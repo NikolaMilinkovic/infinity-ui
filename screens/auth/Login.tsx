@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext, useRef } from 'react'
 import InputField from '../../util-components/InputField'
-import { View, StyleSheet, Text, Image } from 'react-native'
+import { View, StyleSheet, Text, Image, Animated } from 'react-native'
 import Button from '../../util-components/Button'
 import { AuthContext } from '../../store/auth-context';
 import LoadingOverlay from '../../components/loading/LoadingOverlay';
 import { loginUser } from '../../util-methods/auth/AuthMethods';
+import { Colors } from '../../constants/colors';
 
 function Login() {
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -16,27 +17,63 @@ function Login() {
     if(username && password) setErrorMessage('');
   }, [username, password])
 
-  function loginUserHandler(username: string, password: string){
+    // Fade in animation
+    const fadeIn = useRef(new Animated.Value(0)).current;
+    useEffect(() => {
+      Animated.timing(fadeIn, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true
+      }).start();
+    }, []);
+
+  // INTERFACES
+  interface LoginResultType{
+    isAuthenticated: boolean;
+    message: string;
+    token: string;
+  }
+
+  /**
+   * Sends username & password to the server for authentication
+   * Receives token from the server and calls auth-context > authenticate(token) method
+   * @param {String} username 
+   * @param {String} password 
+   * @returns {Promise<void>}
+   */
+  async function loginUserHandler(username: string, password: string): Promise<void>{
     if(!username || !password) {
       setErrorMessage('Invalid input, please provide a valid username & password.');
       return;
     }
-    console.log('> setting isAuthenticating to true');
     setIsAuthenticating(true);
+
     try{
-      setTimeout(() => {
-        async function temp(){
-          console.log('> Artificial timeout');
-          const token = await loginUser({username, password});
-          authCtx.authenticate(token);
-        }
-        temp();
-      }, 3000)
+      const result: LoginResultType = await loginUser({username, password});
+
+      if(result.isAuthenticated === false) failAuthHandler(result);
+      if(result.token === '') failAuthHandler(result);
+
+      authCtx.authenticate(result.token);
+
     } catch(err){
-      console.log(`[ERROR] Issue while logging in user: ${err}`);
-      throw new Error(`[ERROR] Issue logging in user: ${err}`);
+      setErrorMessage(`Issue logging in user: ${err}`);
+      setIsAuthenticating(false);
     }
-    
+  }
+
+
+  
+  /**
+   * Handles updating the screen upon Authentication error
+   * @param {LoginResultType} result 
+   * @returns {void}
+   */
+  function failAuthHandler(result: LoginResultType): void{
+    console.log('> Auth failed')
+    setErrorMessage(result.message || 'Authentication failed..');
+    setIsAuthenticating(false);
+    return;
   }
 
   if(isAuthenticating){
@@ -44,7 +81,7 @@ function Login() {
   }
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { opacity: fadeIn }]}>
         <Image 
           source={require('../../assets/infinity.png')}
           style={styles.image}
@@ -63,15 +100,19 @@ function Login() {
         />
         <Text style={styles.errorMessage}>{errorMessage}</Text>
       </View>
-      <Button onPress={() => loginUserHandler(username, password)}>Login</Button>
-    </View>
+      <Button 
+        onPress={() => loginUserHandler(username, password)}
+        textColor={Colors.whiteText}
+        backColor={Colors.primaryDark}
+      >Login</Button>
+    </Animated.View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: Colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 44,
@@ -83,7 +124,7 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   errorMessage: {
-    color: 'red'
+    color: Colors.error
   },
   image: {
     maxHeight: 140,

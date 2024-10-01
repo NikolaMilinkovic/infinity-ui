@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { StyleSheet, View , Text, TextInput, Animated, Pressable } from 'react-native';
+import { StyleSheet, View , TextInput, Animated, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../constants/colors';
 
 interface InputFieldProps {
   label?: string | null | undefined,
@@ -65,19 +66,19 @@ function getStyles(isActive: boolean, inputText: string){
       position: 'absolute',
       left: 18,
       top: 12,
-      backgroundColor: isActive ? 'white' : inputText !== '' ? 'white' : 'transparent',
+      backgroundColor: isActive ? Colors.primaryLight : inputText !== '' ? Colors.primaryLight : 'transparent',
       zIndex: isActive ? 1 : inputText !== '' ? 1 : 0,
       paddingHorizontal: 4,
       borderRadius: 4,
     },
     label: {
       fontSize: 16,
-      color: isActive ? 'blue' : '#333333',
+      color: isActive ? Colors.secondaryDark : Colors.primaryDark,
     },
     input: {
       padding: 8,
       fontSize: 16,
-      borderColor: isActive ? 'blue' : '#333333',
+      borderColor: isActive ? Colors.secondaryDark : Colors.primaryDark,
       borderWidth: 1,
       borderRadius: 4,
     },
