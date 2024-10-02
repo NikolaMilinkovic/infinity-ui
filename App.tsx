@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Login from './screens/auth/Login';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useCallback, useContext, useEffect, useState, useRef } from 'react';
@@ -9,14 +9,15 @@ import { AuthContext } from './store/auth-context';
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Image, StyleSheet } from 'react-native';
-import AuthContextProvider from './store/auth-context';
-import { SocketProvider } from './store/socket-context';
 import AddItem from './screens/AddItem';
 import BrowseProducts from './screens/BrowseProducts';
 import NewOrder from './screens/NewOrder';
 import { Ionicons } from '@expo/vector-icons';
 import NavigationButton from './util-components/NavigationButton';
 import { Colors } from './constants/colors';
+import ContextProvider from './store/ContextProvider';
+import { ColorsContext } from './store/colors-context';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialTopTabNavigator();
@@ -74,9 +75,15 @@ function AuthenticatedTabs(){
  */
 function CustomDrawerContent(props) {
   const authCtx = useContext(AuthContext);
+  const colorsCtx = useContext(ColorsContext);
+  const navigation = useNavigation();
   // authCtx.logout
   function temp(){
-
+    const colors = colorsCtx.getColors();
+    console.log(colors);
+    colors.forEach((entry, index) => {
+      console.log(`${index + 1} = ${entry.color}`)
+    });
   }
 
   return (
@@ -240,11 +247,9 @@ export default function App() {
   return (
     <>
       <StatusBar style="light" />
-      <AuthContextProvider>
-        <SocketProvider>
+      <ContextProvider>
           <Root/>
-        </SocketProvider>
-      </AuthContextProvider>
+      </ContextProvider>
     </>
   );
 }
