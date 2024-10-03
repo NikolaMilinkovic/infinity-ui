@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react'
 import { ColorsContext } from '../../store/colors-context';
 import { View, StyleSheet, Text, FlatList } from 'react-native'
 import EditColorItem from './EditColorItem';
+import { Colors } from '../../constants/colors';
 
 function EditColors() {
   const colorsCtx = useContext(ColorsContext);
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    backgroundColor: 'lightgray',
+    backgroundColor: Colors.primaryLight,
   },
   list: {
     flex: 1,

@@ -62,7 +62,7 @@ function AddColor() {
       throw new Error('Došlo je do problema prilikom dodavanja boje');
     }
   }
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.controllsContainer}>
@@ -72,6 +72,9 @@ function AddColor() {
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
+            background={Colors.primaryLight}
+            color={Colors.primaryDark}
+            activeColor={Colors.secondaryDark}
           />
         </View>
         <View style={styles.buttonContainer}>
@@ -97,7 +100,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.primaryDark,
     borderWidth: 0.5,
     paddingVertical: 16,
-    backgroundColor: Colors.whiteText
+    backgroundColor: Colors.primaryLight
   },
   controllsContainer: {
     flexDirection: 'row',

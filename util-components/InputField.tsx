@@ -8,13 +8,16 @@ interface InputFieldProps {
   isSecure?: boolean,
   inputText: string,
   setInputText: (text: string) => void,
-  capitalize?: ("sentences" | "none" | "words" | "characters" | undefined)
+  capitalize?: ("sentences" | "none" | "words" | "characters" | undefined),
+  background?: string 
+  color?: string
+  activeColor?:string
 }
 
-function InputField({ label, isSecure=false, inputText, setInputText, capitalize='sentences' } :InputFieldProps) {
+function InputField({ label, isSecure=false, inputText, setInputText, capitalize='sentences', background=Colors.primaryLight, color=Colors.primaryDark, activeColor=Colors.secondaryDark } :InputFieldProps) {
   const [isActive, setIsActive] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const styles = getStyles(isActive, inputText);
+  const styles = getStyles(isActive, inputText, background, color, activeColor);
 
   // Fade in / out animation
   const translateY = useRef(new Animated.Value(0)).current;
@@ -55,7 +58,7 @@ function InputField({ label, isSecure=false, inputText, setInputText, capitalize
   )
 }
 
-function getStyles(isActive: boolean, inputText: string){
+function getStyles(isActive: boolean, inputText: string, background:string, color:string, activeColor:string){
   const styles = StyleSheet.create({
     container: {
       justifyContent: 'center',
@@ -67,21 +70,22 @@ function getStyles(isActive: boolean, inputText: string){
       position: 'absolute',
       left: 18,
       top: 12,
-      backgroundColor: isActive ? Colors.primaryLight : inputText !== '' ? Colors.primaryLight : 'transparent',
+      backgroundColor: isActive ? background : inputText !== '' ? background : 'transparent',
       zIndex: isActive ? 1 : inputText !== '' ? 1 : 0,
       paddingHorizontal: 4,
       borderRadius: 4,
     },
     label: {
       fontSize: 16,
-      color: isActive ? Colors.secondaryDark : Colors.primaryDark,
+      color: isActive ? activeColor : color,
     },
     input: {
       padding: 8,
       fontSize: 16,
-      borderColor: isActive ? Colors.secondaryDark : Colors.primaryDark,
+      borderColor: isActive ? activeColor : color,
       borderWidth: 1,
       borderRadius: 4,
+      color: color
     },
     showHideText: {
       position: 'absolute',
