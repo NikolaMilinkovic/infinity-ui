@@ -17,5 +17,8 @@ export const Colors = {
   highlight: '#C28E8E',
 
   // Error red
-  error: '#DC143C'
+  error: '#DC143C',
+  success: '#218838',
+  warning: '#FFB74D',
+  info: '#001F54',
 }

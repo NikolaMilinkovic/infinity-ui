@@ -1,26 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Animated, Text, View } from 'react-native'
 import { useIsFocused } from '@react-navigation/native';
+import { useFadeAnimation } from '../hooks/useFadeAnimation';
 
 function NewOrder() {
   // Fade in animation
-  const fadeAnimation = useRef(new Animated.Value(0)).current;
-  const isFocused = useIsFocused();
-  useEffect(() => {
-    if(isFocused){
-      Animated.timing(fadeAnimation, {
-        toValue: 1,
-        duration: 180,
-        useNativeDriver: true
-      }).start();
-    } else {
-      Animated.timing(fadeAnimation, {
-        toValue: 0,
-        duration: 180,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [isFocused, fadeAnimation]);
+  const fadeAnimation = useFadeAnimation();
+
   
   return (
     <Animated.View style={{ opacity: fadeAnimation }}>

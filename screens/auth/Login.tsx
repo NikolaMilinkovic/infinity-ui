@@ -91,12 +91,14 @@ function Login() {
           label='Username'
           inputText={username}
           setInputText={setUsername}
+          capitalize='none'
         />
         <InputField
           label='Password'
           isSecure={true}
           inputText={password}
           setInputText={setPassword}
+          capitalize='none'
         />
         <Text style={styles.errorMessage}>{errorMessage}</Text>
       </View>
@@ -124,7 +126,8 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   errorMessage: {
-    color: Colors.error
+    color: Colors.error,
+    textAlign: 'center'
   },
   image: {
     maxHeight: 140,

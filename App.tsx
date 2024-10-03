@@ -8,7 +8,7 @@ import { useCallback, useContext, useEffect, useState, useRef } from 'react';
 import { AuthContext } from './store/auth-context';
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, Pressable } from 'react-native';
 import AddItem from './screens/AddItem';
 import BrowseProducts from './screens/BrowseProducts';
 import NewOrder from './screens/NewOrder';
@@ -17,6 +17,10 @@ import NavigationButton from './util-components/NavigationButton';
 import { Colors } from './constants/colors';
 import ContextProvider from './store/ContextProvider';
 import { ColorsContext } from './store/colors-context';
+import { PopupMessagesComponent } from './util-components/PopupMessage';
+import { useNetworkStatus } from './hooks/useNetworkStatus';
+import Temp from './screens/Temp';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -75,40 +79,54 @@ function AuthenticatedTabs(){
  */
 function CustomDrawerContent(props) {
   const authCtx = useContext(AuthContext);
-  const colorsCtx = useContext(ColorsContext);
   const navigation = useNavigation();
-  // authCtx.logout
+  function navigatePages(pageName:string){
+    navigation.navigate(pageName)
+  }
   function temp(){
-    const colors = colorsCtx.getColors();
-    console.log(colors);
-    colors.forEach((entry, index) => {
-      console.log(`${index + 1} = ${entry.color}`)
-    });
+    navigation.navigate('Temp');
   }
 
   return (
     <View style={{ flex: 1, paddingBottom: 60, paddingTop: 60 }}>
       <NavigationButton 
+        icon="home" 
+        onPress={() => navigatePages('Home')} 
+        size={18} 
+        color={Colors.secondaryDark}
+        text='Početna'
+      />
+      <NavigationButton 
         icon="user" 
-        onPress={temp} 
+        onPress={() => navigatePages('Profile')} 
         size={18} 
         color={Colors.secondaryDark}
         text='Profile'
       />
       <NavigationButton 
         icon="setting" 
-        onPress={temp} 
+        onPress={() => navigatePages('Settings')} 
         size={18} 
         color={Colors.secondaryDark}
         text='Settings'
       />
       <NavigationButton 
         icon="profile" 
-        onPress={temp} 
+        onPress={() => navigatePages('UserManager')} 
         size={18} 
         color={Colors.secondaryDark}
         text='User Manager'
       />
+      <NavigationButton 
+        icon="color-palette-outline" 
+        onPress={() => navigatePages('ColorsManager')} 
+        size={18} 
+        color={Colors.secondaryDark}
+        text='Boje'
+        type='Ionicon'
+      />
+
+      {/* Bottom Buttons */}
       <View style={{
         marginTop: 'auto'
       }}>
@@ -124,6 +142,11 @@ function CustomDrawerContent(props) {
   );
 }
 function AuthenticatedStack() {
+  const navigation = useNavigation();
+
+  function navigateToProductsList(){
+    navigation.navigate('BrowseProducts')
+  }
 
   // Navbar Logo Styles
   const styles = StyleSheet.create({
@@ -146,11 +169,13 @@ function AuthenticatedStack() {
         title: '',
         headerTitle: () => (
           <View style={styles.headerTitleContainer}>
-            <Image 
-              source={require('./assets/infinity-white.png')}
-              style={styles.headerImage}
-              resizeMode="contain"
-            />
+            <Pressable onPress={navigateToProductsList}>
+              <Image 
+                source={require('./assets/infinity-white.png')}
+                style={styles.headerImage}
+                resizeMode="contain"
+              />
+            </Pressable>
           </View>
         ),
         headerTitleAlign: 'center',
@@ -167,11 +192,20 @@ function AuthenticatedStack() {
       }}
     >
       <Drawer.Screen 
-        name="DrawerNavigation" 
+        name="Home" 
         component={AuthenticatedTabs} 
         options={{
           drawerIcon: () => (
             <Ionicons name="home" size={22} color='white' />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="ColorsManager"
+        component={Temp}
+        options={{
+          drawerIcon: () => (
+            <Ionicons name="color-palette-outline" size={22} color='white' />
           ),
         }}
       />
@@ -236,14 +270,18 @@ function Root(){
     }
   }, [isCheckingToken]);
 
+
+
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <PopupMessagesComponent/>
       <Navigation />
     </View>
   )
 }
-
 export default function App() {
+  const networkStatus = useNetworkStatus();
+
   return (
     <>
       <StatusBar style="light" />

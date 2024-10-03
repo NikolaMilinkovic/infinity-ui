@@ -9,8 +9,9 @@ interface ButtonChildrenTypes {
   color: string | undefined
   size: number | undefined
   text: number | undefined
+  type: 'Ant' | 'Ionicons'
 }
-const NavigationButton: React.FC<ButtonChildrenTypes> = ({ onPress, icon, color, size, text }) => {
+const NavigationButton: React.FC<ButtonChildrenTypes> = ({ onPress, icon, color, size, text, type='Ant' }) => {
   const styles = getStyles(size, color);
 
   return (
@@ -20,7 +21,11 @@ const NavigationButton: React.FC<ButtonChildrenTypes> = ({ onPress, icon, color,
       android_ripple={{ color: Colors.secondaryLight }}  
     >
       <View style={styles.container}>
-        <AntDesign name={icon} color={color} size={size + 6}/>
+        {type === 'Ant' ? (
+          <AntDesign name={icon} color={color} size={size + 6}/>
+        ) : (
+          <Ionicons name={icon} color={color} size={size + 6}/>
+        )}
         <Text style={styles.text}>{text}</Text>
       </View>
     </Pressable>

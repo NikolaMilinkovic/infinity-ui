@@ -8,9 +8,10 @@ interface InputFieldProps {
   isSecure?: boolean,
   inputText: string,
   setInputText: (text: string) => void,
+  capitalize?: ("sentences" | "none" | "words" | "characters" | undefined)
 }
 
-function InputField({ label, isSecure=false, inputText, setInputText } :InputFieldProps) {
+function InputField({ label, isSecure=false, inputText, setInputText, capitalize='sentences' } :InputFieldProps) {
   const [isActive, setIsActive] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const styles = getStyles(isActive, inputText);
@@ -40,7 +41,7 @@ function InputField({ label, isSecure=false, inputText, setInputText } :InputFie
         onFocus={() => setIsActive(true)}
         onBlur={() => setIsActive(false)}
         onChangeText={text => setInputText(text)}
-        autoCapitalize='none'
+        autoCapitalize={capitalize}
         autoComplete='off'
         secureTextEntry={isSecure && !showPassword}
         keyboardType='default'
