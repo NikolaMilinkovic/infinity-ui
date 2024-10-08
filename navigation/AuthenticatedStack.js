@@ -4,10 +4,10 @@ import { CustomDrawerContent } from './DrawerNavigation';
 import AuthenticatedTabs from './AuthenticatedTabs';
 import { Colors } from '../constants/colors';
 import { useNavigation } from '@react-navigation/native';
-import ColorsManager from '../screens/ColorsManager/ColorsManager';
 import UserManager from '../screens/UserManager/UserManager';
 import Settings from '../screens/Settings/Settings';
 import Profile from '../screens/Profile/Profile';
+import ColorsCategoriesTabs from './ColorsCategoriesTabs';
 
 
 const Drawer = createDrawerNavigator();
@@ -51,7 +51,7 @@ export default function AuthenticatedStack() {
   /**
    * Postavlja stranice tako da kada kliknemo na dugme u DrawerNavigation
    * One usmeravaju ka jednoj od ovih stranica
-   * Uzima CustomDrawerContent > To su dugmici unutar ove Drawer Navigacije
+   * Uzima CustomDrawerContent > To su dugmici unutar ove DrawerNavigation.js
    */
   return (
     <Drawer.Navigator 
@@ -83,10 +83,11 @@ export default function AuthenticatedStack() {
         component={UserManager} 
       />
 
-      {/* COLOR MANAGER SCREEN */}
-      <Drawer.Screen 
-        name="ColorsManager"
-        component={ColorsManager}
+      {/* COLORS AND CATEGORIES TAB SCREEN */}
+      <Drawer.Screen
+        name="ColorsCategoriesTabs"
+        component={ColorsCategoriesTabs}
+        options={{ drawerLabel: 'Boje i Kategorije' }}
       />
     </Drawer.Navigator>
   );

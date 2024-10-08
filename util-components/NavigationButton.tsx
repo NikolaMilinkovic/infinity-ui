@@ -1,5 +1,5 @@
 import React from 'react'
-import { Ionicons, AntDesign } from '@expo/vector-icons';
+import { Ionicons, AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View, Platform  } from 'react-native';
 import { Colors } from '../constants/colors';
 
@@ -9,10 +9,22 @@ interface ButtonChildrenTypes {
   color: string | undefined
   size: number | undefined
   text: number | undefined
-  type: 'Ant' | 'Ionicons'
+  type: 'Ant' | 'Ionicons' | 'MaterialIcons'
 }
-const NavigationButton: React.FC<ButtonChildrenTypes> = ({ onPress, icon, color, size, text, type='Ant' }) => {
+const NavigationButton: React.FC<ButtonChildrenTypes> = ({ onPress, icon, color, size=20, text, type='Ant' }) => {
   const styles = getStyles(size, color);
+  let Icon:any;
+
+  if(type === 'Ant'){
+    Icon = <AntDesign name={icon} color={color} size={size + 6}/>;
+  }
+  if(type === 'Ionicons'){
+    Icon = <Ionicons name={icon} color={color} size={size + 6}/>;
+  }
+  if(type === 'MaterialIcons'){
+    Icon = <MaterialIcons name={icon} color={color} size={size + 6}/>;
+  }
+  
 
   return (
     <Pressable 
@@ -21,11 +33,7 @@ const NavigationButton: React.FC<ButtonChildrenTypes> = ({ onPress, icon, color,
       android_ripple={{ color: Colors.secondaryLight }}  
     >
       <View style={styles.container}>
-        {type === 'Ant' ? (
-          <AntDesign name={icon} color={color} size={size + 6}/>
-        ) : (
-          <Ionicons name={icon} color={color} size={size + 6}/>
-        )}
+        {Icon}
         <Text style={styles.text}>{text}</Text>
       </View>
     </Pressable>

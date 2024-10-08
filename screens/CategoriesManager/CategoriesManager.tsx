@@ -1,15 +1,15 @@
 import React from 'react'
 import Animated from 'react-native-reanimated'
-import AddColor from '../../components/colors/AddColor'
-import EditColors from '../../components/colors/EditColors'
+// import AddCategory from '../../components/categories/AddCategory'
+// import EditCategories from '../../components/categories/EditCategories'
 import { StyleSheet } from 'react-native';
 
-function ColorsManager() {
+function CategoriesManager() {
 
   return (
     <Animated.View style={[styles.container]}>
-      <AddColor />
-      <EditColors/>
+      {/* <AddCategory /> */}
+      {/* <EditCategories/> */}
     </Animated.View>
   )
 }
@@ -23,4 +23,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ColorsManager
+export default CategoriesManager

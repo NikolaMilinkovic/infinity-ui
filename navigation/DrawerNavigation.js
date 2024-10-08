@@ -1,11 +1,6 @@
-// navigation/DrawerNavigator.js
-
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
-import { View, Image, StyleSheet, Pressable } from 'react-native';
+import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AuthenticatedTabs from './AuthenticatedTabs';
-import Temp from '../screens/Temp';
 import { Colors } from '../constants/colors';
 import { useContext } from 'react';
 import NavigationButton from '../util-components/NavigationButton';
@@ -15,6 +10,7 @@ const Drawer = createDrawerNavigator();
 
 /**
  * Handles display of icons / screens in the drawer menu
+ * Buttons inside the drawer navigation, handles displaying the screens
  */
 export function CustomDrawerContent(props) {
   const authCtx = useContext(AuthContext);
@@ -54,13 +50,15 @@ export function CustomDrawerContent(props) {
         color={Colors.secondaryDark}
         text='Upravljanje Korisnicima'
       />
+
+      {/* COLORS | CATEGORIES */}
       <NavigationButton 
         icon="color-palette-outline" 
-        onPress={() => navigatePages('ColorsManager')} 
+        onPress={() => navigatePages('ColorsCategoriesTabs')} 
         size={18} 
         color={Colors.secondaryDark}
-        text='Boje'
-        type='Ionicon'
+        text='Boje i Kategorije'
+        type='Ionicons'
       />
 
       {/* Bottom Buttons */}
