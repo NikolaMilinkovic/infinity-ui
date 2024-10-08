@@ -6,7 +6,7 @@ import Button from '../../util-components/Button';
 import { Colors } from '../../constants/colors';
 import { popupMessage } from '../../util-components/PopupMessage';
 
-function AddColor() {
+function AddCategories() {
   const authCtx = useContext(AuthContext);
   const [inputText, setInputText] = useState<string>('')
   const [error, setError] = useState<string>('')
@@ -21,29 +21,28 @@ function AddColor() {
   function validateInput(){
     resetError()
     if(inputText.trim() === ''){
-      setError('Boja mora imati ime!');
-      popupMessage('Boja mora imati ime!', 'danger');
+      setError('Kategorija mora imati ime!');
+      popupMessage('Kategorija mora imati ime!', 'danger');
       return false;
     }
     return true;
   }
 
-  async function addColorHandler(){
+  async function addCategoryHandler(){
     const validated = validateInput();
     if(!validated) return;
 
     try{
-      const newColor = {
+      const newCategory = {
         name: inputText,
-        colorCode: ''
       };
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/colors`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ color: newColor })
+        body: JSON.stringify({ category: newCategory })
       })
 
       // Handle errors
@@ -54,12 +53,12 @@ function AddColor() {
         return;
       }
 
-      popupMessage(`${newColor.name} boja je uspesno dodata`, 'success');
+      popupMessage(`Kategorija ${newCategory.name} je uspesno dodata`, 'success');
       resetInputAndError();
     } catch(error){
 
       console.error(error);
-      throw new Error('Došlo je do problema prilikom dodavanja boje');
+      throw new Error('Došlo je do problema prilikom dodavanja kategorije');
     }
   }
 
@@ -68,7 +67,7 @@ function AddColor() {
       <View style={styles.controllsContainer}>
         <View style={styles.inputContainer}>
           <InputField 
-            label='Unesi Boju'
+            label='Unesi Kategoriju'
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
@@ -79,7 +78,7 @@ function AddColor() {
         </View>
         <View style={styles.buttonContainer}>
           <Button 
-              onPress={addColorHandler}
+              onPress={addCategoryHandler}
               textColor={Colors.whiteText}
               backColor={Colors.highlight}
           >
@@ -125,4 +124,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default AddColor
+export default AddCategories

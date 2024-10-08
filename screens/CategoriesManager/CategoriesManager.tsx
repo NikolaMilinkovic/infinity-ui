@@ -1,15 +1,16 @@
 import React from 'react'
 import Animated from 'react-native-reanimated'
-// import AddCategory from '../../components/categories/AddCategory'
-// import EditCategories from '../../components/categories/EditCategories'
+
 import { StyleSheet } from 'react-native';
+import AddCategories from '../../components/categories/AddCategories';
+import EditCategories from '../../components/categories/EditCategories';
 
 function CategoriesManager() {
 
   return (
     <Animated.View style={[styles.container]}>
-      {/* <AddCategory /> */}
-      {/* <EditCategories/> */}
+      <AddCategories/>
+      <EditCategories/>
     </Animated.View>
   )
 }
