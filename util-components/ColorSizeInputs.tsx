@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native'
-import DressColor from '../models/DressColor';
 import { TextInput } from 'react-native-gesture-handler';
 import { Colors } from '../constants/colors';
+
 
 interface DressColorTypes{
   _id: string
@@ -35,14 +35,14 @@ function ColorSizeInputs({
     setColorsData(updatedColors);
   }
 
-  useEffect(() => {
-    console.log('===========================================================')
-    colorsData.forEach(color => {
-      color.sizes.forEach(size => {
-        console.log(`> Size ${size.size} is currently at stock: `, size.stock);
-      });
-    });
-  }, [colorsData])
+  // useEffect(() => {
+  //   console.log('===========================================================')
+  //   colorsData.forEach(color => {
+  //     color.sizes.forEach(size => {
+  //       console.log(`> Size ${size.size} is currently at stock: `, size.stock);
+  //     });
+  //   });
+  // }, [colorsData])
 
   // If no colors present
   if(colorsData.length < 1){

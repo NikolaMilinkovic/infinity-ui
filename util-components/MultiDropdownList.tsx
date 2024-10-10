@@ -4,6 +4,9 @@ import { MultipleSelectList } from 'react-native-dropdown-select-list'
 import { Colors } from '../constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+// React Native Dropdown Select List Documentation
+// https://www.npmjs.com/package/react-native-dropdown-select-list
+
 interface DropdownPropTypes {
   data: any[]
   setSelected: (selectedData:any) => void
@@ -21,12 +24,6 @@ export default function MultiDropdownList({
 }:DropdownPropTypes){
 
   const [dropdownData, setDropdownData] = useState([])
-  const [o, so] = useState(false);
-  useEffect(() => {
-    console.log('> Logging isOpen: ', isOpen);
-    so(isOpen);
-  }, [isOpen])
-
 
   useEffect(() => {
     let d = [];
@@ -39,15 +36,12 @@ export default function MultiDropdownList({
     });
     setDropdownData(d);
   }, [data])
-  function handleClick(){
-    console.log('> Pressable called')
-  }
-
 
   return(
     <>
       {dropdownData.length > 0 && (
         <MultipleSelectList 
+          defaultOption={dropdownData[0]}
           placeholder={placeholder}
           dropdownShown={isOpen}
           setSelected={setSelected} 

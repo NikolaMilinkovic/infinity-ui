@@ -5,67 +5,96 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Colors } from '../constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+// GitHub Repo & Documentation | Examples
+// https://github.com/AdelRedaa97/react-native-select-dropdown/tree/master
+
 interface DropdownPropTypes{
   data: any[],
   placeholder: string,
   onSelect: (selectedItem: any) => void,
+  defaultValue?: any
 }
 
 const DropdownList = ({ 
   data,
   placeholder,
-  onSelect
+  onSelect,
+  defaultValue,
  }: DropdownPropTypes) => {
+  
   const [dropdownData, setDropdownData] = useState<any[]>([]);
+  const [defaultVal, setDefaultVal] = useState(['']);
   useEffect(() => {
+    console.log('> Running...')
     setDropdownData(data || []);
-  }, [data])
 
-  return (
-    <SelectDropdown
-      data={dropdownData}
-      defaultValueByIndex={0} // use default value by index or default value
-      // defaultValue={'TEST'} // use default value by index or default value
+    // Looks for value from the data
+    // If value is found > set that object as default & give onSelect that object
+    let defaultDataObject;
+    data.forEach(element => {
+      if(element?.name === defaultValue){
+        defaultDataObject = element;
+        onSelect(element);
+      }
+      if(element?.value === defaultValue){
+        defaultDataObject = element;
+        onSelect(element);
+      }
+    });
+    setDefaultVal(defaultDataObject || []);
+  }, [data, defaultValue])
 
-      // WHEN SELECTED
-      onSelect={(selectedItem, index) => {
-        onSelect(selectedItem);
-      }}
+  useEffect(() => {
+    console.log(defaultVal);
+  }, [defaultVal])
 
-      // BUTTON
-      renderButton={(selectedItem, isOpen) => {
-        return (
-          <View style={styles.dropdownButtonStyle}>
-            <Text style={styles.dropdownButtonTxtStyle}>{selectedItem?.name || selectedItem?.value || placeholder || 'No placeholder value provided'}</Text>
-            <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} style={styles.dropdown1ButtonArrowStyle} size={18}/>
-          </View>
-        );
-      }}
-
-      // ITEMS
-      renderItem={(item, index, isSelected) => {
-        return (
-          <View
-            style={{
-              ...styles.dropdownItemStyle,
-              ...(isSelected && {backgroundColor: Colors.secondaryHighlight, color: Colors.highlight}),
-            }}>
-              {/* <Text>{index + 1}</Text> */}
-            <Text style={styles.dropdownItemTxtStyle}>{item?.name || item?.value || 'ERROR'}</Text>
-          </View>
-        );
-      }}
-      dropdownStyle={styles.dropdownMenuStyle}
-      search
-      searchInputStyle={styles.dropdownSearchInputStyle}
-      searchInputTxtColor={Colors.primaryLight}
-      searchPlaceHolder={'Pretraži'}
-      searchPlaceHolderColor={Colors.secondaryLight}
-      renderSearchInputLeftIcon={() => {
-        return <FontAwesome name={'search'} color={Colors.secondaryLight} size={18} />;
-      }}
-    />
-  );
+  if(dropdownData.length > 0){
+    return (
+      <SelectDropdown
+        data={dropdownData}
+        // defaultValueByIndex={0} // use default value by index or default value
+        defaultValue={defaultVal} // use default value by index or default value
+  
+        // WHEN SELECTED
+        onSelect={(selectedItem, index) => {
+          onSelect(selectedItem);
+        }}
+  
+        // BUTTON
+        renderButton={(selectedItem, isOpen) => {
+          return (
+            <View style={styles.dropdownButtonStyle}>
+              <Text style={styles.dropdownButtonTxtStyle}>{selectedItem?.name || selectedItem?.value || placeholder || 'No placeholder value provided'}</Text>
+              <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} style={styles.dropdown1ButtonArrowStyle} size={18}/>
+            </View>
+          );
+        }}
+  
+        // ITEMS
+        renderItem={(item, index, isSelected) => {
+          return (
+            <View
+              style={{
+                ...styles.dropdownItemStyle,
+                ...(isSelected && {backgroundColor: Colors.secondaryHighlight, color: Colors.highlight}),
+              }}>
+                {/* <Text>{index + 1}</Text> */}
+              <Text style={styles.dropdownItemTxtStyle}>{item?.name || item?.value || 'ERROR'}</Text>
+            </View>
+          );
+        }}
+        dropdownStyle={styles.dropdownMenuStyle}
+        search
+        searchInputStyle={styles.dropdownSearchInputStyle}
+        searchInputTxtColor={Colors.primaryLight}
+        searchPlaceHolder={'Pretraži'}
+        searchPlaceHolderColor={Colors.secondaryLight}
+        renderSearchInputLeftIcon={() => {
+          return <FontAwesome name={'search'} color={Colors.secondaryLight} size={18} />;
+        }}
+      />
+    );
+  }
 };
 
 export default DropdownList;

@@ -54,7 +54,7 @@ function AddColor() {
         return;
       }
 
-      popupMessage(`${newColor.name} boja je uspesno dodata`, 'success');
+      popupMessage(`${newColor.name} boja je uspešno dodata`, 'success');
       resetInputAndError();
     } catch(error){
 
