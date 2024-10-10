@@ -15,10 +15,14 @@ export const Colors = {
   // highlight: '#808000'
   // highlight: '#D4A5A5'
   highlight: '#C28E8E',
+  secondaryHighlight: '#FFE4E4',
 
   // Error red
   error: '#DC143C',
   success: '#218838',
   warning: '#FFB74D',
   info: '#001F54',
+
+  white: '#FFFFFF',
+  highlightBlue: '#6A5ACD',
 }

@@ -1,14 +1,15 @@
 import React from 'react'
-import Animated from 'react-native-reanimated'
-
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Animated } from 'react-native';
 import AddCategories from '../../components/categories/AddCategories';
 import EditCategories from '../../components/categories/EditCategories';
+import { useFadeAnimation } from '../../hooks/useFadeAnimation';
 
 function CategoriesManager() {
+  // Fade in animation
+  const fadeAnimation = useFadeAnimation();
 
   return (
-    <Animated.View style={[styles.container]}>
+    <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
       <AddCategories/>
       <EditCategories/>
     </Animated.View>

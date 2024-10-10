@@ -87,19 +87,25 @@ function Login() {
           style={styles.image}
         />
       <View style={styles.inputsContainer}>
-        <InputField
-          label='Username'
-          inputText={username}
-          setInputText={setUsername}
-          capitalize='none'
-        />
-        <InputField
-          label='Password'
-          isSecure={true}
-          inputText={password}
-          setInputText={setPassword}
-          capitalize='none'
-        />
+        <View style={styles.inputWrapper}>
+          <InputField
+            label='Username'
+            inputText={username}
+            setInputText={setUsername}
+            capitalize='none'
+            labelBorders={false}
+          />
+        </View>
+        <View style={styles.inputWrapper}>
+          <InputField
+            label='Password'
+            isSecure={true}
+            inputText={password}
+            setInputText={setPassword}
+            capitalize='none'
+            labelBorders={false}
+          />
+        </View>
         <Text style={styles.errorMessage}>{errorMessage}</Text>
       </View>
       <Button 
@@ -124,6 +130,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     marginBottom: 28,
+  },
+  inputWrapper: {
+    marginTop: 16,
+    width: '100%'
   },
   errorMessage: {
     color: Colors.error,

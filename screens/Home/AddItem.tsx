@@ -1,19 +1,16 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Animated, Text, View, FlatList, StyleSheet } from 'react-native'
-import AddColor from '../../components/colors/AddColor';
-import EditColors from '../../components/colors/EditColors';
+import React from 'react'
+import { Animated, StyleSheet } from 'react-native'
 import { useFadeAnimation } from '../../hooks/useFadeAnimation';
+import AddProduct from '../../components/products/AddProduct';
 
 function AddItem() {
 
   // ANIMATIONS
   const fadeAnimation = useFadeAnimation();
-
   
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
-      <AddColor />
-      <EditColors/>
+      <AddProduct/>
     </Animated.View>
   )
 }

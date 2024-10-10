@@ -5,11 +5,12 @@ export default class DressColor{
   color: string
   colorCode: string
   sizes: { size: string; stock: number }[]
+
   constructor(
-    id:string,
-    color:string,
-    colorCode:string,
-    sizes: { size: string; stock: number }[]
+    id?:string,
+    color?:string,
+    colorCode?:string,
+    sizes?: { size: string; stock: number }[]
   ){
     this._id = id || ''
     this.color = color || ''

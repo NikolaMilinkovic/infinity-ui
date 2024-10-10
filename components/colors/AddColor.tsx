@@ -75,6 +75,7 @@ function AddColor() {
             background={Colors.primaryLight}
             color={Colors.primaryDark}
             activeColor={Colors.secondaryDark}
+            labelBorders={false}
           />
         </View>
         <View style={styles.buttonContainer}>

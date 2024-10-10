@@ -137,15 +137,15 @@ function EditCategoriesItem({ data }: { data: CategoryType }) {
           />
           <View style={styles.buttons}>
             <Button 
-              onPress={updateCategoryHandler}
-              textColor={Colors.primaryLight}
-              backColor={Colors.primaryDark}
-            >Sacuvaj</Button>
-            <Button 
               onPress={showEditCategoryrHandler}
               textColor={Colors.primaryLight}
               backColor={Colors.error}
             >Otkazi</Button>
+            <Button 
+              onPress={updateCategoryHandler}
+              textColor={Colors.primaryLight}
+              backColor={Colors.primaryDark}
+            >Sacuvaj</Button>
           </View>
           {error && (
             <Text style={styles.error}>{error}</Text>

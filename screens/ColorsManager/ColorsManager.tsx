@@ -1,13 +1,15 @@
 import React from 'react'
-import Animated from 'react-native-reanimated'
 import AddColor from '../../components/colors/AddColor'
 import EditColors from '../../components/colors/EditColors'
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Animated } from 'react-native';
+import { useFadeAnimation } from '../../hooks/useFadeAnimation';
 
 function ColorsManager() {
+  // Fade in animation
+  const fadeAnimation = useFadeAnimation();
 
   return (
-    <Animated.View style={[styles.container]}>
+    <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
       <AddColor />
       <EditColors/>
     </Animated.View>

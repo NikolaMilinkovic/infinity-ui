@@ -12,6 +12,10 @@ export const useFadeAnimation = () => {
       duration: 180,
       useNativeDriver: true,
     }).start();
+
+    return () => {
+      fadeAnimation.setValue(isFocused ? 1 : 0)
+    }
   }, [isFocused, fadeAnimation]);
 
   return fadeAnimation;

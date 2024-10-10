@@ -140,15 +140,15 @@ function EditColorItem({ data }: { data: ColorType }) {
           />
           <View style={styles.buttons}>
             <Button 
-              onPress={updateColorHandler}
-              textColor={Colors.primaryLight}
-              backColor={Colors.primaryDark}
-            >Sacuvaj</Button>
-            <Button 
               onPress={showEditColorHandler}
               textColor={Colors.primaryLight}
               backColor={Colors.error}
             >Otkazi</Button>
+            <Button 
+              onPress={updateColorHandler}
+              textColor={Colors.primaryLight}
+              backColor={Colors.primaryDark}
+            >Sacuvaj</Button>
           </View>
           {error && (
             <Text style={styles.error}>{error}</Text>
