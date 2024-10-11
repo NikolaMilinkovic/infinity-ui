@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text } from 'react-native'
 import InputField from '../../util-components/InputField'
 import { Colors } from '../../constants/colors';
 import { CategoriesContext } from '../../store/categories-context';
@@ -11,6 +11,7 @@ import Button from '../../util-components/Button';
 import DressColor from '../../models/DressColor';
 import { AuthContext } from '../../store/auth-context';
 import { popupMessage } from '../../util-components/PopupMessage';
+import ImagePicker from '../../util-components/ImagePicker';
 
 interface Category {
   _id: string,
@@ -33,12 +34,12 @@ function AddProduct(){
   const categoriesCtx = useContext(CategoriesContext);
   const colorsCtx = useContext(ColorsContext);
 
-
   // Other data
   const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [allColors, setAllColors] = useState<Color[]>([]);
   const [isMultiDropdownOpen, setIsMultiDropdownOpen] = useState(false);
   const [selectedColors, setSelectedColors] = useState([]);
+  const [error, setError] = useState('');
 
   // Handles adding / removing and updating the dressColors data
   // In the ColorSizeInputs component
@@ -68,7 +69,7 @@ function AddProduct(){
   const [selectedCategory, setSelectedCategory] = useState<Category[]>([]);
   const [price, setPrice] = useState<number | string>('');
   const [dressColors, setDressColors] = useState<DressColorTypes[]>([]);
-  const [error, setError] = useState('');
+  const [productImage, setProductImage] = useState();
 
   useEffect(() => {
     setAllCategories(categoriesCtx.getCategories());
@@ -155,10 +156,16 @@ function AddProduct(){
     }
   }
 
+  useEffect(() => {
+    console.log('> Logging productImage:');
+    console.log(productImage);
+  }, [productImage])
+
   return (
     <TouchableWithoutFeedback onPress={handleOutsideClick} style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
         <View style={[styles.wrapper, {marginTop: 22}]}>
+          <Text style={styles.sectionText}>Osnovne Informacije</Text>
           <InputField
             label='Naziv Proizvoda'
             isSecure={false}
@@ -167,6 +174,7 @@ function AddProduct(){
             background={Colors.white}
             color={Colors.primaryDark}
             activeColor={Colors.secondaryDark}
+            containerStyles={{ marginTop: 18 }}
           />
         </View>
         <View style={styles.wrapper}>
@@ -179,9 +187,17 @@ function AddProduct(){
             color={Colors.primaryDark}
             activeColor={Colors.secondaryDark}
             keyboard='numeric'
+            containerStyles={{ marginTop: 18 }}
           />
         </View>
         <View style={styles.wrapper}>
+          <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Slika Proizvoda</Text>
+          <ImagePicker
+            onTakeImage={setProductImage}
+          />
+        </View>
+        <View style={styles.wrapper}>
+          <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Kategorija</Text>
           <DropdownList
             data={allCategories}
             placeholder='Kategorija Proizvoda'
@@ -190,15 +206,16 @@ function AddProduct(){
           />
         </View>
         <View style={styles.wrapper}>
+          <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Boje, veličine i količina lagera</Text>
           <MultiDropdownList
             data={allColors}
             setSelected={setSelectedColors}
             isOpen={isMultiDropdownOpen}
             placeholder='Izaberi boje'
-            label='Boje'
+            label='Boje Proizvoda'
           />
         </View>
-        <View style={styles.wrapper}>
+        <View style={[styles.wrapper, {marginTop: 10}]}>
           <ColorSizeInputs 
             colorsData={dressColors}
             setColorsData={setDressColors}
@@ -209,7 +226,8 @@ function AddProduct(){
             onPress={handleAddProduct}
             backColor={Colors.highlight}
             textColor={Colors.whiteText}
-          >Dodaj</Button>
+            containerStyles={{ marginTop: 16 }}
+          >Sačuvaj Proizvod</Button>
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>
@@ -223,12 +241,17 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   wrapper: {
-    marginBottom: 8,
-    marginTop: 8,
+    marginBottom: 0,
   },
   buttonContainer: {
     marginBottom: 50
-  }
+  },
+  sectionText: {
+    fontSize: 18,
+  },
+  sectionTextTopMargin: {
+    marginTop: 16
+  },
 })
 
 export default AddProduct

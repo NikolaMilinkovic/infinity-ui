@@ -8,6 +8,7 @@ import UserManager from '../screens/UserManager/UserManager';
 import Settings from '../screens/Settings/Settings';
 import Profile from '../screens/Profile/Profile';
 import ColorsCategoriesTabs from './ColorsCategoriesTabs';
+import ProductsManagerTabs from './ProductsManagerTabs';
 
 
 const Drawer = createDrawerNavigator();
@@ -88,6 +89,13 @@ export default function AuthenticatedStack() {
         name="ColorsCategoriesTabs"
         component={ColorsCategoriesTabs}
         options={{ drawerLabel: 'Boje i Kategorije' }}
+      />
+
+      {/* PRODUCTS MANAGER */}
+      <Drawer.Screen
+        name="ProductsManager"
+        component={ProductsManagerTabs}
+        options={{ drawerLabel: 'Upravljanje Proizvodima' }}
       />
     </Drawer.Navigator>
   );

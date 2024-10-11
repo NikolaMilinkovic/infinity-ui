@@ -38,7 +38,7 @@ export default function MultiDropdownList({
   }, [data])
 
   return(
-    <>
+    <View style={styles.container}>
       {dropdownData.length > 0 && (
         <MultipleSelectList 
           defaultOption={dropdownData[0]}
@@ -73,11 +73,14 @@ export default function MultiDropdownList({
           labelStyles={styles.labelStyles}
         />
       )}
-    </>
+    </View>
   )
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginTop: 4,
+  },
   boxStyles: {
     backgroundColor: Colors.white,
     borderRadius: 4,
@@ -91,11 +94,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderWidth: 0.5,
     borderColor: Colors.primaryDark,
+    borderRadius: 4,
   },
   dropdownItemStyles: {
     backgroundColor: Colors.white,
-    borderBottomColor: Colors.secondaryLight,
-    borderBottomWidth: 0.5,
   },
   dropdownTextStyles: {
     fontSize: 16,

@@ -37,14 +37,7 @@ export function CustomDrawerContent(props) {
         text='Profil'
       />
       <NavigationButton 
-        icon="setting" 
-        onPress={() => navigatePages('Settings')} 
-        size={18} 
-        color={Colors.secondaryDark}
-        text='Podešavanja'
-      />
-      <NavigationButton 
-        icon="profile" 
+        icon="addusergroup" 
         onPress={() => navigatePages('UserManager')} 
         size={18} 
         color={Colors.secondaryDark}
@@ -59,6 +52,24 @@ export function CustomDrawerContent(props) {
         color={Colors.secondaryDark}
         text='Boje i Kategorije'
         type='Ionicons'
+      />
+
+      {/* PRODUCTS MANAGER */}
+      <NavigationButton 
+        icon="profile" 
+        onPress={() => navigatePages('ProductsManager')} 
+        size={18} 
+        color={Colors.secondaryDark}
+        text='Upravljanje Proizvodima'
+      />
+
+      {/* SETTINGS */}
+      <NavigationButton 
+        icon="setting" 
+        onPress={() => navigatePages('Settings')} 
+        size={18} 
+        color={Colors.secondaryDark}
+        text='Podešavanja'
       />
 
       {/* Bottom Buttons */}

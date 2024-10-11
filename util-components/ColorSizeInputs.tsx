@@ -52,7 +52,7 @@ function ColorSizeInputs({
   return (
     <View style={styles.container}>
       <View style={styles.sizesContainer}>
-        <Text style={{ width: 100, fontWeight: 'bold', textAlign: 'center' }}>Color</Text>
+        <Text style={{ width: 100, fontWeight: 'bold', textAlign: 'center' }}>Boja</Text>
         <Text style={styles.header}>XS</Text>
         <Text style={styles.header}>S</Text>
         <Text style={styles.header}>M</Text>
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
     padding: 4,
-    borderRadius: 8,
+    borderRadius: 4,
     borderColor: Colors.primaryDark,
     borderWidth: 0.5,
   },

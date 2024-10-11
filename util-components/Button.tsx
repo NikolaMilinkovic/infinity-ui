@@ -4,20 +4,22 @@ interface ButtonTypes {
   onPress?: any,
   textColor?: string,
   backColor?: string
+  containerStyles?: {},
+  textStyles?: {}
 }
 
-function Button({ children, onPress, textColor, backColor } :ButtonTypes) {
+function Button({ children, onPress, textColor, backColor, containerStyles, textStyles } :ButtonTypes) {
 
 
   const styles = getStyles(textColor, backColor)
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed, containerStyles]}
       onPress={onPress}
     >
       <View>
-        <Text style={styles.buttonText}>{children}</Text>
+        <Text style={[styles.buttonText, textStyles]}>{children}</Text>
       </View>
     </Pressable>
   );
@@ -32,7 +34,7 @@ function getStyles(
   return(
     StyleSheet.create({
       button: {
-        borderRadius: 6,
+        borderRadius: 4,
         paddingVertical: 12,
         paddingHorizontal: 12,
         backgroundColor: backColor,

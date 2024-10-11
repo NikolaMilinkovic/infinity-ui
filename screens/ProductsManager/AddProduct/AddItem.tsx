@@ -1,7 +1,7 @@
 import React from 'react'
 import { Animated, StyleSheet } from 'react-native'
-import { useFadeAnimation } from '../../hooks/useFadeAnimation';
-import AddProduct from '../../components/products/AddProduct';
+import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
+import AddProduct from '../../../components/products/AddProduct';
 
 function AddItem() {
 

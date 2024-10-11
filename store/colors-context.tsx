@@ -51,8 +51,6 @@ function ColorsContextProvider({ children }: ColorsContextProviderType){
       }
 
       const data = await response.json();
-      console.log('> Logging out fetched data');
-      console.log(data);
       if(data.length > 0){
         const colorsArr: ColorType[] = [];
         data.forEach(entry => {

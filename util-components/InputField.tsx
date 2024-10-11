@@ -14,6 +14,7 @@ interface InputFieldProps {
   activeColor?:string
   keyboard?: string
   labelBorders?: boolean
+  containerStyles?: any
 }
 
 function InputField({ 
@@ -27,7 +28,8 @@ function InputField({
   color=Colors.primaryDark, 
   activeColor=Colors.secondaryDark,
   keyboard='default',
-  labelBorders=true
+  labelBorders=true,
+  containerStyles
 
 } :InputFieldProps) {
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -46,7 +48,7 @@ function InputField({
   }, [isActive, inputText, translateY]);
 
   return (
-      <View style={styles.container}>
+      <View style={[styles.container, containerStyles]}>
         {label && (
           <Animated.View style={[styles.labelContainer, { transform: [{ translateY }] }]}>
             <Animated.Text style={styles.label}>
@@ -92,7 +94,6 @@ function getStyles(isActive: boolean, inputText: string, background:string, colo
       width: '100%',
       position: 'relative',
       backgroundColor: background,
-      marginTop: 10
     },
     labelContainer: {
       position: 'absolute',

@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import BrowseProducts from '../screens/Home/BrowseProducts';
-import AddItem from '../screens/Home/AddItem';
-import NewOrder from '../screens/Home/NewOrder';
+import BrowseProducts from '../screens/Home/browseProducts/BrowseProducts';
+import AddItem from '../screens/ProductsManager/AddProduct/AddItem';
+import NewOrder from '../screens/Home/newOrder/NewOrder';
 import { Colors } from '../constants/colors';
 import { Dimensions } from 'react-native';
 
@@ -38,13 +38,6 @@ export default function AuthenticatedTabs(){
         component={BrowseProducts}
         options={{
           title: 'Lista Proizvoda',
-        }}
-      />
-      <Tab.Screen 
-        name="AddItem" 
-        component={AddItem} 
-        options={{
-          title: 'Dodaj Proizvod',
         }}
       />
       <Tab.Screen 

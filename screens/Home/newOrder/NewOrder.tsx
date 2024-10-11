@@ -1,6 +1,6 @@
 import React from 'react'
 import { Animated, Text } from 'react-native'
-import { useFadeAnimation } from '../../hooks/useFadeAnimation';
+import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
 
 function NewOrder() {
   // Fade in animation

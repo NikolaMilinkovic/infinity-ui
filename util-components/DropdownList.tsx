@@ -13,6 +13,7 @@ interface DropdownPropTypes{
   placeholder: string,
   onSelect: (selectedItem: any) => void,
   defaultValue?: any
+  reference?: any
 }
 
 const DropdownList = ({ 
@@ -20,6 +21,7 @@ const DropdownList = ({
   placeholder,
   onSelect,
   defaultValue,
+  reference
  }: DropdownPropTypes) => {
   
   const [dropdownData, setDropdownData] = useState<any[]>([]);
@@ -51,6 +53,7 @@ const DropdownList = ({
   if(dropdownData.length > 0){
     return (
       <SelectDropdown
+        ref={reference}
         data={dropdownData}
         // defaultValueByIndex={0} // use default value by index or default value
         defaultValue={defaultVal} // use default value by index or default value
@@ -110,6 +113,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     borderWidth: 0.5,
     borderColor: Colors.primaryDark,
+    marginTop: 4,
   },
   dropdownButtonTxtStyle: {
     flex: 1,
@@ -118,11 +122,12 @@ const styles = StyleSheet.create({
   },
   dropdownMenuStyle: {
     backgroundColor: Colors.white,
-    borderRadius: 8,
+    borderRadius: 4,
+    maxHeight: 250,
   },
   dropdownSearchInputStyle: {
     backgroundColor: Colors.secondaryDark,
-    borderRadius: 8,
+    borderRadius: 4,
     borderBottomWidth: 1,
     borderBottomColor: Colors.secondaryLight,
   },
