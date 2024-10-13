@@ -27,7 +27,6 @@ const DropdownList = ({
   const [dropdownData, setDropdownData] = useState<any[]>([]);
   const [defaultVal, setDefaultVal] = useState(['']);
   useEffect(() => {
-    console.log('> Running...')
     setDropdownData(data || []);
 
     // Looks for value from the data
@@ -45,10 +44,6 @@ const DropdownList = ({
     });
     setDefaultVal(defaultDataObject || []);
   }, [data, defaultValue])
-
-  useEffect(() => {
-    console.log(defaultVal);
-  }, [defaultVal])
 
   if(dropdownData.length > 0){
     return (

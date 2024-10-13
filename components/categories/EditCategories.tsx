@@ -24,11 +24,6 @@ function EditCategories() {
     fetchCategories();
   }, [categoriesCtx])
 
-  useEffect(() => {
-    console.log("Number of categories:", categories.length)
-  },[categories])
-
-
   if (isLoading) {
     return <Text>Ucitavam kategorije...</Text>;
   }

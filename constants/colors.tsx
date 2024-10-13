@@ -25,4 +25,5 @@ export const Colors = {
 
   white: '#FFFFFF',
   highlightBlue: '#6A5ACD',
+  successSecondary: '#F0FAF0',
 }

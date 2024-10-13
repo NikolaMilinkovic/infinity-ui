@@ -25,12 +25,6 @@ function EditColors() {
     fetchColors();
   }, [colorsCtx])
 
-  useEffect(() => {
-    console.log("Number of colors:", colors.length)
-  },[colors])
-
-
-
   if (isLoading) {
     return <Text>Ucitavam boje...</Text>;
   }

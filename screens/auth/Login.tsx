@@ -70,7 +70,6 @@ function Login() {
    * @returns {void}
    */
   function failAuthHandler(result: LoginResultType): void{
-    console.log('> Auth failed')
     setErrorMessage(result.message || 'Authentication failed..');
     setIsAuthenticating(false);
     return;

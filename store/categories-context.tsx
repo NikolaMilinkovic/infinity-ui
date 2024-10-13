@@ -50,8 +50,6 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
       }
 
       const data = await response.json();
-      console.log('> Logging out fetched data');
-      console.log(data);
       if(data.length > 0){
         const categoriesArr: CategoryType[] = [];
         data.forEach((entry:CategoryType) => {
@@ -81,15 +79,12 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
           newCategory._id,
           newCategory.name,
         )
-        console.log('> Adding new category via socket: ', newCategory.name);
         setCategories(prevCategories => [...prevCategories, newCategoryObj]);
       };
       const handleCategoryRemoved = (categoryId: string) => {
-        console.log('> Removing category via socket: ', categoryId);
         setCategories(prevCategories => prevCategories.filter((category) => category._id !== categoryId));
       }
       const handleCategoryUpdated = (updatedCategory: Category) => {
-        console.log('> Updating category via socket: ', updatedCategory._id);
         const newCategoryObj = new Category(
           updatedCategory._id,
           updatedCategory.name,

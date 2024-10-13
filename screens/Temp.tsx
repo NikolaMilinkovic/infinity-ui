@@ -24,7 +24,6 @@ function Temp() {
       })
       if(response.status === 200){
         const data = await response.json();
-        console.log(data);
         setCounter(data)
       } else {
         console.error('Error fetching counter data:', response.status, response.statusText);
@@ -36,7 +35,6 @@ function Temp() {
     // Listen for counter updates from the server
     if(socket){
       socket.on('counterUpdated', (newCounter: number) => {
-        console.log('Counter updated from socket:', newCounter)
         setCounter(newCounter);
       });
     }

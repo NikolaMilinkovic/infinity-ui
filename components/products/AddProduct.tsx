@@ -1,17 +1,18 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, Platform } from 'react-native'
-import InputField from '../../util-components/InputField'
+import React, { useContext, useEffect, useState } from 'react'
+import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text } from 'react-native'
 import { Colors } from '../../constants/colors';
 import { CategoriesContext } from '../../store/categories-context';
-import DropdownList from '../../util-components/DropdownList';
-import MultiDropdownList from '../../util-components/MultiDropdownList';
 import { ColorsContext } from '../../store/colors-context';
-import ColorSizeInputs from '../../util-components/ColorSizeInputs';
 import Button from '../../util-components/Button';
 import DressColor from '../../models/DressColor';
 import { AuthContext } from '../../store/auth-context';
 import { popupMessage } from '../../util-components/PopupMessage';
-import ImagePicker from '../../util-components/ImagePicker';
+import { addDress, addPurse } from '../../util-methods/FetchMethods';
+import AddDressComponents from './unique_product_components/AddDressComponents';
+import GenericProductInputComponents from './GenericProductInputComponents';
+import AddPurseComponents from './unique_product_components/AddPurseComponents';
+import PurseColor from '../../models/PurseColor';
+import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 interface Category {
   _id: string,
@@ -27,6 +28,12 @@ interface DressColorTypes{
   color: string
   colorCode: string
   sizes: { size: string; stock: number }[]
+}
+interface PurseColorTypes{
+  _id: string
+  color: string
+  colorCode: string
+  stock: number 
 }
 interface ProductImageTypes {
   assetId: string | null;
@@ -54,37 +61,48 @@ function AddProduct(){
   const [isMultiDropdownOpen, setIsMultiDropdownOpen] = useState(false);
   const [selectedColors, setSelectedColors] = useState([]);
   const [previewImage, setPreviewImage] = useState('');
-  const [error, setError] = useState('');
 
-  // Handles adding / removing and updating the dressColors data
-  // In the ColorSizeInputs component
   useEffect(() => {
-    setDressColors(prevDressColors => {
-      // Add new colors that are in selectedColors but not in prevDressColors
+    setItemColors(prevItemColors => {
+      // Add new colors that are in selectedColors but not in prevItemColors
       const newColors = selectedColors.filter(
-        color => !prevDressColors.some(existingColor => existingColor.color === color)
+        color => !prevItemColors.some(existingColor => existingColor.color === color)
       ).map(color => {
+        if(selectedCategory.name === 'Haljina'){
+          const d = new DressColor();
+          d.setColor(color);
+          return d;
+        }
+        if(selectedCategory.name === 'Torbica'){
+          const d = new PurseColor();
+          d.setColor(color);
+          return d;
+        }
         const d = new DressColor();
         d.setColor(color);
         return d;
       });
   
       // Keep only colors that are still in selectedColors
-      const updatedDressColors = prevDressColors.filter(existingColor =>
+      const updatedItemColors = prevItemColors.filter(existingColor =>
         selectedColors.includes(existingColor.color)
       );
   
       // Return combined list of existing valid and newly added dress colors
-      return [...updatedDressColors, ...newColors];
+      return [...updatedItemColors, ...newColors];
     });
-  }, [selectedColors]);
+  }, [selectedColors, selectedCategory]);
 
   // New product data
   const [productName, setProductName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category[] | undefined[]>([]);
   const [price, setPrice] = useState<number | string>('');
-  const [dressColors, setDressColors] = useState<DressColorTypes[]>([]);
   const [productImage, setProductImage] = useState<ProductImageTypes>();
+  
+  const [dressColors, setDressColors] = useState<DressColorTypes[]>([]);
+  const [purseColors, setPurseColors] = useState<PurseColorTypes[]>([]);
+  const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>([]);
+
 
   useEffect(() => {
     setAllCategories(categoriesCtx.getCategories());
@@ -96,7 +114,6 @@ function AddProduct(){
   }
   function setErrorHandler(errMsg){
     popupMessage(errMsg, 'danger');
-    setError(errMsg);
   }
   function verifyInputsData(){
     if(!productName){
@@ -111,13 +128,14 @@ function AddProduct(){
       setErrorHandler('Izaberite kategoriju proizvoda.');
       return false;
     } 
-    if(selectedCategory.name === 'Haljina' && !dressColors.length){
+    if(selectedCategory.name === 'Haljina' && !itemColors.length){
       setErrorHandler('Proizvod mora imati boje');
       return false;
     }
     return true;
   }
   function resetInputsHandler(){
+    setItemColors([]);
     setSelectedColors([])
     setProductName('')
     setSelectedCategory([])
@@ -126,6 +144,66 @@ function AddProduct(){
     setAllColors([]);
     setPreviewImage('');
     setProductImage(undefined);
+  }
+
+  // Handles adding a new DRESS
+  async function handleAddDress(){
+    // Verify all data
+    const isVerified = verifyInputsData();
+    if(!isVerified) return;
+
+    // Add new dress
+    const dressData ={
+      productName,
+      selectedCategory,
+      price,
+      itemColors,
+      productImage
+    }
+    let result = false;
+    if(dressData && authCtx.token){
+      result = await addPurse(dressData, authCtx.token);
+
+      // Reset all inputs
+      if (result) resetInputsHandler();
+    }
+  }
+
+  // Handles adding a new PURSE
+  async function handleAddPurse(){
+    // Verify all data
+    const isVerified = verifyInputsData();
+    if(!isVerified) return;
+
+    // Add new dress
+    const purseData = {
+      productName,
+      selectedCategory,
+      price,
+      itemColors,
+      productImage
+    }
+
+    let result = false;
+    if(purseData && authCtx.token){
+      result = await addPurse(purseData, authCtx.token);
+
+      // Reset all inputs
+      if (result) resetInputsHandler();
+    }
+  }
+
+  // Handles choosing correct method to add a product
+  async function handleAddProduct(){
+    if(selectedCategory.length === 0){
+      return popupMessage('Izaberite Kategoriju proizvoda', 'danger');
+    } else {
+      if(!selectedCategory.name) return popupMessage('Error, kategorija nema ime.','danger');
+
+      // Methods for adding productus based on category
+      if(selectedCategory.name === 'Haljina') return await handleAddDress();
+      if(selectedCategory.name === 'Torbica') return await handleAddPurse();
+    }
   }
 
   // Used in combination for resetInputsHandler to again populate the Categories and Colors
@@ -140,127 +218,45 @@ function AddProduct(){
     }
   }, [allColors])
 
-  async function handleAddProduct(){
-    // Validate all data
-    const isVerified = verifyInputsData();
-    if(!isVerified) return;
-
-    const formData = new FormData();
-    formData.append('name', productName);
-    formData.append('category', selectedCategory.name);
-    formData.append('price', price);
-    formData.append('colors', JSON.stringify(dressColors));
-
-    if (productImage) {
-      // console.log('Product Image:', JSON.stringify(productImage, null, 2));
-      formData.append('image', {
-        uri: productImage.uri,
-        type: productImage.mimeType || 'image/jpeg',
-        name: productImage.fileName || 'product_image.jpg',
-      });
-    }
-
-    const timeout = 30000; // 30 seconds
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
-    try{
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/products/dress`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${authCtx.token}`,
-        },
-        body: formData,
-        signal: controller.signal,
-      })
-
-      if(!response.ok) {
-        const parsedResponse = await response.json();
-        popupMessage(parsedResponse.message, 'danger');
-        return;
-      }
-
-      popupMessage(`Proizvod pod imenom ${productName} je uspešno dodat.`, 'success');
-      resetInputsHandler();
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        console.log('Request timed out');
-        popupMessage('Request timed out. Please try again.', 'danger');
-      } else {
-        console.error('Fetch error:', error);
-        popupMessage(`Network error: ${error.message}`, 'danger');
-      }
-    } finally {
-      clearTimeout(id);
-    }
-  }
-
-  useEffect(() => {
-    console.log('> Logging productImage:');
-    console.log(productImage);
-  }, [productImage])
-
   return (
     <TouchableWithoutFeedback onPress={handleOutsideClick} style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
-        <View style={[styles.wrapper, {marginTop: 22}]}>
-          <Text style={styles.sectionText}>Osnovne Informacije</Text>
-          <InputField
-            label='Naziv Proizvoda'
-            isSecure={false}
-            inputText={productName}
-            setInputText={setProductName}
-            background={Colors.white}
-            color={Colors.primaryDark}
-            activeColor={Colors.secondaryDark}
-            containerStyles={{ marginTop: 18 }}
+        <GenericProductInputComponents
+          productName={productName}
+          setProductName={setProductName}
+          price={price}
+          setPrice={setPrice}
+          setProductImage={setProductImage}
+          previewImage={previewImage}
+          setPreviewImage={setPreviewImage}
+          allCategories={allCategories}
+          setSelectedCategory={setSelectedCategory}
+          allColors={allColors}
+          setSelectedColors={setSelectedColors}
+          isMultiDropdownOpen={isMultiDropdownOpen}
+        />
+
+        {/* DRESES */}
+        {selectedCategory.name === 'Haljina' && (
+          <AddDressComponents
+            dressColors={itemColors}
+            setDressColors={setItemColors}
           />
-        </View>
-        <View style={styles.wrapper}>
-          <InputField
-            label='Cena'
-            isSecure={false}
-            inputText={price}
-            setInputText={setPrice}
-            background={Colors.white}
-            color={Colors.primaryDark}
-            activeColor={Colors.secondaryDark}
-            keyboard='numeric'
-            containerStyles={{ marginTop: 18 }}
+        )}
+        {/* PURSES */}
+        {selectedCategory.name === 'Torbica' && (
+          <AddPurseComponents
+            purseColors={itemColors}
+            setPurseColors={setItemColors}
           />
-        </View>
-        <View style={styles.wrapper}>
-          <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Slika Proizvoda</Text>
-          <ImagePicker
-            onTakeImage={setProductImage}
-            previewImage={previewImage}
-            setPreviewImage={setPreviewImage}
-          />
-        </View>
-        <View style={styles.wrapper}>
-          <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Kategorija</Text>
-          <DropdownList
-            data={allCategories}
-            placeholder='Kategorija Proizvoda'
-            onSelect={setSelectedCategory}
-            defaultValue='Haljina'
-          />
-        </View>
-        <View style={styles.wrapper}>
-          <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Boje, veličine i količina lagera</Text>
-          <MultiDropdownList
-            data={allColors}
-            setSelected={setSelectedColors}
-            isOpen={isMultiDropdownOpen}
-            placeholder='Izaberi boje'
-            label='Boje Proizvoda'
-          />
-        </View>
-        <View style={[styles.wrapper, {marginTop: 10}]}>
-          <ColorSizeInputs 
-            colorsData={dressColors}
-            setColorsData={setDressColors}
-          />
-        </View>
+        )}
+        {/* GENERIC */}
+        {selectedCategory.name !== 'Haljina' && selectedCategory.name !== 'Torbica' && (
+          <AddDressComponents
+          dressColors={itemColors}
+          setDressColors={setItemColors}
+        />
+        )}
         <View style={styles.buttonContainer}>
           <Button
             onPress={handleAddProduct}

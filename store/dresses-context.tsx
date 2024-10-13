@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState, ReactNode, useContext, useMemo } from "react";
 import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
-import { fetchData } from "../util-methods/auth/FetchMethods";
+import { fetchData } from "../util-methods/FetchMethods";
 
 interface ColorSizeType {
   size: string;

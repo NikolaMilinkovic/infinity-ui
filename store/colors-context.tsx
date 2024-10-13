@@ -23,6 +23,10 @@ export const ColorsContext = createContext<ColorsContextType>({
 interface ColorsContextProviderType {
   children: ReactNode
 }
+
+/**
+ * Caches all global color objects
+ */
 function ColorsContextProvider({ children }: ColorsContextProviderType){
   const [colors, setColors] = useState<ColorType[]>([]);
   const authCtx = useContext(AuthContext);
@@ -53,7 +57,7 @@ function ColorsContextProvider({ children }: ColorsContextProviderType){
       const data = await response.json();
       if(data.length > 0){
         const colorsArr: ColorType[] = [];
-        data.forEach(entry => {
+        data.forEach((entry) => {
           const newColor = new Color(
             entry._id,
             entry.name,
@@ -82,15 +86,12 @@ function ColorsContextProvider({ children }: ColorsContextProviderType){
           newColor.name,
           newColor.colorCode
         )
-        console.log('> Adding new color via socket: ', newColor.name);
         setColors(prevColors => [...prevColors, newColorObj]);
       };
       const handleColorRemoved = (colorId: string) => {
-        console.log('> Removing color via socket: ', colorId);
         setColors(prevColors => prevColors.filter((color) => color._id !== colorId));
       }
       const handleColorUpdated = (updatedColor: Color) => {
-        console.log('> Updating color via socket: ', updatedColor._id);
         const newColorObj = new Color(
           updatedColor._id,
           updatedColor.name,
