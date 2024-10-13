@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text } from 'react-native'
+import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, Platform } from 'react-native'
 import InputField from '../../util-components/InputField'
 import { Colors } from '../../constants/colors';
 import { CategoriesContext } from '../../store/categories-context';
@@ -28,6 +28,20 @@ interface DressColorTypes{
   colorCode: string
   sizes: { size: string; stock: number }[]
 }
+interface ProductImageTypes {
+  assetId: string | null;
+  base64: string | null;
+  duration: number | null;
+  exif: object | null;
+  fileName: string;
+  fileSize: number;
+  height: number;
+  mimeType: string;
+  rotation: number | null;
+  type: string;
+  uri: string;
+  width: number;
+}
 
 function AddProduct(){
   const authCtx = useContext(AuthContext);
@@ -39,6 +53,7 @@ function AddProduct(){
   const [allColors, setAllColors] = useState<Color[]>([]);
   const [isMultiDropdownOpen, setIsMultiDropdownOpen] = useState(false);
   const [selectedColors, setSelectedColors] = useState([]);
+  const [previewImage, setPreviewImage] = useState('');
   const [error, setError] = useState('');
 
   // Handles adding / removing and updating the dressColors data
@@ -66,10 +81,10 @@ function AddProduct(){
 
   // New product data
   const [productName, setProductName] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Category[] | undefined[]>([]);
   const [price, setPrice] = useState<number | string>('');
   const [dressColors, setDressColors] = useState<DressColorTypes[]>([]);
-  const [productImage, setProductImage] = useState();
+  const [productImage, setProductImage] = useState<ProductImageTypes>();
 
   useEffect(() => {
     setAllCategories(categoriesCtx.getCategories());
@@ -92,7 +107,7 @@ function AddProduct(){
       setErrorHandler('Proizvod mora imati cenu.');
       return false;
     } 
-    if(selectedCategory.length === 0){
+    if(selectedCategory && selectedCategory.length === 0){
       setErrorHandler('Izaberite kategoriju proizvoda.');
       return false;
     } 
@@ -109,6 +124,8 @@ function AddProduct(){
     setPrice('')
     setAllCategories([]);
     setAllColors([]);
+    setPreviewImage('');
+    setProductImage(undefined);
   }
 
   // Used in combination for resetInputsHandler to again populate the Categories and Colors
@@ -126,21 +143,34 @@ function AddProduct(){
   async function handleAddProduct(){
     // Validate all data
     const isVerified = verifyInputsData();
-    if(!isVerified) return;    
+    if(!isVerified) return;
 
+    const formData = new FormData();
+    formData.append('name', productName);
+    formData.append('category', selectedCategory.name);
+    formData.append('price', price);
+    formData.append('colors', JSON.stringify(dressColors));
+
+    if (productImage) {
+      // console.log('Product Image:', JSON.stringify(productImage, null, 2));
+      formData.append('image', {
+        uri: productImage.uri,
+        type: productImage.mimeType || 'image/jpeg',
+        name: productImage.fileName || 'product_image.jpg',
+      });
+    }
+
+    const timeout = 30000; // 30 seconds
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
     try{
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/products/dress`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,
-          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          name: productName,
-          category: selectedCategory.name,
-          price: price,
-          colors: dressColors,
-         })
+        body: formData,
+        signal: controller.signal,
       })
 
       if(!response.ok) {
@@ -151,8 +181,16 @@ function AddProduct(){
 
       popupMessage(`Proizvod pod imenom ${productName} je uspešno dodat.`, 'success');
       resetInputsHandler();
-    } catch(error){
-      console.log(error);
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('Request timed out');
+        popupMessage('Request timed out. Please try again.', 'danger');
+      } else {
+        console.error('Fetch error:', error);
+        popupMessage(`Network error: ${error.message}`, 'danger');
+      }
+    } finally {
+      clearTimeout(id);
     }
   }
 
@@ -194,6 +232,8 @@ function AddProduct(){
           <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Slika Proizvoda</Text>
           <ImagePicker
             onTakeImage={setProductImage}
+            previewImage={previewImage}
+            setPreviewImage={setPreviewImage}
           />
         </View>
         <View style={styles.wrapper}>

@@ -6,8 +6,7 @@ import { Colors } from '../constants/colors'
 import { popupMessage } from './PopupMessage'
 import Button from './Button'
 
-function ImagePicker({ onTakeImage }) {
-  const [previewImage, setPreviewImage] = useState('');
+function ImagePicker({ onTakeImage, previewImage, setPreviewImage }) {
   const [permissionInfo, requestPermission] = useCameraPermissions()
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpandAnimation = useRef(new Animated.Value(400)).current;
@@ -39,11 +38,12 @@ function ImagePicker({ onTakeImage }) {
 
     const image = await launchCameraAsync({
       allowsEditing: true,
-      quality: 1,
+      quality: 0.2,
+      aspect: [3, 4],
     })
 
     setPreviewImage(image.assets[0]);
-    onTakeImage(image.assets[0].uri);
+    onTakeImage(image.assets[0]);
     setIsExpanded(true);
   }
 

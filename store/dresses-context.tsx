@@ -1,37 +1,37 @@
-import { createContext, useEffect, useState, ReactNode, useContext } from "react";
+import { createContext, useEffect, useState, ReactNode, useContext, useMemo } from "react";
 import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/auth/FetchMethods";
 
 interface ColorSizeType {
-  size: string
-  stock: number
-  _id: string
+  size: string;
+  stock: number;
+  _id: string;
 }
 interface DressColorType {
-  _id: string
-  color: string
-  colorCode: string
-  sizes: ColorSizeType[]
+  _id: string;
+  color: string;
+  colorCode: string;
+  sizes: ColorSizeType[];
 }
 interface DressType {
-  _id: string
-  name: string
-  active: boolean
-  category: string
-  price: number
-  colors: DressColorType[]
+  _id: string;
+  name: string;
+  active: boolean;
+  category: string;
+  price: number;
+  colors: DressColorType[];
 }
 interface DressContextType {
-  activeDresses: DressType[],
-  inactiveDresses: DressType[],
-  setActiveDresses: (dresses: DressType[]) => void,
-  setInactiveDresses: (dresses: DressType[]) => void,
-  getActiveDresses: () => DressType[]
-  getInactiveDresses: () => DressType[]
+  activeDresses: DressType[];
+  inactiveDresses: DressType[];
+  setActiveDresses: (dresses: DressType[]) => void;
+  setInactiveDresses: (dresses: DressType[]) => void;
+  getActiveDresses: () => DressType[];
+  getInactiveDresses: () => DressType[];
 }
 interface DressContextProviderType {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export const DressesContext = createContext<DressContextType>({
@@ -41,9 +41,9 @@ export const DressesContext = createContext<DressContextType>({
   setInactiveDresses: () => {},
   getActiveDresses: () => [],
   getInactiveDresses: () => [],
-})
+});
 
-function DressesContextProvider({ children }:DressContextProviderType ){
+function DressesContextProvider({ children }: DressContextProviderType) {
   const [activeDresses, setActiveDresses] = useState<DressType[]>([]);
   const [inactiveDresses, setInactiveDresses] = useState<DressType[]>([]);
   const authCtx = useContext(AuthContext);
@@ -51,82 +51,81 @@ function DressesContextProvider({ children }:DressContextProviderType ){
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
 
-
   // Setters
   const setActiveDressesHandler = (dresses: DressType[]) => {
     setActiveDresses(dresses);
-  }
+  };
   const setInactiveDressesHandler = (dresses: DressType[]) => {
     setInactiveDresses(dresses);
-  }
-  // Getters
-  const getActiveDressesHandler = () => {
-    return activeDresses;
-  }
-  const getInactiveDressesHandler = () => {
-    return inactiveDresses;
-  }
+  };
+
+  // Getters with memoization
+  const getActiveDressesHandler = () => activeDresses;
+  const getInactiveDressesHandler = () => inactiveDresses;
 
   // Fetched data
   useEffect(() => {
-    if(token){
-      async function getDressesData(token:string){
+    if (token) {
+      async function getDressesData(token: string) {
         const fetchActiveDresses = await fetchData(token, 'products/active-dresses');
-        if(fetchActiveDresses !== false) setActiveDresses(fetchActiveDresses);
+        if (fetchActiveDresses !== false) setActiveDresses(fetchActiveDresses);
 
         const fetchInactiveDresses = await fetchData(token, 'products/inactive-dresses');
-        if(fetchInactiveDresses !== false) setInactiveDresses(fetchInactiveDresses);
+        if (fetchInactiveDresses !== false) setInactiveDresses(fetchInactiveDresses);
       }
       getDressesData(token);
     }
   }, [token]);
 
-
-  function handleActiveDressAdded(newDress:DressType){
+  // Event handlers for socket updates
+  function handleActiveDressAdded(newDress: DressType) {
     setActiveDresses((prevDresses) => [...prevDresses, newDress]);
   }
-  function handleInactiveDressAdded(newDress:DressType){
+
+  function handleInactiveDressAdded(newDress: DressType) {
     setInactiveDresses((prevDresses) => [...prevDresses, newDress]);
   }
-  function handleActiveDressRemoved(dressId:string){
+
+  function handleActiveDressRemoved(dressId: string) {
     setActiveDresses((prevDresses) => prevDresses.filter((dress) => dress._id !== dressId));
   }
-  function handleInactiveDressRemoved(dressId:string){
+
+  function handleInactiveDressRemoved(dressId: string) {
     setInactiveDresses((prevDresses) => prevDresses.filter((dress) => dress._id !== dressId));
   }
-  function handleActiveToInactive(dressId:string){
+
+  function handleActiveToInactive(dressId: string) {
     setActiveDresses((prevDresses) => {
       const removedDress = prevDresses.find((dress) => dress._id === dressId);
-      if(removedDress){
+      if (removedDress) {
         setInactiveDresses((prevInactive) => [...prevInactive, removedDress]);
         return prevDresses.filter((dress) => dress._id !== dressId);
       }
       return prevDresses;
-    })
+    });
   }
-  function handleInactiveToActive(dressId:string){
+
+  function handleInactiveToActive(dressId: string) {
     setInactiveDresses((prevDresses) => {
       const removedDress = prevDresses.find((dress) => dress._id === dressId);
-      if(removedDress){
+      if (removedDress) {
         setActiveDresses((prevActive) => [...prevActive, removedDress]);
         return prevDresses.filter((dress) => dress._id !== dressId);
       }
       return prevDresses;
-    })
+    });
   }
 
-  // SOCKETS
+  // Set up socket listeners
   useEffect(() => {
-    if(socket){
+    if (socket) {
       socket.on('activeDressAdded', handleActiveDressAdded);
       socket.on('inactiveDressAdded', handleInactiveDressAdded);
       socket.on('activeDressRemoved', handleActiveDressRemoved);
       socket.on('inactiveDressRemoved', handleInactiveDressRemoved);
-
-      // To be done
       socket.on('activeDressToInactive', handleActiveToInactive);
       socket.on('inactiveDressToActive', handleInactiveToActive);
-    
+
       return () => {
         socket.off("activeDressAdded", handleActiveDressAdded);
         socket.off("inactiveDressAdded", handleInactiveDressAdded);
@@ -134,20 +133,21 @@ function DressesContextProvider({ children }:DressContextProviderType ){
         socket.off("inactiveDressRemoved", handleInactiveDressRemoved);
         socket.off("activeDressToInactive", handleActiveToInactive);
         socket.off("inactiveDressToActive", handleInactiveToActive);
-      };    
+      };
     }
-  }, [socket])
+  }, [socket]);
 
-  const value = {
+  // Memoizing the getters
+  const value = useMemo(() => ({
     activeDresses,
     setActiveDresses: setActiveDressesHandler,
     getActiveDresses: getActiveDressesHandler,
     inactiveDresses,
     setInactiveDresses: setInactiveDressesHandler,
     getInactiveDresses: getInactiveDressesHandler,
-  }
+  }), [activeDresses, inactiveDresses]);
 
-  return <DressesContext.Provider value={value}>{children}</DressesContext.Provider>
+  return <DressesContext.Provider value={value}>{children}</DressesContext.Provider>;
 }
 
-export default DressesContextProvider
+export default DressesContextProvider;
