@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, Image, StyleSheet } from 'react-native'
 import { Colors } from '../../constants/colors'
+
+
+
 function DisplayProduct({ item }) {
   const [availableSizes, setAvailableSizes] = useState([]);
   const [availableColors, setAvailableColors] = useState([]);
   const [onStock, setOnStock] = useState(false);
   const styles = getStyles(onStock);
   useEffect(() => {
+    if(!item) return;
     let stockAvailable = false;
     if(item.category === 'Haljina'){
       stockAvailable = item.colors.some((colorObj) => 

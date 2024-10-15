@@ -5,6 +5,7 @@ import { DressesContext } from "./dresses-context";
 import { PursesContext } from "./purses-context";
 import isEqual from 'lodash/isEqual';
 import { fetchData } from "../util-methods/FetchMethods";
+import { betterConsoleLog } from "../util-methods/LogMethods";
 
 interface ColorSizeType {
   size: string;
@@ -90,6 +91,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
 
   // SOCKET METHODS
   function activeProductAddedHandler(newProduct: DressType | PurseType){
+    betterConsoleLog('> Socket adding new product in All Products Context', newProduct);
     setActiveProducts(prev => [...prev, newProduct]);
   }
   function inactiveProductAddedHandler(newProduct: DressType | PurseType){
@@ -127,6 +129,9 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
   useEffect(() => {
     setAllProducts([...activeProducts, ...inactiveProducts]);
   }, [activeProducts, inactiveProducts]);
+  useEffect(() => {
+    betterConsoleLog('> AllProducts from All Products context is currently', allProducts);
+  },[allProducts])
 
   useEffect(() => {
     if(socket){

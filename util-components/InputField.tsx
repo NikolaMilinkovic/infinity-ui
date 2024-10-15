@@ -41,7 +41,7 @@ function InputField({
   const translateY = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(translateY, {
-      toValue: inputText !== '' ? -20 : isActive ? -20 : 8,
+      toValue: inputText !== '' ? -20 : isActive ? -20 : 4,
       duration: inputText !== '' ? 0 : 150,
       useNativeDriver: true
     }).start();
@@ -98,7 +98,7 @@ function getStyles(isActive: boolean, inputText: string, background:string, colo
     labelContainer: {
       position: 'absolute',
       left: 18,
-      top: 4,
+      top: 8,
       backgroundColor: isActive ? background : inputText !== '' ? background : 'transparent',
       borderColor: Colors.primaryDark,
       borderWidth: labelBorders ? (inputText !== '' ? 0.5 : 0) || (isActive ? 0.5 : 0) : 0,

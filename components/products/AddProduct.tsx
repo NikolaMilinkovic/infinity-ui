@@ -162,7 +162,7 @@ function AddProduct(){
     }
     let result = false;
     if(dressData && authCtx.token){
-      result = await addPurse(dressData, authCtx.token);
+      result = await addDress(dressData, authCtx.token);
 
       // Reset all inputs
       if (result) resetInputsHandler();

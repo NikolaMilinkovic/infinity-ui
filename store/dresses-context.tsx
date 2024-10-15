@@ -2,6 +2,7 @@ import { createContext, useEffect, useState, ReactNode, useContext, useMemo } fr
 import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
+import { betterConsoleLog } from "../util-methods/LogMethods";
 
 interface ColorSizeType {
   size: string;
@@ -79,6 +80,7 @@ function DressesContextProvider({ children }: DressContextProviderType) {
 
   // Event handlers for socket updates
   function handleActiveDressAdded(newDress: DressType) {
+    betterConsoleLog('> Adding new active dress from dresses ctx', newDress)
     setActiveDresses((prevDresses) => [...prevDresses, newDress]);
   }
 
