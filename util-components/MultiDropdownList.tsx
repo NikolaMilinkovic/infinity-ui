@@ -6,21 +6,27 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // React Native Dropdown Select List Documentation
 // https://www.npmjs.com/package/react-native-dropdown-select-list
+interface DataTypes {
+  key: string | number
+  value: string | number
+}
 
 interface DropdownPropTypes {
-  data: any[]
+  data: DataTypes[]
   setSelected: (selectedData:any) => void
-  isOpen: boolean
-  label: string,
-  placeholder: string
+  isOpen?: boolean
+  label?: string
+  placeholder?: string
+  dropdownStyles?: any
 }
 
 export default function MultiDropdownList({
   data,
   setSelected,
-  isOpen,
+  isOpen = false,
   label,
   placeholder='Izaberi iz liste',
+  dropdownStyles
 }:DropdownPropTypes){
 
   const [dropdownData, setDropdownData] = useState([])
@@ -49,7 +55,7 @@ export default function MultiDropdownList({
           save="value"
           label={label}
           notFoundText='Oof, ništa nije pronađeno pod tim imenom..'
-          searchPlaceholder='Pretraži boje'
+          searchPlaceholder='Pretraži'
           arrowicon={
             <Icon name={'chevron-down'} style={styles.dropdown1ButtonArrowStyle} size={18}/>
           }
@@ -60,7 +66,7 @@ export default function MultiDropdownList({
           // STYLES
           boxStyles={styles.boxStyles}
           inputStyles={styles.inputStyles}
-          dropdownStyles={styles.dropdownStyles}
+          dropdownStyles={[styles.dropdownStyles, dropdownStyles]}
           dropdownItemStyles={styles.dropdownItemStyles}
           dropdownTextStyles={styles.dropdownTextStyles}
           disabledItemStyles={styles.disabledItemStyles}
@@ -95,6 +101,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: Colors.primaryDark,
     borderRadius: 4,
+    maxHeight: 200
   },
   dropdownItemStyles: {
     backgroundColor: Colors.white,

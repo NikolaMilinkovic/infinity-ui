@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler';
 import { Colors } from '../constants/colors';
@@ -66,7 +66,8 @@ function ColorSizeInputs({
               style={styles.input}
               value={String(sizeObj.stock)}
               onChangeText={(value) => handleInputChange(item.color, sizeObj.size, value)}
-            />
+              selectTextOnFocus
+              />
           ))}
         </KeyboardAvoidingView>
       ))}

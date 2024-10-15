@@ -1,9 +1,13 @@
 import React, { useContext, useEffect, useRef, useState, useMemo } from 'react'
-import { View, StyleSheet, Animated, Pressable, Text  } from 'react-native'
+import { View, StyleSheet, Animated, Pressable, Text, TouchableWithoutFeedback  } from 'react-native'
 import InputField from '../../util-components/InputField'
 import { Colors } from '../../constants/colors';
 import ExpandButton from '../../util-components/ExpandButton';
 import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
+import MultiDropdownList from '../../util-components/MultiDropdownList';
+import { ColorsContext } from '../../store/colors-context';
+import SizePickerCheckboxes from './search_product_components/SizePickerCheckboxes';
+import Button from '../../util-components/Button';
 
 interface SearchProductsPropTypes {
   searchData: string
@@ -14,7 +18,7 @@ interface SearchProductsPropTypes {
 }
 function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, updateSearchParam }: SearchProductsPropTypes) {
   // EXPAND ANIMATION & TOGGLING
-  const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 10 : 400)).current;
+  const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 10 : 520)).current;
   const toggleFade = useRef(new Animated.Value(isExpanded ? 0 : 1)).current;
   function handleToggleExpand(){
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
@@ -22,7 +26,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   // EXPAND ANIMATION
   useEffect(() => {
     Animated.timing(toggleExpandAnimation, {
-      toValue: isExpanded ? 400 : 10,
+      toValue: isExpanded ? 520 : 10,
       duration: 180,
       useNativeDriver: false,
     }).start();
@@ -47,29 +51,54 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
     },
     {
         id: '3',
-        label: 'Oba',
+        label: 'Sve',
         value: 'onStockAndSoldOut',
     }
-]), []);
-const [selectedId, setSelectedId] = useState<string>('1');
-type SearchParams = {
-  isOnStock: boolean;
-  isNotOnStock: boolean;
-  onStockAndSoldOut: boolean;
-};
-useEffect(() => {
-  const updateParams: Record<string, SearchParams> = {
-    '1': { isOnStock: true, isNotOnStock: false, onStockAndSoldOut: false },
-    '2': { isOnStock: false, isNotOnStock: true, onStockAndSoldOut: false },
-    '3': { isOnStock: false, isNotOnStock: false, onStockAndSoldOut: true },
+  ]), []);
+  const [selectedId, setSelectedId] = useState<string>('1');
+  type SearchParams = {
+    isOnStock: boolean;
+    isNotOnStock: boolean;
+    onStockAndSoldOut: boolean;
   };
-  const params = updateParams[selectedId];
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      updateSearchParam(key as keyof SearchParams, value);
-    });
+  useEffect(() => {
+    const updateParams: Record<string, SearchParams> = {
+      '1': { isOnStock: true, isNotOnStock: false, onStockAndSoldOut: false },
+      '2': { isOnStock: false, isNotOnStock: true, onStockAndSoldOut: false },
+      '3': { isOnStock: false, isNotOnStock: false, onStockAndSoldOut: true },
+    };
+    const params = updateParams[selectedId];
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        updateSearchParam(key as keyof SearchParams, value);
+      });
+    }
+  }, [selectedId]);
+
+  // COLORS PICKER
+  const colorsCtx = useContext(ColorsContext);
+  interface ColorDataType {
+    key: string | number
+    value: string | number
   }
-}, [selectedId]);
+  const [colorsData, setColorsData] = useState<ColorDataType[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  useEffect(() => {
+    setColorsData(colorsCtx.colors.map(item => ({
+      key: item.name,
+      value: item.name
+    })));
+  }, [colorsCtx.colors])
+  useEffect(() => {
+    updateSearchParam('onColorsSearch', selectedColors)
+  }, [selectedColors])
+
+
+  // SIZE CHECKBOXES
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  useEffect(() => {
+    updateSearchParam('onSizeSearch', selectedSizes);
+  },[selectedSizes])
 
   return (
     <View style={styles.container}>
@@ -90,8 +119,10 @@ useEffect(() => {
         />
       </View>
         <Animated.View style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
-            <Animated.View style={{ opacity: toggleFade }}>
+            <Animated.ScrollView style={{ opacity: toggleFade }}>
               <Text style={styles.filtersH1}>Filteri</Text>
+
+              {/* STOCK AVAILABILITY FILTER INPUT */}
               <View style={styles.radioGroupContainer}>
                 <Text style={styles.filtersH2}>Stanje na lageru</Text>
                 <View style={styles.radioGroup}>
@@ -103,12 +134,33 @@ useEffect(() => {
                   />
                 </View>
               </View>
-              <View style={styles.colorsPickerContainer}>
-                {/* TO DO - COLORS PICKER => MULTIPLEDROPDOWB */}
-              </View>
-              <View style={styles.sizesPickerContainer}>
-                {/* TO DO - SIZES PICKER => CHECKBOXES */}
-              </View>
+
+                {/* SIZES FILTER INPUT */}
+                <SizePickerCheckboxes
+                  sizes={['XS', 'S', 'M', 'L', 'XL', 'UNI']}
+                  selectedSizes={selectedSizes}
+                  setSelectedSizes={setSelectedSizes}
+                />
+
+                {/* COLORS FILTER INPUT */}
+                <MultiDropdownList
+                  data={colorsData}
+                  setSelected={setSelectedColors}
+                  isOpen={true}
+                  label='Boje'
+                  placeholder='Filtriraj po bojama'
+                />
+            </Animated.ScrollView>
+            {/* CLOSE BUTTON */}
+            <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
+              <Button
+                onPress={() => setIsExpanded(!isExpanded)}
+                backColor={Colors.highlight}
+                textColor={Colors.white}
+                containerStyles={{ marginBottom: 16, marginTop: 10}}
+              >
+                Zatvori
+              </Button>
             </Animated.View>
         </Animated.View>
     </View>
@@ -154,7 +206,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 0.5,
     borderColor: Colors.primaryDark,
-    borderRadius: 12
+    borderRadius: 4,
+    marginBottom: 10
   },
   radioGroup: {
     alignItems: 'center',
@@ -170,12 +223,6 @@ const styles = StyleSheet.create({
     color: Colors.primaryDark,
     marginBottom: 8,
   },
-  colorsPickerContainer: {
-
-  },
-  sizesPickerContainer: {
-
-  }
 })
 
 export default SearchProducts

@@ -56,7 +56,14 @@ function DisplayProducts() {
   }
 
   // Search Params object
-  const [searchParams, setSearchParams] = useState({
+  interface SearchParamsTypes {
+    isOnStock: boolean
+    isNotOnStock: boolean
+    onStockAndSoldOut: boolean
+    onColorsSearch: string[]
+    onSizeSearch: string[]
+  }
+  const [searchParams, setSearchParams] = useState<SearchParamsTypes>({
     isOnStock: false,
     isNotOnStock: false,
     onStockAndSoldOut: false,
@@ -65,7 +72,7 @@ function DisplayProducts() {
   });
   
   // Handle radio button changes directly through searchParams
-  function updateSearchParam(paramName: string, value: boolean) {
+  function updateSearchParam<K extends keyof SearchParamsTypes>(paramName: K, value: SearchParamsTypes[K]) {
     setSearchParams((prevParams) => ({
       ...prevParams,
       [paramName]: value,
@@ -112,18 +119,14 @@ function DisplayProducts() {
         setIsExpanded={setIsExpanded}
         updateSearchParam={updateSearchParam}
       />
-      {/* <TouchableWithoutFeedback onPress={handleOutsideClick}> */}
-        {/* <View style={{ flex: 1 }}> */}
-        {filteredData && filteredData.length > 0 && (
-          <FlatList
-            data={filteredData}
-            renderItem={({ item }) => <DisplayProduct item={item} />}
-            keyExtractor={(item) => item._id}
-            contentContainerStyle={styles.productsContainer}
-          />
-        )}
-        {/* </View> */}
-      {/* </TouchableWithoutFeedback> */}
+      {filteredData && filteredData.length > 0 && (
+        <FlatList
+          data={filteredData}
+          renderItem={({ item }) => <DisplayProduct item={item} />}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={styles.productsContainer}
+        />
+      )}
     </View>
   )
 }
