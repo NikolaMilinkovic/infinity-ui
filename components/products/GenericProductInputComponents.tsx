@@ -87,6 +87,7 @@ function GenericProductInputComponents({
         placeholder='Kategorija Proizvoda'
         onSelect={setSelectedCategory}
         defaultValue='Haljina'
+        buttonContainerStyles={{marginTop: 4}}
       />
     </View>
     <View style={styles.wrapper}>
@@ -97,6 +98,7 @@ function GenericProductInputComponents({
         isOpen={isMultiDropdownOpen}
         placeholder='Izaberi boje'
         label='Boje Proizvoda'
+        containerStyles={{marginTop: 4}}
       />
     </View>
   </>

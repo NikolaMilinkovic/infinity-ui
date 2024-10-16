@@ -129,9 +129,6 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
   useEffect(() => {
     setAllProducts([...activeProducts, ...inactiveProducts]);
   }, [activeProducts, inactiveProducts]);
-  useEffect(() => {
-    betterConsoleLog('> AllProducts from All Products context is currently', allProducts);
-  },[allProducts])
 
   useEffect(() => {
     if(socket){

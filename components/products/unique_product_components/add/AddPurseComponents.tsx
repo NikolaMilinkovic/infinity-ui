@@ -1,5 +1,5 @@
 import React from 'react'
-import ColorStockInputs from '../../../util-components/ColorStockInputs'
+import ColorStockInputs from '../../../../util-components/ColorStockInputs'
 
 interface PropTypes {
 

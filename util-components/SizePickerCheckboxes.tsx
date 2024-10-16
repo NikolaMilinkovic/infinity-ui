@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native';
-import CustomCheckbox from '../../../util-components/CustomCheckbox';
-import { Colors } from '../../../constants/colors';
+import CustomCheckbox from './CustomCheckbox';
+import { Colors } from '../constants/colors';
 interface PropTypes {
   selectedSizes: string[]
   setSelectedSizes: (prev: any) => void
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
 })
 

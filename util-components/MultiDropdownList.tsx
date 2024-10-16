@@ -18,6 +18,7 @@ interface DropdownPropTypes {
   label?: string
   placeholder?: string
   dropdownStyles?: any
+  containerStyles?: any
 }
 
 export default function MultiDropdownList({
@@ -26,7 +27,8 @@ export default function MultiDropdownList({
   isOpen = false,
   label,
   placeholder='Izaberi iz liste',
-  dropdownStyles
+  dropdownStyles,
+  containerStyles
 }:DropdownPropTypes){
 
   const [dropdownData, setDropdownData] = useState([])
@@ -44,7 +46,7 @@ export default function MultiDropdownList({
   }, [data])
 
   return(
-    <View style={styles.container}>
+    <View style={[styles.containerStyles, containerStyles]}>
       {dropdownData.length > 0 && (
         <MultipleSelectList 
           defaultOption={dropdownData[0]}
@@ -84,8 +86,8 @@ export default function MultiDropdownList({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 4,
+  containerStyles: {
+    marginTop: 0,
   },
   boxStyles: {
     backgroundColor: Colors.white,
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: Colors.primaryDark,
     borderRadius: 4,
-    maxHeight: 200
+    maxHeight: 200,
   },
   dropdownItemStyles: {
     backgroundColor: Colors.white,

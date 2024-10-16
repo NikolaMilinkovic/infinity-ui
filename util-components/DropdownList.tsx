@@ -4,24 +4,29 @@ import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Colors } from '../constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { betterConsoleLog } from '../util-methods/LogMethods';
 
 // GitHub Repo & Documentation | Examples
 // https://github.com/AdelRedaa97/react-native-select-dropdown/tree/master
 
 interface DropdownPropTypes{
-  data: any[],
-  placeholder: string,
-  onSelect: (selectedItem: any) => void,
+  data: any[]
+  placeholder: string
+  onSelect: (selectedItem: any) => void
+  isDefaultValueOn: boolean
   defaultValue?: any
   reference?: any
+  buttonContainerStyles?: any
 }
 
 const DropdownList = ({ 
   data,
   placeholder,
   onSelect,
+  isDefaultValueOn = true,
   defaultValue,
-  reference
+  reference,
+  buttonContainerStyles
  }: DropdownPropTypes) => {
   
   const [dropdownData, setDropdownData] = useState<any[]>([]);
@@ -29,6 +34,7 @@ const DropdownList = ({
   useEffect(() => {
     setDropdownData(data || []);
 
+    if(!isDefaultValueOn) return setDefaultVal([])
     // Looks for value from the data
     // If value is found > set that object as default & give onSelect that object
     let defaultDataObject;
@@ -52,7 +58,7 @@ const DropdownList = ({
         data={dropdownData}
         // defaultValueByIndex={0} // use default value by index or default value
         defaultValue={defaultVal} // use default value by index or default value
-  
+        
         // WHEN SELECTED
         onSelect={(selectedItem, index) => {
           onSelect(selectedItem);
@@ -61,7 +67,7 @@ const DropdownList = ({
         // BUTTON
         renderButton={(selectedItem, isOpen) => {
           return (
-            <View style={styles.dropdownButtonStyle}>
+            <View style={[styles.dropdownButtonStyle, buttonContainerStyles]}>
               <Text style={styles.dropdownButtonTxtStyle}>{selectedItem?.name || selectedItem?.value || placeholder || 'No placeholder value provided'}</Text>
               <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} style={styles.dropdown1ButtonArrowStyle} size={18}/>
             </View>
@@ -108,7 +114,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     borderWidth: 0.5,
     borderColor: Colors.primaryDark,
-    marginTop: 4,
+    marginTop: 0,
   },
   dropdownButtonTxtStyle: {
     flex: 1,

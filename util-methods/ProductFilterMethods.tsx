@@ -38,12 +38,12 @@ interface SearchParamsType {
   isOnStock: boolean
   isNotOnStock: boolean
   onStockAndSoldOut: boolean
+  onCategorySearch: string
   onColorsSearch: string[]
   onSizeSearch: string[]
 }
 
 export function serachProducts(searchData: string, allActiveProducts: ProductType[], searchParams: SearchParamsType){
-
   if(allActiveProducts === undefined) return [];
   if(allActiveProducts.length === 0) return [];
   // Search items by Name
@@ -52,8 +52,15 @@ export function serachProducts(searchData: string, allActiveProducts: ProductTyp
     nameBasedSearch = searchItemsByName(allActiveProducts, searchData);
   }
 
+  // Filter by categories
+  let categoriesBasedSearch = nameBasedSearch;
+  if(searchParams.onCategorySearch){
+    console.log(searchParams.onCategorySearch);
+    categoriesBasedSearch = filterByCategories(nameBasedSearch, searchParams.onCategorySearch)
+  }
+
   // Filter by color
-  let colorBasedSearch = nameBasedSearch;
+  let colorBasedSearch = categoriesBasedSearch;
   if(searchParams.onColorsSearch.length > 0){
     colorBasedSearch = filterByColor(nameBasedSearch, searchParams.onColorsSearch);
   }
@@ -137,6 +144,14 @@ if (result.category === 'Haljina') {
     colorObj.sizes.every((sizeObj: ColorSizeType) => sizeObj.stock === 0)
   );
 }
+}
+
+// FILTER FOR ITEMS ON CATEGORY
+export function filterByCategories(allActiveProducts:any, category:string){
+  const categoriesBasedSearch = allActiveProducts.filter((item: any) => 
+    item.category === category
+  )
+  return categoriesBasedSearch;
 }
 
 // METHOD FOR FILTERING BY COLOR

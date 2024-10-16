@@ -6,8 +6,10 @@ import ExpandButton from '../../util-components/ExpandButton';
 import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
 import MultiDropdownList from '../../util-components/MultiDropdownList';
 import { ColorsContext } from '../../store/colors-context';
-import SizePickerCheckboxes from './search_product_components/SizePickerCheckboxes';
+import SizePickerCheckboxes from '../../util-components/SizePickerCheckboxes';
 import Button from '../../util-components/Button';
+import DropdownList from '../../util-components/DropdownList';
+import { CategoriesContext } from '../../store/categories-context';
 
 interface SearchProductsPropTypes {
   searchData: string
@@ -18,7 +20,7 @@ interface SearchProductsPropTypes {
 }
 function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, updateSearchParam }: SearchProductsPropTypes) {
   // EXPAND ANIMATION & TOGGLING
-  const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 10 : 520)).current;
+  const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 10 : 568)).current;
   const toggleFade = useRef(new Animated.Value(isExpanded ? 0 : 1)).current;
   function handleToggleExpand(){
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
@@ -26,7 +28,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   // EXPAND ANIMATION
   useEffect(() => {
     Animated.timing(toggleExpandAnimation, {
-      toValue: isExpanded ? 520 : 10,
+      toValue: isExpanded ? 568 : 10,
       duration: 180,
       useNativeDriver: false,
     }).start();
@@ -100,6 +102,24 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
     updateSearchParam('onSizeSearch', selectedSizes);
   },[selectedSizes])
 
+  // CATEGORIES
+  const categoriesCtx = useContext(CategoriesContext);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  useEffect(() => {
+    if(selectedCategory && selectedCategory?.name === 'Resetuj izbor'){
+      resetDropdown();
+      return 
+    }
+    updateSearchParam('onCategorySearch', selectedCategory.name)
+  }, [selectedCategory])
+  // Dropdown Reset
+  const [resetKey, setResetKey] = useState(0);
+  function resetDropdown(){
+    updateSearchParam('onCategorySearch', '');
+    setResetKey(prevKey => prevKey + 1);
+    setSelectedCategory('');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -118,7 +138,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
           containerStyles={styles.expandButton}
         />
       </View>
-        <Animated.View style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
+        <Animated.ScrollView style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
             <Animated.ScrollView style={{ opacity: toggleFade }}>
               <Text style={styles.filtersH1}>Filteri</Text>
 
@@ -134,6 +154,15 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
                   />
                 </View>
               </View>
+
+                {/* CATEGORIES FILTER INPUT */}
+                <DropdownList
+                  key={resetKey}
+                  data={[{_id: '', name: 'Resetuj izbor'}, ...categoriesCtx.categories]}
+                  onSelect={setSelectedCategory}
+                  placeholder='Izaberite kategoriju'
+                  isDefaultValueOn={false}
+                />
 
                 {/* SIZES FILTER INPUT */}
                 <SizePickerCheckboxes
@@ -162,7 +191,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
                 Zatvori
               </Button>
             </Animated.View>
-        </Animated.View>
+        </Animated.ScrollView>
     </View>
   )
 }
@@ -207,7 +236,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: Colors.primaryDark,
     borderRadius: 4,
-    marginBottom: 10
+    marginBottom: 8
   },
   radioGroup: {
     alignItems: 'center',

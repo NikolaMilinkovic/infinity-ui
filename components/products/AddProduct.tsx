@@ -8,9 +8,9 @@ import DressColor from '../../models/DressColor';
 import { AuthContext } from '../../store/auth-context';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { addDress, addPurse } from '../../util-methods/FetchMethods';
-import AddDressComponents from './unique_product_components/AddDressComponents';
+import AddDressComponents from './unique_product_components/add/AddDressComponents';
 import GenericProductInputComponents from './GenericProductInputComponents';
-import AddPurseComponents from './unique_product_components/AddPurseComponents';
+import AddPurseComponents from './unique_product_components/add/AddPurseComponents';
 import PurseColor from '../../models/PurseColor';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
 

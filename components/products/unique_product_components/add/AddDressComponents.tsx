@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
-import ColorSizeInputs from '../../../util-components/ColorSizeInputs';
+import ColorSizeInputs from '../../../../util-components/ColorSizeInputs';
 
 interface DressColorTypes{
   _id: string
