@@ -5,12 +5,7 @@ import Button from '../../util-components/Button'
 import IconButton from '../../util-components/IconButton'
 import { AuthContext } from '../../store/auth-context'
 import { popupMessage } from '../../util-components/PopupMessage'
-
-interface ColorType {
-  _id: string
-  name: string
-  colorCode: string
-}
+import { ColorType } from '../../types/allTsTypes'
 
 function EditColorItem({ data }: { data: ColorType }) {
   const [colorData, setColorData] = useState<ColorType>({

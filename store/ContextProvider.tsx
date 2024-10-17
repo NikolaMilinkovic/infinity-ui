@@ -6,6 +6,7 @@ import CategoriesContextProvider from './categories-context';
 import DressesContextProvider from './dresses-context';
 import PursesContextProvider from './purses-context';
 import AllProductsContextProvider from './all-products-context';
+import NewOrderContextProvider from './new-order-context';
 
 interface ContextChildrenType {
   children: ReactNode;
@@ -20,7 +21,9 @@ const ContextProvider: React.FC<ContextChildrenType> = ({ children }) => {
             <DressesContextProvider>
               <PursesContextProvider>
                 <AllProductsContextProvider>
-                  {children}
+                  <NewOrderContextProvider>
+                    {children}
+                  </NewOrderContextProvider>
                 </AllProductsContextProvider>
               </PursesContextProvider>
             </DressesContextProvider>

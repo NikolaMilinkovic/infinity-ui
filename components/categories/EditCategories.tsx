@@ -3,14 +3,10 @@ import { CategoriesContext } from '../../store/categories-context';
 import { View, StyleSheet, Text, FlatList } from 'react-native'
 import EditCategoriesItem from './EditCategoriesItem';
 import { Colors } from '../../constants/colors';
+import { CategoryType } from '../../types/categoryTypes';
 
 function EditCategories() {
   const categoriesCtx = useContext(CategoriesContext);
-
-  interface CategoryType {
-    _id: string
-    name: string
-  }
   
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [isLoading, setIsLoading] = useState<Boolean>(true);

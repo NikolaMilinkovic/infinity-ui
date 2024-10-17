@@ -12,43 +12,12 @@ import AddDressComponents from './unique_product_components/add/AddDressComponen
 import GenericProductInputComponents from './GenericProductInputComponents';
 import AddPurseComponents from './unique_product_components/add/AddPurseComponents';
 import PurseColor from '../../models/PurseColor';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
+import { CategoryTypes, ColorTypes, DressColorTypes, PurseColorTypes, ProductImageTypes } from '../../types/allTsTypes';
 
-interface Category {
-  _id: string,
-  name: string
-}
-interface Color {
-  _id: string,
-  name: string,
-  colorCode: string,
-}
-interface DressColorTypes{
-  _id: string
-  color: string
-  colorCode: string
-  sizes: { size: string; stock: number }[]
-}
-interface PurseColorTypes{
-  _id: string
-  color: string
-  colorCode: string
-  stock: number 
-}
-interface ProductImageTypes {
-  assetId: string | null;
-  base64: string | null;
-  duration: number | null;
-  exif: object | null;
-  fileName: string;
-  fileSize: number;
-  height: number;
-  mimeType: string;
-  rotation: number | null;
-  type: string;
-  uri: string;
-  width: number;
-}
+
+
+
+
 
 function AddProduct(){
   const authCtx = useContext(AuthContext);
@@ -56,8 +25,8 @@ function AddProduct(){
   const colorsCtx = useContext(ColorsContext);
 
   // Other data
-  const [allCategories, setAllCategories] = useState<Category[]>([]);
-  const [allColors, setAllColors] = useState<Color[]>([]);
+  const [allCategories, setAllCategories] = useState<CategoryTypes[]>([]);
+  const [allColors, setAllColors] = useState<ColorTypes[]>([]);
   const [isMultiDropdownOpen, setIsMultiDropdownOpen] = useState(false);
   const [selectedColors, setSelectedColors] = useState([]);
   const [previewImage, setPreviewImage] = useState('');
@@ -95,7 +64,7 @@ function AddProduct(){
 
   // New product data
   const [productName, setProductName] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<Category[] | undefined[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryTypes[] | undefined[]>([]);
   const [price, setPrice] = useState<number | string>('');
   const [productImage, setProductImage] = useState<ProductImageTypes>();
   

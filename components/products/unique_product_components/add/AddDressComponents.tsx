@@ -1,13 +1,9 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
 import ColorSizeInputs from '../../../../util-components/ColorSizeInputs';
+import { DressColorTypes } from '../../../../types/allTsTypes';
 
-interface DressColorTypes{
-  _id: string
-  color: string
-  colorCode: string
-  sizes: { size: string; stock: number }[]
-}
+
 interface PropTypes{
   dressColors: DressColorTypes[],
   setDressColors: (data:DressColorTypes[]) => void

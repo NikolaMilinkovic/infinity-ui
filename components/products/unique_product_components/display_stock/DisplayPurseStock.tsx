@@ -2,24 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, Animated } from 'react-native'
 import { Colors } from '../../../../constants/colors';
 import { useToggleFadeAnimation } from '../../../../hooks/useFadeAnimation';
+import { PurseTypes } from '../../../../types/allTsTypes';
 
-interface PurseColorType {
-  _id: string;
-  color: string;
-  colorCode: string;
-  stock: number;
-}
-interface PurseType {
-  _id: string;
-  name: string;
-  active: boolean;
-  category: string;
-  price: number;
-  colors: PurseColorType[];
-}
 interface PropTypes {
   isExpanded: boolean
-  item: PurseType
+  item: PurseTypes
 }
 
 function DisplayPurseStock({ isExpanded, item }: PropTypes) {
@@ -45,7 +32,7 @@ function DisplayPurseStock({ isExpanded, item }: PropTypes) {
         <Animated.View style={[styles.container, { overflow: 'hidden', opacity: toggleFade}]}>
           <View style={styles.sizesContainer}>
             <Text style={styles.header}>Boja</Text>
-            <Text style={styles.header}>Veličina</Text>
+            <Text style={styles.header}>Količina</Text>
           </View>
 
           {item.colors.map((item, index) => (

@@ -2,17 +2,12 @@ import React, { useEffect } from 'react'
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler';
 import { Colors } from '../constants/colors';
+import { PurseColorTypes } from '../types/allTsTypes';
 
 
-interface ColorTypes{
-  _id: string
-  color: string
-  colorCode: string
-  stock: number
-}
 interface PropTypes{
-  colorsData: ColorTypes[],
-  setColorsData: (data:ColorTypes[]) => void
+  colorsData: PurseColorTypes[],
+  setColorsData: (data:PurseColorTypes[]) => void
 }
 
 function ColorStockInputs({ colorsData, setColorsData, }: PropTypes) {

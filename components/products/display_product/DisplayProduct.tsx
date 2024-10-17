@@ -1,50 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { View, Text, Image, StyleSheet, Pressable } from 'react-native'
 import { Colors } from '../../../constants/colors'
 import ExpandButton from '../../../util-components/ExpandButton';
 import DisplayDressStock from '../unique_product_components/display_stock/DisplayDressStock';
 import DisplayPurseStock from '../unique_product_components/display_stock/DisplayPurseStock';
+import { DressTypes, PurseTypes } from '../../../types/allTsTypes';
+import { popupMessage } from '../../../util-components/PopupMessage';
+import { NewOrderContext } from '../../../store/new-order-context';
+import { MaterialIcons } from '@expo/vector-icons';
+import IconButton from '../../../util-components/IconButton';
 
-interface ColorSizeType {
-  size: string;
-  stock: number;
-  _id: string;
-}
-interface ImageType {
-  uri: string;
-  imageName: string;
-}
-interface DressColorType {
-  _id: string;
-  color: string;
-  colorCode: string;
-  sizes: ColorSizeType[];
-}
-interface DressType {
-  _id: string;
-  name: string;
-  active: boolean;
-  category: string;
-  price: number;
-  colors: DressColorType[];
-  image: ImageType;
-}
-interface PurseColorType {
-  _id: string;
-  color: string;
-  colorCode: string;
-  stock: number;
-}
-interface PurseType {
-  _id: string;
-  name: string;
-  active: boolean;
-  category: string;
-  price: number;
-  colors: PurseColorType[];
-  image: ImageType;
-}
-type ProductType = DressType | PurseType;
+type ProductType = DressTypes | PurseTypes;
 interface DisplayProductProps {
   item: ProductType;
 }
@@ -52,19 +18,20 @@ interface DisplayProductProps {
 function DisplayProduct({ item }: DisplayProductProps) {
   const [onStock, setOnStock] = useState(false);
   const styles = getStyles(onStock);
+  const newOrderCtx = useContext(NewOrderContext);
 
   useEffect(() => {
     if(!item) return;
     let stockAvailable = false;
 
     if(item.category === 'Haljina'){
-      const dressItem = item as DressType
+      const dressItem = item as DressTypes
       stockAvailable = dressItem.colors.some((colorObj) => 
         colorObj.sizes.some((sizeObj) => sizeObj.stock > 0)
       )
     }
     if(item.category === 'Torbica'){
-      const purseItem = item as PurseType
+      const purseItem = item as PurseTypes
       stockAvailable = purseItem.colors.some((colorObj) =>
         colorObj.stock > 0
       )
@@ -75,18 +42,31 @@ function DisplayProduct({ item }: DisplayProductProps) {
   // =============================================================================
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => {
-    console.log('> Toggle Expand called', isExpanded)
     setIsExpanded(!isExpanded);
   };
 
+  // TEMP
+  function handleOnPress(){
+    if(onStock){
+      newOrderCtx.addProduct(item);
+      popupMessage(`${item.name} dodat u porudžbinu.\nTrenuthin artikala u porudžbini: ${newOrderCtx.productData.length + 1}`, 'success');
+    } else {
+      popupMessage(`${item.name} je rasprodati i nije dodat u porudžbinu!`,'danger')
+    }
+  }
+
   return (
-    <Pressable key={item._id} style={styles.container} onPress={() => {console.log('> Button for creating a new order clicked')}}>
+    <View 
+      key={item._id} 
+      style={styles.container} 
+    >
 
       {/* IMAGE AND INFORMATIONS */}
       <View style={styles.infoContainer}>
 
-        <View style={{position: 'relative', height: 140, width: 120}}>
-          <Image resizeMode="contain" source={{ uri: item.image.uri }} style={styles.image} />
+        <View style={styles.imageContainer}>
+          {/* <Image resizeMode="contain" source={{ uri: item.image.uri }} style={styles.image} /> */}
+          <Image source={{ uri: item.image.uri }} style={styles.image} />
         </View>
 
         <View style={styles.info}>
@@ -108,6 +88,18 @@ function DisplayProduct({ item }: DisplayProductProps) {
               iconStyles={styles.expandButtonIcon}
             />
         </View>
+
+        {onStock && (
+          <IconButton
+            size={26}
+            color={Colors.secondaryDark}
+            onPress={handleOnPress}
+            key={`key-${item._id}`}
+            icon='add'
+            style={styles.addButtonContainer} 
+            pressedStyles={styles.addButtonContainerPressed}
+          />
+        )}
       </View>
 
       {/* STOCK DATA */}
@@ -117,7 +109,7 @@ function DisplayProduct({ item }: DisplayProductProps) {
         {item && item.category === 'Haljina' && (
           <DisplayDressStock
             isExpanded={isExpanded}
-            item={item as DressType}
+            item={item as DressTypes}
           />
         )}
 
@@ -125,11 +117,11 @@ function DisplayProduct({ item }: DisplayProductProps) {
         {item && item.category === 'Torbica' && (
           <DisplayPurseStock
             isExpanded={isExpanded}
-            item={item as PurseType}
+            item={item as PurseTypes}
           />
         )}
       </View>
-    </Pressable>
+    </View>
   )
 }
 
@@ -137,7 +129,8 @@ function getStyles(onStock:boolean){
   return StyleSheet.create({
     container: {
       minHeight: 160,
-      padding: 10,
+      padding: 6,
+      paddingVertical: 10,
       width: '100%',
       borderBottomWidth: 0.5,
       borderColor: Colors.highlight,
@@ -164,8 +157,15 @@ function getStyles(onStock:boolean){
       marginLeft: 16,
       position: 'relative',
     },
+    imageContainer: {
+      position: 'relative', 
+      height: 140, 
+      borderRadius: 8,
+      overflow: 'hidden'
+    },
     image: {
-      flex: 4
+      flex: 4,
+      width: 120,
     },
     headerText: {
       fontSize: 16, 
@@ -195,12 +195,26 @@ function getStyles(onStock:boolean){
     },
     stockDataContainer:{
       width: '100%',
-      paddingHorizontal: 18
+      paddingHorizontal: 6
     },
     onStockText: {
       color: Colors.success,
       fontWeight: 'bold',
     },
+    addButtonContainer: {
+      position: 'absolute',
+      right: 8,
+      top: 0,
+      borderRadius: 100,
+      overflow: 'hidden',
+      backgroundColor: Colors.white,
+      padding: 10,
+      elevation: 2
+    },
+    addButtonContainerPressed: {
+      opacity: 0.7,
+      elevation: 1,
+    }
   })
 }
 

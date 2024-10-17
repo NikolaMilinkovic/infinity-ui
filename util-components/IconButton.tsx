@@ -6,16 +6,17 @@ interface IconButtonProps {
   icon: string
   color: string
   onPress: () => void
+  size: number
   text?: string
   style?: object
   textStyle?: object
   iconStyle?: object
-  size: number
+  pressedStyles?: object
 }
 
-function IconButton({ icon, color, onPress, text, style, textStyle, iconStyle, size }: IconButtonProps) {
+function IconButton({ icon, color, onPress, text, style, textStyle, iconStyle, size, pressedStyles }: IconButtonProps) {
   return (
-    <Pressable onPress={onPress} style={(pressed) => [style, pressed && styles.pressed]}>
+    <Pressable onPress={onPress} style={({pressed}) => [style, pressed && (pressedStyles || styles.pressed)]}>
       <MaterialIcons 
         style={iconStyle}
         name={icon}

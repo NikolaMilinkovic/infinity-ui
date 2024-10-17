@@ -3,33 +3,16 @@ import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
+import { DressTypes } from "../types/allTsTypes";
 
-interface ColorSizeType {
-  size: string;
-  stock: number;
-  _id: string;
-}
-interface DressColorType {
-  _id: string;
-  color: string;
-  colorCode: string;
-  sizes: ColorSizeType[];
-}
-interface DressType {
-  _id: string;
-  name: string;
-  active: boolean;
-  category: string;
-  price: number;
-  colors: DressColorType[];
-}
+
 interface DressContextType {
-  activeDresses: DressType[];
-  inactiveDresses: DressType[];
-  setActiveDresses: (dresses: DressType[]) => void;
-  setInactiveDresses: (dresses: DressType[]) => void;
-  getActiveDresses: () => DressType[];
-  getInactiveDresses: () => DressType[];
+  activeDresses: DressTypes[];
+  inactiveDresses: DressTypes[];
+  setActiveDresses: (dresses: DressTypes[]) => void;
+  setInactiveDresses: (dresses: DressTypes[]) => void;
+  getActiveDresses: () => DressTypes[];
+  getInactiveDresses: () => DressTypes[];
 }
 interface DressContextProviderType {
   children: ReactNode;
@@ -45,18 +28,18 @@ export const DressesContext = createContext<DressContextType>({
 });
 
 function DressesContextProvider({ children }: DressContextProviderType) {
-  const [activeDresses, setActiveDresses] = useState<DressType[]>([]);
-  const [inactiveDresses, setInactiveDresses] = useState<DressType[]>([]);
+  const [activeDresses, setActiveDresses] = useState<DressTypes[]>([]);
+  const [inactiveDresses, setInactiveDresses] = useState<DressTypes[]>([]);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
 
   // Setters
-  const setActiveDressesHandler = (dresses: DressType[]) => {
+  const setActiveDressesHandler = (dresses: DressTypes[]) => {
     setActiveDresses(dresses);
   };
-  const setInactiveDressesHandler = (dresses: DressType[]) => {
+  const setInactiveDressesHandler = (dresses: DressTypes[]) => {
     setInactiveDresses(dresses);
   };
 
@@ -79,12 +62,12 @@ function DressesContextProvider({ children }: DressContextProviderType) {
   }, [token]);
 
   // Event handlers for socket updates
-  function handleActiveDressAdded(newDress: DressType) {
+  function handleActiveDressAdded(newDress: DressTypes) {
     betterConsoleLog('> Adding new active dress from dresses ctx', newDress)
     setActiveDresses((prevDresses) => [...prevDresses, newDress]);
   }
 
-  function handleInactiveDressAdded(newDress: DressType) {
+  function handleInactiveDressAdded(newDress: DressTypes) {
     setInactiveDresses((prevDresses) => [...prevDresses, newDress]);
   }
 

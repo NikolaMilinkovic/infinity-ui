@@ -3,50 +3,18 @@ import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import { DressesContext } from "./dresses-context";
 import { PursesContext } from "./purses-context";
-import isEqual from 'lodash/isEqual';
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
+import { DressTypes, PurseTypes } from "../types/allTsTypes";
 
-interface ColorSizeType {
-  size: string;
-  stock: number;
-  _id: string;
-}
-interface DressColorType {
-  _id: string;
-  color: string;
-  colorCode: string;
-  sizes: ColorSizeType[];
-}
-interface DressType {
-  _id: string;
-  name: string;
-  active: boolean;
-  category: string;
-  price: number;
-  colors: DressColorType[];
-}
-interface PurseColorType {
-  _id: string;
-  color: string;
-  colorCode: string;
-  stock: number;
-}
-interface PurseType {
-  _id: string;
-  name: string;
-  active: boolean;
-  category: string;
-  price: number;
-  colors: PurseColorType[];
-}
+
 interface AllProductsContextType {
-  allActiveProducts: (DressType | PurseType)[];
-  allInactiveProducts: (DressType | PurseType)[];
-  allProducts: (DressType | PurseType)[];
-  setAllActiveProducts: (products: (DressType | PurseType)[]) => void;
-  setAllInactiveProducts: (products: (DressType | PurseType)[]) => void;
-  setAllProducts: (products: (DressType | PurseType)[]) => void;
+  allActiveProducts: (DressTypes | PurseTypes)[];
+  allInactiveProducts: (DressTypes | PurseTypes)[];
+  allProducts: (DressTypes | PurseTypes)[];
+  setAllActiveProducts: (products: (DressTypes | PurseTypes)[]) => void;
+  setAllInactiveProducts: (products: (DressTypes | PurseTypes)[]) => void;
+  setAllProducts: (products: (DressTypes | PurseTypes)[]) => void;
 }
 
 interface AllProductsProviderType {
@@ -62,9 +30,9 @@ export const AllProductsContext = createContext<AllProductsContextType>({
 })
 
 function AllProductsContextProvider({ children }: AllProductsProviderType){
-  const [activeProducts, setActiveProducts] = useState<(DressType | PurseType)[]>([])
-  const [inactiveProducts, setInactiveProducts] = useState<(DressType | PurseType)[]>([])
-  const [allProducts, setAllProducts] = useState<(DressType | PurseType)[]>([])
+  const [activeProducts, setActiveProducts] = useState<(DressTypes | PurseTypes)[]>([])
+  const [inactiveProducts, setInactiveProducts] = useState<(DressTypes | PurseTypes)[]>([])
+  const [allProducts, setAllProducts] = useState<(DressTypes | PurseTypes)[]>([])
 
   const authCtx = useContext(AuthContext)
   const token = authCtx.token
@@ -74,13 +42,13 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
   const pursesCtx = useContext(PursesContext);
 
   // Setters
-  const setActiveProductsHandler = (products: (DressType | PurseType)[]) => {
+  const setActiveProductsHandler = (products: (DressTypes | PurseTypes)[]) => {
     setActiveProducts(products);
   };
-  const setInactiveProductsHandler = (products: (DressType | PurseType)[]) => {
+  const setInactiveProductsHandler = (products: (DressTypes | PurseTypes)[]) => {
     setInactiveProducts(products);
   };
-  const setAllProductsHandler = (products: (DressType | PurseType)[]) => {
+  const setAllProductsHandler = (products: (DressTypes | PurseTypes)[]) => {
     setAllProducts(products);
   };
 
@@ -90,11 +58,11 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
   const getAllProductsHandler = () => allProducts;
 
   // SOCKET METHODS
-  function activeProductAddedHandler(newProduct: DressType | PurseType){
+  function activeProductAddedHandler(newProduct: DressTypes | PurseTypes){
     betterConsoleLog('> Socket adding new product in All Products Context', newProduct);
     setActiveProducts(prev => [...prev, newProduct]);
   }
-  function inactiveProductAddedHandler(newProduct: DressType | PurseType){
+  function inactiveProductAddedHandler(newProduct: DressTypes | PurseTypes){
     setInactiveProducts(prev => [...prev, newProduct]);
   }
   function activeProductRemovedHandler(productId: string){

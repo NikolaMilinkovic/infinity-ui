@@ -5,11 +5,7 @@ import Button from '../../util-components/Button'
 import IconButton from '../../util-components/IconButton'
 import { AuthContext } from '../../store/auth-context'
 import { popupMessage } from '../../util-components/PopupMessage'
-
-interface CategoryType {
-  _id: string
-  name: string
-}
+import { CategoryType } from '../../types/categoryTypes'
 
 function EditCategoriesItem({ data }: { data: CategoryType }) {
   const [categoryData, setCategoryData] = useState<CategoryType>({

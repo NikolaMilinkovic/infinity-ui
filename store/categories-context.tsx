@@ -2,16 +2,12 @@ import { createContext, useEffect, useState, ReactNode, useContext } from "react
 import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import Category from "../models/Category";
-
-interface CategoryType{
-  _id: string
-  name: string
-}
+import { CategoryTypes } from "../types/allTsTypes";
 
 interface CategoriesContextType{
-  categories: CategoryType[]
-  setCategories: (categories: CategoryType[]) => void
-  getCategories: () => CategoryType[]
+  categories: CategoryTypes[]
+  setCategories: (categories: CategoryTypes[]) => void
+  getCategories: () => CategoryTypes[]
 }
 export const CategoriesContext = createContext<CategoriesContextType>({
   categories: [],
@@ -23,13 +19,13 @@ interface CategoriesContextProviderType {
   children: ReactNode
 }
 function CategoriesContextProvider({ children }: CategoriesContextProviderType){
-  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [categories, setCategories] = useState<CategoryTypes[]>([]);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
 
-  const setCategoriesHandler = (categories: CategoryType[]) => {
+  const setCategoriesHandler = (categories: CategoryTypes[]) => {
     setCategories(categories);
   }
   const getCategoriesHandler = () => {
@@ -51,8 +47,8 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
 
       const data = await response.json();
       if(data.length > 0){
-        const categoriesArr: CategoryType[] = [];
-        data.forEach((entry:CategoryType) => {
+        const categoriesArr: CategoryTypes[] = [];
+        data.forEach((entry:CategoryTypes) => {
           const newCategory = new Category(
             entry._id,
             entry.name,

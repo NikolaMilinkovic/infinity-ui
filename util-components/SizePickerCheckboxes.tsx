@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native';
 import CustomCheckbox from './CustomCheckbox';
 import { Colors } from '../constants/colors';
+
 interface PropTypes {
   selectedSizes: string[]
   setSelectedSizes: (prev: any) => void

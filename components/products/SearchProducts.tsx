@@ -10,6 +10,7 @@ import SizePickerCheckboxes from '../../util-components/SizePickerCheckboxes';
 import Button from '../../util-components/Button';
 import DropdownList from '../../util-components/DropdownList';
 import { CategoriesContext } from '../../store/categories-context';
+import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
 
 interface SearchProductsPropTypes {
   searchData: string
@@ -21,19 +22,15 @@ interface SearchProductsPropTypes {
 function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, updateSearchParam }: SearchProductsPropTypes) {
   // EXPAND ANIMATION & TOGGLING
   const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 10 : 568)).current;
-  const toggleFade = useRef(new Animated.Value(isExpanded ? 0 : 1)).current;
+  const toggleFade = useToggleFadeAnimation(isExpanded, 180);
   function handleToggleExpand(){
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
   }
+
   // EXPAND ANIMATION
   useEffect(() => {
     Animated.timing(toggleExpandAnimation, {
       toValue: isExpanded ? 568 : 10,
-      duration: 180,
-      useNativeDriver: false,
-    }).start();
-    Animated.timing(toggleFade, {
-      toValue: isExpanded ? 1 : 0,
       duration: 180,
       useNativeDriver: false,
     }).start();

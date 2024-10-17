@@ -2,28 +2,15 @@ import { createContext, useEffect, useState, ReactNode, useContext, useMemo } fr
 import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
+import { PurseTypes } from "../types/allTsTypes";
 
-interface ColorType {
-  _id: string;
-  color: string;
-  colorCode: string;
-  stock: number;
-}
-interface PurseType {
-  _id: string;
-  name: string;
-  active: boolean;
-  category: string;
-  price: number;
-  colors: ColorType[];
-}
 interface PurseContextType {
-  activePurses: PurseType[];
-  inactivePurses: PurseType[];
-  setActivePurses: (purses: PurseType[]) => void;
-  setInactivePurses: (purses: PurseType[]) => void;
-  getActivePurses: () => PurseType[];
-  getInactivePurses: () => PurseType[];
+  activePurses: PurseTypes[];
+  inactivePurses: PurseTypes[];
+  setActivePurses: (purses: PurseTypes[]) => void;
+  setInactivePurses: (purses: PurseTypes[]) => void;
+  getActivePurses: () => PurseTypes[];
+  getInactivePurses: () => PurseTypes[];
 }
 interface PurseContextProviderType {
   children: ReactNode;
@@ -39,18 +26,18 @@ export const PursesContext = createContext<PurseContextType>({
 });
 
 function PursesContextProvider({ children }: PurseContextProviderType) {
-  const [activePurses, setActivePurses] = useState<PurseType[]>([]);
-  const [inactivePurses, setInactivePurses] = useState<PurseType[]>([]);
+  const [activePurses, setActivePurses] = useState<PurseTypes[]>([]);
+  const [inactivePurses, setInactivePurses] = useState<PurseTypes[]>([]);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
 
   // Setters
-  const setActivePursesHandler = (purses: PurseType[]) => {
+  const setActivePursesHandler = (purses: PurseTypes[]) => {
     setActivePurses(purses);
   };
-  const setInactivePursesHandler = (purses: PurseType[]) => {
+  const setInactivePursesHandler = (purses: PurseTypes[]) => {
     setInactivePurses(purses);
   };
 
@@ -73,11 +60,11 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
   }, [token]);
 
   // Event handlers for socket updates
-  function handleActivePurseAdded(newPurse: PurseType) {
+  function handleActivePurseAdded(newPurse: PurseTypes) {
     setActivePurses((prevPurses) => [...prevPurses, newPurse]);
   }
 
-  function handleInactivePurseAdded(newPurse: PurseType) {
+  function handleInactivePurseAdded(newPurse: PurseTypes) {
     setInactivePurses((prevPurses) => [...prevPurses, newPurse]);
   }
 

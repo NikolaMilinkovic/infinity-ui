@@ -2,19 +2,12 @@ import React, { useEffect, useRef } from 'react'
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler';
 import { Colors } from '../constants/colors';
+import { DressColorTypes } from '../types/allTsTypes';
 
-
-interface DressColorTypes{
-  _id: string
-  color: string
-  colorCode: string
-  sizes: { size: string; stock: number }[]
-}
 interface PropTypes{
   colorsData: DressColorTypes[],
   setColorsData: (data:DressColorTypes[]) => void
 }
-
 
 function ColorSizeInputs({
   colorsData,

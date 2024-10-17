@@ -2,17 +2,13 @@ import { createContext, useEffect, useState, ReactNode, useContext } from "react
 import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import Color from "../models/Color";
+import { ColorTypes } from "../types/allTsTypes";
 
-interface ColorType{
-  _id: string
-  name: string
-  colorCode: string
-}
 
 interface ColorsContextType{
-  colors: ColorType[]
-  setColors: (colors: ColorType[]) => void
-  getColors: () => ColorType[]
+  colors: ColorTypes[]
+  setColors: (colors: ColorTypes[]) => void
+  getColors: () => ColorTypes[]
 }
 export const ColorsContext = createContext<ColorsContextType>({
   colors: [],
@@ -28,13 +24,13 @@ interface ColorsContextProviderType {
  * Caches all global color objects
  */
 function ColorsContextProvider({ children }: ColorsContextProviderType){
-  const [colors, setColors] = useState<ColorType[]>([]);
+  const [colors, setColors] = useState<ColorTypes[]>([]);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
 
-  const setColorsHandler = (colors: ColorType[]) => {
+  const setColorsHandler = (colors: ColorTypes[]) => {
     setColors(colors);
   }
   const getColorsHandler = () => {
@@ -56,7 +52,7 @@ function ColorsContextProvider({ children }: ColorsContextProviderType){
 
       const data = await response.json();
       if(data.length > 0){
-        const colorsArr: ColorType[] = [];
+        const colorsArr: ColorTypes[] = [];
         data.forEach((entry) => {
           const newColor = new Color(
             entry._id,

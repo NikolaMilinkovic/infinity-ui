@@ -1,32 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFadeAnimation, useToggleFadeAnimation } from '../../../../hooks/useFadeAnimation';
 import { Colors } from '../../../../constants/colors';
+import { DressTypes } from '../../../../types/allTsTypes';
 
-interface ColorSizeType {
-  size: string;
-  stock: number;
-  _id: string;
-}
-interface DressColorType {
-  _id: string;
-  color: string;
-  colorCode: string;
-  sizes: ColorSizeType[];
-}
-interface DressType {
-  _id: string;
-  name: string;
-  active: boolean;
-  category: string;
-  price: number;
-  colors: DressColorType[];
-}
 interface PropTypes {
   isExpanded: boolean
-  item: DressType
+  item: DressTypes
 }
-
 function DisplayDressStock({ isExpanded, item }: PropTypes) {
   const [availableColors, setAvailableColors] = useState<string[]>([]);
   const styles = getStyles(isExpanded);
@@ -52,26 +33,47 @@ function DisplayDressStock({ isExpanded, item }: PropTypes) {
         <Animated.View style={[styles.container, { overflow: 'hidden', opacity: toggleFade}]}>
             <View style={styles.sizesContainer}>
               <Text style={{ width: 100, fontWeight: 'bold', textAlign: 'center' }}>Boja</Text>
+              <Text style={styles.header}>UNI</Text>
               <Text style={styles.header}>XS</Text>
               <Text style={styles.header}>S</Text>
               <Text style={styles.header}>M</Text>
               <Text style={styles.header}>L</Text>
               <Text style={styles.header}>XL</Text>
-              <Text style={styles.header}>UNI</Text>
             </View>
-            {item.colors.map((item, index) => (
-              <View 
-                style={[styles.rowContainer, 
-                  index % 2 === 0 ? (availableColors.length > 0 ? styles.rowColorOnStock : styles.rowColorOutOfStock) : styles.rowColor2 ]} 
-                key={`${index}-${item.color}`}
-              >
-                <Text style={styles.colorLabel2}>{item.color}</Text>
+            {item.colors.map((colorItem, index) => {
+              // Sort sizes so "UNI" comes first
+              const sortedSizes = [...colorItem.sizes].sort((a, b) => {
+                if (a.size === "UNI") return -1;
+                if (b.size === "UNI") return 1;
+                return 0;
+              });
 
-                {item.sizes.map((size, index) => (
-                  <Text key={`${item.color}${index}`} style={styles.sizeText}>{size.stock}</Text>
-                ))}
-              </View>
-            ))}
+              return (
+                <View 
+                  style={[
+                    styles.rowContainer, 
+                    index % 2 === 0 ? (availableColors.length > 0 ? styles.rowColorOnStock : styles.rowColorOutOfStock) : styles.rowColor2
+                  ]}
+                  key={`${index}-${colorItem.color}`}
+                >
+                  <Text style={styles.colorLabel2}>{colorItem.color}</Text>
+
+                  {sortedSizes.map((size, index) => (
+                    <Text key={`${colorItem.color}${index}`} style={styles.sizeText}>{size.stock}</Text>
+                  ))}
+                  
+                  {/* {sortedSizes.map((size, index) => (
+                    <Pressable
+                      onPress={() => console.log(`> You selected ${size.size}`)}
+                      key={`${colorItem.color}${index}`} 
+                      style={styles.pressable} 
+                    >
+                      <Text style={styles.sizeText}>{size.stock}</Text>
+                    </Pressable>
+                  ))} */}
+                </View>
+              );
+            })}
           </Animated.View>
         )}
     </>
@@ -132,6 +134,11 @@ function getStyles(isExpanded:boolean){
       marginHorizontal: 4,
       flex: 1,
     },
+    pressable: {
+      padding: 6,
+      borderWidth: 0.5,
+      borderColor: Colors.success,
+    }
   })
 }
 

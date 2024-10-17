@@ -3,16 +3,10 @@ import { ColorsContext } from '../../store/colors-context';
 import { View, StyleSheet, Text, FlatList } from 'react-native'
 import EditColorItem from './EditColorItem';
 import { Colors } from '../../constants/colors';
+import { ColorType } from '../../types/allTsTypes';
 
 function EditColors() {
-  const colorsCtx = useContext(ColorsContext);
-  
-  interface ColorType {
-    _id: string
-    name: string
-    colorCode: string
-  }
-  
+  const colorsCtx = useContext(ColorsContext);  
   const [colors, setColors] = useState<ColorType[]>([]);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
 

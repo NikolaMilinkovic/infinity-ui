@@ -1,39 +1,6 @@
 import { betterConsoleLog } from "./LogMethods";
-
-interface ColorSizeType {
-  size: string;
-  stock: number;
-  _id: string;
-}
-interface DressColorType {
-  _id: string;
-  color: string;
-  colorCode: string;
-  sizes: ColorSizeType[];
-}
-interface DressType {
-  _id: string;
-  name: string;
-  active: boolean;
-  category: string;
-  price: number;
-  colors: DressColorType[];
-}
-interface PurseColorType {
-  _id: string;
-  color: string;
-  colorCode: string;
-  stock: number;
-}
-interface PurseType {
-  _id: string;
-  name: string;
-  active: boolean;
-  category: string;
-  price: number;
-  colors: PurseColorType[];
-}
-type ProductType = DressType | PurseType;
+import { DressTypes, PurseTypes } from "../types/allTsTypes";
+type ProductType = DressTypes | PurseTypes;
 interface SearchParamsType {
   isOnStock: boolean
   isNotOnStock: boolean

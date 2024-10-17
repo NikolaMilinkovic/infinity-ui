@@ -5,6 +5,7 @@ import SearchProducts from './SearchProducts';
 import DisplayProduct from './display_product/DisplayProduct';
 import { AllProductsContext } from '../../store/all-products-context';
 import { serachProducts } from '../../util-methods/ProductFilterMethods';
+import { SearchParamsTypes } from '../../types/allTsTypes';
 
 function DisplayProducts() {
   const productsCtx = useContext(AllProductsContext);
@@ -13,15 +14,6 @@ function DisplayProducts() {
   // =============================[ SEARCH INPUT STUFF ]=============================
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
-  // Search Params object
-  interface SearchParamsTypes {
-    isOnStock: boolean
-    isNotOnStock: boolean
-    onStockAndSoldOut: boolean
-    onCategorySearch: string
-    onColorsSearch: string[]
-    onSizeSearch: string[]
-  }
   const [searchParams, setSearchParams] = useState<SearchParamsTypes>({
     isOnStock: false,
     isNotOnStock: false,
