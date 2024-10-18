@@ -1,12 +1,19 @@
 import { createContext, useState, ReactNode, useMemo, useEffect } from "react";
 import { betterConsoleLog } from "../util-methods/LogMethods";
-import { ProductTypes } from "../types/allTsTypes";
-import { NewOrderContextTypes, BuyerTypes } from "../types/allTsTypes";
+import { NewOrderContextTypes, BuyerTypes, ProductTypes, OrderProductTypes } from "../types/allTsTypes";
 interface ContextChildrenTypes {
   children: ReactNode;
 }
 
 export const NewOrderContext = createContext<NewOrderContextTypes>({
+  productReferences: [],
+  addProductReference: () => {},
+  removeProductReference: () => {},
+  setProductReferences: () => {},
+  getProductReferences: () => [],
+  updateProductColorByIndex: () => [],
+  updateProductSizeByIndex: () => [],
+
   productData: [],
   addProduct: () => {},
   removeProduct: () => {},
@@ -20,9 +27,13 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
 })
 
 function NewOrderContextProvider({ children }: ContextChildrenTypes){
-  const [productData, setProductData] = useState<ProductTypes[]>([]);
+  const [productReferences, setProductReferences] = useState<ProductTypes[]>([]);
   const [buyerData, setBuyerData] = useState<BuyerTypes | null>(null);
-  const [orderedProductsData, setOrderProductsData] = useState([]); 
+  const [productData, setProductData] = useState<OrderProductTypes[]>([]);
+
+  useEffect(() => {
+    betterConsoleLog('> Logging product references: ', productReferences.length);
+  }, [productReferences])
 
   useEffect(() => {
     betterConsoleLog('> Logging product data: ', productData.length);
@@ -32,10 +43,25 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     betterConsoleLog('> Loggin buyer data: ', buyerData);
   }, [buyerData])
 
-  const setProductsDataHandler = (productsArr: ProductTypes[]) => {
+  // PRODUCT REFERENCE
+  const setProductReferencesHandler = (productsArr: ProductTypes[]) => {
+    setProductReferences(productsArr);
+  }
+  const addProductReferenceHandler = (product: ProductTypes) => {
+    setProductReferences((prev) => [...prev, product]);
+  }
+  const removeProductReferenceByIndexHandler = (index: number) => {
+    setProductReferences((prev) => prev.filter((_, i) => i !== index));
+  };
+  const getProductReferencesDataHandler = () => {
+    return productReferences;
+  }
+
+  // PRODUCTS
+  const setProductsDataHandler = (productsArr: OrderProductTypes[]) => {
     setProductData(productsArr);
   }
-  const addProductHandler = (product: ProductTypes) => {
+  const addProductHandler = (product: OrderProductTypes) => {
     setProductData((prev) => [...prev, product]);
   }
   const removeProductByIndexHandler = (index: number) => {
@@ -44,7 +70,32 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const getProductsDataHandler = () => {
     return productData;
   }
+  const updateProductColorByIndexHandler = (index: number, selectedColor: string) => {
+    setProductData((prev) => {
+      const updatedProducts = [...prev]; // Clone the array
+      if (updatedProducts[index]) {
+        updatedProducts[index] = {
+          ...updatedProducts[index],  // Keep other product fields
+          selectedColor: selectedColor,
+        };
+      }
+      return updatedProducts;
+    });
+  };
+  const updateProductSizeByIndexHandler = (index: number, selectedSize: string) => {
+    setProductData((prev) => {
+      const updatedProducts = [...prev]; // Clone the array
+      if (updatedProducts[index]) {
+        updatedProducts[index] = {
+          ...updatedProducts[index],  // Keep other product fields
+          selectedSize: selectedSize,
+        };
+      }
+      return updatedProducts;
+    });
+  };
 
+  // BUYER
   const setBuyerDataHandler = (data:BuyerTypes) => {
     setBuyerData(data);
   }
@@ -53,21 +104,40 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   }
 
   const resetOrderDataHandler = () => {
+    setProductReferences([]);
     setProductData([]);
-    setBuyerData(null);
+    setBuyerData({
+      name: '',
+      address: '',
+      phone: '',
+    });
   }
 
+  useEffect(() => {
+    betterConsoleLog('> Product data is: ', productData);
+  }, [productData])
+
   const value = useMemo(() => ({
+    productReferences,
+    setProductReferences: setProductReferencesHandler,
+    addProductReference: addProductReferenceHandler,
+    removeProductReference: removeProductReferenceByIndexHandler,
+    getProductReferences: getProductReferencesDataHandler,
+    
     productData,
     addProduct: addProductHandler,
     removeProduct: removeProductByIndexHandler,
     setProductsData: setProductsDataHandler,
     getProductsData: getProductsDataHandler,
+    updateProductColorByIndex: updateProductColorByIndexHandler,
+    updateProductSizeByIndex: updateProductSizeByIndexHandler,
+
     buyerData,
     setBuyerData: setBuyerDataHandler,
     getBuyerData: getBuyerDataHandler,
+    
     resetOrderData: resetOrderDataHandler
-  }), [productData, buyerData]);
+  }), [productData, buyerData, productReferences]);
 
   return <NewOrderContext.Provider value={value}>{ children }</NewOrderContext.Provider>
 }

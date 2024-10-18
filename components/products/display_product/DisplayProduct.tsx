@@ -48,7 +48,23 @@ function DisplayProduct({ item }: DisplayProductProps) {
   // TEMP
   function handleOnPress(){
     if(onStock){
-      newOrderCtx.addProduct(item);
+      newOrderCtx.addProductReference(item);
+      if(item.category === 'Haljina'){
+        const productObj = {
+          itemReference: item,
+          selectedColor: '',
+          selectedSize: '',
+        }
+        newOrderCtx.addProduct(productObj);
+      }
+      if(item.category === 'Torbica'){
+        const productObj = {
+          product: item,
+          selectedColor: '',
+        }
+        newOrderCtx.addProduct(productObj);
+      }
+      
       popupMessage(`${item.name} dodat u porudžbinu.\nTrenuthin artikala u porudžbini: ${newOrderCtx.productData.length + 1}`, 'success');
     } else {
       popupMessage(`${item.name} je rasprodati i nije dodat u porudžbinu!`,'danger')
@@ -65,7 +81,6 @@ function DisplayProduct({ item }: DisplayProductProps) {
       <View style={styles.infoContainer}>
 
         <View style={styles.imageContainer}>
-          {/* <Image resizeMode="contain" source={{ uri: item.image.uri }} style={styles.image} /> */}
           <Image source={{ uri: item.image.uri }} style={styles.image} />
         </View>
 

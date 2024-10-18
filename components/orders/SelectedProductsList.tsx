@@ -7,6 +7,7 @@ import { NewOrderContextTypes } from '../../types/allTsTypes'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation'
 import Button from '../../util-components/Button'
+import { popupMessage } from '../../util-components/PopupMessage'
 
 interface PropTypes{
   ordersCtx: NewOrderContextTypes
@@ -41,17 +42,32 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
     });
   }, [isExpanded]);
 
+  // ON NEXT
+  function handleOnNext(){
+    if(ordersCtx.productReferences.length > 0){
+      onNext()
+    } else {
+      popupMessage('Molimo izaberite proizvod', 'danger')
+    }
+  }
+
   return (
     <View style={styles.container}>
+
+      {/* TOGGLE BUTTON */}
       <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
         <Text style={styles.header}>Izabrani artikli</Text>
         <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.white}/>
       </Pressable>
+
+      {/* MAIN */}
       {isContentVisible && (
         <View style={{marginHorizontal: 8}}>
+
+          {/* LIST */}
           <Animated.FlatList 
             style={[styles.listContainer, {height: toggleExpandAnimation, opacity: fadeAnimation}]}
-            data={ordersCtx.productData}
+            data={ordersCtx.productReferences}
             renderItem={({item, index}) => (          
                 <SelectedProduct 
                   item={item}
@@ -62,11 +78,13 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
             keyExtractor={(item, index) => `${index}-${item._id}`}
             contentContainerStyle={{ paddingBottom: 16 }}
           />
+
+          {/* NEXT BUTTON */}
           <Button
             backColor={Colors.highlight}
             textColor={Colors.white}
             containerStyles={{marginBottom: 6}}
-            onPress={onNext}
+            onPress={handleOnNext}
           >
             Dalje
           </Button>

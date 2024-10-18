@@ -9,6 +9,7 @@ import { AuthContext } from '../../store/auth-context';
 import { popupMessage } from '../../util-components/PopupMessage';
 import InputField from '../../util-components/InputField';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
+import { NewOrderContext } from '../../store/new-order-context';
 
 interface PropTypes {
   isExpanded: boolean
@@ -22,10 +23,13 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext}: PropTypes
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const authCtx = useContext(AuthContext);
+  const orderCtx = useContext(NewOrderContext)
 
-  const [nameSurname, setNameSurname] = useState('');
-  const [address, setAddress] = useState('');
-  const [phoneNum, setPhoneNum] = useState('');
+  const [buyerDataObject, setBuyerDataObject] = useState({
+    name: '',
+    address: '',
+    phone: '',
+  })
 
   useEffect(() => {
     if(isExpanded){
@@ -76,27 +80,43 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext}: PropTypes
         return;
       }
       const parsedResponse = await response.json();
-      betterConsoleLog('> logging response', parsedResponse);
-      setNameSurname(parsedResponse.data.name);
-      setAddress(parsedResponse.data.address);
-      setPhoneNum(parsedResponse.data.phone);
+      setBuyerDataObject({
+        name: parsedResponse.data.name,
+        address: parsedResponse.data.address,
+        phone: parsedResponse.data.phone,
+      });
       popupMessage(parsedResponse.message, 'success')
     } catch(error){
       console.error(error);
       throw new Error('Došlo je do problema prilikom dodavanja kategorije');
     }
   }
+
   
-  
+  // ON NEXT
+  function handleOnNext(){
+    if(buyerDataObject.name && buyerDataObject.address && buyerDataObject.phone){
+      onNext()
+    } else {
+      if(!buyerDataObject.name) return popupMessage('Unesite ime / prezime kupca', 'danger');
+      if(!buyerDataObject.address) return popupMessage('Unesite adresu kupca', 'danger');
+      if(!buyerDataObject.phone) return popupMessage('Unesite broj telefona kupca', 'danger');
+    }
+  }
+  useEffect(() => {
+    orderCtx.setBuyerData(buyerDataObject);
+  }, [buyerDataObject])
   
   return (
-    <View style={styles.container}>
+    <View>
       <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
         <Text style={styles.header}>Informacije o kupcu</Text>
         <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.white}/>
       </Pressable>
+
+
       {isContentVisible && (
-        <Animated.View style={{height: toggleExpandAnimation, opacity: toggleFade, overflow: 'hidden', marginHorizontal: 8}}>
+        <Animated.View style={{height: toggleExpandAnimation, opacity: toggleFade, overflow: 'hidden', paddingHorizontal: 8}}>
           <TextInput 
             style={styles.input}
             multiline={true}
@@ -117,22 +137,22 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext}: PropTypes
           </Button>
           <InputField
             label='Ime i Prezime'
-            inputText={nameSurname}
-            setInputText={setNameSurname}
+            inputText={buyerDataObject.name}
+            setInputText={(text) => setBuyerDataObject((prev) => ({ ...prev, name: text }))}
             labelBorders={false}
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
             label='Adresa'
-            inputText={address}
-            setInputText={setAddress}
+            inputText={buyerDataObject.address}
+            setInputText={(text) => setBuyerDataObject((prev) => ({ ...prev, address: text }))}
             labelBorders={false}
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
             label='Broj telefona'
-            inputText={phoneNum}
-            setInputText={setPhoneNum}
+            inputText={buyerDataObject.phone}
+            setInputText={(text) => setBuyerDataObject((prev) => ({ ...prev, phone: text }))}
             labelBorders={false}
             containerStyles={styles.inputFieldStyle}
           />
@@ -140,7 +160,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext}: PropTypes
             backColor={Colors.highlight}
             textColor={Colors.white}
             containerStyles={{marginBottom: 6}}
-            onPress={onNext}
+            onPress={handleOnNext}
           >
             Dalje
           </Button>
@@ -151,7 +171,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext}: PropTypes
 }
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 16
+    // paddingBottom: 16
   },
   headerContainer: {
     padding: 10,
@@ -177,9 +197,10 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     padding: 10,
     fontSize: 16,
+    maxHeight: 140,
   },
   sortButton: {
-    marginBottom: 8
+    marginBottom: 5
   },
   inputFieldStyle: {
     marginVertical: 8

@@ -91,14 +91,30 @@ export interface BuyerTypes {
   address: string
   phone: string
 }
+export interface OrderProductTypes {
+  itemReference: ProductTypes;
+  selectedColor: string;
+  selectedSize: string;
+  productType: string;
+  quantity: number;
+}
 export interface NewOrderContextTypes {
-  productData: ProductTypes[]
-  addProduct: (product: ProductTypes) => void
-  removeProduct: (index: number) => void
-  setProductsData: (products: ProductTypes[]) => void
-  getProductsData: () => ProductTypes[]
-  buyerData: BuyerTypes | null
-  setBuyerData: (info: BuyerTypes) => void
-  getBuyerData: () => BuyerTypes | null
-  resetOrderData: () => void
+  productReferences: ProductTypes[];
+  addProductReference: (product: ProductTypes) => void;
+  removeProductReference: (index: number) => void;
+  setProductReferences: (products: ProductTypes[]) => void;
+  getProductReferences: () => ProductTypes[];
+
+  productData: OrderProductTypes[];
+  addProduct: (product: OrderProductTypes) => void;
+  removeProduct: (index: number) => void;
+  setProductsData: (products: OrderProductTypes[]) => void;
+  getProductsData: () => OrderProductTypes[];
+  updateProductColorByIndex: (index: number, selectedColor: string) => void;
+  updateProductSizeByIndex: (index: number, selectedSize: string) => void;
+
+  buyerData: BuyerTypes | null;
+  setBuyerData: (info: BuyerTypes) => void;
+  getBuyerData: () => BuyerTypes | null;
+  resetOrderData: () => void;
 }

@@ -12,7 +12,8 @@ interface PropTypes{
 function SelectedProduct({ item, orderCtx, index }: PropTypes) {
   
   function onPressHandler(){
-    orderCtx.removeProduct(index)
+    orderCtx.removeProductReference(index);
+    orderCtx.removeProduct(index);
   }
   return (
     <Pressable 
