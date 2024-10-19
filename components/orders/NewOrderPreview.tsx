@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { NewOrderContextTypes } from '../../types/allTsTypes'
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,6 +17,8 @@ interface PropTypes {
 
 
 function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset }: PropTypes) {
+  const [customPrice, setCustomPrice] = useState();
+  const [showEdit, setShowEdit] = useState(false);
   const orderCtx = useContext(NewOrderContext)
   function handleToggleExpand(){
     setIsExpanded(!isExpanded)
@@ -42,12 +44,86 @@ function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset }: Prop
       
       {isExpanded &&(
         <View style={styles.container}>
-          <Text>Ime: {orderCtx.buyerData?.name || 'N/A'}</Text>
-          <Text>Adresa: {orderCtx.buyerData?.address || 'N/A'}</Text>
-          <Text>Telefon: {orderCtx.buyerData?.phone || 'N/A'}</Text>
-          {orderCtx?.productData.map((item) => (
-            <Text>1x - {item.itemReference.name || 'N/A'}, Boja: {item.selectedColor || 'N/A'}, Veličina: {item.selectedSize || 'N/A'}</Text>
-          ))}
+
+          {/* BUYER INFORMATION */}
+          <View style={styles.buyerInfoContainer}>
+            <Text style={styles.header2}>Informacije o kupcu</Text>
+
+            {/* NAME */}
+            <View style={styles.rowContainer}>
+              <Text style={styles.label}>Ime:</Text>
+              <Text style={styles.information}>{orderCtx.buyerData?.name || 'N/A'}</Text>
+            </View>
+
+            {/* ADDRESS */}
+            <View style={styles.rowContainer}>
+              <Text style={styles.label}>Adresa:</Text>
+              <Text style={styles.information}>{orderCtx.buyerData?.address || 'N/A'}</Text>
+            </View>
+
+            {/* PHONE */}
+            <View style={styles.rowContainer}>
+              <Text style={styles.label}>Telefon:</Text>
+              <Text style={styles.information}>{orderCtx.buyerData?.phone || 'N/A'}</Text>
+            </View>
+
+          </View>
+
+          {/* SELECTED PRODUCTS */}
+          <View style={styles.selectedItemsContainer}>
+            <Text style={styles.header2}>Izabrani proizvodi ({orderCtx.productData.length}) :</Text>
+            {orderCtx?.productData.map((item, index) => (
+              <View 
+                style={[
+                  styles.selectedItem, 
+                  index === orderCtx.productData.length - 1 ? styles.lastItemStyle : null,
+                ]}
+                key={index}
+                
+                >
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Artikal:</Text>
+                  <Text style={styles.information}>{item.itemReference.name || 'N/A'}</Text>
+                </View>
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Kategorija:</Text>
+                  <Text style={styles.information}>{item.itemReference.category || 'N/A'}</Text>
+                </View>
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Boja:</Text>
+                  <Text style={styles.information}>{item.selectedColor || 'N/A'}</Text>
+                </View>
+                {item.hasOwnProperty('selectedSize') && (
+                  <View style={styles.rowContainer}>
+                    <Text style={styles.label}>Veličina:</Text>
+                    <Text style={styles.information}>{item.selectedSize || 'N/A'}</Text>
+                  </View>
+                )}
+                  <View style={styles.rowContainer}>
+                    <Text style={styles.label}>Cena:</Text>
+                    <Text style={styles.information}>{`${item.itemReference.price} din` || 'N/A'}</Text>
+                  </View>
+              </View>
+            ))}
+
+          </View>
+
+          <View style={styles.otherInfoContainer}>
+            {/* EDIT FIELDS BUTTON */}
+            <Pressable onPress={() => setShowEdit(!showEdit)} style={styles.editButton}>
+              <Icon name={showEdit ? 'file-edit-outline' : 'cancel'} style={styles.editIcon} size={28} color={Colors.primaryDark}/>
+            </Pressable>
+
+            <Text style={styles.header2}>Ostale informacije:</Text>
+            <View style={styles.rowContainer}>
+              <Text style={styles.label}>Ukupna cena:</Text>
+              <Text style={styles.information}>{orderCtx.productData.map((item) => item.itemReference.price).reduce((accumulator, currentValue) => accumulator + currentValue, 0)} din</Text>
+            </View>
+            <View style={styles.rowContainer}>
+              <Text style={styles.label}>Kurir:</Text>
+              <Text style={styles.information}></Text>
+            </View>
+          </View>
         </View>
       )}
       <View style={styles.buttonsContainer}>
@@ -93,6 +169,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.white
   },
+  buyerInfoContainer: {
+    borderWidth: 0.5,
+    borderColor: Colors.primaryDark,
+    borderRadius: 4,
+    padding: 10,
+  },
+  header2: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    width: '100%',
+    marginLeft: 8
+  },
+  label: {
+    flex: 2,
+  },
+  information: {
+    flex: 3,
+  },
   buttonsContainer: {
     marginTop: 'auto',
     display: 'flex',
@@ -102,6 +201,45 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 2,
+  },
+  selectedItemsContainer: {
+    borderWidth: 0.5,
+    borderColor: Colors.primaryDark,
+    borderRadius: 4,
+    padding: 10,
+    marginVertical: 8,
+    paddingBottom: 0,
+  },
+  selectedItem: {
+    borderBottomWidth: 0.5,
+    borderColor: Colors.primaryDark,
+    borderRadius: 4,
+    paddingVertical: 8,
+  },
+  lastItemStyle: {
+    borderBottomWidth: 0
+  },
+  otherInfoContainer: {
+    borderWidth: 0.5,
+    borderColor: Colors.primaryDark,
+    borderRadius: 4,
+    padding: 10,
+    marginBottom: 8,
+    position: 'relative',
+  },
+  editButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    height: 40,
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'red',
+    zIndex: 1
+  },
+  editIcon: {
+
   }
 })
 

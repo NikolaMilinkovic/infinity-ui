@@ -39,7 +39,11 @@ function ColorSizeSelector({ product, context, index }) {
       setProductColors(filteredColors)
     }
     if(product.itemReference.category === 'Torbica'){
-
+      betterConsoleLog('> Logging robicu', product.itemReference)
+      const filteredColors = product.itemReference.colors.filter((color: PurseColorTypes) => 
+        color.stock > 0
+      );
+      setProductColors(filteredColors)
     }
   }, [product])
 
@@ -61,6 +65,7 @@ function ColorSizeSelector({ product, context, index }) {
 
 
   useEffect(() => {
+    if(product.itemReference.category === 'Torbica') return;
     if (product.selectedColor) {
       const selectedColorObj = product.itemReference.colors.find((color) => color.color === product.selectedColor);
       
@@ -83,12 +88,14 @@ function ColorSizeSelector({ product, context, index }) {
     console.log('> Selected size is: ', product.selectedSize)
   },[product.selectedSize])
 
-  function handleColorSelect(index, color){
+  function handleColorSelect(index, color, product){
     orderCtx.updateProductColorByIndex(index, color);
-    orderCtx.updateProductSizeByIndex(index, '');
+    if(product.hasOwnProperty('selectedSize'))
+      orderCtx.updateProductSizeByIndex(index, '');
   }
-  function handleSizeSelect(index, size){
-    orderCtx.updateProductSizeByIndex(index, size);
+  function handleSizeSelect(index, size, product){
+    if(product.hasOwnProperty('selectedSize'))
+      orderCtx.updateProductSizeByIndex(index, size);
   }
 
   if(!product) return;
@@ -98,7 +105,7 @@ function ColorSizeSelector({ product, context, index }) {
 
       {/* TOGGLE  BUTTON */}
       <Pressable onPress={() => setIsExpanded(!isExpanded)} style={styles.headerContainer}>
-        <Text style={styles.header}>{product.itemReference.name}</Text>
+        <Text style={styles.header}>{product?.itemReference?.name}</Text>
         <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.white}/>
       </Pressable>
       {isExpanded && (
@@ -109,7 +116,7 @@ function ColorSizeSelector({ product, context, index }) {
             <Text style={styles.colorHeader}>  Boja</Text>
             <RadioButtonsGroup
               radioButtons={colorButtons} 
-              onPress={(color) => handleColorSelect(index, color)}
+              onPress={(color) => handleColorSelect(index, color, product)}
               containerStyle={styles.radioButtonsContainer}
               selectedId={product.selectedColor}
               labelStyle={styles.label}
@@ -117,12 +124,12 @@ function ColorSizeSelector({ product, context, index }) {
         </View>
 
         {/* SIZE PICKER */}
-          {product.selectedColor && (
+          {product.selectedColor && product.itemReference.category !== 'Torbica' && (
             <View style={styles.sizeContainer}>
               <Text style={styles.colorHeader}>  Veličina</Text>
               <RadioButtonsGroup
                 radioButtons={sizeButtons} 
-                onPress={(size) => handleSizeSelect(index, size)}
+                onPress={(size) => handleSizeSelect(index, size, product)}
                 containerStyle={styles.radioButtonsContainer}
                 selectedId={product.selectedSize}
                 labelStyle={styles.label}

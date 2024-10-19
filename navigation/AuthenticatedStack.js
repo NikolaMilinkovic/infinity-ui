@@ -91,6 +91,13 @@ export default function AuthenticatedStack() {
         options={{ drawerLabel: 'Boje i Kategorije' }}
       />
 
+      {/* COURIERS TAB SCREEN */}
+      <Drawer.Screen
+        name="CouriersTabs"
+        component={ColorsCategoriesTabs}
+        options={{ drawerLabel: 'Kuriri' }}
+      />
+
       {/* PRODUCTS MANAGER */}
       <Drawer.Screen
         name="ProductsManager"

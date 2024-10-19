@@ -7,6 +7,7 @@ import { Colors } from '../../constants/colors';
 import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { AnimatedScrollView } from 'react-native-reanimated/lib/typescript/reanimated2/component/ScrollView';
+import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 interface PropTypes {
   ordersCtx: NewOrderContextTypes
@@ -49,7 +50,11 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
     if(ordersCtx.productData.length === 0) return popupMessage('Morate izabrati proizvod kako bi nastavili dalje', 'danger');
     const missingColor = ordersCtx.productData.some((order) => order.selectedColor === '');
     if(missingColor) return popupMessage('Morate izabrati boju za svaki proizvod', 'danger');
-    const missingSize = ordersCtx.productData.some((order) => order.selectedSize === '');
+
+
+    const productsWithSizes = ordersCtx.productData.filter(product => product.hasOwnProperty('selectedSize'));
+    betterConsoleLog('> Products with sizes', productsWithSizes);
+    const missingSize = productsWithSizes.some((order) => order.selectedSize === '');
     if(missingSize) return popupMessage('Morate uneti veličinu za svaki proizvod', 'danger');
 
     onNext();

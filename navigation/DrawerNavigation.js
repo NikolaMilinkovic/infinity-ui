@@ -54,6 +54,16 @@ export function CustomDrawerContent(props) {
         type='Ionicons'
       />
 
+      {/* COURIERS */}
+      <NavigationButton 
+        icon="truck-delivery-outline" 
+        onPress={() => navigatePages('CouriersTabs')} 
+        size={18} 
+        color={Colors.secondaryDark}
+        text='Kuriri'
+        type='MaterialCommunityIcons'
+      />
+
       {/* PRODUCTS MANAGER */}
       <NavigationButton 
         icon="profile" 

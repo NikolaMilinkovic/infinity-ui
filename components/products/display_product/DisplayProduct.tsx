@@ -50,16 +50,20 @@ function DisplayProduct({ item }: DisplayProductProps) {
     if(onStock){
       newOrderCtx.addProductReference(item);
       if(item.category === 'Haljina'){
+        console.log('> Adding haljinu')
         const productObj = {
           itemReference: item,
           selectedColor: '',
           selectedSize: '',
+          isReservation : false,
+          selectedCourier: '',
         }
         newOrderCtx.addProduct(productObj);
       }
       if(item.category === 'Torbica'){
+        console.log('> Adding torbicu')
         const productObj = {
-          product: item,
+          itemReference: item,
           selectedColor: '',
         }
         newOrderCtx.addProduct(productObj);
