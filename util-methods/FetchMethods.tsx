@@ -1,5 +1,3 @@
-import { useContext } from "react"
-import { AuthContext } from "../store/auth-context"
 import { popupMessage } from "../util-components/PopupMessage";
 import { betterConsoleLog, betterErrorLog } from "./LogMethods";
 

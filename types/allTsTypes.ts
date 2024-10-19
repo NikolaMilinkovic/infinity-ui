@@ -118,3 +118,8 @@ export interface NewOrderContextTypes {
   getBuyerData: () => BuyerTypes | null;
   resetOrderData: () => void;
 }
+
+export interface CourierTypes {
+  _id: string
+  name: string
+}

@@ -9,6 +9,7 @@ import Settings from '../screens/Settings/Settings';
 import Profile from '../screens/Profile/Profile';
 import ColorsCategoriesTabs from './ColorsCategoriesTabs';
 import ProductsManagerTabs from './ProductsManagerTabs';
+import CouriersTabs from './CouriersTabs';
 
 
 const Drawer = createDrawerNavigator();
@@ -94,7 +95,7 @@ export default function AuthenticatedStack() {
       {/* COURIERS TAB SCREEN */}
       <Drawer.Screen
         name="CouriersTabs"
-        component={ColorsCategoriesTabs}
+        component={CouriersTabs}
         options={{ drawerLabel: 'Kuriri' }}
       />
 

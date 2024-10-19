@@ -6,7 +6,7 @@ import CouriersManager from '../screens/CouriersManager/CouriersManager';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function ColorsCategoriesTabs(){
+export default function CouriersTabs(){
 
   /**
    * COURIERS tabovi

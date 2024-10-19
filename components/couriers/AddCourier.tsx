@@ -6,7 +6,7 @@ import Button from '../../util-components/Button';
 import { Colors } from '../../constants/colors';
 import { popupMessage } from '../../util-components/PopupMessage';
 
-function AddColor() {
+function AddCourier() {
   const authCtx = useContext(AuthContext);
   const [inputText, setInputText] = useState<string>('')
   const [error, setError] = useState<string>('')
@@ -35,15 +35,14 @@ function AddColor() {
     try{
       const newCourier = {
         name: inputText,
-        colorCode: ''
       };
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/colors`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/couriers`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ color: newCourier })
+        body: JSON.stringify({ courier: newCourier })
       })
 
       // Handle errors
@@ -54,12 +53,12 @@ function AddColor() {
         return;
       }
 
-      popupMessage(`${newCourier.name} boja je uspešno dodata`, 'success');
+      popupMessage(`Kurir ${newCourier.name} je uspešno dodat`, 'success');
       resetInputAndError();
     } catch(error){
 
       console.error(error);
-      throw new Error('Došlo je do problema prilikom dodavanja boje');
+      throw new Error('Došlo je do problema prilikom dodavanja kurira');
     }
   }
 
@@ -68,7 +67,7 @@ function AddColor() {
       <View style={styles.controllsContainer}>
         <View style={styles.inputContainer}>
           <InputField 
-            label='Unesi Boju'
+            label='Unesi Kurira'
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
@@ -126,4 +125,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default AddColor
+export default AddCourier
