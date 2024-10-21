@@ -1,6 +1,6 @@
 import { createContext, useState, ReactNode, useMemo, useEffect } from "react";
 import { betterConsoleLog } from "../util-methods/LogMethods";
-import { NewOrderContextTypes, BuyerTypes, ProductTypes, OrderProductTypes } from "../types/allTsTypes";
+import { NewOrderContextTypes, BuyerTypes, ProductTypes, OrderProductTypes, CourierTypes } from "../types/allTsTypes";
 interface ContextChildrenTypes {
   children: ReactNode;
 }
@@ -23,27 +23,36 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
   buyerData: null,
   setBuyerData: () => {},
   getBuyerData: () => null,
-  resetOrderData: () => null
+  resetOrderData: () => null,
+
+  courierData: null,
+  setCourierData: () => {},
+  getCourierData: () => null,
+
+  isReservation: false,
+  setIsReservation: () => {}
 })
 
 function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const [productReferences, setProductReferences] = useState<ProductTypes[]>([]);
   const [buyerData, setBuyerData] = useState<BuyerTypes | null>(null);
   const [productData, setProductData] = useState<OrderProductTypes[]>([]);
+  const [courierData, setCourierData] = useState<CourierTypes>(undefined);
+  const [isReservation, setIsReservation] = useState(false);
 
-  useEffect(() => {
-    betterConsoleLog('> Logging product references: ', productReferences.length);
-  }, [productReferences])
+  // useEffect(() => {
+  //   betterConsoleLog('> Logging product references: ', productReferences.length);
+  // }, [productReferences])
 
   useEffect(() => {
     betterConsoleLog('> Logging product data: ', productData.length);
   }, [productData])
 
-  useEffect(() => {
-    betterConsoleLog('> Loggin buyer data: ', buyerData);
-  }, [buyerData])
+  // useEffect(() => {
+  //   betterConsoleLog('> Loggin buyer data: ', buyerData);
+  // }, [buyerData])
 
-  // PRODUCT REFERENCE
+  // PRODUCT REFERENCE => References of selected items
   const setProductReferencesHandler = (productsArr: ProductTypes[]) => {
     setProductReferences(productsArr);
   }
@@ -117,6 +126,21 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     betterConsoleLog('> Product data is: ', productData);
   }, [productData])
 
+  // COURIER
+  function setCourierDataHandler(courierData:CourierTypes){
+    setCourierData(courierData)
+  }
+  function getCourierDataHandler(){
+    return courierData;
+  }
+  useEffect(() => {
+    betterConsoleLog('> Logging out courier data from new order context', courierData);
+  }, [courierData])
+
+  useEffect(() => {
+    console.log('> isReservation: ', isReservation);
+  }, [isReservation])
+
   const value = useMemo(() => ({
     productReferences,
     setProductReferences: setProductReferencesHandler,
@@ -135,9 +159,16 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     buyerData,
     setBuyerData: setBuyerDataHandler,
     getBuyerData: getBuyerDataHandler,
+
+    courierData,
+    setCourierData: setCourierDataHandler,
+    getCourierData: getCourierDataHandler,
+
+    isReservation,
+    setIsReservation: setIsReservation,
     
     resetOrderData: resetOrderDataHandler
-  }), [productData, buyerData, productReferences]);
+  }), [productData, buyerData, productReferences, courierData, isReservation]);
 
   return <NewOrderContext.Provider value={value}>{ children }</NewOrderContext.Provider>
 }

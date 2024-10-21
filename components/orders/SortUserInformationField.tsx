@@ -8,28 +8,29 @@ import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
 import { AuthContext } from '../../store/auth-context';
 import { popupMessage } from '../../util-components/PopupMessage';
 import InputField from '../../util-components/InputField';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
 import { NewOrderContext } from '../../store/new-order-context';
 
+interface BuyerDataObjectTypes {
+  name: string
+  address: string
+  phone: number
+}
 interface PropTypes {
   isExpanded: boolean
   setIsExpanded: (expanded: boolean) => void
   onNext: () => void
+  buyerInfo: string
+  setBuyerInfo: (info: string) => void
+  buyerDataObject: BuyerDataObjectTypes
+  setBuyerDataObject: (obj:BuyerDataObjectTypes ) => void
 }
 
-function SortUserInformationField({isExpanded, setIsExpanded, onNext}: PropTypes) {
+function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo, setBuyerInfo, buyerDataObject, setBuyerDataObject}: PropTypes) {
   const toggleFade = useToggleFadeAnimation(isExpanded, 180);
   const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 10 : 428)).current;
   const [isContentVisible, setIsContentVisible] = useState(false);
-  const [inputValue, setInputValue] = useState('');
   const authCtx = useContext(AuthContext);
   const orderCtx = useContext(NewOrderContext)
-
-  const [buyerDataObject, setBuyerDataObject] = useState({
-    name: '',
-    address: '',
-    phone: '',
-  })
 
   useEffect(() => {
     if(isExpanded){
@@ -59,7 +60,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext}: PropTypes
   }, [isExpanded]);
 
   async function handleInputSort(){
-    if(inputValue.trim() === ''){
+    if(buyerInfo.trim() === ''){
       popupMessage('Morate uneti podatke o kupcu','danger')
       return;
     }
@@ -70,7 +71,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext}: PropTypes
           'Authorization': `Bearer ${authCtx.token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ orderData: inputValue })
+        body: JSON.stringify({ orderData: buyerInfo })
       })
 
       // Handle errors
@@ -121,8 +122,8 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext}: PropTypes
             style={styles.input}
             multiline={true}
             numberOfLines={6}
-            onChangeText={setInputValue}
-            value={inputValue}
+            onChangeText={setBuyerInfo}
+            value={buyerInfo}
             placeholder="Unesite puno ime, adresu i broj telefona kupca"
             textAlignVertical="top"
           />
@@ -138,23 +139,24 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext}: PropTypes
           <InputField
             label='Ime i Prezime'
             inputText={buyerDataObject.name}
-            setInputText={(text) => setBuyerDataObject((prev) => ({ ...prev, name: text }))}
+            setInputText={(text:(string | number | undefined)) => setBuyerDataObject((prev) => ({ ...prev, name: text }))}
             labelBorders={false}
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
             label='Adresa'
             inputText={buyerDataObject.address}
-            setInputText={(text) => setBuyerDataObject((prev) => ({ ...prev, address: text }))}
+            setInputText={(text:(string | number | undefined)) => setBuyerDataObject((prev) => ({ ...prev, address: text }))}
             labelBorders={false}
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
             label='Broj telefona'
             inputText={buyerDataObject.phone}
-            setInputText={(text) => setBuyerDataObject((prev) => ({ ...prev, phone: text }))}
+            setInputText={(text:(string | number | undefined)) => setBuyerDataObject((prev) => ({ ...prev, phone: Number(text) }))}
             labelBorders={false}
             containerStyles={styles.inputFieldStyle}
+            keyboard='numeric'
           />
           <Button
             backColor={Colors.highlight}

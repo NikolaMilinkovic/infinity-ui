@@ -15,6 +15,7 @@ interface InputFieldProps {
   keyboard?: string
   labelBorders?: boolean
   containerStyles?: any
+  selectTextOnFocus?: boolean
 }
 
 function InputField({ 
@@ -29,7 +30,8 @@ function InputField({
   activeColor=Colors.secondaryDark,
   keyboard='default',
   labelBorders=true,
-  containerStyles
+  containerStyles,
+  selectTextOnFocus=false,
 
 } :InputFieldProps) {
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -68,6 +70,7 @@ function InputField({
             autoComplete='off'
             secureTextEntry={isSecure && !showPassword}
             keyboardType={keyboard}
+            selectTextOnFocus={selectTextOnFocus}
           />
         {isSecure && isSecure === true && (
           <Pressable onPress={() => setShowPassword(!showPassword)} style={({ pressed }) => [styles.showHideText, pressed && styles.pressed]}>

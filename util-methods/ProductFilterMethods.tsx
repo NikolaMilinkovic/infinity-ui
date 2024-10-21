@@ -1,5 +1,5 @@
 import { betterConsoleLog } from "./LogMethods";
-import { DressTypes, PurseTypes } from "../types/allTsTypes";
+import { ColorSizeTypes, DressTypes, PurseTypes } from "../types/allTsTypes";
 type ProductType = DressTypes | PurseTypes;
 interface SearchParamsType {
   isOnStock: boolean
@@ -26,10 +26,12 @@ export function serachProducts(searchData: string, allActiveProducts: ProductTyp
     categoriesBasedSearch = filterByCategories(nameBasedSearch, searchParams.onCategorySearch)
   }
 
+  betterConsoleLog('> Category filter returns:', categoriesBasedSearch);
+
   // Filter by color
   let colorBasedSearch = categoriesBasedSearch;
   if(searchParams.onColorsSearch.length > 0){
-    colorBasedSearch = filterByColor(nameBasedSearch, searchParams.onColorsSearch);
+    colorBasedSearch = filterByColor(categoriesBasedSearch, searchParams.onColorsSearch);
   }
 
   // Filter by availability [on stock & sold out]
@@ -75,19 +77,19 @@ export function searchItemsByName(allActiveProducts: any, searchData: string){
 export function showItemsOnStock(result: ProductType) {
 
   // PURSES 
-  if (result.category === 'Haljina') {
+  if (result.stockType === 'Boja-Veličina-Količina') {
     return result.colors.some((colorObj: any) =>
-      colorObj.sizes.some((sizeObj: ColorSizeType) => sizeObj.stock > 0)
+      colorObj.sizes.some((sizeObj: ColorSizeTypes) => sizeObj.stock > 0)
     );
  
   // DRESSES
-  } else if (result.category === 'Torbica') {
+  } else if (result.stockType === 'Boja-Količina') {
     return result.colors.some((colorObj: any) => colorObj.stock > 0);
 
   // REST
   } else {
     return result.colors.some((colorObj: any) =>
-      colorObj.sizes.some((sizeObj: ColorSizeType) => sizeObj.stock > 0)
+      colorObj.sizes.some((sizeObj: ColorSizeTypes) => sizeObj.stock > 0)
     );
   }
 }
@@ -96,19 +98,19 @@ export function showItemsOnStock(result: ProductType) {
 export function showItemsNotOnStock(result: ProductType) {
 
 // PURSES 
-if (result.category === 'Haljina') {
+if (result.stockType === 'Boja-Veličina-Količina') {
   return result.colors.every((colorObj: any) =>
-    colorObj.sizes.every((sizeObj: ColorSizeType) => sizeObj.stock === 0)
+    colorObj.sizes.every((sizeObj: ColorSizeTypes) => sizeObj.stock === 0)
   );
 
 // DRESSES
-} else if (result.category === 'Torbica') {
+} else if (result.stockType === 'Boja-Količina') {
   return result.colors.every((colorObj: any) => colorObj.stock === 0);
 
 // REST
 } else {
   return result.colors.every((colorObj: any) =>
-    colorObj.sizes.every((sizeObj: ColorSizeType) => sizeObj.stock === 0)
+    colorObj.sizes.every((sizeObj: ColorSizeTypes) => sizeObj.stock === 0)
   );
 }
 }
@@ -137,7 +139,7 @@ export function filterByColor(allActiveProducts: any, searchData: string[]) {
 function searchItemsBySize(product: ProductType, searchSizes: string[]): boolean {
   if ('sizes' in product.colors[0]) {
     const matches =  product.colors.some((colorObj: any) =>
-      colorObj.sizes.some((sizeObj: ColorSizeType) => 
+      colorObj.sizes.some((sizeObj: ColorSizeTypes) => 
         searchSizes.includes(sizeObj.size) && sizeObj.stock > 0
       )
     );

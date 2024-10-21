@@ -5,12 +5,19 @@ import Button from '../../util-components/Button'
 import IconButton from '../../util-components/IconButton'
 import { AuthContext } from '../../store/auth-context'
 import { popupMessage } from '../../util-components/PopupMessage'
-import { CategoryType } from '../../types/categoryTypes'
+import { CategoryTypes } from '../../types/allTsTypes'
+import DropdownList from '../../util-components/DropdownList'
 
-function EditCategoriesItem({ data }: { data: CategoryType }) {
-  const [categoryData, setCategoryData] = useState<CategoryType>({
+interface DropdownTypes {
+  _id: string | number
+  name: string
+}
+
+function EditCategoriesItem({ data }: { data: CategoryTypes }) {
+  const [categoryData, setCategoryData] = useState<CategoryTypes>({
     _id: '',
     name: '',
+    stockType: '',
   });
   const [newName, setNewName] = useState('')
   const [showEdit, setShowEdit] = useState<Boolean>(false);
@@ -18,6 +25,11 @@ function EditCategoriesItem({ data }: { data: CategoryType }) {
   const [success, setSucces] = useState('');
   const [error, setError] = useState('');
   const [display, setDisplay] = useState(true);
+  const [stockType, setStockType] = useState<DropdownTypes | undefined>()
+  const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([
+    {_id: 0, name: 'Boja-Veličina-Količina'},
+    {_id: 1, name: 'Boja-Količina'}
+  ]);
 
   // Resets Error & Success 
   function resetNotifications(){
@@ -39,20 +51,26 @@ function EditCategoriesItem({ data }: { data: CategoryType }) {
   // Set default data to read from
   useEffect(() => {
     setCategoryData(data);
-    setNewName(data.name)
+    setNewName(data.name);
+    // setStockType(data.stockType);
   }, [data])
 
   // Updates the current category name in the database
   async function updateCategoryHandler(){
     try{
       resetNotifications();
-      if(newName.trim() === data.name){
-        setShowEdit(false);
-        return;
-      }
+      // if(newName.trim() === data.name){
+      //   setShowEdit(false);
+      //   return;
+      // }
       if(newName.trim() === ''){
         setError('Kategorija mora imati ime!');
         popupMessage('Kategorija mora imati ime', 'danger');
+        return;
+      }
+      if(!stockType){
+        setError('Kategorija mora imati jedinicu lagera!');
+        popupMessage('Kategorija mora imati jedinicu lagera', 'danger');
         return;
       }
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/categories/${categoryData._id}`, {
@@ -64,6 +82,7 @@ function EditCategoriesItem({ data }: { data: CategoryType }) {
         body: JSON.stringify({ 
           id: categoryData._id,
           name: newName,
+          stockType: stockType.name
         })
       })
 
@@ -131,13 +150,21 @@ function EditCategoriesItem({ data }: { data: CategoryType }) {
             value={newName}
             onChangeText={handleNameChange}
           />
+          <DropdownList
+            data={dropdownData}
+            defaultValue={data.stockType || 'Boja-Veličina-Količina'}
+            onSelect={setStockType}
+            buttonContainerStyles={styles.dropdown}
+          />
           <View style={styles.buttons}>
             <Button 
+              containerStyles={styles.buttonStyle}
               onPress={showEditCategoryrHandler}
               textColor={Colors.primaryLight}
               backColor={Colors.error}
             >Otkazi</Button>
             <Button 
+              containerStyles={styles.buttonStyle}
               onPress={updateCategoryHandler}
               textColor={Colors.primaryLight}
               backColor={Colors.primaryDark}
@@ -151,8 +178,11 @@ function EditCategoriesItem({ data }: { data: CategoryType }) {
           )}
         </View>
       ) : (
-        <View style={styles.displayColor}>
-          <Text style={styles.colorText}>{categoryData.name}</Text>
+        <View style={styles.displayCategory}>
+          <View style={styles.categoryData}>
+              <Text style={[styles.text, styles.categoryName]}>{categoryData.name}</Text>
+              <Text style={styles.text}>{categoryData.stockType}</Text>
+          </View>
           <IconButton
             icon='delete'
             onPress={removeCategoryHandler}
@@ -182,12 +212,20 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     paddingHorizontal: 8,
   },
-  displayColor: {
+  displayCategory: {
     flexDirection: 'row',
     flex: 1,
     alignItems: 'center',
   },
-  colorText: {
+  categoryData: {
+    flexDirection: 'column',
+    width: '100%'
+  },
+  text: {
+    fontSize: 14,
+  },
+  categoryName: {
+    fontWeight: 'bold',
     fontSize: 16,
   },
   mainInputsContainer: {
@@ -201,9 +239,11 @@ const styles = StyleSheet.create({
     marginBottom: 10, 
     fontSize: 16,
   },
+  dropdown: {
+    marginBottom: 8
+  },
   buttons: {
     flexDirection: 'row',
-    maxWidth: '50%',
     justifyContent: 'space-between',
     gap: 10,
   },
@@ -216,6 +256,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
     color: Colors.success,
     textAlign: 'center'
+  },
+  buttonStyle: {
+    flex: 1
   }
 })
 

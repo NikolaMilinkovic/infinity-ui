@@ -18,6 +18,7 @@ export interface ProductImageTypes {
 export interface CategoryTypes {
   _id: string
   name: string
+  stockType: string
 }
 
 // COLORS
@@ -59,6 +60,7 @@ export interface DressTypes {
   name: string;
   active: boolean;
   category: string;
+  stockType: string;
   price: number;
   colors: DressColorTypes[];
   image: ImageTypes;
@@ -76,6 +78,7 @@ export interface PurseTypes {
   name: string;
   active: boolean;
   category: string;
+  stockType: string;
   price: number;
   colors: PurseColorTypes[];
   image: ImageTypes;
@@ -117,9 +120,17 @@ export interface NewOrderContextTypes {
   setBuyerData: (info: BuyerTypes) => void;
   getBuyerData: () => BuyerTypes | null;
   resetOrderData: () => void;
+
+  courierData: CourierTypes | null;
+  getCourierData: () => void;
+  setCourierData: (courierData: CourierTypes) => void;
+
+  isReservation: boolean;
+  setIsReservation: (isReservation:boolean) => void;
 }
 
 export interface CourierTypes {
   _id: string
   name: string
+  deliveryPrice: number
 }

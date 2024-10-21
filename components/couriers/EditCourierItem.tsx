@@ -6,13 +6,17 @@ import IconButton from '../../util-components/IconButton'
 import { AuthContext } from '../../store/auth-context'
 import { popupMessage } from '../../util-components/PopupMessage'
 import { CourierTypes } from '../../types/allTsTypes'
+import { betterConsoleLog } from '../../util-methods/LogMethods'
+import InputField from '../../util-components/InputField'
 
 function EditCourierItem({ data }: { data: CourierTypes }) {
   const [courierData, setCourierData] = useState<CourierTypes>({
     _id: '',
     name: '',
+    deliveryPrice: 0,
   });
   const [newName, setNewName] = useState('')
+  const [deliveryPrice, setDeliveryPrice] = useState<number>();
   const [showEdit, setShowEdit] = useState<Boolean>(false);
   const authCtx = useContext(AuthContext);
   const [success, setSucces] = useState('');
@@ -28,6 +32,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
   // Toggler
   function showEditCourierHandler(){
     setNewName(data.name)
+    setDeliveryPrice(data.deliveryPrice)
     setShowEdit(!showEdit);
   }
 
@@ -35,24 +40,36 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
   function handleNameChange(newName: string) {
     setNewName(newName)
   }
+  function handlePriceChange(newPrice: string){
+    const price = newPrice.replace(/[^0-9.]/g, '');
+    setDeliveryPrice(Number(price));
+  }
 
   // Set default data to read from
   useEffect(() => {
+    betterConsoleLog('> Logging data', data);
     setCourierData(data);
     setNewName(data.name)
+    setDeliveryPrice(data.deliveryPrice)
+    console.log('Delivery price is:', data.deliveryPrice)
   }, [data])
 
   // Updates the current color name in the database
   async function updateCourierHandler(){
     try{
       resetNotifications();
-      if(newName.trim() === data.name){
+      if(newName.trim() === data.name && deliveryPrice === data.deliveryPrice){
         setShowEdit(false);
         return;
       }
       if(newName.trim() === ''){
         setError('Kurir mora imati ime!');
         popupMessage('Kurir mora imati ime', 'danger');
+        return;
+      }
+      if(!deliveryPrice){
+        setError('Kurir mora imati cenu dostave!');
+        popupMessage('Kurir mora cenu dostave', 'danger');
         return;
       }
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/couriers/${courierData._id}`, {
@@ -64,6 +81,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
         body: JSON.stringify({ 
           id: courierData._id,
           name: newName,
+          deliveryPrice: deliveryPrice
         })
       })
 
@@ -131,6 +149,13 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
             value={newName}
             onChangeText={handleNameChange}
           />
+          <TextInput 
+            style={styles.input}
+            placeholder='Cena dostave po paketu'
+            value={deliveryPrice?.toString() || ''}
+            onChangeText={handlePriceChange}
+            keyboardType='numeric'
+          />
           <View style={styles.buttons}>
             <Button 
               onPress={showEditCourierHandler}
@@ -152,7 +177,10 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
         </View>
       ) : (
         <View style={styles.displayCourier}>
-          <Text style={styles.courierText}>{courierData.name}</Text>
+          <View style={styles.previewData}>
+            <Text style={styles.text}>{courierData.name}</Text>
+            <Text style={styles.price}>Cena dostave: {courierData.deliveryPrice} RSD</Text>
+          </View>
           <IconButton
             icon='delete'
             onPress={removeCourierHandler}
@@ -187,8 +215,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  courierText: {
+  previewData: {
+
+  },
+  text: {
+    fontWeight: 'bold',
     fontSize: 16,
+  },
+  price: {
+    fontSize: 14,
   },
   mainInputsContainer: {
     width: '100%',

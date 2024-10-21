@@ -3,6 +3,7 @@ import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { PurseTypes } from "../types/allTsTypes";
+import { betterConsoleLog } from "../util-methods/LogMethods";
 
 interface PurseContextType {
   activePurses: PurseTypes[];
@@ -63,6 +64,10 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
   function handleActivePurseAdded(newPurse: PurseTypes) {
     setActivePurses((prevPurses) => [...prevPurses, newPurse]);
   }
+
+  useEffect(() => {
+    betterConsoleLog('> Active purses: ', activePurses);
+  }, [activePurses])
 
   function handleInactivePurseAdded(newPurse: PurseTypes) {
     setInactivePurses((prevPurses) => [...prevPurses, newPurse]);

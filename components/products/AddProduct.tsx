@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text } from 'react-native'
+import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import { Colors } from '../../constants/colors';
 import { CategoriesContext } from '../../store/categories-context';
 import { ColorsContext } from '../../store/colors-context';
@@ -13,11 +13,7 @@ import GenericProductInputComponents from './GenericProductInputComponents';
 import AddPurseComponents from './unique_product_components/add/AddPurseComponents';
 import PurseColor from '../../models/PurseColor';
 import { CategoryTypes, ColorTypes, DressColorTypes, PurseColorTypes, ProductImageTypes } from '../../types/allTsTypes';
-
-
-
-
-
+import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 function AddProduct(){
   const authCtx = useContext(AuthContext);
@@ -32,17 +28,19 @@ function AddProduct(){
   const [previewImage, setPreviewImage] = useState('');
 
   useEffect(() => {
+    if(!selectedColors) return;
     setItemColors(prevItemColors => {
       // Add new colors that are in selectedColors but not in prevItemColors
       const newColors = selectedColors.filter(
         color => !prevItemColors.some(existingColor => existingColor.color === color)
       ).map(color => {
-        if(selectedCategory.name === 'Haljina'){
+        if(!selectedCategory) return;
+        if(selectedCategory.stockType === 'Boja-Veličina-Količina'){
           const d = new DressColor();
           d.setColor(color);
           return d;
         }
-        if(selectedCategory.name === 'Torbica'){
+        if(selectedCategory.stockType === 'Boja-Količina'){
           const d = new PurseColor();
           d.setColor(color);
           return d;
@@ -64,12 +62,9 @@ function AddProduct(){
 
   // New product data
   const [productName, setProductName] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<CategoryTypes[] | undefined[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryTypes>();
   const [price, setPrice] = useState<number | string>('');
   const [productImage, setProductImage] = useState<ProductImageTypes>();
-  
-  const [dressColors, setDressColors] = useState<DressColorTypes[]>([]);
-  const [purseColors, setPurseColors] = useState<PurseColorTypes[]>([]);
   const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>([]);
 
 
@@ -85,6 +80,7 @@ function AddProduct(){
     popupMessage(errMsg, 'danger');
   }
   function verifyInputsData(){
+    console.log('> Verifying data...')
     if(!productName){
       setErrorHandler('Proizvod mora imati ime.');
       return false;
@@ -93,27 +89,33 @@ function AddProduct(){
       setErrorHandler('Proizvod mora imati cenu.');
       return false;
     } 
-    if(selectedCategory && selectedCategory.length === 0){
+    if(!selectedCategory){
       setErrorHandler('Izaberite kategoriju proizvoda.');
       return false;
     } 
-    if(selectedCategory.name === 'Haljina' && !itemColors.length){
+    if(selectedCategory.stockType === 'Boja-Količina' && !itemColors.length){
       setErrorHandler('Proizvod mora imati boje');
       return false;
     }
+
+    console.log('Validation passed');
     return true;
   }
   function resetInputsHandler(){
     setItemColors([]);
     setSelectedColors([])
     setProductName('')
-    setSelectedCategory([])
+    setSelectedCategory()
     setPrice('')
     setAllCategories([]);
     setAllColors([]);
     setPreviewImage('');
     setProductImage(undefined);
   }
+
+  useEffect(() => {
+    betterConsoleLog('> Selected category', selectedCategory);
+  }, [selectedCategory])
 
   // Handles adding a new DRESS
   async function handleAddDress(){
@@ -125,10 +127,13 @@ function AddProduct(){
     const dressData ={
       productName,
       selectedCategory,
+      stockType: selectedCategory?.stockType,
       price,
       itemColors,
       productImage
     }
+
+    betterConsoleLog('> Logging dress data', dressData);
     let result = false;
     if(dressData && authCtx.token){
       result = await addDress(dressData, authCtx.token);
@@ -148,11 +153,13 @@ function AddProduct(){
     const purseData = {
       productName,
       selectedCategory,
+      stockType: selectedCategory?.stockType,
       price,
       itemColors,
       productImage
     }
 
+    betterConsoleLog('> Logging purse data', purseData);
     let result = false;
     if(purseData && authCtx.token){
       result = await addPurse(purseData, authCtx.token);
@@ -164,14 +171,14 @@ function AddProduct(){
 
   // Handles choosing correct method to add a product
   async function handleAddProduct(){
-    if(selectedCategory.length === 0){
+    if(!selectedCategory){
       return popupMessage('Izaberite Kategoriju proizvoda', 'danger');
     } else {
-      if(!selectedCategory.name) return popupMessage('Error, kategorija nema ime.','danger');
+      if(!selectedCategory.name) return popupMessage('Morate izabrati kategoriju','danger');
 
       // Methods for adding productus based on category
-      if(selectedCategory.name === 'Haljina') return await handleAddDress();
-      if(selectedCategory.name === 'Torbica') return await handleAddPurse();
+      if(selectedCategory.stockType === 'Boja-Veličina-Količina') return await handleAddDress();
+      if(selectedCategory.stockType === 'Boja-Količina') return await handleAddPurse();
     }
   }
 
@@ -206,26 +213,26 @@ function AddProduct(){
         />
 
         {/* DRESES */}
-        {selectedCategory.name === 'Haljina' && (
+        {selectedCategory && selectedCategory.stockType === 'Boja-Veličina-Količina' && (
           <AddDressComponents
             dressColors={itemColors}
             setDressColors={setItemColors}
           />
         )}
         {/* PURSES */}
-        {selectedCategory.name === 'Torbica' && (
+        {selectedCategory && selectedCategory.stockType === 'Boja-Količina' && (
           <AddPurseComponents
             purseColors={itemColors}
             setPurseColors={setItemColors}
           />
         )}
         {/* GENERIC */}
-        {selectedCategory.name !== 'Haljina' && selectedCategory.name !== 'Torbica' && (
+        {/* {selectedCategory && selectedCategory.stockType !== 'Boja-Veličina-Količina' && selectedCategory.stockType !== 'Boja-Veličina' && (
           <AddDressComponents
           dressColors={itemColors}
           setDressColors={setItemColors}
-        />
-        )}
+        /> */}
+        {/* )} */}
         <View style={styles.buttonContainer}>
           <Button
             onPress={handleAddProduct}

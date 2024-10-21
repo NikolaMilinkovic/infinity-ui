@@ -60,6 +60,7 @@ export async function addDress(dressData:any, authToken:string):Promise<boolean>
   const formData = new FormData();
   formData.append('name', dressData.productName);
   formData.append('category', dressData.selectedCategory.name);
+  formData.append('stockType', dressData.stockType);
   formData.append('price', dressData.price);
   formData.append('colors', JSON.stringify(dressData.itemColors));
 
@@ -82,6 +83,7 @@ export async function addPurse(purseData:any, authToken:string):Promise<boolean>
   const formData = new FormData();
   formData.append('name', purseData.productName);
   formData.append('category', purseData.selectedCategory.name);
+  formData.append('stockType', purseData.stockType);
   formData.append('price', purseData.price);
   formData.append('colors', JSON.stringify(purseData.itemColors));
 

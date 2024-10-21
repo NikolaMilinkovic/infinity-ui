@@ -16,7 +16,7 @@ function DisplayDressStock({ isExpanded, item }: PropTypes) {
   // Extracts all the colors that have at least one size withing its stock
   useEffect(() => {
     if(!item) return;
-    if (item.category === 'Haljina') {
+    if (item.stockType === 'Boja-Veličina-Količina') {
       // Filter colors that have at least one size with stock
       const colorsWithStock = item.colors
         .filter((colorObj) => colorObj.sizes.some((sizeObj) => sizeObj.stock > 0))
@@ -29,7 +29,7 @@ function DisplayDressStock({ isExpanded, item }: PropTypes) {
   if(!item) return;
   return (
     <>
-      {isExpanded && item.category === 'Haljina' && (
+      {isExpanded && item.stockType === 'Boja-Veličina-Količina' && (
         <Animated.View style={[styles.container, { overflow: 'hidden', opacity: toggleFade}]}>
             <View style={styles.sizesContainer}>
               <Text style={{ width: 100, fontWeight: 'bold', textAlign: 'center' }}>Boja</Text>

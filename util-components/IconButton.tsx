@@ -31,7 +31,7 @@ function IconButton({ icon, color, onPress, text, style, textStyle, iconStyle, s
 }
 const styles = StyleSheet.create({
   pressed: {
-    opacity: 0.7
+    opacity: 0.7,
   }
 })
 

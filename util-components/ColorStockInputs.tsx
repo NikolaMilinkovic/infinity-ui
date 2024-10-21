@@ -49,6 +49,7 @@ function ColorStockInputs({ colorsData, setColorsData, }: PropTypes) {
             style={styles.input}
             value={String(item.stock)}
             onChangeText={(value) => handleInputChange(item.color, value)}
+            selectTextOnFocus
           />
         </KeyboardAvoidingView>
       ))}

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { NewOrderContextTypes } from '../../types/allTsTypes'
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -6,6 +6,9 @@ import { Colors } from '../../constants/colors';
 import { NewOrderContext } from '../../store/new-order-context';
 import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
+import InputField from '../../util-components/InputField';
+import { betterConsoleLog } from '../../util-methods/LogMethods';
+import CustomCheckbox from '../../util-components/CustomCheckbox';
 
 
 interface PropTypes {
@@ -13,17 +16,32 @@ interface PropTypes {
   isExpanded: boolean
   setIsExpanded: (expanded: boolean) => void
   onReset: () => void
+  customPrice: string
+  setCustomPrice: (price: string | number | undefined) => void
 }
 
 
-function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset }: PropTypes) {
-  const [customPrice, setCustomPrice] = useState();
-  const [showEdit, setShowEdit] = useState(false);
+function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset, customPrice, setCustomPrice }: PropTypes) {
   const orderCtx = useContext(NewOrderContext)
+  const [itemsPrice, setItemsPrice] = useState<string | number>('N/A');
+
+  // Calculate total article price
+  useEffect(() => {
+    if(orderCtx.productData.length > 0){
+      const calc = orderCtx.productData.map((item) => item.itemReference.price)
+      .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+
+      setItemsPrice(calc);
+      if(orderCtx.courierData)
+        setCustomPrice((calc + orderCtx.courierData?.deliveryPrice).toString());
+    } else {
+      setItemsPrice(0);
+    }
+  }, [orderCtx.productData])
+
   function handleToggleExpand(){
     setIsExpanded(!isExpanded)
   }
-
   function handleSubmitOrder(){
     popupMessage('> Porudžbina upsešno dodata', 'success');
     orderCtx.resetOrderData();
@@ -33,7 +51,7 @@ function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset }: Prop
     orderCtx.resetOrderData();
     onReset();
   }
-  
+
   return (
     <Animated.ScrollView>
       {/* TOGGLE BUTTON */}
@@ -110,25 +128,54 @@ function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset }: Prop
 
           <View style={styles.otherInfoContainer}>
             {/* EDIT FIELDS BUTTON */}
-            <Pressable onPress={() => setShowEdit(!showEdit)} style={styles.editButton}>
+            {/* <Pressable onPress={() => setShowEdit(!showEdit)} style={styles.editButton}>
               <Icon name={showEdit ? 'file-edit-outline' : 'cancel'} style={styles.editIcon} size={28} color={Colors.primaryDark}/>
-            </Pressable>
+            </Pressable> */}
+            <Text style={styles.header2}>Rezervacija:</Text>
+            <View style={styles.rowContainer}>
+              <CustomCheckbox
+                label={'Da'}
+                checked={orderCtx.isReservation === true}
+                onCheckedChange={() => orderCtx.setIsReservation(true)}
+              />
+              <CustomCheckbox
+                label={'Ne'}
+                checked={orderCtx.isReservation === false}
+                onCheckedChange={() => orderCtx.setIsReservation(false)}
+              />
+            </View>
 
             <Text style={styles.header2}>Ostale informacije:</Text>
             <View style={styles.rowContainer}>
-              <Text style={styles.label}>Ukupna cena:</Text>
-              <Text style={styles.information}>{orderCtx.productData.map((item) => item.itemReference.price).reduce((accumulator, currentValue) => accumulator + currentValue, 0)} din</Text>
+              <Text style={styles.label}>Kurir:</Text>
+              <Text style={styles.information}>{orderCtx.courierData?.name}</Text>
             </View>
             <View style={styles.rowContainer}>
-              <Text style={styles.label}>Kurir:</Text>
-              <Text style={styles.information}></Text>
+              <Text style={styles.label}>Cena dostave:</Text>
+              <Text style={styles.information}>{Number(orderCtx.courierData?.deliveryPrice) | 0} din</Text>
             </View>
+            <View style={styles.rowContainer}>
+              <Text style={styles.label}>Ukupna cena artikala:</Text>
+              <Text style={styles.information}>{Number(itemsPrice) | 0} din</Text>
+            </View>
+            <View style={styles.rowContainer}>
+              <Text style={styles.label}>Ukupno:</Text>
+              <Text style={styles.information}>{Number(itemsPrice) + Number(orderCtx.courierData?.deliveryPrice) | 0} din</Text>
+            </View>
+            <InputField
+              label='Finalna cena'
+              inputText={customPrice}
+              setInputText={setCustomPrice}
+              containerStyles={styles.customPriceInput}
+              keyboard='numeric'
+              selectTextOnFocus={true}
+            />
           </View>
         </View>
       )}
       <View style={styles.buttonsContainer}>
         <Button
-          backColor={Colors.secondaryLight}
+          backColor={Colors.secondaryDark}
           textColor={Colors.white}
           containerStyles={[styles.button, {marginBottom: 6}]}
           onPress={handleSubmitOrder}
@@ -136,12 +183,12 @@ function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset }: Prop
           Dodaj porudžbinu
         </Button>
         <Button
-          backColor={Colors.secondaryLight}
+          backColor={Colors.error}
           textColor={Colors.white}
           containerStyles={[styles.button, {marginBottom: 6}]}
           onPress={handleResetOrderData}
         >
-          Resetuj sve podatke
+          Odustani i resetuj
         </Button>
       </View>
     </Animated.ScrollView>
@@ -190,7 +237,7 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   information: {
-    flex: 3,
+    flex: 2.5,
   },
   buttonsContainer: {
     marginTop: 'auto',
@@ -240,6 +287,9 @@ const styles = StyleSheet.create({
   },
   editIcon: {
 
+  },
+  customPriceInput: {
+    marginTop: 16
   }
 })
 

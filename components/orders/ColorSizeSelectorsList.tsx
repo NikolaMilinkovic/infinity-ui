@@ -6,7 +6,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
 import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
-import { AnimatedScrollView } from 'react-native-reanimated/lib/typescript/reanimated2/component/ScrollView';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 interface PropTypes {
@@ -53,7 +52,6 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
 
 
     const productsWithSizes = ordersCtx.productData.filter(product => product.hasOwnProperty('selectedSize'));
-    betterConsoleLog('> Products with sizes', productsWithSizes);
     const missingSize = productsWithSizes.some((order) => order.selectedSize === '');
     if(missingSize) return popupMessage('Morate uneti veličinu za svaki proizvod', 'danger');
 
@@ -73,7 +71,7 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
       {isExpanded && (
         <Animated.ScrollView style={styles.container}>
           {ordersCtx.productData.map((product, index) => (
-              <Animated.View style={{ paddingHorizontal: 8}} key={`${index}-${product._id}`}>
+              <Animated.View key={`${index}-${product._id}`}>
                 <ColorSizeSelector
                   index={index}
                   product={product}
@@ -86,7 +84,7 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
           <Button
             backColor={Colors.highlight}
             textColor={Colors.white}
-            containerStyles={{marginBottom: 6, marginHorizontal: 8}}
+            containerStyles={{marginBottom: 6, marginHorizontal: 0}}
             onPress={handleOnNext}
           >
             Dalje

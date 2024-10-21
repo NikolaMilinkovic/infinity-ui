@@ -38,8 +38,6 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
   const token = authCtx.token
   const socketCtx = useContext(SocketContext)
   const socket = socketCtx?.socket
-  const dressesCtx = useContext(DressesContext);
-  const pursesCtx = useContext(PursesContext);
 
   // Setters
   const setActiveProductsHandler = (products: (DressTypes | PurseTypes)[]) => {

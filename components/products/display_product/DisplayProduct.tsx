@@ -7,8 +7,8 @@ import DisplayPurseStock from '../unique_product_components/display_stock/Displa
 import { DressTypes, PurseTypes } from '../../../types/allTsTypes';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { NewOrderContext } from '../../../store/new-order-context';
-import { MaterialIcons } from '@expo/vector-icons';
 import IconButton from '../../../util-components/IconButton';
+import { betterConsoleLog } from '../../../util-methods/LogMethods';
 
 type ProductType = DressTypes | PurseTypes;
 interface DisplayProductProps {
@@ -24,13 +24,14 @@ function DisplayProduct({ item }: DisplayProductProps) {
     if(!item) return;
     let stockAvailable = false;
 
-    if(item.category === 'Haljina'){
+    if(item.stockType === 'Boja-Veličina-Količina'){
       const dressItem = item as DressTypes
       stockAvailable = dressItem.colors.some((colorObj) => 
         colorObj.sizes.some((sizeObj) => sizeObj.stock > 0)
       )
     }
-    if(item.category === 'Torbica'){
+    if(item.stockType === 'Boja-Količina'){
+      betterConsoleLog('> Logging item', item);
       const purseItem = item as PurseTypes
       stockAvailable = purseItem.colors.some((colorObj) =>
         colorObj.stock > 0
@@ -49,19 +50,15 @@ function DisplayProduct({ item }: DisplayProductProps) {
   function handleOnPress(){
     if(onStock){
       newOrderCtx.addProductReference(item);
-      if(item.category === 'Haljina'){
-        console.log('> Adding haljinu')
+      if(item.stockType === 'Boja-Veličina-Količina'){
         const productObj = {
           itemReference: item,
           selectedColor: '',
           selectedSize: '',
-          isReservation : false,
-          selectedCourier: '',
         }
         newOrderCtx.addProduct(productObj);
       }
-      if(item.category === 'Torbica'){
-        console.log('> Adding torbicu')
+      if(item.stockType === 'Boja-Količina'){
         const productObj = {
           itemReference: item,
           selectedColor: '',
@@ -125,7 +122,7 @@ function DisplayProduct({ item }: DisplayProductProps) {
       <View style={styles.stockDataContainer}>
 
         {/* DISPLAY DRESSES STOCK */}
-        {item && item.category === 'Haljina' && (
+        {item && item.stockType === 'Boja-Veličina-Količina' && (
           <DisplayDressStock
             isExpanded={isExpanded}
             item={item as DressTypes}
@@ -133,7 +130,7 @@ function DisplayProduct({ item }: DisplayProductProps) {
         )}
 
         {/* DISPLAY PURSES STOCK */}
-        {item && item.category === 'Torbica' && (
+        {item && item.stockType === 'Boja-Količina' && (
           <DisplayPurseStock
             isExpanded={isExpanded}
             item={item as PurseTypes}

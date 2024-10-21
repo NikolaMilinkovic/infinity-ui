@@ -9,10 +9,12 @@ import { popupMessage } from '../../util-components/PopupMessage';
 function AddCourier() {
   const authCtx = useContext(AuthContext);
   const [inputText, setInputText] = useState<string>('')
+  const [inputPrice, setInputPrice] = useState<number>('')
   const [error, setError] = useState<string>('')
   
   function resetInputAndError(){
     setInputText('');
+    setInputPrice(0);
     setError('');
   }
   function resetError(){
@@ -25,6 +27,11 @@ function AddCourier() {
       popupMessage('Kurir mora imati ime!', 'danger');
       return false;
     }
+    if(!inputPrice){
+      setError('Kurir mora imati cenu dostave!');
+      popupMessage('Kurir mora imati cenu dostave!', 'danger');
+      return false;
+    }
     return true;
   }
 
@@ -35,6 +42,7 @@ function AddCourier() {
     try{
       const newCourier = {
         name: inputText,
+        deliveryPrice: inputPrice
       };
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/couriers`, {
         method: 'POST',
@@ -65,27 +73,34 @@ function AddCourier() {
   return (
     <View style={styles.container}>
       <View style={styles.controllsContainer}>
-        <View style={styles.inputContainer}>
-          <InputField 
-            label='Unesi Kurira'
-            isSecure={false}
-            inputText={inputText}
-            setInputText={setInputText}
-            background={Colors.primaryLight}
-            color={Colors.primaryDark}
-            activeColor={Colors.secondaryDark}
-            labelBorders={false}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button 
-              onPress={addCourierHandler}
-              textColor={Colors.whiteText}
-              backColor={Colors.highlight}
-          >
-            Sačuvaj
-          </Button>
-        </View>
+        <InputField 
+          label='Unesi Kurira'
+          isSecure={false}
+          inputText={inputText}
+          setInputText={setInputText}
+          background={Colors.primaryLight}
+          color={Colors.primaryDark}
+          activeColor={Colors.secondaryDark}
+          labelBorders={false}
+        />
+        <InputField 
+          label='Cena dostave po paketu'
+          isSecure={false}
+          inputText={inputPrice}
+          setInputText={setInputPrice}
+          background={Colors.primaryLight}
+          color={Colors.primaryDark}
+          activeColor={Colors.secondaryDark}
+          labelBorders={false}
+          keyboard='numeric'
+        />
+        <Button 
+            onPress={addCourierHandler}
+            textColor={Colors.whiteText}
+            backColor={Colors.highlight}
+        >
+          Sačuvaj
+        </Button>
       </View>
       {error && (
         <Text style={styles.error}>{error}</Text>
@@ -103,7 +118,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primaryLight
   },
   controllsContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     width: '100%',
     gap: 16,

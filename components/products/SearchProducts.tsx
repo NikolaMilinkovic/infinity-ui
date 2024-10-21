@@ -107,7 +107,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
       resetDropdown();
       return 
     }
-    updateSearchParam('onCategorySearch', selectedCategory.name)
+    updateSearchParam('onCategorySearch', selectedCategory?.name)
   }, [selectedCategory])
   // Dropdown Reset
   const [resetKey, setResetKey] = useState(0);

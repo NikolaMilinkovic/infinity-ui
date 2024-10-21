@@ -55,11 +55,7 @@ function CouriersContextProvider({ children }: CouriersContextProviderType){
   useEffect(() => {
     if(socket){
       const handleCourierAdded = (newCourier: CourierTypes) => {
-        const newCourierObj = {
-          _id: newCourier._id,
-          name: newCourier.name,
-        }
-        setCouriers(prevCouriers => [...prevCouriers, newCourierObj]);
+        setCouriers(prevCouriers => [...prevCouriers, newCourier]);
       };
       const handleCourierRemoved = (courierId: string) => {
         setCouriers(prevCouriers => prevCouriers.filter((courier) => courier._id !== courierId));
@@ -68,6 +64,7 @@ function CouriersContextProvider({ children }: CouriersContextProviderType){
         const newCourierObj = {
           _id: updatedCourier._id,
           name: updatedCourier.name,
+          deliveryPrice: updatedCourier.deliveryPrice,
         }
         setCouriers(prevCouriers => 
           prevCouriers.map(courier => 

@@ -47,15 +47,7 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
 
       const data = await response.json();
       if(data.length > 0){
-        const categoriesArr: CategoryTypes[] = [];
-        data.forEach((entry:CategoryTypes) => {
-          const newCategory = new Category(
-            entry._id,
-            entry.name,
-          )
-          categoriesArr.push(newCategory);
-        });
-        setCategories(categoriesArr);
+        setCategories(data);
       }
       
     } catch (error) {
@@ -71,23 +63,15 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
   useEffect(() => {
     if(socket){
       const handleCategoryAdded = (newCategory: Category) => {
-        const newCategoryObj = new Category(
-          newCategory._id,
-          newCategory.name,
-        )
-        setCategories(prevCategories => [...prevCategories, newCategoryObj]);
+        setCategories(prevCategories => [...prevCategories, newCategory]);
       };
       const handleCategoryRemoved = (categoryId: string) => {
         setCategories(prevCategories => prevCategories.filter((category) => category._id !== categoryId));
       }
       const handleCategoryUpdated = (updatedCategory: Category) => {
-        const newCategoryObj = new Category(
-          updatedCategory._id,
-          updatedCategory.name,
-        );
         setCategories(prevCategories => 
           prevCategories.map(category => 
-            category._id === updatedCategory._id ? newCategoryObj : category
+            category._id === updatedCategory._id ? updatedCategory : category
           )
         );
       }

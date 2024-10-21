@@ -3,12 +3,13 @@ import { CategoriesContext } from '../../store/categories-context';
 import { View, StyleSheet, Text, FlatList } from 'react-native'
 import EditCategoriesItem from './EditCategoriesItem';
 import { Colors } from '../../constants/colors';
-import { CategoryType } from '../../types/categoryTypes';
+import { CategoryTypes } from '../../types/allTsTypes';
+import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 function EditCategories() {
   const categoriesCtx = useContext(CategoriesContext);
   
-  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [categories, setCategories] = useState<CategoryTypes[]>([]);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
 
   useEffect(() => {
@@ -19,6 +20,10 @@ function EditCategories() {
     };
     fetchCategories();
   }, [categoriesCtx])
+
+  useEffect(() => {
+    betterConsoleLog('> Logging categoried: ', categories);
+  },[categories])
 
   if (isLoading) {
     return <Text>Ucitavam kategorije...</Text>;

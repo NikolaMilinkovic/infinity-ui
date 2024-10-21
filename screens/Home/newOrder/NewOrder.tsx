@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Animated, StyleSheet, ScrollView } from 'react-native'
 import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { NewOrderContext } from '../../../store/new-order-context';
@@ -6,11 +6,13 @@ import SelectedProductsDisplay from '../../../components/orders/SelectedProducts
 import SortUserInformationField from '../../../components/orders/SortUserInformationField';
 import ColorSizeSelectorsList from '../../../components/orders/ColorSizeSelectorsList';
 import NewOrderPreview from '../../../components/orders/NewOrderPreview';
+import CourierSelector from '../../../components/orders/CourierSelector';
 
 function NewOrder() {
   // Fade in animation
   const fadeAnimation = useFadeAnimation();
   const ordersCtx = useContext(NewOrderContext);
+  
 
   // ARTICLE LIST
   const [isArticleListOpen, setIsArticleListOpen] = useState(true);
@@ -18,6 +20,7 @@ function NewOrder() {
     setIsArticleListOpen(false);
     setIsColorSizeSelectorsOpen(false);
     setIsOrderPreviewOpen(false);
+    setIsCourierPreviewOpen(false);
     
     setTimeout(() => {
       setIsBuyerInfoOpen(true);
@@ -26,10 +29,17 @@ function NewOrder() {
 
   // BUYER INFORMATION
   const [isBuyerInfoOpen, setIsBuyerInfoOpen] = useState(false);
+  const [buyerInfo, setBuyerInfo] = useState('');
+  const [buyerDataObject, setBuyerDataObject] = useState({
+    name: '',
+    address: '',
+    phone: '',
+  })
   function handleBuyerInfoOk(){
     setIsArticleListOpen(false);
     setIsBuyerInfoOpen(false);
     setIsOrderPreviewOpen(false);
+    setIsCourierPreviewOpen(false);
 
     setTimeout(() => {
       setIsColorSizeSelectorsOpen(true);
@@ -42,14 +52,35 @@ function NewOrder() {
     setIsArticleListOpen(false);
     setIsBuyerInfoOpen(false);
     setIsColorSizeSelectorsOpen(false);
+    setIsOrderPreviewOpen(false)
+    
+    setTimeout(() => {
+      setIsCourierPreviewOpen(true);
+    }, 360)
+  }
+
+
+  // COURIER SELECTOR
+  const [isCourierPreviewOpen, setIsCourierPreviewOpen] = useState(false);
+  function handleCourierSelectorOk(){
+    setIsArticleListOpen(false);
+    setIsBuyerInfoOpen(false);
+    setIsColorSizeSelectorsOpen(false);
+    setIsOrderPreviewOpen(false)
+    setIsCourierPreviewOpen(false);
     
     setTimeout(() => {
       setIsOrderPreviewOpen(true);
     }, 360)
   }
 
-  // ORDER PREVIEW
+  useEffect(() => {
+    console.log(isCourierPreviewOpen)
+  },[isCourierPreviewOpen])
+
+  // ORDER PREVIEW SECTION
   const [isOrderPreviewOpen, setIsOrderPreviewOpen] = useState(false);
+  const [customPrice, setCustomPrice] = useState('');
   function handleSubmitOrder(){
 
   }
@@ -59,7 +90,19 @@ function NewOrder() {
     setIsArticleListOpen(true);
     setIsBuyerInfoOpen(false);
     setIsColorSizeSelectorsOpen(false);
+    setIsCourierPreviewOpen(false);
     setIsOrderPreviewOpen(false);
+
+    // BUYER INFORMATION SECTION
+    setBuyerInfo('');
+    setBuyerDataObject({
+      name: '',
+      address: '',
+      phone: '',
+    });
+    // ORDER PREVIEW SECTION
+    setCustomPrice('');
+    ordersCtx.setIsReservation(false);
   }
   
   return (
@@ -77,6 +120,10 @@ function NewOrder() {
           setIsExpanded={setIsBuyerInfoOpen}
           isExpanded={isBuyerInfoOpen}
           onNext={handleBuyerInfoOk}
+          buyerInfo={buyerInfo}
+          setBuyerInfo={setBuyerInfo}
+          buyerDataObject={buyerDataObject}
+          setBuyerDataObject={setBuyerDataObject}
         />
         <ColorSizeSelectorsList
           ordersCtx={ordersCtx}
@@ -84,11 +131,18 @@ function NewOrder() {
           setIsExpanded={setIsColorSizeSelectorsOpen}
           onNext={handleColorSizeSelectorsOk}
         />
+        <CourierSelector
+          isExpanded={isCourierPreviewOpen}
+          setIsExpanded={setIsCourierPreviewOpen}
+          onNext={handleCourierSelectorOk}
+        />
         <NewOrderPreview
           ordersCtx={ordersCtx}
           isExpanded={isOrderPreviewOpen}
           setIsExpanded={setIsOrderPreviewOpen}
           onReset={resetOrderData}
+          customPrice={customPrice}
+          setCustomPrice={setCustomPrice}
         />
       </Animated.ScrollView>
     </>

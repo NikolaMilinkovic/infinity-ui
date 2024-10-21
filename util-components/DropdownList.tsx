@@ -17,6 +17,7 @@ interface DropdownPropTypes{
   defaultValue?: any
   reference?: any
   buttonContainerStyles?: any
+  defaultValueByIndex?: number
 }
 
 const DropdownList = ({ 
@@ -26,7 +27,8 @@ const DropdownList = ({
   isDefaultValueOn = true,
   defaultValue,
   reference,
-  buttonContainerStyles
+  buttonContainerStyles,
+  defaultValueByIndex,
  }: DropdownPropTypes) => {
   
   const [dropdownData, setDropdownData] = useState<any[]>([]);
@@ -56,7 +58,7 @@ const DropdownList = ({
       <SelectDropdown
         ref={reference}
         data={dropdownData}
-        // defaultValueByIndex={0} // use default value by index or default value
+        defaultValueByIndex={defaultValueByIndex} // use default value by index or default value
         defaultValue={defaultVal} // use default value by index or default value
         
         // WHEN SELECTED

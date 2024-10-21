@@ -31,14 +31,16 @@ function ColorSizeSelector({ product, context, index }) {
   
   useEffect(() => {
     if(!product) return;
+    if(!product.itemReference) return;
+    if(!product.itemReference.stockType) return;
 
-    if(product.itemReference.category === 'Haljina'){
+    if(product.itemReference.stockType === 'Boja-Veličina-Količina'){
       const filteredColors = product.itemReference.colors.filter((color: DressColorTypes) => 
         color.sizes.some((size) => size.stock > 0)
       );
       setProductColors(filteredColors)
     }
-    if(product.itemReference.category === 'Torbica'){
+    if(product.itemReference.stockType === 'Boja-Količina'){
       betterConsoleLog('> Logging robicu', product.itemReference)
       const filteredColors = product.itemReference.colors.filter((color: PurseColorTypes) => 
         color.stock > 0
@@ -65,7 +67,7 @@ function ColorSizeSelector({ product, context, index }) {
 
 
   useEffect(() => {
-    if(product.itemReference.category === 'Torbica') return;
+    if(product.itemReference.stockType === 'Boja-Količina') return;
     if (product.selectedColor) {
       const selectedColorObj = product.itemReference.colors.find((color) => color.color === product.selectedColor);
       
@@ -124,7 +126,7 @@ function ColorSizeSelector({ product, context, index }) {
         </View>
 
         {/* SIZE PICKER */}
-          {product.selectedColor && product.itemReference.category !== 'Torbica' && (
+          {product.selectedColor && product.itemReference.stockType !== 'Boja-Količina' && (
             <View style={styles.sizeContainer}>
               <Text style={styles.colorHeader}>  Veličina</Text>
               <RadioButtonsGroup

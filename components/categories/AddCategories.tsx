@@ -5,10 +5,20 @@ import InputField from '../../util-components/InputField';
 import Button from '../../util-components/Button';
 import { Colors } from '../../constants/colors';
 import { popupMessage } from '../../util-components/PopupMessage';
+import DropdownList from '../../util-components/DropdownList';
 
+interface DropdownTypes {
+  _id: string | number
+  name: string
+}
 function AddCategories() {
   const authCtx = useContext(AuthContext);
   const [inputText, setInputText] = useState<string>('')
+  const [stockType, setStockType] = useState<DropdownTypes>({_id: 0, name: 'Boja-Veličina-Količina'})
+  const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([
+    {_id: 0, name: 'Boja-Veličina-Količina'},
+    {_id: 1, name: 'Boja-Količina'}
+  ]);
   const [error, setError] = useState<string>('')
   
   function resetInputAndError(){
@@ -25,6 +35,11 @@ function AddCategories() {
       popupMessage('Kategorija mora imati ime!', 'danger');
       return false;
     }
+    if(!stockType || !stockType.name){
+      setError('Kategorija mora imati jedinicu lagera!');
+      popupMessage('Kategorija mora jedinicu lagera!', 'danger');
+      return false;
+    }
     return true;
   }
 
@@ -35,6 +50,7 @@ function AddCategories() {
     try{
       const newCategory = {
         name: inputText,
+        stockType: stockType.name
       };
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
         method: 'POST',
@@ -65,6 +81,8 @@ function AddCategories() {
   return (
     <View style={styles.container}>
       <View style={styles.controllsContainer}>
+
+        {/* INPUT */}
         <View style={styles.inputContainer}>
           <InputField 
             label='Unesi Kategoriju'
@@ -77,6 +95,24 @@ function AddCategories() {
             labelBorders={false}
           />
         </View>
+      </View>
+
+        {/* DROPDOWN */}
+        <View style={styles.dropdownContainer}>
+          <DropdownList
+            data={dropdownData}
+            defaultValue={'Boja-Veličina-Količina'}
+            onSelect={setStockType}
+            buttonContainerStyles={styles.dropdown}
+          />
+        </View>
+
+        {/* ERROR MESSAGE */}
+        {error && (
+        <Text style={styles.error}>{error}</Text>
+        )}
+
+        {/* BUTTON */}
         <View style={styles.buttonContainer}>
           <Button 
               onPress={addCategoryHandler}
@@ -86,10 +122,6 @@ function AddCategories() {
             Sačuvaj
           </Button>
         </View>
-      </View>
-      {error && (
-        <Text style={styles.error}>{error}</Text>
-      )}
     </View>
   )
 }
@@ -110,10 +142,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   inputContainer: {
-    flex: 0.6
+    width: '100%'
   },
   buttonContainer: {
-    flex: 0.4,
+    width: '100%',
+    marginTop: 16,
+    paddingHorizontal: 16,
   },
   error: {
     color: Colors.error,
@@ -122,6 +156,14 @@ const styles = StyleSheet.create({
   success: {
     color: Colors.success,
     marginTop: 10,
+  },
+  dropdownContainer: {
+    width: '100%',
+    paddingHorizontal: 16,
+    marginTop: 6,
+  },
+  dropdown: {
+    backgroundColor: 'transparent'
   }
 })
 
