@@ -76,6 +76,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
           <GalleryImagePicker
             image={orderCtx.profileImage}
             setImage={orderCtx.setProfileImage}
+            placeholder='Dodaj sliku profila'
           />
           <TextInput 
             style={styles.input}

@@ -31,7 +31,7 @@ function DisplayProduct({ item }: DisplayProductProps) {
       )
     }
     if(item.stockType === 'Boja-Količina'){
-      betterConsoleLog('> Logging item', item);
+      // betterConsoleLog('> Logging item', item);
       const purseItem = item as PurseTypes
       stockAvailable = purseItem.colors.some((colorObj) =>
         colorObj.stock > 0

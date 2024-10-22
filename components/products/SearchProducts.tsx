@@ -95,9 +95,9 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   }
   const categoriesCtx = useContext(CategoriesContext);
   const [selectedCategory, setSelectedCategory] = useState<CategoryTypes | null>(null);
-  useEffect(() => {
-    betterConsoleLog('> Selected category', selectedCategory);
-  }, [selectedCategory])
+  // useEffect(() => {
+  //   betterConsoleLog('> Selected category', selectedCategory);
+  // }, [selectedCategory])
   useEffect(() => {
     if (selectedCategory && selectedCategory?.name === 'Resetuj izbor') {
       resetDropdown();

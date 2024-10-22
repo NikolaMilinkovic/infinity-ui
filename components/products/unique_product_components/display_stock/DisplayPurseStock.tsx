@@ -16,7 +16,7 @@ function DisplayPurseStock({ isExpanded, item }: PropTypes) {
 
   useEffect(() => {
     if(!item) return;
-    if (item.category === 'Torbica') {
+    if (item.stockType === 'Boja-Količina') {
       // Filter colors with stock greater than 0
       const colorsWithStock = item.colors
         .filter((colorObj) => colorObj.stock > 0)
@@ -28,7 +28,7 @@ function DisplayPurseStock({ isExpanded, item }: PropTypes) {
   if(!item) return;
   return (
     <>
-      {isExpanded && item.category === 'Torbica' && (
+      {isExpanded && item.stockType === 'Boja-Količina' && (
         <Animated.View style={[styles.container, { overflow: 'hidden', opacity: toggleFade}]}>
           <View style={styles.sizesContainer}>
             <Text style={styles.header}>Boja</Text>

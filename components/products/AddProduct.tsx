@@ -113,9 +113,9 @@ function AddProduct(){
     setProductImage(undefined);
   }
 
-  useEffect(() => {
-    betterConsoleLog('> Selected category', selectedCategory);
-  }, [selectedCategory])
+  // useEffect(() => {
+  //   betterConsoleLog('> Selected category', selectedCategory);
+  // }, [selectedCategory])
 
   // Handles adding a new DRESS
   async function handleAddDress(){
@@ -133,7 +133,6 @@ function AddProduct(){
       productImage
     }
 
-    betterConsoleLog('> Logging dress data', dressData);
     let result = false;
     if(dressData && authCtx.token){
       result = await addDress(dressData, authCtx.token);
@@ -159,7 +158,6 @@ function AddProduct(){
       productImage
     }
 
-    betterConsoleLog('> Logging purse data', purseData);
     let result = false;
     if(purseData && authCtx.token){
       result = await addPurse(purseData, authCtx.token);

@@ -3,6 +3,7 @@ import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import Category from "../models/Category";
 import { CategoryTypes } from "../types/allTsTypes";
+import { betterConsoleLog } from "../util-methods/LogMethods";
 
 interface CategoriesContextType{
   categories: CategoryTypes[]
@@ -58,6 +59,10 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
   useEffect(() => {
     if(token) fetchCategories(token);
   }, [token])
+
+  useEffect(() => {
+    betterConsoleLog('> Logging categories', categories)
+  }, [categories])
 
   // SOCKETS
   useEffect(() => {

@@ -30,7 +30,7 @@ function ColorSizeSelector({ product, index }: PropTypes) {
 
   
   useEffect(() => {
-    betterConsoleLog('> Logging product', product)
+    // betterConsoleLog('> Logging product', product)
     if(!product) return;
 
     if(product.itemReference.stockType === 'Boja-Veličina-Količina'){

@@ -10,9 +10,10 @@ import { ProductImageTypes } from '../types/allTsTypes';
 interface PropTypes {
   image: ProductImageTypes | null,
   setImage: (image: ProductImageTypes | null) => void
+  placeholder: string
 }
 
-function GalleryImagePicker({ image, setImage }: PropTypes) {
+function GalleryImagePicker({ image, setImage, placeholder = 'Dodaj sliku' }: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(true);
   const toggledHeight = useExpandAnimation(isExpanded, 50, 100, 180);
   async function handlePickImage(){
@@ -28,7 +29,7 @@ function GalleryImagePicker({ image, setImage }: PropTypes) {
     event.stopPropagation();
   }
 
-  let imagePreview = <Text style={styles.text}>Dodaj sliku proizvoda</Text>
+  let imagePreview = <Text style={styles.text}>{placeholder}</Text>
   if(!isExpanded){
     imagePreview = (
       <Pressable onPress={handleToggleExpand} style={styles.collapsedArea}>

@@ -65,10 +65,6 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
     setActivePurses((prevPurses) => [...prevPurses, newPurse]);
   }
 
-  useEffect(() => {
-    betterConsoleLog('> Active purses: ', activePurses);
-  }, [activePurses])
-
   function handleInactivePurseAdded(newPurse: PurseTypes) {
     setInactivePurses((prevPurses) => [...prevPurses, newPurse]);
   }
