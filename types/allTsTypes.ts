@@ -1,17 +1,17 @@
 // IMAGE PICKER => TAKEN IMAGE DATA TYPES
 export interface ProductImageTypes {
-  assetId: string | null;
-  base64: string | null;
-  duration: number | null;
-  exif: object | null;
-  fileName: string;
-  fileSize: number;
-  height: number;
-  mimeType: string;
-  rotation: number | null;
-  type: string;
-  uri: string;
-  width: number;
+  assetId?: string | null;
+  base64?: string | null;
+  duration?: number | null;
+  exif?: object | null;
+  fileName?: string;
+  fileSize?: number;
+  height?: number;
+  mimeType?: string;
+  rotation?: number | null;
+  type?: string;
+  uri?: string;
+  width?: number;
 }
 
 // CATEGORIES
@@ -130,6 +130,10 @@ export interface NewOrderContextTypes {
 
   profileImage: string | null
   setProfileImage: (image:string | null) => void;
+  createOrderHandler: () => void;
+
+  customPrice: string | number
+  setCustomPrice: (price: string | number) => void
 }
 
 export interface CourierTypes {

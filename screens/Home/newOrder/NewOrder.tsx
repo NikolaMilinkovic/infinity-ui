@@ -9,11 +9,17 @@ import NewOrderPreview from '../../../components/orders/NewOrderPreview';
 import CourierSelector from '../../../components/orders/CourierSelector';
 import Button from '../../../util-components/Button';
 import { Colors } from '../../../constants/colors';
+import { addNewOrder } from '../../../util-methods/FetchMethods';
+import { AuthContext } from '../../../store/auth-context';
+import { popupMessage } from '../../../util-components/PopupMessage';
+import { betterConsoleLog } from '../../../util-methods/LogMethods';
 
 function NewOrder() {
   // Fade in animation
   const fadeAnimation = useFadeAnimation();
-  const ordersCtx = useContext(NewOrderContext);
+  const orderCtx = useContext(NewOrderContext);
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
   
 
   // ARTICLE LIST
@@ -74,7 +80,6 @@ function NewOrder() {
 
   // ORDER PREVIEW SECTION
   const [isOrderPreviewOpen, setIsOrderPreviewOpen] = useState(false);
-  const [customPrice, setCustomPrice] = useState<string | number>('');
 
   // Reset order entries
   function handleResetOrderData(){
@@ -87,12 +92,34 @@ function NewOrder() {
     // BUYER INFORMATION SECTION
     setBuyerInfo('');
     // ORDER PREVIEW SECTION
-    setCustomPrice('');
-    ordersCtx.resetOrderData();
+    orderCtx.setCustomPrice('');
+    orderCtx.resetOrderData();
   }
 
-  function handleSubmitOrder(){
-
+  async function handleSubmitOrder(){
+    console.log('> handle submit order running..')
+    try{
+      // get order form with all the data from new-order-context
+      const order = orderCtx.createOrderHandler()
+      betterConsoleLog('Logging out order form', order)
+      if(order === undefined) return;
+  
+      // Send the data via fetch
+      if(!token) return popupMessage('Autentifikacioni token ne postoji!', 'danger');
+      console.log('Adding new order..')
+      const response = await addNewOrder(order, token, 'orders');
+      console.log(response);
+  
+      if(response){
+        handleResetOrderData();
+        popupMessage('Porudžbina uspešno dodata', 'success');
+      } else {
+        popupMessage('Došlo je do problema prilikom slanja nove porudžbine', 'danger');
+      }
+    } catch (error){
+      console.error(error);
+      // popupMessage('Došlo je do problema prilikom slanja nove porudžbine', 'danger');
+    }
   }
   
   return (
@@ -104,7 +131,7 @@ function NewOrder() {
           setIsExpanded={setIsArticleListOpen}
           isExpanded={isArticleListOpen}
           onNext={handleArticleListOk}
-          ordersCtx={ordersCtx}
+          ordersCtx={orderCtx}
         />
         <SortUserInformationField
           setIsExpanded={setIsBuyerInfoOpen}
@@ -114,7 +141,7 @@ function NewOrder() {
           setBuyerInfo={setBuyerInfo}
         />
         <ColorSizeSelectorsList
-          ordersCtx={ordersCtx}
+          ordersCtx={orderCtx}
           isExpanded={isColorSizeSelectorsOpen}
           setIsExpanded={setIsColorSizeSelectorsOpen}
           onNext={handleColorSizeSelectorsOk}
@@ -127,8 +154,8 @@ function NewOrder() {
         <NewOrderPreview
           isExpanded={isOrderPreviewOpen}
           setIsExpanded={setIsOrderPreviewOpen}
-          customPrice={customPrice}
-          setCustomPrice={setCustomPrice}
+          customPrice={orderCtx.customPrice}
+          setCustomPrice={orderCtx.setCustomPrice}
         />
         <View style={styles.buttonsContainer}>
           <Button

@@ -1,11 +1,11 @@
 import * as ImagePicker from 'expo-image-picker';
 
 // PICK IMAGE FROM GALLERY
-export const pickImage = async() => {
+export const pickImage = async(quality:number = 0.2) => {
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsEditing: false,
-    quality: 0.4,
+    quality: quality,
   });
 
   if(!result.canceled){

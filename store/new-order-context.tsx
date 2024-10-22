@@ -1,6 +1,7 @@
 import { createContext, useState, ReactNode, useMemo, useEffect } from "react";
 import { betterConsoleLog } from "../util-methods/LogMethods";
-import { NewOrderContextTypes, BuyerTypes, ProductTypes, OrderProductTypes, CourierTypes } from "../types/allTsTypes";
+import { NewOrderContextTypes, BuyerTypes, ProductTypes, OrderProductTypes, CourierTypes, ProductImageTypes } from "../types/allTsTypes";
+import { popupMessage } from "../util-components/PopupMessage";
 interface ContextChildrenTypes {
   children: ReactNode;
 }
@@ -33,7 +34,12 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
   setIsReservation: () => {},
 
   profileImage: null,
-  setProfileImage: () => {}
+  setProfileImage: () => {},
+
+  createOrderHandler: () => {},
+
+  customPrice: '',
+  setCustomPrice: () => {},
 })
 
 function NewOrderContextProvider({ children }: ContextChildrenTypes){
@@ -42,7 +48,86 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const [productData, setProductData] = useState<OrderProductTypes[]>([]);
   const [courierData, setCourierData] = useState<CourierTypes | null>(null);
   const [isReservation, setIsReservation] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<ProductImageTypes | null>(null);
+  const [customPrice, setCustomPrice] = useState<string | number>('');
+
+
+  // Check to see if all products have selectedColor & selectedSize where applicable
+  function validateProductData(){
+    const isValid = productData.every(product => {
+      const hasSelectedColor = product.selectedColor !== undefined && product.selectedColor !== "";
+      const hasSelectedSize = product.selectedSize !== undefined ? product.selectedSize !== "" : true; // Consider true if selectedSize is missing
+    
+      return hasSelectedColor && hasSelectedSize;
+    });
+    return isValid;
+  }
+
+  // Validates all inputs | Creates a new form, prepares all data and returns the form
+  // Used for sending the data back to server
+  function createOrderHandler(){
+    // Validate all data
+    if(productData.length === 0) return popupMessage('Nedostaju podaci o proizvodima', 'danger');
+    if(!buyerData) return popupMessage('Nedostaju podaci o kupcu', 'danger');
+    if(!courierData) return popupMessage('Nedostaju podaci o kuriru', 'danger');
+    if(!profileImage) return popupMessage('Nedostaje slika kupčevog profila', 'danger');
+    if(!validateProductData()) return popupMessage('Svi proizvodi moraju imati selektovane boje i veličine', 'danger');
+
+
+    // Reshape data
+    const price = calculatePriceHandler();
+    if (!price) return popupMessage('Nije moguće izračunati cenu', 'danger');
+
+    const courier = {
+      name: courierData.name,
+      deliveryPrice: courierData.deliveryPrice
+    }
+
+    // Create form data
+    const order = new FormData();
+    order.append('buyerData', JSON.stringify(buyerData));
+    order.append('productData', JSON.stringify(productData));
+    if (price.productsPrice !== undefined) order.append('productsPrice', price.productsPrice.toString());
+    if (price.totalPrice !== undefined) order.append('totalPrice', price.totalPrice.toString());
+    order.append('reservation', isReservation.toString());
+    order.append('packed', 'false');
+    order.append('processed', 'false');
+    order.append('courier', JSON.stringify(courier));
+    order.append('profileImage', {
+        uri: profileImage.uri, // Ensure this is the correct path
+        type: profileImage.mimeType || 'image/jpeg', // Default to 'image/jpeg' if not provided
+        name: profileImage.fileName || 'profile_image.jpg', // Default name if not provided
+    });
+
+    // FIELDS THAT WILL NEED TO BE PARSED ON THE BACKEND
+    // buyerData - JSON.parse(req.body.buyerData)
+    // productData - JSON.parse(req.body.productData)
+    // courier - JSON.parse(req.body.courier)
+
+    return order;
+  }
+
+  function calculatePriceHandler(){
+    if(productData.length > 0 && courierData?.deliveryPrice){
+      const productsPrice = productData.map((item) => item.itemReference.price)
+      .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+  
+      const deliveryPrice = courierData.deliveryPrice;
+  
+      let totalPrice;
+      if(customPrice){
+        totalPrice = customPrice
+      } else {
+        totalPrice = productsPrice + deliveryPrice;
+      }
+
+      return {
+        productsPrice: productsPrice,
+        deliveryPrice: deliveryPrice,
+        totalPrice: totalPrice,
+      }
+    }
+  }
 
   // useEffect(() => {
   //   betterConsoleLog('> Courier data,',courierData);
@@ -59,6 +144,9 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   // useEffect(() => {
   //   console.log('> Is Reservation:', isReservation);
   // }, [isReservation])
+    useEffect(() => {
+    console.log('> Profile image is:', profileImage);
+  }, [profileImage])
 
   // PRODUCT REFERENCE => References of selected items
   const setProductReferencesHandler = (productsArr: ProductTypes[]) => {
@@ -169,8 +257,12 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     profileImage,
     setProfileImage: setProfileImage,
     
-    resetOrderData: resetOrderDataHandler
-  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage]);
+    resetOrderData: resetOrderDataHandler,
+    createOrderHandler: createOrderHandler,
+
+    customPrice,
+    setCustomPrice: setCustomPrice,
+  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice]);
 
   return <NewOrderContext.Provider value={value}>{ children }</NewOrderContext.Provider>
 }

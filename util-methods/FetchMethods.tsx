@@ -68,7 +68,7 @@ export async function addDress(dressData:any, authToken:string):Promise<boolean>
   if (dressData.productImage) {
     formData.append('image', {
       uri: dressData.productImage.uri,
-      type: dressData.productImage.mimexType || 'image/jpeg',
+      type: dressData.productImage.mimeType || 'image/jpeg',
       name: dressData.productImage.fileName || 'product_image.jpg',
     });
   }
@@ -91,10 +91,67 @@ export async function addPurse(purseData:any, authToken:string):Promise<boolean>
   if (purseData.productImage) {
     formData.append('image', {
       uri: purseData.productImage.uri,
-      type: purseData.productImage.mimexType || 'image/jpeg',
+      type: purseData.productImage.mimeType || 'image/jpeg',
       name: purseData.productImage.fileName || 'product_image.jpg',
     });
   }
   const result = await handleAddingProductFetch(formData, authToken, purseData.productName, 'purse');
   return result;
+}
+
+// NEW ORDER ADD METHOD
+export async function addNewOrder(formData: any, authToken: string, uri: string) {
+  try {
+    console.log('> calling handle fetching with form data method')
+    const response = await handleFetchingWithFormData(formData, authToken, uri, 'POST');
+    
+    console.log('> handle fetching with form data finished')
+    if (!response) {
+      console.log('> !response')
+      popupMessage('Došlo je do problema prilikom dodavanja porudžbine', 'danger');
+      return false;
+    }
+    console.log('> returning response..')
+    return response;
+    
+  } catch (error) {
+    betterErrorLog('Error adding new order', error);
+    popupMessage('Došlo je do problema prilikom dodavanja porudžbine', 'danger');
+    return false;
+  }
+}
+
+// GENERIC FETCHING METHOD WITH FORM DATA
+export async function handleFetchingWithFormData(formData: any, authToken: string, uri: string, method: string) {
+  try {
+    console.log('> handle fetching with form data started, here is backed uri> ', process.env.EXPO_PUBLIC_BACKEND_URI)
+    console.log('> Uri is: ',uri);
+    console.log('> Method is: ',method);
+    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${uri}`, {
+      method: method,
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'multipart/form-data'
+      },
+      body: formData,
+    });
+
+    console.log('> Fetching completed, continuing.')
+
+    if (!response.ok) {
+      console.log('> !response, seems to be an error here')
+      const parsedResponse = await response.json();
+      console.log(parsedResponse.message);
+      popupMessage(parsedResponse.message, 'danger');
+      return false;
+    }
+
+    // Return the actual response data if the fetch is successful
+    console.log('> Fetching finished successfully, returning response.json()');
+    return await response.json(); // Parse and return the response body as JSON
+
+  } catch (error) {
+    betterErrorLog('Error adding new order', error);
+    return false;
+  }
 }

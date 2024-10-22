@@ -31,19 +31,12 @@ function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPric
         setCustomPrice((calc + orderCtx.courierData?.deliveryPrice).toString());
     } else {
       setItemsPrice(0);
-      setCustomPrice(orderCtx.courierData?.deliveryPrice.toString());
+      orderCtx.setCustomPrice(orderCtx.courierData?.deliveryPrice.toString() || '');
     }
   }, [orderCtx.productData, orderCtx.courierData])
 
-  // Function to calculate total price
-
   function handleToggleExpand(){
     setIsExpanded(!isExpanded)
-  }
-  function handleSubmitOrder(){
-    popupMessage('> Porudžbina upsešno dodata', 'success');
-    orderCtx.resetOrderData();
-    onReset();
   }
 
   return (
@@ -159,8 +152,8 @@ function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPric
             </View>
             <InputField
               label='Finalna cena'
-              inputText={customPrice}
-              setInputText={setCustomPrice}
+              inputText={orderCtx.customPrice}
+              setInputText={orderCtx.setCustomPrice}
               containerStyles={styles.customPriceInput}
               keyboard='numeric'
               selectTextOnFocus={true}

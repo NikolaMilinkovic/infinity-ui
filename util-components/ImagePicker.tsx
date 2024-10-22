@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../constants/colors'
 import { popupMessage } from './PopupMessage'
 import Button from './Button'
+import { useExpandAnimation } from '../hooks/useExpand';
 
 interface PropTypes {
   onTakeImage: (img:any) => void
@@ -14,15 +15,7 @@ interface PropTypes {
 function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
   const [permissionInfo, requestPermission] = useCameraPermissions()
   const [isExpanded, setIsExpanded] = useState(false);
-  const toggleExpandAnimation = useRef(new Animated.Value(400)).current;
-
-  useEffect(() => {
-    Animated.timing(toggleExpandAnimation, {
-      toValue: isExpanded ? 400 : 50,
-      duration: 180,
-      useNativeDriver: false,
-    }).start();
-  }, [isExpanded]);
+  const toggleExpandAnimation = useExpandAnimation(isExpanded, 50, 400, 180);
 
   async function verifyPermissions(){
     if(permissionInfo?.status === PermissionStatus.UNDETERMINED){

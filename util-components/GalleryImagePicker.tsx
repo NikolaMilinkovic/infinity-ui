@@ -1,14 +1,15 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { Image, View, StyleSheet, Pressable, Animated, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Button from './Button';
 import { Colors } from '../constants/colors';
 import { useExpandAnimation } from '../hooks/useExpand';
 import { pickImage } from '../util-methods/GalleryPickImage';
+import { ProductImageTypes } from '../types/allTsTypes';
 
 interface PropTypes {
-  image: string | null,
-  setImage: (image: string | null) => void
+  image: ProductImageTypes | null,
+  setImage: (image: ProductImageTypes | null) => void
 }
 
 function GalleryImagePicker({ image, setImage }: PropTypes) {
@@ -17,7 +18,7 @@ function GalleryImagePicker({ image, setImage }: PropTypes) {
   async function handlePickImage(){
     const pickedImage = await pickImage();
     if(pickedImage){
-      setImage(pickedImage.uri);
+      setImage(pickedImage);
       setIsExpanded(true);
     }
   }
@@ -35,7 +36,7 @@ function GalleryImagePicker({ image, setImage }: PropTypes) {
     )
   }
   if(image && isExpanded){
-    imagePreview = <Image resizeMode="contain" source={{ uri: image }} style={styles.image}/>
+    imagePreview = <Image resizeMode="contain" source={{ uri: image.uri }} style={styles.image}/>
   }
 
   return (
