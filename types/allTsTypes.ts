@@ -92,7 +92,7 @@ export type ProductTypes = DressTypes | PurseTypes;
 export interface BuyerTypes {
   name: string
   address: string
-  phone: string
+  phone: string | number
 }
 export interface OrderProductTypes {
   itemReference: ProductTypes;
@@ -127,6 +127,9 @@ export interface NewOrderContextTypes {
 
   isReservation: boolean;
   setIsReservation: (isReservation:boolean) => void;
+
+  profileImage: string | null
+  setProfileImage: (image:string | null) => void;
 }
 
 export interface CourierTypes {

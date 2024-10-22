@@ -6,7 +6,12 @@ import { Colors } from '../constants/colors'
 import { popupMessage } from './PopupMessage'
 import Button from './Button'
 
-function ImagePicker({ onTakeImage, previewImage, setPreviewImage }) {
+interface PropTypes {
+  onTakeImage: (img:any) => void
+  previewImage: any
+  setPreviewImage: (img:any) => void
+}
+function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
   const [permissionInfo, requestPermission] = useCameraPermissions()
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpandAnimation = useRef(new Animated.Value(400)).current;
@@ -20,7 +25,7 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage }) {
   }, [isExpanded]);
 
   async function verifyPermissions(){
-    if(permissionInfo.status === PermissionStatus.UNDETERMINED){
+    if(permissionInfo?.status === PermissionStatus.UNDETERMINED){
       const permissionsResponse = await requestPermission();
       return permissionsResponse.granted;
     }
@@ -42,12 +47,12 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage }) {
       aspect: [3, 4],
     })
 
-    setPreviewImage(image.assets[0]);
-    onTakeImage(image.assets[0]);
+    setPreviewImage(image?.assets?.[0]);
+    onTakeImage(image?.assets?.[0]);
     setIsExpanded(true);
   }
 
-  function handleToggleExpand(event){
+  function handleToggleExpand(event:any){
     setIsExpanded(!isExpanded);
     event.stopPropagation();
   }
@@ -69,7 +74,7 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage }) {
       <Pressable onPress={takeImageHandler}>
         <Animated.View style={[styles.imagePreview, { height: toggleExpandAnimation }]}>
           <Pressable style={styles.toggleExpand} onPress={handleToggleExpand}>
-            <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={styles.toggleIcon} size={24}/>
+            <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} size={24}/>
           </Pressable>
           {imagePreview}
         </Animated.View>

@@ -5,10 +5,10 @@ import Button from '../../util-components/Button'
 import IconButton from '../../util-components/IconButton'
 import { AuthContext } from '../../store/auth-context'
 import { popupMessage } from '../../util-components/PopupMessage'
-import { ColorType } from '../../types/allTsTypes'
+import { ColorTypes } from '../../types/allTsTypes'
 
-function EditColorItem({ data }: { data: ColorType }) {
-  const [colorData, setColorData] = useState<ColorType>({
+function EditColorItem({ data }: { data: ColorTypes }) {
+  const [colorData, setColorData] = useState<ColorTypes>({
     _id: '',
     name: '',
     colorCode: ''

@@ -30,27 +30,35 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
   getCourierData: () => null,
 
   isReservation: false,
-  setIsReservation: () => {}
+  setIsReservation: () => {},
+
+  profileImage: null,
+  setProfileImage: () => {}
 })
 
 function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const [productReferences, setProductReferences] = useState<ProductTypes[]>([]);
   const [buyerData, setBuyerData] = useState<BuyerTypes | null>(null);
   const [productData, setProductData] = useState<OrderProductTypes[]>([]);
-  const [courierData, setCourierData] = useState<CourierTypes>(undefined);
+  const [courierData, setCourierData] = useState<CourierTypes | null>(null);
   const [isReservation, setIsReservation] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
+  // useEffect(() => {
+  //   betterConsoleLog('> Courier data,',courierData);
+  // },[courierData])
   // useEffect(() => {
   //   betterConsoleLog('> Logging product references: ', productReferences.length);
   // }, [productReferences])
-
-  useEffect(() => {
-    betterConsoleLog('> Logging product data: ', productData.length);
-  }, [productData])
-
   // useEffect(() => {
   //   betterConsoleLog('> Loggin buyer data: ', buyerData);
   // }, [buyerData])
+  // useEffect(() => {
+  //   betterConsoleLog('> Loggin product data: ', productData);
+  // }, [productData])
+  // useEffect(() => {
+  //   console.log('> Is Reservation:', isReservation);
+  // }, [isReservation])
 
   // PRODUCT REFERENCE => References of selected items
   const setProductReferencesHandler = (productsArr: ProductTypes[]) => {
@@ -120,11 +128,9 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
       address: '',
       phone: '',
     });
+    setIsReservation(false);
+    setProfileImage(null);
   }
-
-  useEffect(() => {
-    betterConsoleLog('> Product data is: ', productData);
-  }, [productData])
 
   // COURIER
   function setCourierDataHandler(courierData:CourierTypes){
@@ -133,13 +139,6 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   function getCourierDataHandler(){
     return courierData;
   }
-  useEffect(() => {
-    betterConsoleLog('> Logging out courier data from new order context', courierData);
-  }, [courierData])
-
-  useEffect(() => {
-    console.log('> isReservation: ', isReservation);
-  }, [isReservation])
 
   const value = useMemo(() => ({
     productReferences,
@@ -166,9 +165,12 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
 
     isReservation,
     setIsReservation: setIsReservation,
+
+    profileImage,
+    setProfileImage: setProfileImage,
     
     resetOrderData: resetOrderDataHandler
-  }), [productData, buyerData, productReferences, courierData, isReservation]);
+  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage]);
 
   return <NewOrderContext.Provider value={value}>{ children }</NewOrderContext.Provider>
 }

@@ -47,10 +47,6 @@ function CouriersContextProvider({ children }: CouriersContextProviderType){
     if(token) fetchCouriers(token);
   }, [token])
 
-  useEffect(() => {
-    betterConsoleLog('> Fetching couriers:', couriers);
-  }, [couriers])
-
   // SOCKETS
   useEffect(() => {
     if(socket){

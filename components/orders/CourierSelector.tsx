@@ -8,6 +8,7 @@ import { NewOrderContext } from '../../store/new-order-context';
 import { CourierTypes } from '../../types/allTsTypes';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
 import Button from '../../util-components/Button';
+import { useExpandAnimation } from '../../hooks/useExpand';
 
 interface PropTypes {
   isExpanded: boolean
@@ -21,37 +22,18 @@ interface DropdownTypes {
 }
 
 function CourierSelector({ isExpanded, setIsExpanded, onNext }: PropTypes) {
-  const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 0 : 107)).current;
   const couriersCtx = useContext(CouriersContext);
   const orderCtx = useContext(NewOrderContext);
   const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([]);
-  const [selectedCourier, setSelectedCourier] = useState<CourierTypes>();
+  const toggleExpandAnimation = useExpandAnimation(isExpanded, 0, 107, 180)
 
   useEffect(() => {
-    orderCtx.setCourierData(selectedCourier);
-  }, [selectedCourier])
-
-
-  // EXPAND ANIMATION
-  useEffect(() => {
-    Animated.timing(toggleExpandAnimation, {
-      toValue: isExpanded ? 107 : 0,
-      duration: 180,
-      useNativeDriver: false,
-    }).start();
-  }, [isExpanded, toggleExpandAnimation ]);
-
-  useEffect(() => {
-    let couriers: DropdownTypes[] = [];
-    couriersCtx.couriers.forEach(courier => {
-      const t = {
-        _id: courier._id,
-        name: courier.name,
-        deliveryPrice: courier.deliveryPrice
-      }
-      couriers.push(t);
-    });
-    setDropdownData(couriers)
+    const dropdownData = couriersCtx.couriers.map(courier => ({
+      _id: courier._id,
+      name: courier.name,
+      deliveryPrice: courier.deliveryPrice
+    }));
+    setDropdownData(dropdownData)
   }, [couriersCtx.couriers, setDropdownData])
 
   return (
@@ -65,7 +47,7 @@ function CourierSelector({ isExpanded, setIsExpanded, onNext }: PropTypes) {
       <Animated.ScrollView style={[styles.container,{height: toggleExpandAnimation}]}>
         <DropdownList
           data={dropdownData}
-          onSelect={setSelectedCourier}
+          onSelect={orderCtx.setCourierData}
           isDefaultValueOn={true}
           placeholder='Izaberite kurira za dostavu'
           defaultValueByIndex={1}

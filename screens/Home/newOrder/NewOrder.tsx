@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Animated, StyleSheet, ScrollView } from 'react-native'
+import { Animated, StyleSheet, ScrollView, View } from 'react-native'
 import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { NewOrderContext } from '../../../store/new-order-context';
 import SelectedProductsDisplay from '../../../components/orders/SelectedProductsList';
@@ -7,6 +7,8 @@ import SortUserInformationField from '../../../components/orders/SortUserInforma
 import ColorSizeSelectorsList from '../../../components/orders/ColorSizeSelectorsList';
 import NewOrderPreview from '../../../components/orders/NewOrderPreview';
 import CourierSelector from '../../../components/orders/CourierSelector';
+import Button from '../../../util-components/Button';
+import { Colors } from '../../../constants/colors';
 
 function NewOrder() {
   // Fade in animation
@@ -30,11 +32,7 @@ function NewOrder() {
   // BUYER INFORMATION
   const [isBuyerInfoOpen, setIsBuyerInfoOpen] = useState(false);
   const [buyerInfo, setBuyerInfo] = useState('');
-  const [buyerDataObject, setBuyerDataObject] = useState({
-    name: '',
-    address: '',
-    phone: '',
-  })
+
   function handleBuyerInfoOk(){
     setIsArticleListOpen(false);
     setIsBuyerInfoOpen(false);
@@ -74,19 +72,12 @@ function NewOrder() {
     }, 360)
   }
 
-  useEffect(() => {
-    console.log(isCourierPreviewOpen)
-  },[isCourierPreviewOpen])
-
   // ORDER PREVIEW SECTION
   const [isOrderPreviewOpen, setIsOrderPreviewOpen] = useState(false);
-  const [customPrice, setCustomPrice] = useState('');
-  function handleSubmitOrder(){
-
-  }
+  const [customPrice, setCustomPrice] = useState<string | number>('');
 
   // Reset order entries
-  function resetOrderData(){
+  function handleResetOrderData(){
     setIsArticleListOpen(true);
     setIsBuyerInfoOpen(false);
     setIsColorSizeSelectorsOpen(false);
@@ -95,14 +86,13 @@ function NewOrder() {
 
     // BUYER INFORMATION SECTION
     setBuyerInfo('');
-    setBuyerDataObject({
-      name: '',
-      address: '',
-      phone: '',
-    });
     // ORDER PREVIEW SECTION
     setCustomPrice('');
-    ordersCtx.setIsReservation(false);
+    ordersCtx.resetOrderData();
+  }
+
+  function handleSubmitOrder(){
+
   }
   
   return (
@@ -110,20 +100,18 @@ function NewOrder() {
       <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
       </Animated.View>
       <Animated.ScrollView style={[styles.scrollViewContainer, { opacity: fadeAnimation }]}>
-          <SelectedProductsDisplay
-            setIsExpanded={setIsArticleListOpen}
-            isExpanded={isArticleListOpen}
-            onNext={handleArticleListOk}
-            ordersCtx={ordersCtx}
-          />
+        <SelectedProductsDisplay
+          setIsExpanded={setIsArticleListOpen}
+          isExpanded={isArticleListOpen}
+          onNext={handleArticleListOk}
+          ordersCtx={ordersCtx}
+        />
         <SortUserInformationField
           setIsExpanded={setIsBuyerInfoOpen}
           isExpanded={isBuyerInfoOpen}
           onNext={handleBuyerInfoOk}
           buyerInfo={buyerInfo}
           setBuyerInfo={setBuyerInfo}
-          buyerDataObject={buyerDataObject}
-          setBuyerDataObject={setBuyerDataObject}
         />
         <ColorSizeSelectorsList
           ordersCtx={ordersCtx}
@@ -137,13 +125,29 @@ function NewOrder() {
           onNext={handleCourierSelectorOk}
         />
         <NewOrderPreview
-          ordersCtx={ordersCtx}
           isExpanded={isOrderPreviewOpen}
           setIsExpanded={setIsOrderPreviewOpen}
-          onReset={resetOrderData}
           customPrice={customPrice}
           setCustomPrice={setCustomPrice}
         />
+        <View style={styles.buttonsContainer}>
+          <Button
+            backColor={Colors.secondaryDark}
+            textColor={Colors.white}
+            containerStyles={[styles.button, {marginBottom: 6}]}
+            onPress={handleSubmitOrder}
+          >
+            Dodaj porudžbinu
+          </Button>
+          <Button
+            backColor={Colors.error}
+            textColor={Colors.white}
+            containerStyles={[styles.button, {marginBottom: 6}]}
+            onPress={handleResetOrderData}
+          >
+            Odustani i resetuj
+          </Button>
+        </View>
       </Animated.ScrollView>
     </>
   )
@@ -155,7 +159,17 @@ const styles = StyleSheet.create({
   },
   scrollViewContainer: {
     paddingHorizontal: 16
-  }
+  },
+  buttonsContainer: {
+    marginTop: 'auto',
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 1,
+    gap: 10
+  },
+  button: {
+    flex: 2,
+  },
 })
 
 export default NewOrder

@@ -7,6 +7,7 @@ import { Colors } from '../../constants/colors';
 import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
+import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 
 interface PropTypes {
   ordersCtx: NewOrderContextTypes
@@ -15,35 +16,15 @@ interface PropTypes {
   onNext: () => void
 }
 function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }: PropTypes) {
-  const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 0 : 128)).current;
-  const [isContentVisible, setIsContentVisible] = useState(false);
-
-  useEffect(() => {
-    if(isExpanded){
-      setIsContentVisible(true)
-    }
-  }, [isExpanded])
-
+  // const [isContentVisible, setIsContentVisible] = useState(false);
+  // const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 0, 128, 180);
   function handleToggleExpand(){
     if (isExpanded) {
       setIsExpanded(false);
     } else {
-      setIsContentVisible(true);
       setIsExpanded(true);
     }
   }
-  // EXPAND ANIMATION
-  useEffect(() => {
-    Animated.timing(toggleExpandAnimation, {
-      toValue: isExpanded ? 128 : 0,
-      duration: 180,
-      useNativeDriver: false,
-    }).start(() => {
-      if(!isExpanded) {
-        setIsContentVisible(false);
-      }
-    });
-  }, [isExpanded]);
 
   function handleOnNext(){
     if(ordersCtx.productData.length === 0) return popupMessage('Morate izabrati proizvod kako bi nastavili dalje', 'danger');

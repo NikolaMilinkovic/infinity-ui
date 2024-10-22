@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import RadioButtonsGroup from 'react-native-radio-buttons-group';
-import { DressColorTypes, PurseColorTypes } from '../../types/allTsTypes';
+import { DressColorTypes, DressTypes, ProductTypes, PurseColorTypes } from '../../types/allTsTypes';
 import { Pressable, StyleSheet, Text, View, Animated } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
@@ -11,28 +11,27 @@ interface ButtonTypes {
   value: string,
   label: string,
 }
-
-function ColorSizeSelector({ product, context, index }) {
+interface Product {
+  itemReference: DressTypes
+  selectedColor: string
+  selectedSize: string
+}
+interface PropTypes {
+  product: Product
+  index: number
+}
+function ColorSizeSelector({ product, index }: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(true);
   const orderCtx = useContext(NewOrderContext);
-
-  
-  
   const [productColors, setProductColors] = useState([]);
-  
-  
   const [colorButtons, setColorButtons] = useState<ButtonTypes[]>([]);
-  
-  
   const [sizeButtons, setSizeButtons] = useState<ButtonTypes[]>([]);
-  
   const styles = getStyles(product.selectedColor, product.selectedSize);
 
   
   useEffect(() => {
+    betterConsoleLog('> Logging product', product)
     if(!product) return;
-    if(!product.itemReference) return;
-    if(!product.itemReference.stockType) return;
 
     if(product.itemReference.stockType === 'Boja-Veličina-Količina'){
       const filteredColors = product.itemReference.colors.filter((color: DressColorTypes) => 
@@ -41,7 +40,6 @@ function ColorSizeSelector({ product, context, index }) {
       setProductColors(filteredColors)
     }
     if(product.itemReference.stockType === 'Boja-Količina'){
-      betterConsoleLog('> Logging robicu', product.itemReference)
       const filteredColors = product.itemReference.colors.filter((color: PurseColorTypes) => 
         color.stock > 0
       );
@@ -49,8 +47,8 @@ function ColorSizeSelector({ product, context, index }) {
     }
   }, [product])
 
+  // CREATE RADIO BUTTONS
   useEffect(() => {
-    // CREATE RADIO BUTTONS
     if(productColors){
       const filteredColors = productColors
         .map((color: DressColorTypes, index) => ({
@@ -66,13 +64,13 @@ function ColorSizeSelector({ product, context, index }) {
   },[productColors])
 
 
+  // Filter sizes with stock > 0
   useEffect(() => {
     if(product.itemReference.stockType === 'Boja-Količina') return;
     if (product.selectedColor) {
       const selectedColorObj = product.itemReference.colors.find((color) => color.color === product.selectedColor);
       
       if (selectedColorObj) {
-        // Filter sizes with stock > 0
         const filteredSizes = selectedColorObj.sizes
           .filter((size) => size.stock > 0)
           .map((size) => ({
@@ -86,16 +84,12 @@ function ColorSizeSelector({ product, context, index }) {
     }
   }, [product.selectedColor]);
 
-  useEffect(() => {
-    console.log('> Selected size is: ', product.selectedSize)
-  },[product.selectedSize])
-
-  function handleColorSelect(index, color, product){
+  function handleColorSelect(index:number, color:string, product:ProductTypes){
     orderCtx.updateProductColorByIndex(index, color);
     if(product.hasOwnProperty('selectedSize'))
       orderCtx.updateProductSizeByIndex(index, '');
   }
-  function handleSizeSelect(index, size, product){
+  function handleSizeSelect(index:number, size:string, product:ProductTypes){
     if(product.hasOwnProperty('selectedSize'))
       orderCtx.updateProductSizeByIndex(index, size);
   }

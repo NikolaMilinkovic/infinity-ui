@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation'
 import Button from '../../util-components/Button'
 import { popupMessage } from '../../util-components/PopupMessage'
+import { useExpandAnimation, useExpandAnimationWithContentVisibility } from '../../hooks/useExpand'
 
 interface PropTypes{
   ordersCtx: NewOrderContextTypes
@@ -17,30 +18,20 @@ interface PropTypes{
 }
 function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext }: PropTypes) {
   const fadeAnimation = useToggleFadeAnimation(isExpanded, 180);
-  const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 10 : 250)).current;
+
+  // Expand animation that makescontent visible when expanded
+  // Used to fix the padding issue when expand is collapsed
   const [isContentVisible, setIsContentVisible] = useState(true);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 250)
 
   function handleToggleExpand(){
     if (isExpanded) {
       setIsExpanded(false);
     } else {
-      setIsContentVisible(true);
       setIsExpanded(true);
     }
   }
 
-  // EXPAND ANIMATION
-  useEffect(() => {
-    Animated.timing(toggleExpandAnimation, {
-      toValue: isExpanded ? 250 : 10,
-      duration: 180,
-      useNativeDriver: false,
-    }).start(() => {
-      if(!isExpanded) {
-        setIsContentVisible(false);
-      }
-    });
-  }, [isExpanded]);
 
   // ON NEXT
   function handleOnNext(){

@@ -1,27 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { NewOrderContextTypes } from '../../types/allTsTypes'
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
 import { NewOrderContext } from '../../store/new-order-context';
-import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
 import InputField from '../../util-components/InputField';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
 import CustomCheckbox from '../../util-components/CustomCheckbox';
 
 
 interface PropTypes {
-  ordersCtx: NewOrderContextTypes
   isExpanded: boolean
   setIsExpanded: (expanded: boolean) => void
-  onReset: () => void
-  customPrice: string
-  setCustomPrice: (price: string | number | undefined) => void
+  customPrice: string | number
+  setCustomPrice: (price: string | number) => void
 }
 
 
-function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset, customPrice, setCustomPrice }: PropTypes) {
+function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPrice }: PropTypes) {
   const orderCtx = useContext(NewOrderContext)
   const [itemsPrice, setItemsPrice] = useState<string | number>('N/A');
 
@@ -36,18 +31,17 @@ function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset, custom
         setCustomPrice((calc + orderCtx.courierData?.deliveryPrice).toString());
     } else {
       setItemsPrice(0);
+      setCustomPrice(orderCtx.courierData?.deliveryPrice.toString());
     }
-  }, [orderCtx.productData])
+  }, [orderCtx.productData, orderCtx.courierData])
+
+  // Function to calculate total price
 
   function handleToggleExpand(){
     setIsExpanded(!isExpanded)
   }
   function handleSubmitOrder(){
     popupMessage('> Porudžbina upsešno dodata', 'success');
-    orderCtx.resetOrderData();
-    onReset();
-  }
-  function handleResetOrderData(){
     orderCtx.resetOrderData();
     onReset();
   }
@@ -156,11 +150,12 @@ function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset, custom
             </View>
             <View style={styles.rowContainer}>
               <Text style={styles.label}>Ukupna cena artikala:</Text>
-              <Text style={styles.information}>{Number(itemsPrice) | 0} din</Text>
+              <Text style={styles.information}>{Number(itemsPrice) || 0} din</Text>
             </View>
+            {/* Final price */}
             <View style={styles.rowContainer}>
               <Text style={styles.label}>Ukupno:</Text>
-              <Text style={styles.information}>{Number(itemsPrice) + Number(orderCtx.courierData?.deliveryPrice) | 0} din</Text>
+              <Text style={styles.information}>{Number(itemsPrice) + Number(orderCtx.courierData?.deliveryPrice) || 0} din</Text>
             </View>
             <InputField
               label='Finalna cena'
@@ -173,24 +168,6 @@ function NewOrderPreview({ ordersCtx, isExpanded, setIsExpanded, onReset, custom
           </View>
         </View>
       )}
-      <View style={styles.buttonsContainer}>
-        <Button
-          backColor={Colors.secondaryDark}
-          textColor={Colors.white}
-          containerStyles={[styles.button, {marginBottom: 6}]}
-          onPress={handleSubmitOrder}
-        >
-          Dodaj porudžbinu
-        </Button>
-        <Button
-          backColor={Colors.error}
-          textColor={Colors.white}
-          containerStyles={[styles.button, {marginBottom: 6}]}
-          onPress={handleResetOrderData}
-        >
-          Odustani i resetuj
-        </Button>
-      </View>
     </Animated.ScrollView>
   )
 }
@@ -238,16 +215,6 @@ const styles = StyleSheet.create({
   },
   information: {
     flex: 2.5,
-  },
-  buttonsContainer: {
-    marginTop: 'auto',
-    display: 'flex',
-    flexDirection: 'row',
-    flex: 1,
-    gap: 10
-  },
-  button: {
-    flex: 2,
   },
   selectedItemsContainer: {
     borderWidth: 0.5,

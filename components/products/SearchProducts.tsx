@@ -11,6 +11,8 @@ import Button from '../../util-components/Button';
 import DropdownList from '../../util-components/DropdownList';
 import { CategoriesContext } from '../../store/categories-context';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
+import { useExpandAnimation } from '../../hooks/useExpand';
+import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 interface SearchProductsPropTypes {
   searchData: string
@@ -21,20 +23,11 @@ interface SearchProductsPropTypes {
 }
 function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, updateSearchParam }: SearchProductsPropTypes) {
   // EXPAND ANIMATION & TOGGLING
-  const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 10 : 568)).current;
+  const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, 568, 180);
   const toggleFade = useToggleFadeAnimation(isExpanded, 180);
   function handleToggleExpand(){
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
   }
-
-  // EXPAND ANIMATION
-  useEffect(() => {
-    Animated.timing(toggleExpandAnimation, {
-      toValue: isExpanded ? 568 : 10,
-      duration: 180,
-      useNativeDriver: false,
-    }).start();
-  }, [isExpanded]);
 
   // RADIO BUTTONS
   const radioButtons: RadioButtonProps[] = useMemo(() => ([
@@ -88,27 +81,37 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
       value: item.name
     })));
   }, [colorsCtx.colors])
-  useEffect(() => {
-    updateSearchParam('onColorsSearch', selectedColors)
-  }, [selectedColors])
 
 
   // SIZE CHECKBOXES
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-  useEffect(() => {
-    updateSearchParam('onSizeSearch', selectedSizes);
-  },[selectedSizes])
 
   // CATEGORIES
+  interface CategoryTypes {
+    _id: string
+    name: string
+    stockType: string
+    __v: number
+  }
   const categoriesCtx = useContext(CategoriesContext);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryTypes | null>(null);
   useEffect(() => {
-    if(selectedCategory && selectedCategory?.name === 'Resetuj izbor'){
-      resetDropdown();
-      return 
-    }
-    updateSearchParam('onCategorySearch', selectedCategory?.name)
+    betterConsoleLog('> Selected category', selectedCategory);
   }, [selectedCategory])
+  useEffect(() => {
+    if (selectedCategory && selectedCategory?.name === 'Resetuj izbor') {
+      resetDropdown();
+      return; 
+    }
+    updateSearchParam('onCategorySearch', selectedCategory?.name);
+  }, [selectedCategory]);
+
+  // COLOR | SIZE SEARCH UPDATE
+  useEffect(() => {
+    updateSearchParam('onColorsSearch', selectedColors);
+    updateSearchParam('onSizeSearch', selectedSizes);
+  }, [selectedColors, selectedSizes]);
+
   // Dropdown Reset
   const [resetKey, setResetKey] = useState(0);
   function resetDropdown(){

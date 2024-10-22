@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Pressable, StyleSheet } from 'react-native'
 import { View, TextInput, Text, Animated } from 'react-native'
 import Button from '../../util-components/Button';
@@ -9,6 +9,9 @@ import { AuthContext } from '../../store/auth-context';
 import { popupMessage } from '../../util-components/PopupMessage';
 import InputField from '../../util-components/InputField';
 import { NewOrderContext } from '../../store/new-order-context';
+import GalleryImagePicker from '../../util-components/GalleryImagePicker';
+import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
+import { handleBuyerDataInputSort } from '../../util-methods/InputSortMethods';
 
 interface BuyerDataObjectTypes {
   name: string
@@ -21,92 +24,44 @@ interface PropTypes {
   onNext: () => void
   buyerInfo: string
   setBuyerInfo: (info: string) => void
-  buyerDataObject: BuyerDataObjectTypes
-  setBuyerDataObject: (obj:BuyerDataObjectTypes ) => void
 }
 
-function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo, setBuyerInfo, buyerDataObject, setBuyerDataObject}: PropTypes) {
+function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo, setBuyerInfo}: PropTypes) {
   const toggleFade = useToggleFadeAnimation(isExpanded, 180);
-  const toggleExpandAnimation = useRef(new Animated.Value(isExpanded ? 10 : 428)).current;
-  const [isContentVisible, setIsContentVisible] = useState(false);
   const authCtx = useContext(AuthContext);
   const orderCtx = useContext(NewOrderContext)
-
-  useEffect(() => {
-    if(isExpanded){
-      setIsContentVisible(true)
-    }
-  }, [isExpanded])
+  
+  // Expand animation that makescontent visible when expanded
+  // Used to fix the padding issue when expand is collapsed
+  const [isContentVisible, setIsContentVisible] = useState(false);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 591, 180);
 
   function handleToggleExpand(){
     if (isExpanded) {
       setIsExpanded(false);
     } else {
-      setIsContentVisible(true);
       setIsExpanded(true);
     }
   }
-  // EXPAND ANIMATION
-  useEffect(() => {
-    Animated.timing(toggleExpandAnimation, {
-      toValue: isExpanded ? 428 : 10,
-      duration: 180,
-      useNativeDriver: false,
-    }).start(() => {
-      if(!isExpanded) {
-        setIsContentVisible(false);
-      }
-    });
-  }, [isExpanded]);
 
+  // Sends buyer data for sorting and resets the input field
   async function handleInputSort(){
-    if(buyerInfo.trim() === ''){
-      popupMessage('Morate uneti podatke o kupcu','danger')
-      return;
-    }
-    try{
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/orders/parse`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${authCtx.token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ orderData: buyerInfo })
-      })
-
-      // Handle errors
-      if (!response.ok) {
-        const parsedResponse = await response.json();
-        popupMessage(parsedResponse.message, 'danger');
-        return;
-      }
-      const parsedResponse = await response.json();
-      setBuyerDataObject({
-        name: parsedResponse.data.name,
-        address: parsedResponse.data.address,
-        phone: parsedResponse.data.phone,
-      });
-      popupMessage(parsedResponse.message, 'success')
-    } catch(error){
-      console.error(error);
-      throw new Error('Došlo je do problema prilikom dodavanja kategorije');
-    }
+    const result = await handleBuyerDataInputSort(authCtx.token || '', buyerInfo, orderCtx.setBuyerData);
+    if(result) setBuyerInfo('');
   }
 
   
   // ON NEXT
   function handleOnNext(){
-    if(buyerDataObject.name && buyerDataObject.address && buyerDataObject.phone){
+    if(orderCtx.buyerData?.name && orderCtx.buyerData?.address && orderCtx.buyerData?.phone && orderCtx.profileImage){
       onNext()
     } else {
-      if(!buyerDataObject.name) return popupMessage('Unesite ime / prezime kupca', 'danger');
-      if(!buyerDataObject.address) return popupMessage('Unesite adresu kupca', 'danger');
-      if(!buyerDataObject.phone) return popupMessage('Unesite broj telefona kupca', 'danger');
+      if(!orderCtx.buyerData?.name) return popupMessage('Unesite ime / prezime kupca', 'danger');
+      if(!orderCtx.buyerData?.address) return popupMessage('Unesite adresu kupca', 'danger');
+      if(!orderCtx.buyerData?.phone) return popupMessage('Unesite broj telefona kupca', 'danger');
+      if(!orderCtx.profileImage) return popupMessage('Unesite sliku profila kupca', 'danger');
     }
   }
-  useEffect(() => {
-    orderCtx.setBuyerData(buyerDataObject);
-  }, [buyerDataObject])
   
   return (
     <View>
@@ -118,6 +73,10 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
 
       {isContentVisible && (
         <Animated.View style={{height: toggleExpandAnimation, opacity: toggleFade, overflow: 'hidden', paddingHorizontal: 8}}>
+          <GalleryImagePicker
+            image={orderCtx.profileImage}
+            setImage={orderCtx.setProfileImage}
+          />
           <TextInput 
             style={styles.input}
             multiline={true}
@@ -138,22 +97,22 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
           </Button>
           <InputField
             label='Ime i Prezime'
-            inputText={buyerDataObject.name}
-            setInputText={(text:(string | number | undefined)) => setBuyerDataObject((prev) => ({ ...prev, name: text }))}
+            inputText={orderCtx.buyerData?.name}
+            setInputText={(text:(string | number | undefined)) => orderCtx.setBuyerData((prev) => ({ ...prev, name: text }))}
             labelBorders={false}
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
             label='Adresa'
-            inputText={buyerDataObject.address}
-            setInputText={(text:(string | number | undefined)) => setBuyerDataObject((prev) => ({ ...prev, address: text }))}
+            inputText={orderCtx.buyerData?.address}
+            setInputText={(text:(string | number | undefined)) => orderCtx.setBuyerData((prev) => ({ ...prev, address: text }))}
             labelBorders={false}
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
             label='Broj telefona'
-            inputText={buyerDataObject.phone}
-            setInputText={(text:(string | number | undefined)) => setBuyerDataObject((prev) => ({ ...prev, phone: Number(text) }))}
+            inputText={orderCtx.buyerData?.phone}
+            setInputText={(text:(string | number | undefined)) => orderCtx.setBuyerData((prev) => ({ ...prev, phone: Number(text) }))}
             labelBorders={false}
             containerStyles={styles.inputFieldStyle}
             keyboard='numeric'
@@ -199,7 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     padding: 10,
     fontSize: 16,
-    maxHeight: 140,
+    maxHeight: 135,
   },
   sortButton: {
     marginBottom: 5

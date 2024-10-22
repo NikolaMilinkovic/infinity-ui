@@ -11,9 +11,9 @@ import { betterConsoleLog } from '../util-methods/LogMethods';
 
 interface DropdownPropTypes{
   data: any[]
-  placeholder: string
+  placeholder?: string
   onSelect: (selectedItem: any) => void
-  isDefaultValueOn: boolean
+  isDefaultValueOn?: boolean
   defaultValue?: any
   reference?: any
   buttonContainerStyles?: any
