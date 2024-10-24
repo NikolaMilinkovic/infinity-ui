@@ -95,13 +95,17 @@ export interface BuyerTypes {
   phone: string | number
 }
 export interface OrderProductTypes {
-  itemReference: ProductTypes;
+  itemReference: ProductTypes | string;
+  name: string;
+  category: string;
+  price: number;
+  stockType: string;
+  image: ImageTypes;
+  mongoDB_type: string;
   selectedColor: string;
   selectedColorId: string;
-  selectedSize: string;
-  selectedSizeId: string;
-  productType: string;
-  quantity: number;
+  selectedSize?: string;
+  selectedSizeId?: string;
 }
 
 export interface NewOrderContextTypes {

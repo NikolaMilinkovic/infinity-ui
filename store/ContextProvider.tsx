@@ -8,6 +8,7 @@ import PursesContextProvider from './purses-context';
 import AllProductsContextProvider from './all-products-context';
 import NewOrderContextProvider from './new-order-context';
 import CouriersContextProvider from './couriers-context';
+import OrdersContextProvider from './orders-context';
 
 interface ContextChildrenType {
   children: ReactNode;
@@ -24,7 +25,9 @@ const ContextProvider: React.FC<ContextChildrenType> = ({ children }) => {
                 <PursesContextProvider>
                   <AllProductsContextProvider>
                     <NewOrderContextProvider>
-                      {children}
+                      <OrdersContextProvider>
+                        {children}
+                      </OrdersContextProvider>
                     </NewOrderContextProvider>
                   </AllProductsContextProvider>
                 </PursesContextProvider>

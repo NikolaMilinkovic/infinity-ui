@@ -55,6 +55,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   // Check to see if all products have selectedColor & selectedSize where applicable
   function validateProductData(){
     const isValid = productData.every(product => {
+      // product.itemReference = product.itemReference._id;
       const hasSelectedColor = product.selectedColor !== undefined && product.selectedColor !== "";
       const hasSelectedSize = product.selectedSize !== undefined ? product.selectedSize !== "" : true; // Consider true if selectedSize is missing
     

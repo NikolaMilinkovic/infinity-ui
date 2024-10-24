@@ -52,15 +52,36 @@ function DisplayProduct({ item }: DisplayProductProps) {
       if(item.stockType === 'Boja-Veličina-Količina'){
         const productObj = {
           itemReference: item,
+          name: item.name,
+          category: item.category,
+          price: item.price,
+          stockType: item.stockType,
+          image: {
+            uri: item.image.uri,
+            imageName: item.image.imageName
+          },
+          mongoDB_type: 'Dress',
           selectedColor: '',
+          selectedColorId: '',
           selectedSize: '',
+          selectedSizeId: '',
         }
         newOrderCtx.addProduct(productObj);
       }
       if(item.stockType === 'Boja-Količina'){
         const productObj = {
           itemReference: item,
+          name: item.name,
+          category: item.category,
+          price: item.price,
+          stockType: item.stockType,
+          image: {
+            uri: item.image.uri,
+            imageName: item.image.imageName
+          },
+          mongoDB_type: 'Purse',
           selectedColor: '',
+          selectedColorId: '',
         }
         newOrderCtx.addProduct(productObj);
       }
