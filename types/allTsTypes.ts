@@ -97,10 +97,13 @@ export interface BuyerTypes {
 export interface OrderProductTypes {
   itemReference: ProductTypes;
   selectedColor: string;
+  selectedColorId: string;
   selectedSize: string;
+  selectedSizeId: string;
   productType: string;
   quantity: number;
 }
+
 export interface NewOrderContextTypes {
   productReferences: ProductTypes[];
   addProductReference: (product: ProductTypes) => void;
@@ -113,8 +116,8 @@ export interface NewOrderContextTypes {
   removeProduct: (index: number) => void;
   setProductsData: (products: OrderProductTypes[]) => void;
   getProductsData: () => OrderProductTypes[];
-  updateProductColorByIndex: (index: number, selectedColor: string) => void;
-  updateProductSizeByIndex: (index: number, selectedSize: string) => void;
+  updateProductColorByIndex: (index: number, selectedColorObj: (DressColorTypes | PurseColorTypes)) => void;
+  updateProductSizeByIndex: (index: number, selectedSizeObj: ColorSizeTypes) => void;
 
   buyerData: BuyerTypes | null;
   setBuyerData: (info: BuyerTypes) => void;

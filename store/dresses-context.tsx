@@ -63,7 +63,6 @@ function DressesContextProvider({ children }: DressContextProviderType) {
 
   // Event handlers for socket updates
   function handleActiveDressAdded(newDress: DressTypes) {
-    betterConsoleLog('> Adding new active dress from dresses ctx', newDress)
     setActiveDresses((prevDresses) => [...prevDresses, newDress]);
   }
 
@@ -101,6 +100,59 @@ function DressesContextProvider({ children }: DressContextProviderType) {
     });
   }
 
+  // Function to increase stock for a specific dress, color, and size
+  const increaseStock = (dressId: string, colorId: string, sizeId: string, increment: number) => {
+    setActiveDresses((prevDresses) =>
+      prevDresses.map((dress) => {
+        if (dress._id === dressId) {
+          return {
+            ...dress,
+            colors: dress.colors.map((color) => {
+              if (color._id === colorId) {
+                return {
+                  ...color,
+                  sizes: color.sizes.map((size) =>
+                    size._id === sizeId ? { ...size, stock: size.stock + increment } : size
+                  ),
+                };
+              }
+              return color;
+            }),
+          };
+        }
+        return dress;
+      })
+    );
+  };
+
+  // Function to decrease stock for a specific dress, color, and size
+  const decreaseStock = (dressId: string, colorId: string, sizeId: string, decrement: number) => {
+    setActiveDresses((prevDresses) =>
+      prevDresses.map((dress) => {
+        if (dress._id === dressId) {
+          return {
+            ...dress,
+            colors: dress.colors.map((color) => {
+              if (color._id === colorId) {
+                return {
+                  ...color,
+                  sizes: color.sizes.map((size) =>
+                    size._id === sizeId && size.stock - decrement >= 0
+                      ? { ...size, stock: size.stock - decrement }
+                      : size
+                  ),
+                };
+              }
+              return color;
+            }),
+          };
+        }
+        return dress;
+      })
+    );
+  };
+
+
   // Set up socket listeners
   useEffect(() => {
     if (socket) {
@@ -110,6 +162,8 @@ function DressesContextProvider({ children }: DressContextProviderType) {
       socket.on('inactiveDressRemoved', handleInactiveDressRemoved);
       socket.on('activeDressToInactive', handleActiveToInactive);
       socket.on('inactiveDressToActive', handleInactiveToActive);
+      socket.on('handleStockIncrease', increaseStock);
+      socket.on('handleStockDecrease', decreaseStock);
 
       return () => {
         socket.off("activeDressAdded", handleActiveDressAdded);
@@ -118,6 +172,8 @@ function DressesContextProvider({ children }: DressContextProviderType) {
         socket.off("inactiveDressRemoved", handleInactiveDressRemoved);
         socket.off("activeDressToInactive", handleActiveToInactive);
         socket.off("inactiveDressToActive", handleInactiveToActive);
+        socket.off('handleStockIncrease', increaseStock);
+        socket.off('handleStockDecrease', decreaseStock);
       };
     }
   }, [socket]);

@@ -97,18 +97,15 @@ function NewOrder() {
   }
 
   async function handleSubmitOrder(){
-    console.log('> handle submit order running..')
     try{
       // get order form with all the data from new-order-context
       const order = orderCtx.createOrderHandler()
-      betterConsoleLog('Logging out order form', order)
+      // betterConsoleLog('Logging out order form', order)
       if(order === undefined) return;
   
       // Send the data via fetch
       if(!token) return popupMessage('Autentifikacioni token ne postoji!', 'danger');
-      console.log('Adding new order..')
       const response = await addNewOrder(order, token, 'orders');
-      console.log(response);
   
       if(response){
         handleResetOrderData();

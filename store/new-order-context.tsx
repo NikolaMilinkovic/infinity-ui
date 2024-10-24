@@ -1,6 +1,6 @@
 import { createContext, useState, ReactNode, useMemo, useEffect } from "react";
 import { betterConsoleLog } from "../util-methods/LogMethods";
-import { NewOrderContextTypes, BuyerTypes, ProductTypes, OrderProductTypes, CourierTypes, ProductImageTypes } from "../types/allTsTypes";
+import { NewOrderContextTypes, BuyerTypes, ProductTypes, OrderProductTypes, CourierTypes, ProductImageTypes, DressColorTypes, PurseColorTypes, ColorSizeTypes } from "../types/allTsTypes";
 import { popupMessage } from "../util-components/PopupMessage";
 interface ContextChildrenTypes {
   children: ReactNode;
@@ -144,9 +144,9 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   // useEffect(() => {
   //   console.log('> Is Reservation:', isReservation);
   // }, [isReservation])
-    useEffect(() => {
-    console.log('> Profile image is:', profileImage);
-  }, [profileImage])
+  // useEffect(() => {
+  //   console.log('> Profile image is:', profileImage);
+  // }, [profileImage])
 
   // PRODUCT REFERENCE => References of selected items
   const setProductReferencesHandler = (productsArr: ProductTypes[]) => {
@@ -175,25 +175,27 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const getProductsDataHandler = () => {
     return productData;
   }
-  const updateProductColorByIndexHandler = (index: number, selectedColor: string) => {
+  const updateProductColorByIndexHandler = (index: number, selectedColorObj: (DressColorTypes | PurseColorTypes)) => {
     setProductData((prev) => {
       const updatedProducts = [...prev]; // Clone the array
       if (updatedProducts[index]) {
         updatedProducts[index] = {
           ...updatedProducts[index],  // Keep other product fields
-          selectedColor: selectedColor,
+          selectedColor: selectedColorObj.color,
+          selectedColorId: selectedColorObj._id,
         };
       }
       return updatedProducts;
     });
   };
-  const updateProductSizeByIndexHandler = (index: number, selectedSize: string) => {
+  const updateProductSizeByIndexHandler = (index: number, selectedSizeObj: ColorSizeTypes) => {
     setProductData((prev) => {
       const updatedProducts = [...prev]; // Clone the array
       if (updatedProducts[index]) {
         updatedProducts[index] = {
           ...updatedProducts[index],  // Keep other product fields
-          selectedSize: selectedSize,
+          selectedSize: selectedSizeObj.size,
+          selectedSizeId: selectedSizeObj._id,
         };
       }
       return updatedProducts;

@@ -1,4 +1,3 @@
-import { betterConsoleLog } from "./LogMethods";
 import { ColorSizeTypes, DressTypes, PurseTypes } from "../types/allTsTypes";
 type ProductType = DressTypes | PurseTypes;
 interface SearchParamsType {
@@ -22,11 +21,8 @@ export function serachProducts(searchData: string, allActiveProducts: ProductTyp
   // Filter by categories
   let categoriesBasedSearch = nameBasedSearch;
   if(searchParams.onCategorySearch){
-    console.log(searchParams.onCategorySearch);
     categoriesBasedSearch = filterByCategories(nameBasedSearch, searchParams.onCategorySearch)
   }
-
-  betterConsoleLog('> Category filter returns:', categoriesBasedSearch);
 
   // Filter by color
   let colorBasedSearch = categoriesBasedSearch;
@@ -143,7 +139,6 @@ function searchItemsBySize(product: ProductType, searchSizes: string[]): boolean
         searchSizes.includes(sizeObj.size) && sizeObj.stock > 0
       )
     );
-    betterConsoleLog('> Matches with UNI are', matches);
     return matches
   }
   return false;

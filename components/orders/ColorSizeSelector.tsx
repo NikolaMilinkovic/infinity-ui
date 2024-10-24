@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import RadioButtonsGroup from 'react-native-radio-buttons-group';
-import { DressColorTypes, DressTypes, ProductTypes, PurseColorTypes } from '../../types/allTsTypes';
+import { DressColorTypes, DressTypes, OrderProductTypes, ProductTypes, PurseColorTypes } from '../../types/allTsTypes';
 import { Pressable, StyleSheet, Text, View, Animated } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NewOrderContext } from '../../store/new-order-context';
+import { betterConsoleLog } from '../../util-methods/LogMethods';
 interface ButtonTypes {
   id: string,
   value: string,
@@ -24,6 +24,7 @@ function ColorSizeSelector({ product, index }: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(true);
   const orderCtx = useContext(NewOrderContext);
   const [productColors, setProductColors] = useState([]);
+  const [selectedColor, setSelectedColor] = useState('');
   const [colorButtons, setColorButtons] = useState<ButtonTypes[]>([]);
   const [sizeButtons, setSizeButtons] = useState<ButtonTypes[]>([]);
   const styles = getStyles(product.selectedColor, product.selectedSize);
@@ -54,7 +55,7 @@ function ColorSizeSelector({ product, index }: PropTypes) {
         .map((color: DressColorTypes, index) => ({
           id: `${color.color}`,
           label: color.color,
-          value: color.color
+          value: color._id
         }
       )
     );
@@ -76,7 +77,7 @@ function ColorSizeSelector({ product, index }: PropTypes) {
           .map((size) => ({
             id: size.size,
             label: size.size,
-            value: size.size,
+            value: size._id,
           }));
   
         setSizeButtons(filteredSizes);
@@ -84,14 +85,25 @@ function ColorSizeSelector({ product, index }: PropTypes) {
     }
   }, [product.selectedColor]);
 
-  function handleColorSelect(index:number, color:string, product:ProductTypes){
-    orderCtx.updateProductColorByIndex(index, color);
-    if(product.hasOwnProperty('selectedSize'))
-      orderCtx.updateProductSizeByIndex(index, '');
+  function handleColorSelect(index:number, color:string, product: OrderProductTypes){
+    // Filter all colors and find the selected color object
+    const colorObj = product.itemReference.colors.find((obj) => obj.color === color);
+
+    // Update the order object & cache selected color obj
+    setSelectedColor(colorObj)
+    orderCtx.updateProductColorByIndex(index, colorObj);
+    if(product.hasOwnProperty('selectedSize')){
+      const sizeObj = {_id: '', size: ''}
+      orderCtx.updateProductSizeByIndex(index, sizeObj);
+    }
   }
-  function handleSizeSelect(index:number, size:string, product:ProductTypes){
-    if(product.hasOwnProperty('selectedSize'))
-      orderCtx.updateProductSizeByIndex(index, size);
+
+  function handleSizeSelect(index:number, size:string, product: OrderProductTypes){
+    // Find the size object and update the order object with selected size & id
+    if(product.hasOwnProperty('selectedSize')){
+      const sizeObj = selectedColor.sizes.find((obj) => obj.size === size);
+      orderCtx.updateProductSizeByIndex(index, sizeObj);
+    }
   }
 
   if(!product) return;
@@ -112,6 +124,7 @@ function ColorSizeSelector({ product, index }: PropTypes) {
             <Text style={styles.colorHeader}>  Boja</Text>
             <RadioButtonsGroup
               radioButtons={colorButtons} 
+              // onPress={(value) => handleColorSelect(index, value, product)}
               onPress={(color) => handleColorSelect(index, color, product)}
               containerStyle={styles.radioButtonsContainer}
               selectedId={product.selectedColor}

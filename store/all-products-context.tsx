@@ -6,6 +6,8 @@ import { PursesContext } from "./purses-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
 import { DressTypes, PurseTypes } from "../types/allTsTypes";
+import { popupMessage } from "../util-components/PopupMessage";
+import { decreaseDressStock, decreasePurseStock } from "../util-methods/StockMethods";
 
 
 interface AllProductsContextType {
@@ -39,25 +41,8 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
   const socketCtx = useContext(SocketContext)
   const socket = socketCtx?.socket
 
-  // Setters
-  const setActiveProductsHandler = (products: (DressTypes | PurseTypes)[]) => {
-    setActiveProducts(products);
-  };
-  const setInactiveProductsHandler = (products: (DressTypes | PurseTypes)[]) => {
-    setInactiveProducts(products);
-  };
-  const setAllProductsHandler = (products: (DressTypes | PurseTypes)[]) => {
-    setAllProducts(products);
-  };
-
-  // Getters with memoization
-  const getAllActiveProductsHandler = () => activeProducts;
-  const getAllInactiveProductsHandler = () => inactiveProducts;
-  const getAllProductsHandler = () => allProducts;
-
   // SOCKET METHODS
   function activeProductAddedHandler(newProduct: DressTypes | PurseTypes){
-    betterConsoleLog('> Socket adding new product in All Products Context', newProduct);
     setActiveProducts(prev => [...prev, newProduct]);
   }
   function inactiveProductAddedHandler(newProduct: DressTypes | PurseTypes){
@@ -91,6 +76,15 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
         return prevInactive;
     });
   }
+  function handleStockDecrease(data: any){
+    if(!data.stockType) return popupMessage('Update stanja nije uspeo, stockType je obavezan!', 'danger');
+    if(data.stockType === 'Boja-Veličina-Količina'){
+      decreaseDressStock(data, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>)
+    }
+    if(data.stockType === 'Boja-Količina'){
+      decreasePurseStock(data, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>)
+    }
+  }
   // Handle setting ALL PRODUCTS
   useEffect(() => {
     setAllProducts([...activeProducts, ...inactiveProducts]);
@@ -104,6 +98,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
       socket.on('inactiveProductRemoved', inactiveProductRemovedHandler);
       socket.on('activeToInactive', activeToInactive);
       socket.on('inactiveToActive', inactiveToActive);
+      socket.on('allProductStockDecrease', handleStockDecrease);
 
       return () => {
         socket.off('activeProductAdded');
@@ -112,6 +107,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
         socket.off('inactiveProductRemoved');
         socket.off('activeToInactive');
         socket.off('inactiveToActive');
+        socket.off('allProductStockDecrease');
       };
     }
   },[socket])

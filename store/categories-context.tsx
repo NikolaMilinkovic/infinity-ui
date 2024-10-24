@@ -60,9 +60,9 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
     if(token) fetchCategories(token);
   }, [token])
 
-  useEffect(() => {
-    betterConsoleLog('> Logging categories', categories)
-  }, [categories])
+  // useEffect(() => {
+  //   betterConsoleLog('> Logging categories', categories)
+  // }, [categories])
 
   // SOCKETS
   useEffect(() => {
