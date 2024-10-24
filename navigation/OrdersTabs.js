@@ -1,13 +1,13 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import BrowseProducts from '../screens/Home/browseProducts/BrowseProducts';
-import AddItem from '../screens/ProductsManager/AddProduct/AddItem';
 import NewOrder from '../screens/Home/newOrder/NewOrder';
 import { Colors } from '../constants/colors';
 import { Dimensions } from 'react-native';
+import BrowseOrders from '../screens/Orders/BrowseOrders';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function AuthenticatedTabs(){
+export default function OrdersTabs(){
   /**
    * Main TAB navigation | The sliding windows
    */
@@ -34,19 +34,19 @@ export default function AuthenticatedTabs(){
         swipeEnabled: true,
     }}>
       <Tab.Screen 
-        name="BrowseProducts" 
-        component={BrowseProducts}
+        name="BrowseOrders" 
+        component={BrowseOrders}
         options={{
-          title: 'Lista Proizvoda',
+          title: 'Lista porudžbina',
         }}
       />
-      <Tab.Screen 
+      {/* <Tab.Screen 
         name="NewOrder" 
         component={NewOrder} 
         options={{
           title: 'Nova Porudzbina',
         }}
-      />
+      /> */}
     </Tab.Navigator>
   )
 }

@@ -1,7 +1,6 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { View, Image, Pressable, StyleSheet } from 'react-native';
 import { CustomDrawerContent } from './DrawerNavigation';
-import AuthenticatedTabs from './AuthenticatedTabs';
 import { Colors } from '../constants/colors';
 import { useNavigation } from '@react-navigation/native';
 import UserManager from '../screens/UserManager/UserManager';
@@ -10,6 +9,8 @@ import Profile from '../screens/Profile/Profile';
 import ColorsCategoriesTabs from './ColorsCategoriesTabs';
 import ProductsManagerTabs from './ProductsManagerTabs';
 import CouriersTabs from './CouriersTabs';
+import BrowsePageTabs from './BrowsePageTabs';
+import OrdersTabs from './OrdersTabs';
 
 
 const Drawer = createDrawerNavigator();
@@ -64,8 +65,15 @@ export default function AuthenticatedStack() {
       {/* HOME SCREEN / LANDING SCREEN WITH TAB NAVIGATION */}
       <Drawer.Screen 
         name="Home" 
-        component={AuthenticatedTabs} 
+        component={BrowsePageTabs} 
       />
+
+      {/* ORDERS */}
+      <Drawer.Screen 
+        name="Orders" 
+        component={OrdersTabs} 
+      />
+
 
       {/* PROFILE */}
       <Drawer.Screen 

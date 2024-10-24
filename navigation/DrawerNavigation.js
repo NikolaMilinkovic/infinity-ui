@@ -30,6 +30,13 @@ export function CustomDrawerContent(props) {
         text='Početna'
       />
       <NavigationButton 
+        icon="filetext1" 
+        onPress={() => navigatePages('Orders')} 
+        size={18} 
+        color={Colors.secondaryDark}
+        text='Porudžbine'
+      />
+      <NavigationButton 
         icon="user" 
         onPress={() => navigatePages('Profile')} 
         size={18} 
