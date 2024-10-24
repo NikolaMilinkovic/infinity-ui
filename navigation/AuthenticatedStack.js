@@ -10,7 +10,7 @@ import ColorsCategoriesTabs from './ColorsCategoriesTabs';
 import ProductsManagerTabs from './ProductsManagerTabs';
 import CouriersTabs from './CouriersTabs';
 import BrowsePageTabs from './BrowsePageTabs';
-import OrdersTabs from './OrdersTabs';
+import OrdersManagerTabs from './OrdersManagerTabs';
 
 
 const Drawer = createDrawerNavigator();
@@ -71,7 +71,7 @@ export default function AuthenticatedStack() {
       {/* ORDERS */}
       <Drawer.Screen 
         name="Orders" 
-        component={OrdersTabs} 
+        component={OrdersManagerTabs} 
       />
 
 

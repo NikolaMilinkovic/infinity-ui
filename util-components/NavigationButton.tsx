@@ -8,7 +8,7 @@ interface ButtonChildrenTypes {
   icon: string | undefined
   color: string | undefined
   size: number | undefined
-  text: number | undefined
+  text: string | undefined
   type: 'Ant' | 'Ionicons' | 'MaterialIcons' | 'MaterialCommunityIcons'
 }
 const NavigationButton: React.FC<ButtonChildrenTypes> = ({ onPress, icon, color, size=20, text, type='Ant' }) => {
@@ -61,7 +61,7 @@ function getStyles(size:number|undefined, color:string|undefined){
       },
       text: {
         fontSize: size,
-        color: color
+        color: color,
       }
     })
   )

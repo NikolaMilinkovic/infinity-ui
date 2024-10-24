@@ -115,7 +115,7 @@ function NewOrder() {
       }
     } catch (error){
       console.error(error);
-      // popupMessage('Došlo je do problema prilikom slanja nove porudžbine', 'danger');
+      popupMessage('Došlo je do problema prilikom slanja nove porudžbine', 'danger');
     }
   }
   

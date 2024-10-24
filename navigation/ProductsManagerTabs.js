@@ -1,6 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Colors } from '../constants/colors';
 import AddItem from '../screens/ProductsManager/AddProduct/AddItem';
+import EditItem from '../screens/ProductsManager/editProduct/EditItem';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -31,12 +32,12 @@ export default function ProductsManagerTabs(){
           title: 'Dodaj Proizvod',
         }}
       />
-      {/* <Tab.Screen 
-        name="AddItem" 
-        component={} 
+      <Tab.Screen 
+        name="EditItem" 
+        component={EditItem} 
         options={{
-          title: 'Izmeni Proizvod',
-        }}/> */}
+        title: 'Izmeni Proizvod',
+      }}/>
     </Tab.Navigator>
   )
 }

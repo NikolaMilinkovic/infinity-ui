@@ -4,10 +4,11 @@ import NewOrder from '../screens/Home/newOrder/NewOrder';
 import { Colors } from '../constants/colors';
 import { Dimensions } from 'react-native';
 import BrowseOrders from '../screens/Orders/BrowseOrders';
+import PackOrders from '../screens/Orders/PackOrders';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function OrdersTabs(){
+export default function OrdersManagerTabs(){
   /**
    * Main TAB navigation | The sliding windows
    */
@@ -40,13 +41,13 @@ export default function OrdersTabs(){
           title: 'Lista porudžbina',
         }}
       />
-      {/* <Tab.Screen 
-        name="NewOrder" 
-        component={NewOrder} 
+      <Tab.Screen 
+        name="PackOrders" 
+        component={PackOrders} 
         options={{
-          title: 'Nova Porudzbina',
+          title: 'Pakovanje Porudžbina',
         }}
-      /> */}
+      />
     </Tab.Navigator>
   )
 }

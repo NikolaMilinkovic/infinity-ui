@@ -21,20 +21,14 @@ export function CustomDrawerContent(props) {
   }
 
   return (
-    <View style={{ flex: 1, paddingBottom: 60, paddingTop: 60 }}>
+    <View style={{ flex: 1, paddingBottom: 60, paddingTop: 60 , paddingRight:60}}>
       <NavigationButton 
-        icon="home" 
+        icon="playlist-plus" 
         onPress={() => navigatePages('Home')} 
         size={18} 
         color={Colors.secondaryDark}
-        text='Početna'
-      />
-      <NavigationButton 
-        icon="filetext1" 
-        onPress={() => navigatePages('Orders')} 
-        size={18} 
-        color={Colors.secondaryDark}
-        text='Porudžbine'
+        text={'Lista Proizvoda i\nKreiranje Porudžbina'}
+        type='MaterialCommunityIcons'
       />
       <NavigationButton 
         icon="user" 
@@ -43,13 +37,7 @@ export function CustomDrawerContent(props) {
         color={Colors.secondaryDark}
         text='Profil'
       />
-      <NavigationButton 
-        icon="addusergroup" 
-        onPress={() => navigatePages('UserManager')} 
-        size={18} 
-        color={Colors.secondaryDark}
-        text='Upravljanje Korisnicima'
-      />
+
 
       {/* COLORS | CATEGORIES */}
       <NavigationButton 
@@ -78,6 +66,24 @@ export function CustomDrawerContent(props) {
         size={18} 
         color={Colors.secondaryDark}
         text='Upravljanje Proizvodima'
+      />
+
+      {/* ORDERS MANAGER */}
+      <NavigationButton 
+        icon="filetext1" 
+        onPress={() => navigatePages('Orders')} 
+        size={18} 
+        color={Colors.secondaryDark}
+        text='Upravljanje Porudžbinama'
+      />
+
+      {/* USERS MANAGER */}
+      <NavigationButton 
+        icon="addusergroup" 
+        onPress={() => navigatePages('UserManager')} 
+        size={18} 
+        color={Colors.secondaryDark}
+        text='Upravljanje Korisnicima'
       />
 
       {/* SETTINGS */}
