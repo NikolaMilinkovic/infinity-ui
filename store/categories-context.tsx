@@ -3,7 +3,7 @@ import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import Category from "../models/Category";
 import { CategoryTypes } from "../types/allTsTypes";
-import { betterConsoleLog } from "../util-methods/LogMethods";
+import fetchCategories from "../util-methods/FetchMethods";
 
 interface CategoriesContextType{
   categories: CategoryTypes[]
@@ -32,37 +32,14 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
   const getCategoriesHandler = () => {
     return categories;
   }
-  async function fetchCategories(token:string){
-    try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        }
-      });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch categories');
-      }
-
-      const data = await response.json();
-      if(data.length > 0){
-        setCategories(data);
-      }
-      
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  }
-
+  // Fetches initial categories data
   useEffect(() => {
-    if(token) fetchCategories(token);
+    async function fetchCategoriesData(){
+      if(token) setCategories(await fetchCategories(token));
+    }
+    fetchCategoriesData()
   }, [token])
-
-  // useEffect(() => {
-  //   betterConsoleLog('> Logging categories', categories)
-  // }, [categories])
 
   // SOCKETS
   useEffect(() => {

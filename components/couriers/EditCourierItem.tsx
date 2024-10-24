@@ -47,7 +47,6 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
 
   // Set default data to read from
   useEffect(() => {
-    betterConsoleLog('> Logging data', data);
     setCourierData(data);
     setNewName(data.name)
     setDeliveryPrice(data.deliveryPrice)

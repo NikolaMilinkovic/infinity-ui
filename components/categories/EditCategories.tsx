@@ -4,7 +4,6 @@ import { View, StyleSheet, Text, FlatList } from 'react-native'
 import EditCategoriesItem from './EditCategoriesItem';
 import { Colors } from '../../constants/colors';
 import { CategoryTypes } from '../../types/allTsTypes';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 function EditCategories() {
   const categoriesCtx = useContext(CategoriesContext);
@@ -20,10 +19,6 @@ function EditCategories() {
     };
     fetchCategories();
   }, [categoriesCtx])
-
-  useEffect(() => {
-    betterConsoleLog('> Logging categoried: ', categories);
-  },[categories])
 
   if (isLoading) {
     return <Text>Ucitavam kategorije...</Text>;

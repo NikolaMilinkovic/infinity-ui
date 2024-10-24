@@ -4,7 +4,7 @@ import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
 import { DressTypes } from "../types/allTsTypes";
-
+import { decreaseDressStock } from "../util-methods/StockMethods";
 
 interface DressContextType {
   activeDresses: DressTypes[];
@@ -100,58 +100,12 @@ function DressesContextProvider({ children }: DressContextProviderType) {
     });
   }
 
-  // Function to increase stock for a specific dress, color, and size
-  const increaseStock = (dressId: string, colorId: string, sizeId: string, increment: number) => {
-    setActiveDresses((prevDresses) =>
-      prevDresses.map((dress) => {
-        if (dress._id === dressId) {
-          return {
-            ...dress,
-            colors: dress.colors.map((color) => {
-              if (color._id === colorId) {
-                return {
-                  ...color,
-                  sizes: color.sizes.map((size) =>
-                    size._id === sizeId ? { ...size, stock: size.stock + increment } : size
-                  ),
-                };
-              }
-              return color;
-            }),
-          };
-        }
-        return dress;
-      })
-    );
-  };
-
-  // Function to decrease stock for a specific dress, color, and size
-  const decreaseStock = (dressId: string, colorId: string, sizeId: string, decrement: number) => {
-    setActiveDresses((prevDresses) =>
-      prevDresses.map((dress) => {
-        if (dress._id === dressId) {
-          return {
-            ...dress,
-            colors: dress.colors.map((color) => {
-              if (color._id === colorId) {
-                return {
-                  ...color,
-                  sizes: color.sizes.map((size) =>
-                    size._id === sizeId && size.stock - decrement >= 0
-                      ? { ...size, stock: size.stock - decrement }
-                      : size
-                  ),
-                };
-              }
-              return color;
-            }),
-          };
-        }
-        return dress;
-      })
-    );
-  };
-
+  function decreaseDressStockHandler(data: any){
+    if(data.stockType === 'Boja-Veličina-Količina'){
+      decreaseDressStock(data, setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>)
+    }
+  }
+  
 
   // Set up socket listeners
   useEffect(() => {
@@ -162,8 +116,8 @@ function DressesContextProvider({ children }: DressContextProviderType) {
       socket.on('inactiveDressRemoved', handleInactiveDressRemoved);
       socket.on('activeDressToInactive', handleActiveToInactive);
       socket.on('inactiveDressToActive', handleInactiveToActive);
-      socket.on('handleStockIncrease', increaseStock);
-      socket.on('handleStockDecrease', decreaseStock);
+      // socket.on('handleStockIncrease', increaseStock);
+      socket.on('handleDressStockDecrease', decreaseDressStockHandler);
 
       return () => {
         socket.off("activeDressAdded", handleActiveDressAdded);
@@ -172,8 +126,8 @@ function DressesContextProvider({ children }: DressContextProviderType) {
         socket.off("inactiveDressRemoved", handleInactiveDressRemoved);
         socket.off("activeDressToInactive", handleActiveToInactive);
         socket.off("inactiveDressToActive", handleInactiveToActive);
-        socket.off('handleStockIncrease', increaseStock);
-        socket.off('handleStockDecrease', decreaseStock);
+        // socket.off('handleStockIncrease', increaseStock);
+        socket.off('handleDressStockDecrease', decreaseDressStockHandler);
       };
     }
   }, [socket]);

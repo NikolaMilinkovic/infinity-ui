@@ -1,8 +1,10 @@
 import { popupMessage } from "../util-components/PopupMessage";
 import { betterConsoleLog, betterErrorLog } from "./LogMethods";
 
-export async function fetchData(token:string, api:string) {
+export async function fetchData(token:string | null, api:string) {
   try{
+    if (token === null) return popupMessage('Auth token nedostaje kako bi se izvršio fetch.', 'danger');
+    
     const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${api}`, {
       method: 'GET',
       headers: {
@@ -153,5 +155,31 @@ export async function handleFetchingWithFormData(formData: any, authToken: strin
   } catch (error) {
     betterErrorLog('Error adding new order', error);
     return false;
+  }
+}
+
+// CATEGORIES FETCH
+export default async function fetchCategories(token: string | null){
+  try {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories');
+    }
+
+    const data = await response.json();
+    if(data.length > 0){
+      return data;
+    }
+    return []
+    
+  } catch (error) {
+    console.error('Error fetching categories:', error);
   }
 }
