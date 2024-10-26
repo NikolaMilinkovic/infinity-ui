@@ -95,7 +95,7 @@ function GenericProductInputComponents({
       <MultiDropdownList
         data={allColors}
         setSelected={setSelectedColors}
-        isOpen={isMultiDropdownOpen}
+        isOpen={true}
         placeholder='Izaberi boje'
         label='Boje Proizvoda'
         containerStyles={{marginTop: 4}}

@@ -3,6 +3,7 @@ import { StyleSheet, TouchableWithoutFeedback, Keyboard, View, Pressable } from 
 import { MultipleSelectList } from 'react-native-dropdown-select-list'
 import { Colors } from '../constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import TestMultipleDropdownList from './TestMultiDropdownList';
 
 // React Native Dropdown Select List Documentation
 // https://www.npmjs.com/package/react-native-dropdown-select-list
@@ -19,6 +20,8 @@ interface DropdownPropTypes {
   placeholder?: string
   dropdownStyles?: any
   containerStyles?: any
+  defaultOption?: any
+  defaultValues?: any
 }
 
 export default function MultiDropdownList({
@@ -28,7 +31,9 @@ export default function MultiDropdownList({
   label,
   placeholder='Izaberi iz liste',
   dropdownStyles,
-  containerStyles
+  containerStyles,
+  defaultOption,
+  defaultValues = [],
 }:DropdownPropTypes){
 
   const [dropdownData, setDropdownData] = useState([])
@@ -38,7 +43,7 @@ export default function MultiDropdownList({
     data.forEach(item => {
       let t = {
         key: item._id,
-        value: item?.name || item?.value
+        value: item?.name || item?.value || item?.color
       }
       d.push(t);
     });
@@ -48,12 +53,13 @@ export default function MultiDropdownList({
   return(
     <View style={[styles.containerStyles, containerStyles]}>
       {dropdownData.length > 0 && (
-        <MultipleSelectList 
-          defaultOption={dropdownData[0]}
+        <TestMultipleDropdownList
+          defaultValues={defaultValues} 
+          defaultOption={defaultOption || dropdownData[0]}
           placeholder={placeholder}
           dropdownShown={isOpen}
           setSelected={setSelected} 
-          data={dropdownData} 
+          data={dropdownData}
           save="value"
           label={label}
           notFoundText='Oof, ništa nije pronađeno pod tim imenom..'

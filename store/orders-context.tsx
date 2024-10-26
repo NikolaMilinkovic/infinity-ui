@@ -36,6 +36,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     }
     if(token) fetchUnprocessedOrdersData();
   }, [token])
+  
   useEffect(() => {
     async function fetchProcessedOrdersData(){
       const processedOrdersData = await fetchData(token, 'orders/processed');

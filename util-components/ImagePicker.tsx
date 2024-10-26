@@ -14,7 +14,7 @@ interface PropTypes {
 }
 function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
   const [permissionInfo, requestPermission] = useCameraPermissions()
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(previewImage ? true : false);
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 50, 400, 180);
 
   async function verifyPermissions(){
@@ -40,6 +40,7 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
       aspect: [3, 4],
     })
 
+    if(!image?.assets?.[0]) return;
     setPreviewImage(image?.assets?.[0]);
     onTakeImage(image?.assets?.[0]);
     setIsExpanded(true);
