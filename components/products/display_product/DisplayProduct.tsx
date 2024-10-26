@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { View, Text, Image, StyleSheet, Pressable } from 'react-native'
+import { View, Text, Image, StyleSheet } from 'react-native'
 import { Colors } from '../../../constants/colors'
 import ExpandButton from '../../../util-components/ExpandButton';
 import DisplayDressStock from '../unique_product_components/display_stock/DisplayDressStock';
@@ -8,45 +8,44 @@ import { DressTypes, PurseTypes } from '../../../types/allTsTypes';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { NewOrderContext } from '../../../store/new-order-context';
 import IconButton from '../../../util-components/IconButton';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
+import useCheckStockAvailability from '../../../hooks/useCheckStockAvailability';
+
 
 type ProductType = DressTypes | PurseTypes;
+interface HighlightedItemsProps {
+  _id: string
+  stockType: string
+}
 interface DisplayProductProps {
   item: ProductType;
+  setEditItem: (data: ProductType | null) => void;
+  highlightedItems: HighlightedItemsProps[];
+  batchMode: boolean;
+  onRemoveHighlight: (id: string) => void
 }
 
-function DisplayProduct({ item }: DisplayProductProps) {
+function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemoveHighlight }: DisplayProductProps) {
   const [onStock, setOnStock] = useState(false);
-  const styles = getStyles(onStock);
   const newOrderCtx = useContext(NewOrderContext);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+  const styles = getStyles(onStock, isHighlighted);
+  if(item) useCheckStockAvailability(item, setOnStock);
 
   useEffect(() => {
-    if(!item) return;
-    let stockAvailable = false;
-
-    if(item.stockType === 'Boja-Veličina-Količina'){
-      const dressItem = item as DressTypes
-      stockAvailable = dressItem.colors.some((colorObj) => 
-        colorObj.sizes.some((sizeObj) => sizeObj.stock > 0)
-      )
+    const highlighted = highlightedItems.some((highlightedItem) => item._id === highlightedItem._id);
+    if(highlighted){
+      setIsHighlighted(true);
+    } else {
+      setIsHighlighted(false);
     }
-    if(item.stockType === 'Boja-Količina'){
-      const purseItem = item as PurseTypes
-      stockAvailable = purseItem.colors.some((colorObj) =>
-        colorObj.stock > 0
-      )
-    }
-    setOnStock(stockAvailable);
-  },[item])
+  }, [highlightedItems, item])
 
-  // =============================================================================
-  const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
-
-  // TEMP
-  function handleOnPress(){
+  // ADD item to new order
+  function handleOnAddPress(){
     if(onStock){
       newOrderCtx.addProductReference(item);
       if(item.stockType === 'Boja-Veličina-Količina'){
@@ -91,12 +90,24 @@ function DisplayProduct({ item }: DisplayProductProps) {
       popupMessage(`${item.name} je rasprodati i nije dodat u porudžbinu!`,'danger')
     }
   }
+  // EDIT
+  function handleOnEditPress(){
+    setEditItem(item);
+  }
+
+  // async function handleOnShare() {
+  //   const message = `Proizvod: ${item.name}, Cena: ${item.price}, Kategorija: ${item.category}`;
+  //   await useShareMessage({ message: message, image: item.image });
+  // }
 
   return (
     <View 
       key={item._id} 
       style={styles.container} 
     >
+      {isHighlighted && (
+        <View style={styles.itemHighlightedOverlay}/>
+      )}
 
       {/* IMAGE AND INFORMATIONS */}
       <View style={styles.infoContainer}>
@@ -124,16 +135,43 @@ function DisplayProduct({ item }: DisplayProductProps) {
             />
         </View>
 
-        {onStock && (
-          <IconButton
-            size={26}
-            color={Colors.secondaryDark}
-            onPress={handleOnPress}
-            key={`key-${item._id}`}
-            icon='add'
-            style={styles.addButtonContainer} 
-            pressedStyles={styles.addButtonContainerPressed}
-          />
+        {batchMode ? (
+          <>
+            {isHighlighted && (
+              <IconButton
+                size={26}
+                color={Colors.secondaryDark}
+                onPress={() => onRemoveHighlight(item._id)}
+                key={`key-${item._id}-add-button`}
+                icon='check'
+                style={styles.addButtonContainer} 
+                pressedStyles={styles.buttonContainerPressed}
+              />
+            )}
+          </>
+        ) : (
+          <>
+            {onStock && (
+              <IconButton
+                size={26}
+                color={Colors.secondaryDark}
+                onPress={handleOnAddPress}
+                key={`key-${item._id}-add-button`}
+                icon='add'
+                style={styles.addButtonContainer} 
+                pressedStyles={styles.buttonContainerPressed}
+              />
+            )}
+            <IconButton
+              size={26}
+              color={Colors.secondaryDark}
+              onPress={handleOnEditPress}
+              key={`key-${item._id}-edit-button`}
+              icon='edit'
+              style={styles.editButtonContainer} 
+              pressedStyles={styles.buttonContainerPressed}
+            />
+          </>
         )}
       </View>
 
@@ -160,7 +198,7 @@ function DisplayProduct({ item }: DisplayProductProps) {
   )
 }
 
-function getStyles(onStock:boolean){
+function getStyles(onStock:boolean, isHighlighted:boolean){
   return StyleSheet.create({
     container: {
       minHeight: 160,
@@ -173,7 +211,7 @@ function getStyles(onStock:boolean){
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      backgroundColor: onStock ? Colors.white : Colors.secondaryHighlight,
+      backgroundColor: (onStock ? Colors.white : Colors.secondaryHighlight),
       marginBottom: 4,
       elevation: 2,
       position: 'relative',
@@ -246,9 +284,30 @@ function getStyles(onStock:boolean){
       padding: 10,
       elevation: 2
     },
-    addButtonContainerPressed: {
+    editButtonContainer : {
+      position: 'absolute',
+      right: 8,
+      top: onStock ? 56 : 0,
+      borderRadius: 100,
+      overflow: 'hidden',
+      backgroundColor: Colors.white,
+      padding: 10,
+      elevation: 2
+    },
+    buttonContainerPressed: {
       opacity: 0.7,
       elevation: 1,
+    },
+    itemHighlightedOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: Colors.primaryDark,
+      zIndex: 12,
+      opacity: 0.4,
+      pointerEvents: 'none'
     }
   })
 }

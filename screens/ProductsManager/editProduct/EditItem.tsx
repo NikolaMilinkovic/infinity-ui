@@ -1,28 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import React, { useState } from 'react';
 import DisplayEditableProducts from '../../../components/products/edit_product/DisplayEditableProducts';
 import { ProductTypes } from '../../../types/allTsTypes';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
 import EditProductComponent from '../../../components/products/edit_product/EditProductComponent';
 import Animated from 'react-native-reanimated';
 import { useFadeTransition, useFadeTransitionReversed } from '../../../hooks/useFadeTransition';
 import { StyleSheet } from 'react-native';
-import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
-import { opacity } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
+import DisplayProducts from '../../../components/products/DisplayProducts';
 
 function EditItem() {
   const [editedProduct, setEditedProduct] = useState<ProductTypes | null>(null);
   
   const editProductFade = useFadeTransition(editedProduct !== null);
   const overlayView = useFadeTransitionReversed(editedProduct === null, 500, 150);
-  const fadeAnimation = useFadeAnimation();
 
   return (
     <>
       {editedProduct === null ? (
         <Animated.View>
           <Animated.View style={[overlayView, styles.overlayView]} />
-          <DisplayEditableProducts setEditedProduct={setEditedProduct} />
+          <DisplayProducts setEditItem={setEditedProduct} />
         </Animated.View>
       ) : (
         <Animated.View style={editProductFade}>

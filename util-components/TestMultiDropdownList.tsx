@@ -65,8 +65,6 @@ const TestMultipleDropdownList: React.FC<any> = ({
     const [filtereddata,setFilteredData] = React.useState(data);
 
     useEffect(() => {
-      betterConsoleLog('> Default values sent to multi select are', defaultValues)
-
       if(defaultValues?.length > 0) setSelectedVal(defaultValues)
     }, [defaultValues, setSelectedVal])
 
