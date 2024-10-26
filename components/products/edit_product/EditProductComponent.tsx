@@ -54,6 +54,13 @@ function EditProductComponent({ item, setItem }: PropTypes) {
   //   betterConsoleLog('> Item colors are', itemColors);
   // }, [itemColors])
 
+  useEffect(() => {
+    betterConsoleLog('> CATEGORY: ', category);
+  }, [category])
+  useEffect(() => {
+    betterConsoleLog('> SELECTED COLORS: ', selectedColors);
+  }, [selectedColors])
+
   function verifyInputsData(){
     if(!name) {popupMessage('Proizvod mora imati ime','danger'); return false}
     if(!price) {popupMessage('Proizvod mora imati cenu','danger'); return false}
@@ -71,12 +78,13 @@ function EditProductComponent({ item, setItem }: PropTypes) {
 
     const data ={
       previousStockType: item.stockType,
+      isActive,
       name,
+      price,
+      productImage,
       category,
       stockType: category?.stockType,
-      price,
       itemColors,
-      productImage
     }
 
     const response = await handleFetchingWithBodyData(data, token, `products/update/${item._id}`, "PUT");
@@ -94,10 +102,11 @@ function EditProductComponent({ item, setItem }: PropTypes) {
   // new stockType is different then previous
   function setCategoryHandler(newCategory: CategoryTypes){
     if(item.stockType === newCategory.stockType){
-      setCategory(newCategory)
+      setCategory(newCategory);
     } else {
       setSelectedColors([]);
-      setColorsDefaultOptions(['']);
+      setColorsDefaultOptions([]);
+      setCategory(newCategory);
     }
   }
 
@@ -110,21 +119,24 @@ function EditProductComponent({ item, setItem }: PropTypes) {
         selectedColors.includes(existingColor.color)
       );
   
+      if (!category) return existingColors;
+      betterConsoleLog('> SELECTED COLORS: ', selectedColors);
       // Create new color entries for any newly selected colors not in `existingColors`
       const newColors = selectedColors
         .filter(color => !existingColors.some(ec => ec.color === color))
         .map(color => {
-          if (!category) return;
           const newColor = category.stockType === 'Boja-Veličina-Količina'
             ? new DressColor()
             : new PurseColor();
           newColor.setColor(color);
           return newColor;
         })
+        .filter(Boolean); // Remove any `undefined` entries
   
       return [...existingColors, ...newColors];
     });
   }, [category, selectedColors]);
+  
   // This must run after the default size / stock value useEffect in order to rerun it
   // And therefore populate the fields..
   useEffect(() => {
@@ -217,14 +229,14 @@ function EditProductComponent({ item, setItem }: PropTypes) {
       )}
     </View>
     {/* DRESES */}
-    {category && item.stockType === 'Boja-Veličina-Količina' && (
+    {category && category.stockType === 'Boja-Veličina-Količina' && (
       <AddDressComponents
         dressColors={itemColors}
         setDressColors={setItemColors}
       />
     )}
     {/* PURSES */}
-    {category && item.stockType === 'Boja-Količina' && (
+    {category && category.stockType === 'Boja-Količina' && (
       <AddPurseComponents
         purseColors={itemColors}
         setPurseColors={setItemColors}
