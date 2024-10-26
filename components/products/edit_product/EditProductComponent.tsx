@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import Button from '../../../util-components/Button'
 import { Colors } from '../../../constants/colors';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -12,6 +12,12 @@ import { ProductTypes, CategoryTypes, DressColorTypes, PurseColorTypes, ProductI
 import DressColor from '../../../models/DressColor';
 import PurseColor from '../../../models/PurseColor';
 import { betterConsoleLog } from '../../../util-methods/LogMethods';
+import DropdownList from '../../../util-components/DropdownList';
+import { CategoriesContext } from '../../../store/categories-context';
+import RadioButtonsGroup, { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
+import { popupMessage } from '../../../util-components/PopupMessage';
+import { handleFetchingWithBodyData } from '../../../util-methods/FetchMethods';
+import { AuthContext } from '../../../store/auth-context';
 
 interface PropTypes {
   item: ProductTypes;
@@ -19,76 +25,139 @@ interface PropTypes {
 }
 
 function EditProductComponent({ item, setItem }: PropTypes) {
+  const authCtx = useContext(AuthContext);
+  const colorsCtx = useContext(ColorsContext);
+  const categoryCtx = useContext(CategoriesContext)
+
+  const token = authCtx.token;
   const [name, setName] = useState(item.name);
   const [price, setPrice] = useState<number | string>(item.price.toString());
   const [productImage, setProductImage] = useState<ProductImageTypes>(item.image);
   const [previewImage, setPreviewImage] = useState(item.image);
-  const [selectedColors, setSelectedColors] = useState<string[]>();
-  const [category] = useState<CategoryTypes>(item.category);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [category, setCategory] = useState<CategoryTypes>(item.category);
+  const [isActive, setIsActive] = useState(item.active)
+  const [allColors, setAllColors] = useState(colorsCtx.colors);
+  const [colorsDefaultOptions, setColorsDefaultOptions] = useState<string[]>(item.colors.map((obj) => obj.color));
+  const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>(item.colors);
+
+  // useEffect(() => {
+  //   betterConsoleLog('> All colors are', allColors);
+  // }, [allColors])
+  // useEffect(() => {
+  //   betterConsoleLog('> All categories are', categoryCtx.getCategories());
+  // }, [categoryCtx])
+  // useEffect(() => {
+  //   betterConsoleLog('> Colors Default options are', colorsDefaultOptions);
+  // }, [colorsDefaultOptions])
+  // useEffect(() => {
+  //   betterConsoleLog('> Item colors are', itemColors);
+  // }, [itemColors])
+
+  function verifyInputsData(){
+    if(!name) {popupMessage('Proizvod mora imati ime','danger'); return false}
+    if(!price) {popupMessage('Proizvod mora imati cenu','danger'); return false}
+    if(!productImage) {popupMessage('Proizvod mora imati sliku','danger'); return false}
+    if(selectedColors?.length === 0) {popupMessage('Proizvod mora imati izabrane boje','danger'); return false}
+    if(!category) {popupMessage('Proizvod mora imati kategoriju','danger'); return false}
+    return true;
+  }
+
+  // Sends all the data to the server for product update
+  async function handleProductUpdate(){
+    if(!token) return popupMessage('Morate biti ulogovani kako bi izvršili izmenu proizvoda', 'danger');
+    const isVerified = verifyInputsData();
+    if(!isVerified) return;
+
+    const data ={
+      previousStockType: item.stockType,
+      name,
+      category,
+      stockType: category?.stockType,
+      price,
+      itemColors,
+      productImage
+    }
+
+    const response = await handleFetchingWithBodyData(data, token, `products/update/${item._id}`, "PUT");
+
+    if (!response.ok) {
+      const parsedResponse = await response.json();
+      return popupMessage(parsedResponse.message,'success');
+    }
+
+    const parsedResponse = await response.json(); 
+    popupMessage(parsedResponse.message,'success');
+  }
+
+  // Changes category and resets selected colors and default options if
+  // new stockType is different then previous
+  function setCategoryHandler(newCategory: CategoryTypes){
+    if(item.stockType === newCategory.stockType){
+      setCategory(newCategory)
+    } else {
+      setSelectedColors([]);
+      setColorsDefaultOptions(['']);
+    }
+  }
 
 
-  // defaultValues for multi dropdown list
-  const [colorsDefaultOptions, setColorsDefaultOptions] = useState<string[]>(['']);
-  const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>([]);
-
-  betterConsoleLog('> Item colors are', itemColors);
-
-
+  // Sets default size / stock value 
+  useEffect(() => {
+    setItemColors((prevItemColors) => {
+      // Filter out existing colors already in `selectedColors`
+      const existingColors = prevItemColors.filter(existingColor =>
+        selectedColors.includes(existingColor.color)
+      );
+  
+      // Create new color entries for any newly selected colors not in `existingColors`
+      const newColors = selectedColors
+        .filter(color => !existingColors.some(ec => ec.color === color))
+        .map(color => {
+          if (!category) return;
+          const newColor = category.stockType === 'Boja-Veličina-Količina'
+            ? new DressColor()
+            : new PurseColor();
+          newColor.setColor(color);
+          return newColor;
+        })
+  
+      return [...existingColors, ...newColors];
+    });
+  }, [category, selectedColors]);
+  // This must run after the default size / stock value useEffect in order to rerun it
+  // And therefore populate the fields..
   useEffect(() => {
     const colors = item.colors.map((obj) => obj.color);
     setItemColors(item.colors);
     setSelectedColors(colors);
     setColorsDefaultOptions(colors);
-  }, [item])
-
-  // betterConsoleLog('> Logging edit product component item: ', item);  
-  const colorsCtx = useContext(ColorsContext);
-  const [allColors, setAllColors] = useState(colorsCtx.colors);
-
-  useEffect(() => {
-    setAllColors(colorsCtx.colors);
-  }, [colorsCtx.colors])
-
-  useEffect(() => {
-    // console.log('> Selected colors', selectedColors);
-    if(!selectedColors) return;
-    setItemColors(prevItemColors => {
-      // Add new colors that are in selectedColors but not in prevItemColors
-      const newColors = selectedColors.filter(
-        color => !prevItemColors.some(existingColor => existingColor.color === color)
-      ).map(color => {
-        if(!category) return;
-        if(category.stockType === 'Boja-Veličina-Količina'){
-          const d = new DressColor();
-          d.setColor(color);
-          return d;
-        }
-        if(category.stockType === 'Boja-Količina'){
-          const d = new PurseColor();
-          d.setColor(color);
-          return d;
-        }
-        const d = new DressColor();
-        d.setColor(color);
-        return d;
-      });
-  
-      // Keep only colors that are still in selectedColors
-      const updatedItemColors = prevItemColors.filter(existingColor =>
-        selectedColors.includes(existingColor.color)
-      );
-  
-      // Return combined list of existing valid and newly added dress colors
-      return [...updatedItemColors, ...newColors];
-    });
-  }, [selectedColors]);
-
+  }, [item, setItemColors, setSelectedColors, setColorsDefaultOptions]);
 
   function handleOnPress(){
     setItem(null);
   }
+  // Define the radio buttons with `useMemo` for optimization
+  const activeButtons: RadioButtonProps[] = useMemo(() => [
+    { id: '1', label: 'Aktivan', value: 'active' },
+    { id: '2', label: 'Neaktivan', value: 'inactive' },
+  ], []);
+  // Handle the radio button selection
+  const handleRadioSelect = (selectedId: string | undefined) => {
+    setIsActive(selectedId === '1');
+  };
+
   return (
     <ScrollView style={styles.container}>
+      <View>
+        <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Aktivan | Neaktivan</Text>
+        <RadioGroup
+          radioButtons={activeButtons}
+          onPress={handleRadioSelect}
+          selectedId={isActive ? '1' : '2'}
+          containerStyle={styles.radioButtionsContainer}
+        />
+      </View>
       <View>
       <Text style={styles.sectionText}>Osnovne Informacije</Text>
       <InputField
@@ -123,27 +192,29 @@ function EditProductComponent({ item, setItem }: PropTypes) {
         setPreviewImage={setPreviewImage}
       />
     </View>
-    {/* <View style={styles.wrapper}>
+    <View>
       <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Kategorija</Text>
       <DropdownList
-        data={allCategories}
+        data={categoryCtx.categories}
         placeholder='Kategorija Proizvoda'
-        onSelect={setSelectedCategory}
-        defaultValue='Haljina'
+        onSelect={(category) => setCategoryHandler(category)}
+        defaultValue={item.category}
         buttonContainerStyles={{marginTop: 4}}
       />
-    </View> */}
+    </View>
     <View>
       <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Boje, veličine i količina lagera</Text>
-      <MultiDropdownList
-        data={allColors}
-        setSelected={setSelectedColors}
-        isOpen={true}
-        placeholder='Izaberi boje'
-        label='Boje Proizvoda'
-        containerStyles={{marginTop: 4}}
-        defaultValues={colorsDefaultOptions}
-      />
+      {colorsDefaultOptions && allColors && (
+        <MultiDropdownList
+          data={allColors}
+          setSelected={setSelectedColors}
+          isOpen={true}
+          placeholder='Izaberi boje'
+          label='Boje Proizvoda'
+          containerStyles={{marginTop: 4}}
+          defaultValues={colorsDefaultOptions}
+        />
+      )}
     </View>
     {/* DRESES */}
     {category && item.stockType === 'Boja-Veličina-Količina' && (
@@ -164,7 +235,7 @@ function EditProductComponent({ item, setItem }: PropTypes) {
       {/* BUTTONS */}
       <View style={styles.buttonsContainer}>
         <Button
-          onPress={handleOnPress}
+          onPress={handleProductUpdate}
           textColor={Colors.white}
           backColor={Colors.secondaryDark}
           containerStyles={styles.button}
@@ -219,6 +290,10 @@ const styles = StyleSheet.create({
     flex: 2,
     height: 50,
   },
+  radioButtionsContainer: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  }
 
 })
 

@@ -36,6 +36,8 @@ export interface SearchParamsTypes {
   onCategorySearch: string
   onColorsSearch: string[]
   onSizeSearch: string[]
+  active: boolean
+  inactive: boolean
 }
 
 

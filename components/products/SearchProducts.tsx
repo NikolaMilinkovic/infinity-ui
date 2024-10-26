@@ -13,6 +13,7 @@ import { CategoriesContext } from '../../store/categories-context';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
 import { useExpandAnimation } from '../../hooks/useExpand';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
+import { Dimensions } from 'react-native';
 
 interface SearchProductsPropTypes {
   searchData: string
@@ -23,11 +24,43 @@ interface SearchProductsPropTypes {
 }
 function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, updateSearchParam }: SearchProductsPropTypes) {
   // EXPAND ANIMATION & TOGGLING
-  const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, 568, 180);
+  const screenHeight = Dimensions.get('window').height;
+  const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 172, 180);
   const toggleFade = useToggleFadeAnimation(isExpanded, 180);
   function handleToggleExpand(){
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
   }
+
+  // ACTIVE | INACTIVE RADIO BUTTONS
+  const activeRadioButtons: RadioButtonProps[] = useMemo(() => ([
+    {
+        id: '1', 
+        label: 'Aktivni proizvodi',
+        value: 'active',
+    },
+    {
+        id: '2',
+        label: 'Neaktivni proizvodi',
+        value: 'inactive',
+    },
+  ]), []);
+  const [areActiveProducts, setAreActiveProducts] = useState<string>('1');
+  type ActiveProductsParams = {
+    active: boolean;
+    inactive: boolean;
+  };
+  useEffect(() => {
+    const updateParams: Record<string, ActiveProductsParams> = {
+      '1': { active: true, inactive: false },
+      '2': { active: false, inactive: true },
+    };
+    const params = updateParams[areActiveProducts];
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        updateSearchParam(key as keyof ActiveProductsParams, value);
+      });
+    }
+  }, [areActiveProducts]);
 
   // RADIO BUTTONS
   const radioButtons: RadioButtonProps[] = useMemo(() => ([
@@ -95,9 +128,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   }
   const categoriesCtx = useContext(CategoriesContext);
   const [selectedCategory, setSelectedCategory] = useState<CategoryTypes | null>(null);
-  // useEffect(() => {
-  //   betterConsoleLog('> Selected category', selectedCategory);
-  // }, [selectedCategory])
+ 
   useEffect(() => {
     if (selectedCategory && selectedCategory?.name === 'Resetuj izbor') {
       resetDropdown();
@@ -141,6 +172,19 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
         <Animated.ScrollView style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
             <Animated.ScrollView style={{ opacity: toggleFade }}>
               <Text style={styles.filtersH1}>Filteri</Text>
+
+              {/* ACTIVE INACTIVE */}
+              <View style={styles.radioGroupContainer}>
+                <Text style={styles.filtersH2}>Izbor Aktivni | Neaktivni proizvodi</Text>
+                <View style={styles.radioGroup}>
+                  <RadioGroup 
+                    radioButtons={activeRadioButtons} 
+                    onPress={setAreActiveProducts}
+                    selectedId={areActiveProducts}
+                    layout='row'
+                  />
+                </View>
+              </View>
 
               {/* STOCK AVAILABILITY FILTER INPUT */}
               <View style={styles.radioGroupContainer}>

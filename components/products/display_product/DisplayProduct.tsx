@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { View, Text, Image, StyleSheet } from 'react-native'
+import { View, Text, Image, StyleSheet, Pressable } from 'react-native'
 import { Colors } from '../../../constants/colors'
 import ExpandButton from '../../../util-components/ExpandButton';
 import DisplayDressStock from '../unique_product_components/display_stock/DisplayDressStock';
@@ -9,8 +9,12 @@ import { popupMessage } from '../../../util-components/PopupMessage';
 import { NewOrderContext } from '../../../store/new-order-context';
 import IconButton from '../../../util-components/IconButton';
 import useCheckStockAvailability from '../../../hooks/useCheckStockAvailability';
+import useImagePreviewModal from '../../../hooks/useImagePreviewModal';
 
-
+interface ImageTypes {
+  uri: string
+  imageName: string
+}
 type ProductType = DressTypes | PurseTypes;
 interface HighlightedItemsProps {
   _id: string
@@ -22,9 +26,10 @@ interface DisplayProductProps {
   highlightedItems: HighlightedItemsProps[];
   batchMode: boolean;
   onRemoveHighlight: (id: string) => void
+  showImagePreview: (image: string) => void
 }
 
-function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemoveHighlight }: DisplayProductProps) {
+function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemoveHighlight, showImagePreview }: DisplayProductProps) {
   const [onStock, setOnStock] = useState(false);
   const newOrderCtx = useContext(NewOrderContext);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -112,9 +117,9 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
       {/* IMAGE AND INFORMATIONS */}
       <View style={styles.infoContainer}>
 
-        <View style={styles.imageContainer}>
+        <Pressable style={styles.imageContainer} onPress={() => showImagePreview(item.image.uri)}>
           <Image source={{ uri: item.image.uri }} style={styles.image} />
-        </View>
+        </Pressable>
 
         <View style={styles.info}>
           <Text style={styles.headerText}>{item.name}</Text>
@@ -280,7 +285,7 @@ function getStyles(onStock:boolean, isHighlighted:boolean){
       top: 0,
       borderRadius: 100,
       overflow: 'hidden',
-      backgroundColor: Colors.white,
+      backgroundColor: onStock ? Colors.white : Colors.secondaryHighlight,
       padding: 10,
       elevation: 2
     },
@@ -290,7 +295,7 @@ function getStyles(onStock:boolean, isHighlighted:boolean){
       top: onStock ? 56 : 0,
       borderRadius: 100,
       overflow: 'hidden',
-      backgroundColor: Colors.white,
+      backgroundColor: onStock ? Colors.white : Colors.secondaryHighlight,
       padding: 10,
       elevation: 2
     },

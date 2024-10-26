@@ -46,15 +46,15 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     if(token) fetchProcessedOrdersData();
   }, [token])
 
-  useEffect(() => {
-    betterConsoleLog('> Neaktivne, procesovane porudzbine: ', processedOrders.length);
-  }, [processedOrders])
-  useEffect(() => {
-    betterConsoleLog('> Aktivne, jos ne procesovane porudzbine: ', unprocessedOrders);
-  }, [unprocessedOrders])
+  // useEffect(() => {
+  //   betterConsoleLog('> Neaktivne, procesovane porudzbine: ', processedOrders.length);
+  // }, [processedOrders])
+  // useEffect(() => {
+  //   betterConsoleLog('> Aktivne, jos ne procesovane porudzbine: ', unprocessedOrders);
+  // }, [unprocessedOrders])
 
   function handleOrderAdded(newOrder: OrderProductTypes){
-    betterConsoleLog('> Adding new order to unprocessed orders:', newOrder);
+    // betterConsoleLog('> Adding new order to unprocessed orders:', newOrder);
     setUnprocessedOrders((prev) => [...prev, newOrder]);
   }
 

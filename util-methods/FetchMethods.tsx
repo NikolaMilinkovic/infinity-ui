@@ -104,16 +104,12 @@ export async function addPurse(purseData:any, authToken:string):Promise<boolean>
 // NEW ORDER ADD METHOD
 export async function addNewOrder(formData: any, authToken: string, uri: string) {
   try {
-    console.log('> calling handle fetching with form data method')
     const response = await handleFetchingWithFormData(formData, authToken, uri, 'POST');
     
-    console.log('> handle fetching with form data finished')
     if (!response) {
-      console.log('> !response')
       popupMessage('Došlo je do problema prilikom dodavanja porudžbine', 'danger');
       return false;
     }
-    console.log('> returning response..')
     return response;
     
   } catch (error) {
@@ -126,9 +122,6 @@ export async function addNewOrder(formData: any, authToken: string, uri: string)
 // GENERIC FETCHING METHOD WITH FORM DATA
 export async function handleFetchingWithFormData(formData: any, authToken: string, uri: string, method: string) {
   try {
-    console.log('> handle fetching with form data started, here is backed uri> ', process.env.EXPO_PUBLIC_BACKEND_URI)
-    console.log('> Uri is: ',uri);
-    console.log('> Method is: ',method);
     const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${uri}`, {
       method: method,
       headers: {
@@ -138,20 +131,35 @@ export async function handleFetchingWithFormData(formData: any, authToken: strin
       body: formData,
     });
 
-    console.log('> Fetching completed, continuing.')
-
     if (!response.ok) {
-      console.log('> !response, seems to be an error here')
       const parsedResponse = await response.json();
-      console.log(parsedResponse.message);
       popupMessage(parsedResponse.message, 'danger');
       return false;
     }
 
-    // Return the actual response data if the fetch is successful
-    console.log('> Fetching finished successfully, returning response.json()');
-    return await response.json(); // Parse and return the response body as JSON
+    return await response.json(); 
+  } catch (error) {
+    betterErrorLog('Error adding new order', error);
+    return false;
+  }
+}
 
+// GENERIC FETCHING METHOD WITH FORM DATA
+export async function handleFetchingWithBodyData(data: any, authToken: string, uri: string, method: string) {
+  try {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${uri}`, {
+      method: method,
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+    });
+
+    console.log('> Returning response...')
+    betterConsoleLog('> Response obj is: ', response);
+    if(!response.ok) popupMessage('Fetching with body data failed', 'danger')
+    return response;
   } catch (error) {
     betterErrorLog('Error adding new order', error);
     return false;
@@ -159,7 +167,7 @@ export async function handleFetchingWithFormData(formData: any, authToken: strin
 }
 
 // CATEGORIES FETCH
-export default async function fetchCategories(token: string | null){
+export async function fetchCategories(token: string | null){
   try {
     const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
       method: 'GET',
@@ -182,4 +190,8 @@ export default async function fetchCategories(token: string | null){
   } catch (error) {
     console.error('Error fetching categories:', error);
   }
+}
+
+export async function fetchWithBodyData(token: string | null, data: any){
+
 }

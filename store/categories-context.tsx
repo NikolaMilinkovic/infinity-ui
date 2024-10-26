@@ -3,7 +3,8 @@ import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import Category from "../models/Category";
 import { CategoryTypes } from "../types/allTsTypes";
-import fetchCategories from "../util-methods/FetchMethods";
+import { fetchCategories } from "../util-methods/FetchMethods";
+import { betterConsoleLog } from "../util-methods/LogMethods";
 
 interface CategoriesContextType{
   categories: CategoryTypes[]
@@ -25,6 +26,10 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
+
+  useEffect(() => {
+    betterConsoleLog('> Categories are', categories);
+  }, [categories])
 
   const setCategoriesHandler = (categories: CategoryTypes[]) => {
     setCategories(categories);

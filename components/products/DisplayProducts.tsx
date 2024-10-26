@@ -14,6 +14,8 @@ import { AuthContext } from '../../store/auth-context';
 import { popupMessage } from '../../util-components/PopupMessage';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
+import useImagePreviewModal from '../../hooks/useImagePreviewModal';
+import ImagePreviewModal from '../../util-components/ImagePreviewModal';
 
 interface DisplayProductsPropTypes {
   setEditItem: (data: ProductTypes | null) => void
@@ -34,6 +36,13 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
   const productsCtx = useContext(AllProductsContext);
   const authCtx = useContext(AuthContext);
   const [searchData, setSearchData] = useState('');
+  const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
+  const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
+  const [previewImage, setPreviewImage] = useState<string>('');
+  function handleImagePreview(imageUri:string) {
+    setPreviewImage(imageUri);
+    showImageModal();
+  }
 
   // =============================[ SEARCH INPUT STUFF ]=============================
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -44,8 +53,10 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
     onCategorySearch: '',
     onColorsSearch: [],
     onSizeSearch: [],
+    active: true,
+    inactive: false,
   });
-  
+
   // Handle radio button changes directly through searchParams
   function updateSearchParam<K extends keyof SearchParamsTypes>(paramName: K, value: SearchParamsTypes[K]) {
     setSearchParams((prevParams) => ({
@@ -58,8 +69,9 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
 
   // Memoize the filtered products
   const filteredData = useMemo(() => {
-    return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
-  }, [productsCtx.allActiveProducts, searchData, searchParams]);
+    if(searchParams.active) return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
+    if(searchParams.inactive) return serachProducts(searchData, productsCtx.allInactiveProducts, searchParams); 
+  }, [productsCtx.allActiveProducts, productsCtx.allInactiveProducts, searchData, searchParams]);
 
 
   // Long press that initializes select mode
@@ -82,14 +94,9 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
     }
   }
 
-  useEffect(() => {
-    betterConsoleLog('> Selected items are: ', selectedItems);
-  }, [selectedItems])
-  const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
-
 
   async function handleRemoveBatchProducts() {
-    await showModal(async () => {
+    showModal(async () => {
       const response = await handleRemoveBatch(selectedItems, authCtx.token);
       if (response && !response.ok) {
         const parsedResponse = await response.json();
@@ -115,6 +122,13 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
         onCancel={hideModal}
         message="Da li sigurno želiš da obrišeš selektovane proizvode?"
       />
+      {previewImage && (
+        <ImagePreviewModal
+          image={previewImage}
+          isVisible={isImageModalVisible}
+          onCancel={hideImageModal}
+        />
+      )}
       <SearchProducts
         searchData={searchData}
         setSearchData={setSearchData}
@@ -141,6 +155,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
                 highlightedItems={selectedItems}
                 batchMode={batchMode}
                 onRemoveHighlight={handlePress}
+                showImagePreview={handleImagePreview}
               />
             </Pressable>
           }
