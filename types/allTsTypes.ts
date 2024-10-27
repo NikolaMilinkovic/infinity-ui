@@ -42,14 +42,14 @@ export interface SearchParamsTypes {
 
 
 // DRESSES
+export interface ImageTypes {
+  uri: string;
+  imageName: string;
+}
 export interface ColorSizeTypes {
   size: string;
   stock: number;
   _id: string;
-}
-export interface ImageTypes {
-  uri: string;
-  imageName: string;
 }
 export interface DressColorTypes {
   _id: string;

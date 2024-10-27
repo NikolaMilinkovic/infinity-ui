@@ -56,9 +56,9 @@ const TestMultipleDropdownList: React.FC<any> = ({
     const [dropdown, setDropdown] = React.useState<boolean>(dropdownShown);
     const [selectedval, setSelectedVal] = React.useState<any>([]);
 
-    // useEffect(() => {
-    //   betterConsoleLog('> Selected val', selectedval);
-    // }, [selectedval])
+    useEffect(() => {
+      betterConsoleLog('> Selected val', selectedval);
+    }, [selectedval])
 
     const [height,setHeight] = React.useState<number>(350)
     const animatedvalue = React.useRef(new Animated.Value(0)).current;

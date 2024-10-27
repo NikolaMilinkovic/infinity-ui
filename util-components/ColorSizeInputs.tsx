@@ -12,25 +12,36 @@ interface PropTypes{
 function ColorSizeInputs({
   colorsData,
   setColorsData,
-}:PropTypes) {
+}: PropTypes) {
 
-  function handleInputChange(color:string, size: string, value: string){
+  // Ensure all sizes have a stock value initialized to 0 if undefined
+  const initializedColorsData = colorsData.map(item => ({
+    ...item,
+    sizes: item.sizes.map(sizeItem => ({
+      ...sizeItem,
+      stock: sizeItem.stock ?? 0,
+    })),
+  }));
+
+  // Method for handling input changes
+  function handleInputChange(color: string, size: string, value: string){
     const newStock = parseInt(value, 10) || 0;
-    const updatedColors = colorsData.map((item) => {
-      if(item.color === color){
-        const updatedSizes = item.sizes.map((s) => s.size === size ? {...s, stock: newStock} : s
-        )
-        return { ...item, sizes: updatedSizes }
+    const updatedColors = initializedColorsData.map((item) => {
+      if (item.color === color) {
+        const updatedSizes = item.sizes.map((s) => 
+          s.size === size ? { ...s, stock: newStock } : s
+        );
+        return { ...item, sizes: updatedSizes };
       }
       return item;
-    })
+    });
 
     setColorsData(updatedColors);
   }
 
   // If no colors present
-  if(colorsData.length < 1){
-    return;
+  if (colorsData.length < 1) {
+    return null;
   }
 
   return (
@@ -44,7 +55,7 @@ function ColorSizeInputs({
         <Text style={styles.header}>XL</Text>
         <Text style={styles.header}>UNI</Text>
       </View>
-      {colorsData.map((item, index) => (
+      {initializedColorsData.map((item, index) => (
         <KeyboardAvoidingView 
           style={[styles.rowContainer, index % 2 === 0 ? styles.rowColor1 : styles.rowColor2 ]} 
           key={`${index}-${item.color}`}
@@ -60,12 +71,12 @@ function ColorSizeInputs({
               value={String(sizeObj.stock)}
               onChangeText={(value) => handleInputChange(item.color, sizeObj.size, value)}
               selectTextOnFocus
-              />
+            />
           ))}
         </KeyboardAvoidingView>
       ))}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

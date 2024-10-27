@@ -11,13 +11,14 @@ import AddPurseComponents from '../unique_product_components/add/AddPurseCompone
 import { ProductTypes, CategoryTypes, DressColorTypes, PurseColorTypes, ProductImageTypes } from '../../../types/allTsTypes';
 import DressColor from '../../../models/DressColor';
 import PurseColor from '../../../models/PurseColor';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
+import { betterConsoleLog, betterErrorLog } from '../../../util-methods/LogMethods';
 import DropdownList from '../../../util-components/DropdownList';
 import { CategoriesContext } from '../../../store/categories-context';
 import RadioButtonsGroup, { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
 import { popupMessage } from '../../../util-components/PopupMessage';
-import { handleFetchingWithBodyData } from '../../../util-methods/FetchMethods';
+import { handleFetchingWithFormData } from '../../../util-methods/FetchMethods';
 import { AuthContext } from '../../../store/auth-context';
+import { getMimeType } from '../../../util-methods/ImageMethods';
 
 interface PropTypes {
   item: ProductTypes;
@@ -72,30 +73,44 @@ function EditProductComponent({ item, setItem }: PropTypes) {
 
   // Sends all the data to the server for product update
   async function handleProductUpdate(){
-    if(!token) return popupMessage('Morate biti ulogovani kako bi izvršili izmenu proizvoda', 'danger');
-    const isVerified = verifyInputsData();
-    if(!isVerified) return;
-
-    const data ={
-      previousStockType: item.stockType,
-      isActive,
-      name,
-      price,
-      productImage,
-      category,
-      stockType: category?.stockType,
-      itemColors,
+    try{
+      if(!token) return popupMessage('Morate biti ulogovani kako bi izvršili izmenu proizvoda', 'danger');
+      const isVerified = verifyInputsData();
+      if(!isVerified) return;
+  
+      const newColors = itemColors.map(({ _id, ...colorWithoutId }) => colorWithoutId);
+      const formData = new FormData();
+      formData.append('previousStockType', item.stockType);
+      formData.append('active', isActive.toString());
+      formData.append('name', name);
+      formData.append('price', price.toString());
+      formData.append('category', category.name);
+      formData.append('stockType', category?.stockType);
+      formData.append('colors', JSON.stringify(newColors));
+  
+      betterConsoleLog('> Product image is: ', productImage)
+      if (productImage) {
+        formData.append('image', {
+          uri: productImage.uri,
+          name: productImage?.fileName || productImage?.imageName,
+          type: getMimeType(productImage?.mimeType, productImage.uri)
+        });
+      }
+  
+      const response = await handleFetchingWithFormData(formData, token, `products/update/${item._id}`, "PUT");
+      betterConsoleLog('> Logging response', response);
+      if(!response) return popupMessage('Došlo je do problema prilikom ažuriranja prozvoda', 'danger');
+  
+      if (!response.ok) {
+        const parsedResponse = await response.json();
+        return popupMessage(parsedResponse.message,'danger');
+      }
+  
+      const parsedResponse = await response.json(); 
+      popupMessage(parsedResponse.message,'success');
+    } catch(error) {
+      return betterErrorLog('> Error while handling product update', error);
     }
-
-    const response = await handleFetchingWithBodyData(data, token, `products/update/${item._id}`, "PUT");
-
-    if (!response.ok) {
-      const parsedResponse = await response.json();
-      return popupMessage(parsedResponse.message,'success');
-    }
-
-    const parsedResponse = await response.json(); 
-    popupMessage(parsedResponse.message,'success');
   }
 
   // Changes category and resets selected colors and default options if
@@ -104,11 +119,15 @@ function EditProductComponent({ item, setItem }: PropTypes) {
     if(item.stockType === newCategory.stockType){
       setCategory(newCategory);
     } else {
-      setSelectedColors([]);
-      setColorsDefaultOptions([]);
+      // setColorsDefaultOptions([]);
+      // setSelectedColors([]);
       setCategory(newCategory);
     }
   }
+
+  useEffect(() => {
+    betterConsoleLog('> colorsDefaultOptions', colorsDefaultOptions);
+  }, [colorsDefaultOptions])
 
 
   // Sets default size / stock value 
@@ -224,7 +243,7 @@ function EditProductComponent({ item, setItem }: PropTypes) {
           placeholder='Izaberi boje'
           label='Boje Proizvoda'
           containerStyles={{marginTop: 4}}
-          defaultValues={colorsDefaultOptions}
+          defaultValues={colorsDefaultOptions.length === 0 ? [] : colorsDefaultOptions}
         />
       )}
     </View>

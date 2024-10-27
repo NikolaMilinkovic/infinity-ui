@@ -10,24 +10,30 @@ interface PropTypes{
   setColorsData: (data:PurseColorTypes[]) => void
 }
 
-function ColorStockInputs({ colorsData, setColorsData, }: PropTypes) {
-  
+function ColorStockInputs({ colorsData, setColorsData }) {
+
+  // Initialize stock to 0 if undefined
+  const initializedColorsData = colorsData.map(item => ({
+    ...item,
+    stock: item.stock ?? 0,
+  }));
+
   // Method for handling input changes
-  function handleInputChange(color:string, value: string){
+  function handleInputChange(color, value) {
     const newStock = parseInt(value, 10) || 0;
-    const updatedColorStock = colorsData.map((item) => {
-      if(item.color === color){
-        return { ...item, stock: newStock }
+    const updatedColorStock = initializedColorsData.map((item) => {
+      if (item.color === color) {
+        return { ...item, stock: newStock };
       }
       return item;
-    })
+    });
 
     setColorsData(updatedColorStock);
   }
 
   // If no colors present
-  if(colorsData.length < 1){
-    return;
+  if (initializedColorsData.length < 1) {
+    return null;
   }
 
   return (
@@ -36,9 +42,9 @@ function ColorStockInputs({ colorsData, setColorsData, }: PropTypes) {
         <Text style={{ width: 100, fontWeight: 'bold', textAlign: 'center' }}>Boja</Text>
         <Text style={styles.header}>Količina</Text>
       </View>
-      {colorsData.map((item, index) => (
-        <KeyboardAvoidingView 
-          style={[styles.rowContainer, index % 2 === 0 ? styles.rowColor1 : styles.rowColor2 ]} 
+      {initializedColorsData.map((item, index) => (
+        <KeyboardAvoidingView
+          style={[styles.rowContainer, index % 2 === 0 ? styles.rowColor1 : styles.rowColor2]}
           key={`${index}-${item.color}`}
         >
           <Text style={styles.colorLabel}>{item.color}</Text>
@@ -54,7 +60,7 @@ function ColorStockInputs({ colorsData, setColorsData, }: PropTypes) {
         </KeyboardAvoidingView>
       ))}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

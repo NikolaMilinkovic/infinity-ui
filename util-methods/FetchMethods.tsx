@@ -126,23 +126,18 @@ export async function handleFetchingWithFormData(formData: any, authToken: strin
       method: method,
       headers: {
         'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'multipart/form-data'
       },
       body: formData,
     });
 
-    if (!response.ok) {
-      const parsedResponse = await response.json();
-      popupMessage(parsedResponse.message, 'danger');
-      return false;
-    }
-
-    return await response.json(); 
+    return response;
   } catch (error) {
-    betterErrorLog('Error adding new order', error);
-    return false;
+    betterErrorLog('Error fetching with form data', error);
+    betterConsoleLog('> Error: ', error);
   }
 }
+// 'Content-Type': 'multipart/form-data'
+
 
 // GENERIC FETCHING METHOD WITH FORM DATA
 export async function handleFetchingWithBodyData(data: any, authToken: string, uri: string, method: string) {
@@ -162,7 +157,6 @@ export async function handleFetchingWithBodyData(data: any, authToken: string, u
     return response;
   } catch (error) {
     betterErrorLog('Error adding new order', error);
-    return false;
   }
 }
 
