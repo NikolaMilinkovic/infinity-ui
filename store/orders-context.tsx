@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, ReactNode, useContext } from "react";
+import { createContext, useEffect, useState, ReactNode, useContext, useMemo } from "react";
 import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
@@ -74,10 +74,11 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     };
   }, [socket]);
 
-  const value = {
-    unprocessedOrders,
-    processedOrders,
-  }
+    // Memoizing the getters
+    const value = useMemo(() => ({
+      unprocessedOrders,
+      processedOrders,
+    }), [unprocessedOrders, processedOrders]);
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;
 }

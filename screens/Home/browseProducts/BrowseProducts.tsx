@@ -12,7 +12,6 @@ function BrowseProducts() {
 
   const editProductFade = useFadeTransition(editedProduct !== null);
   const overlayView = useFadeTransitionReversed(editedProduct === null, 500, 150);
-  const fadeAnimation = useFadeAnimation();
   
   return (
     <>

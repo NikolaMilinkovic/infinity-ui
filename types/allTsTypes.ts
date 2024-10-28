@@ -89,12 +89,17 @@ export interface PurseTypes {
 // PURSE & DRESS TYPE
 export type ProductTypes = DressTypes | PurseTypes;
 
+export interface ProfileImageTypes {
+  uri: string
+  imageName: string
+}
 
 // NEW ORDER CONTEXT
 export interface BuyerTypes {
   name: string
   address: string
   phone: string | number
+  profileImage: ProfileImageTypes
 }
 export interface OrderProductTypes {
   itemReference: ProductTypes | string;
@@ -149,4 +154,22 @@ export interface CourierTypes {
   _id: string
   name: string
   deliveryPrice: number
+}
+export interface CourierTypesWithNoId {
+  name: string
+  deliveryPrice: number
+}
+
+export interface OrderTypes {
+  buyer: BuyerTypes;
+  courier?: CourierTypesWithNoId;
+  _id: string;
+  products: ProductTypes[];
+  productsPrice: number;
+  totalPrice: number;
+  reservation: boolean;
+  packed: boolean;
+  processed: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -27,16 +27,25 @@ export function CustomDrawerContent(props) {
         onPress={() => navigatePages('Home')} 
         size={18} 
         color={Colors.secondaryDark}
-        text={'Lista Proizvoda i\nKreiranje Porudžbina'}
+        text={'Proizvodi | Porudžbine'}
         type='MaterialCommunityIcons'
       />
+
+      {/* ORDERS MANAGER */}
       <NavigationButton 
+        icon="filetext1" 
+        onPress={() => navigatePages('Orders')} 
+        size={18} 
+        color={Colors.secondaryDark}
+        text='Porudžbine'
+      />
+      {/* <NavigationButton 
         icon="user" 
         onPress={() => navigatePages('Profile')} 
         size={18} 
         color={Colors.secondaryDark}
         text='Profil'
-      />
+      /> */}
 
 
       {/* COLORS | CATEGORIES */}
@@ -66,15 +75,6 @@ export function CustomDrawerContent(props) {
         size={18} 
         color={Colors.secondaryDark}
         text='Upravljanje Proizvodima'
-      />
-
-      {/* ORDERS MANAGER */}
-      <NavigationButton 
-        icon="filetext1" 
-        onPress={() => navigatePages('Orders')} 
-        size={18} 
-        color={Colors.secondaryDark}
-        text='Upravljanje Porudžbinama'
       />
 
       {/* USERS MANAGER */}

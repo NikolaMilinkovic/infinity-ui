@@ -36,7 +36,7 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
 
     const image = await launchCameraAsync({
       allowsEditing: true,
-      quality: 0.2,
+      quality: 0.6,
       aspect: [3, 4],
     })
 

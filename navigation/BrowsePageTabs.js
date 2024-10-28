@@ -44,7 +44,7 @@ export default function BrowsePageTabs(){
         name="NewOrder" 
         component={NewOrder} 
         options={{
-          title: 'Nova Porudzbina',
+          title: 'Nova Porudžbina',
         }}
       />
     </Tab.Navigator>
