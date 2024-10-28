@@ -4,8 +4,21 @@ import { Animated, Modal, View, Text, StyleSheet, Image, TouchableWithoutFeedbac
 import { Colors } from '../constants/colors';
 import Button from './Button';
 import { useFadeAnimation } from '../hooks/useFadeAnimation';
+import IconButton from './IconButton';
+import { useShareMessage } from '../hooks/useShareMessage';
+import { ImageTypes } from '../types/allTsTypes';
 
-function ImagePreviewModal({ isVisible, onCancel, image }) {
+interface ImageModalPropTypes {
+  isVisible: boolean
+  onCancel: () => void
+  image: ImageTypes
+}
+
+function ImagePreviewModal({ isVisible, onCancel, image }: ImageModalPropTypes) {
+
+  async function shareImageHandler(){
+    await useShareMessage({ message: undefined, image: image });
+  }
   return (
       <Modal
         animationType="slide"
@@ -19,7 +32,17 @@ function ImagePreviewModal({ isVisible, onCancel, image }) {
               <View style={styles.modalContent}>
                 {/* IMAGE */}
                 <View style={styles.imageContainer}>
-                  <Image source={{ uri: image }} resizeMode="contain" style={styles.image} />
+                  <Image source={{ uri: image.uri }} resizeMode="contain" style={styles.image} />
+
+                  <IconButton
+                    size={26}
+                    color={Colors.secondaryDark}
+                    onPress={shareImageHandler}
+                    key={`key-${image}-add-button`}
+                    icon='share'
+                    style={styles.shareButtonContainer} 
+                    pressedStyles={styles.shareButtonPressed}
+                  />
                 </View>
                 <Button
                   backColor={Colors.highlight}
@@ -74,6 +97,20 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.primaryDark,
     borderBottomWidth: 0.5,
     marginBottom: 10,
+  },
+  shareButtonContainer : {
+    position: 'absolute',
+    bottom: 60,
+    right: 10,
+    borderRadius: 100,
+    overflow: 'hidden',
+    backgroundColor: Colors.white,
+    padding: 10,
+    elevation: 2
+  },
+  shareButtonPressed: {
+    opacity: 0.7,
+    elevation: 1,
   },
   modalText: {
     fontSize: 16,

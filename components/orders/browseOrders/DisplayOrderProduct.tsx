@@ -7,9 +7,9 @@ import { Colors } from '../../../constants/colors';
 
 function DisplayOrderProduct({ product, index }) {
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
-  const [previewImage, setPreviewImage] = useState(product?.image?.uri);
+  const [previewImage, setPreviewImage] = useState(product?.image);
   function handleImagePreview() {
-    setPreviewImage(product.image.uri);
+    setPreviewImage(product.image);
     showImageModal();
   }
   betterConsoleLog('> Product', product);

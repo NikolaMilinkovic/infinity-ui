@@ -5,7 +5,7 @@ import SearchProducts from './SearchProducts';
 import DisplayProduct from './display_product/DisplayProduct';
 import { AllProductsContext } from '../../store/all-products-context';
 import { serachProducts } from '../../util-methods/ProductFilterMethods';
-import { ProductTypes, SearchParamsTypes } from '../../types/allTsTypes';
+import { ImageTypes, ProductTypes, SearchParamsTypes } from '../../types/allTsTypes';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
 import useBatchSelectBackHandler from '../../hooks/useBatchSelectBackHandler';
 import BatchModeControlls from './BatchModeControlls';
@@ -40,8 +40,8 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const [previewImage, setPreviewImage] = useState<string>('');
-  function handleImagePreview(imageUri:string) {
-    setPreviewImage(imageUri);
+  function handleImagePreview(image:ImageTypes) {
+    setPreviewImage(image);
     showImageModal();
   }
 

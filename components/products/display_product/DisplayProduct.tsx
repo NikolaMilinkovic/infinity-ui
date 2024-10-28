@@ -9,12 +9,7 @@ import { popupMessage } from '../../../util-components/PopupMessage';
 import { NewOrderContext } from '../../../store/new-order-context';
 import IconButton from '../../../util-components/IconButton';
 import useCheckStockAvailability from '../../../hooks/useCheckStockAvailability';
-import useImagePreviewModal from '../../../hooks/useImagePreviewModal';
 
-interface ImageTypes {
-  uri: string
-  imageName: string
-}
 type ProductType = DressTypes | PurseTypes;
 interface HighlightedItemsProps {
   _id: string
@@ -117,7 +112,7 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
       {/* IMAGE AND INFORMATIONS */}
       <View style={styles.infoContainer}>
 
-        <Pressable style={styles.imageContainer} onPress={() => showImagePreview(item.image.uri)}>
+        <Pressable style={styles.imageContainer} onPress={() => showImagePreview(item.image)}>
           <Image source={{ uri: item.image.uri }} style={styles.image} />
         </Pressable>
 

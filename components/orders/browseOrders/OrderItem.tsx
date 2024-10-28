@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Animated, Image, Pressable, Text, View } from 'react-native'
 import { betterConsoleLog } from '../../../util-methods/LogMethods'
-import { OrderTypes } from '../../../types/allTsTypes';
+import { ImageTypes, OrderTypes } from '../../../types/allTsTypes';
 import { StyleSheet } from 'react-native';
 import { Colors } from '../../../constants/colors';
 import { getFormattedDate } from '../../../util-methods/DateFormatters';
@@ -19,7 +19,7 @@ interface PropTypes {
 
 function OrderItem({ order, setEditedOrder, index }: PropTypes) {
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
-  const [previewImage, setPreviewImage] = useState(order.buyer.profileImage.uri);
+  const [previewImage, setPreviewImage] = useState(order.buyer.profileImage);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const expandHeight = useExpandAnimation(isExpanded, 140, (order.products.length * 88 + 164), 180);
@@ -28,8 +28,8 @@ function OrderItem({ order, setEditedOrder, index }: PropTypes) {
     setIsExpanded(!isExpanded);
     setIsVisible(!isVisible)
   }
-  function handleImagePreview(imageUri:string) {
-    setPreviewImage(imageUri);
+  function handleImagePreview(image:ImageTypes) {
+    setPreviewImage(image);
     showImageModal();
   }
   function handleOnEditPress(){
@@ -51,7 +51,7 @@ function OrderItem({ order, setEditedOrder, index }: PropTypes) {
               onCancel={hideImageModal}
             />
           )}
-          <Pressable onPress={() => handleImagePreview(order.buyer.profileImage.uri)}>
+          <Pressable onPress={() => handleImagePreview(order.buyer.profileImage)}>
             <Image source={order.buyer.profileImage} style={styles.profileImage}/>
           </Pressable>
           <View style={styles.info}>
