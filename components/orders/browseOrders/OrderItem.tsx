@@ -58,7 +58,7 @@ function OrderItem({ order, setEditedOrder, index }: PropTypes) {
             <Text>{order.buyer.name}</Text>
             <Text>{order.buyer.address}</Text>
             <Text>{order.buyer.phone}</Text>
-            <Text>Cena: {order.totalPrice}</Text>
+            <Text>Otkup: {order.totalPrice} din.</Text>
           </View>
           <View style={styles.buttonsContainer}>
             <IconButton

@@ -44,7 +44,7 @@ function DisplayOrderProduct({ product, index }) {
         )}
         <View style={styles.row}>
           <Text style={styles.label}>Cena:</Text>
-          <Text style={styles.data}>{product.price}</Text>
+          <Text style={styles.data}>{product.price} din.</Text>
         </View>
       </View>
     </Animated.View>

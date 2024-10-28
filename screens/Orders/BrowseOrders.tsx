@@ -8,12 +8,16 @@ import SearchProducts from '../../components/products/SearchProducts';
 import { searchOrders } from '../../util-methods/OrderFilterMethods';
 import Button from '../../util-components/Button';
 import Animated from 'react-native-reanimated';
+import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 interface SearchParamsTypes {
   processed: boolean
   unprocessed: boolean
   packed: boolean
   unpacked: boolean
+  onCourierSearch: string
+  ascending: boolean,
+  descending: boolean,
 }
 function BrowseOrders() {
   const ordersCtx = useContext(OrdersContext);
@@ -26,7 +30,11 @@ function BrowseOrders() {
     unprocessed: true,
     packed: false,
     unpacked: true,
+    onCourierSearch: '',
+    ascending: true,
+    descending: false,
   });
+  betterConsoleLog('> Logging search params', searchParams)
   function updateSearchParam<K extends keyof SearchParamsTypes>(paramName: K, value: SearchParamsTypes[K]) {
     setSearchParams((prevParams) => ({
       ...prevParams,
@@ -37,6 +45,7 @@ function BrowseOrders() {
   const filteredData = useMemo(() => {
     if(searchParams.processed) return searchOrders(searchData, ordersCtx.processedOrders, searchParams);
     if(searchParams.unprocessed) return searchOrders(searchData, ordersCtx.unprocessedOrders, searchParams);
+    return [];
   }, [ordersCtx.processedOrders, ordersCtx.unprocessedOrders, searchData, searchParams]);
 
   const editOrderFade = useFadeTransition(editedOrder !== null);
@@ -47,7 +56,7 @@ function BrowseOrders() {
       {editedOrder === null ? (
         <View style={styles.ordersListContainer}>
           <Animated.View style={[overlayView, styles.overlayView]} />
-          <SearchOrders searchData={searchData} setSearchData={setSearchData} />
+          <SearchOrders searchData={searchData} setSearchData={setSearchData} updateSearchParam={updateSearchParam} />
           <OrderItemsList data={filteredData} setEditedOrder={setEditedOrder} />
         </View>
       ) : (

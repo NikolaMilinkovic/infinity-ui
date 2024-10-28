@@ -128,8 +128,15 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   }
   const categoriesCtx = useContext(CategoriesContext);
   const [selectedCategory, setSelectedCategory] = useState<CategoryTypes | null>(null);
+
+  useEffect(() => {
+    betterConsoleLog('> Selected category is', selectedCategory);
+  }, [selectedCategory])
  
   useEffect(() => {
+    if(selectedCategory?.stockType !== 'Boja-Veličina-Količina'){
+      setSelectedSizes([]);
+    }
     if (selectedCategory && selectedCategory?.name === 'Resetuj izbor') {
       resetDropdown();
       return; 
@@ -169,13 +176,13 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
           containerStyles={styles.expandButton}
         />
       </View>
-        <Animated.ScrollView style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
-            <Animated.ScrollView style={{ opacity: toggleFade }}>
+        <Animated.View style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
+            <Animated.View style={{ opacity: toggleFade }}>
               <Text style={styles.filtersH1}>Filteri</Text>
 
               {/* ACTIVE INACTIVE */}
               <View style={styles.radioGroupContainer}>
-                <Text style={styles.filtersH2}>Izbor Aktivni | Neaktivni proizvodi</Text>
+                <Text style={styles.filtersH2absolute}>Izbor Aktivni | Neaktivni proizvodi</Text>
                 <View style={styles.radioGroup}>
                   <RadioGroup 
                     radioButtons={activeRadioButtons} 
@@ -188,7 +195,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
 
               {/* STOCK AVAILABILITY FILTER INPUT */}
               <View style={styles.radioGroupContainer}>
-                <Text style={styles.filtersH2}>Stanje na lageru</Text>
+                <Text style={styles.filtersH2absolute}>Stanje na lageru</Text>
                 <View style={styles.radioGroup}>
                   <RadioGroup 
                     radioButtons={radioButtons} 
@@ -209,21 +216,25 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
                 />
 
                 {/* SIZES FILTER INPUT */}
-                <SizePickerCheckboxes
-                  sizes={['XS', 'S', 'M', 'L', 'XL', 'UNI']}
-                  selectedSizes={selectedSizes}
-                  setSelectedSizes={setSelectedSizes}
-                />
+                {(!selectedCategory || selectedCategory?.stockType === 'Boja-Veličina-Količina') && (
+                  <SizePickerCheckboxes
+                    sizes={['XS', 'S', 'M', 'L', 'XL', 'UNI']}
+                    selectedSizes={selectedSizes}
+                    setSelectedSizes={setSelectedSizes}
+                  />
+                )}
 
                 {/* COLORS FILTER INPUT */}
-                <MultiDropdownList
-                  data={colorsData}
-                  setSelected={setSelectedColors}
-                  isOpen={true}
-                  label='Boje'
-                  placeholder='Filtriraj po bojama'
-                />
-            </Animated.ScrollView>
+                <View style={{ marginTop: 8, }}>
+                  <MultiDropdownList
+                    data={colorsData}
+                    setSelected={setSelectedColors}
+                    isOpen={true}
+                    label='Boje'
+                    placeholder='Filtriraj po bojama'
+                  />
+                </View>
+            </Animated.View>
             {/* CLOSE BUTTON */}
             <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
               <Button
@@ -235,7 +246,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
                 Zatvori
               </Button>
             </Animated.View>
-        </Animated.ScrollView>
+        </Animated.View>
     </View>
   )
 }
@@ -280,7 +291,9 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: Colors.primaryDark,
     borderRadius: 4,
-    marginBottom: 8
+    marginBottom: 8,
+    position: 'relative',
+    marginTop: 10
   },
   radioGroup: {
     alignItems: 'center',
@@ -295,7 +308,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.primaryDark,
     marginBottom: 8,
+    backgroundColor: Colors.white,
+    paddingHorizontal: 18
   },
+  filtersH2absolute: {
+    fontSize: 14,
+    color: Colors.primaryDark,
+    marginBottom: 8,
+    position: 'absolute',
+    left: 10,
+    top: -12,
+    backgroundColor: Colors.white,
+    borderRadius: 4,
+    paddingHorizontal: 4
+  }
 })
 
 export default SearchProducts
