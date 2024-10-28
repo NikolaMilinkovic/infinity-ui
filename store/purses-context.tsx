@@ -63,11 +63,21 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
 
   // Event handlers for socket updates
   function handleActivePurseAdded(newPurse: PurseTypes) {
-    setActivePurses((prevPurses) => [...prevPurses, newPurse]);
+    if(newPurse.active){
+      setActivePurses(prev => [...prev, newPurse]);
+    } else {
+      setInactivePurses(prev => [...prev, newPurse]);
+    }
+    // setActivePurses((prevPurses) => [...prevPurses, newPurse]);
   }
 
   function handleInactivePurseAdded(newPurse: PurseTypes) {
-    setInactivePurses((prevPurses) => [...prevPurses, newPurse]);
+    if(newPurse.active){
+      setActivePurses(prev => [...prev, newPurse]);
+    } else {
+      setInactivePurses(prev => [...prev, newPurse]);
+    }
+    // setInactivePurses((prevPurses) => [...prevPurses, newPurse]);
   }
 
   function handleActivePurseRemoved(purseId: string) {

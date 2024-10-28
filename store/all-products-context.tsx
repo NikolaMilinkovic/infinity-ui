@@ -41,12 +41,28 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
   const socketCtx = useContext(SocketContext)
   const socket = socketCtx?.socket
 
+  useEffect(() => {
+    const filteredInactive = inactiveProducts.map((product) => product.name);
+    betterConsoleLog('> All inactive products are FROM STORE', filteredInactive);
+    const filteredActive = activeProducts.map((product) => product.name);
+    betterConsoleLog('> All active products are FROM STORE', filteredActive);
+  }, [activeProducts, inactiveProducts])
+
   // SOCKET METHODS
   function activeProductAddedHandler(newProduct: DressTypes | PurseTypes){
-    setActiveProducts(prev => [...prev, newProduct]);
+    if(newProduct.active){
+        setActiveProducts(prev => [...prev, newProduct]);
+    } else {
+        setInactiveProducts(prev => [...prev, newProduct]);
+    }
   }
   function inactiveProductAddedHandler(newProduct: DressTypes | PurseTypes){
-    setInactiveProducts(prev => [...prev, newProduct]);
+    if(newProduct.active){
+      setActiveProducts(prev => [...prev, newProduct]);
+    } else {
+        setInactiveProducts(prev => [...prev, newProduct]);
+    }
+    // setInactiveProducts(prev => [...prev, newProduct]);
   }
   function activeProductRemovedHandler(productId: string){
     setActiveProducts(prev => prev.filter(product => product._id !== productId));
@@ -87,6 +103,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
   }
   // Handle setting ALL PRODUCTS
   useEffect(() => {
+    console.log('> Setting all products: Active + Inactive');
     setAllProducts([...activeProducts, ...inactiveProducts]);
   }, [activeProducts, inactiveProducts]);
 

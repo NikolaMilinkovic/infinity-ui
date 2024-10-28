@@ -33,6 +33,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
     setSelectedItems([]);
   }
   useBatchSelectBackHandler(batchMode, resetBatch);
+
   const productsCtx = useContext(AllProductsContext);
   const authCtx = useContext(AuthContext);
   const [searchData, setSearchData] = useState('');
@@ -69,10 +70,16 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
 
   // Memoize the filtered products
   const filteredData = useMemo(() => {
+    // console.log('> ACTIVE Search params are> ', searchParams.active)
+    // console.log('> INACTIVE Search params are> ', searchParams.inactive)
+    // const filteredInactive = productsCtx.allInactiveProducts.map((product) => product.name);
+    // betterConsoleLog('> All inactive products are', filteredInactive);
+    // const filteredActive = productsCtx.allActiveProducts.map((product) => product.name);
+    // betterConsoleLog('> All active products are', filteredActive)
+
     if(searchParams.active) return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
     if(searchParams.inactive) return serachProducts(searchData, productsCtx.allInactiveProducts, searchParams); 
   }, [productsCtx.allActiveProducts, productsCtx.allInactiveProducts, searchData, searchParams]);
-
 
   // Long press that initializes select mode
   function handleLongPress(itemId: string, stockType: string){

@@ -55,13 +55,6 @@ function EditProductComponent({ item, setItem }: PropTypes) {
   //   betterConsoleLog('> Item colors are', itemColors);
   // }, [itemColors])
 
-  useEffect(() => {
-    betterConsoleLog('> CATEGORY: ', category);
-  }, [category])
-  useEffect(() => {
-    betterConsoleLog('> SELECTED COLORS: ', selectedColors);
-  }, [selectedColors])
-
   function verifyInputsData(){
     if(!name) {popupMessage('Proizvod mora imati ime','danger'); return false}
     if(!price) {popupMessage('Proizvod mora imati cenu','danger'); return false}
@@ -106,7 +99,8 @@ function EditProductComponent({ item, setItem }: PropTypes) {
         return popupMessage(parsedResponse.message,'danger');
       }
   
-      const parsedResponse = await response.json(); 
+      const parsedResponse = await response.json();
+      setItem(null);
       popupMessage(parsedResponse.message,'success');
     } catch(error) {
       return betterErrorLog('> Error while handling product update', error);
