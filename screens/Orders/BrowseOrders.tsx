@@ -34,7 +34,6 @@ function BrowseOrders() {
     ascending: true,
     descending: false,
   });
-  betterConsoleLog('> Logging search params', searchParams)
   function updateSearchParam<K extends keyof SearchParamsTypes>(paramName: K, value: SearchParamsTypes[K]) {
     setSearchParams((prevParams) => ({
       ...prevParams,

@@ -4,7 +4,6 @@ import { BackHandler } from 'react-native';
 
 function useBatchSelectBackHandler(isBatchActive: boolean, resetBatch: () => void){
   useEffect(() => {
-    console.log('> Running batch reset')
     const backAction = () => {
       if(isBatchActive) {
         resetBatch();

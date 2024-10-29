@@ -1,18 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Animated, StyleSheet, Text, View } from 'react-native'
-import IconButton from '../../util-components/IconButton'
-import { Colors } from '../../constants/colors'
-import { useExpandAnimation, useExpandAnimationWithContentVisibility } from '../../hooks/useExpand'
-import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation'
-import { AuthContext } from '../../store/auth-context'
-import { popupMessage } from '../../util-components/PopupMessage'
+import IconButton from '../../../util-components/IconButton'
+import { Colors } from '../../../constants/colors'
+import { useExpandAnimationWithContentVisibility } from '../../../hooks/useExpand'
+import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation'
 
 
 interface PropTypes {
   active: boolean
   onRemoveBatchPress: () => void
 }
-function BatchModeControlls({ active, onRemoveBatchPress }:PropTypes) {
+function BatchModeOrderControlls({ active, onRemoveBatchPress }:PropTypes) {
   useEffect(() => {
     setIsExpanded(active);
   }, [active])
@@ -45,9 +43,7 @@ function BatchModeControlls({ active, onRemoveBatchPress }:PropTypes) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
-    backgroundColor: Colors.white,
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.primaryDark,
+    backgroundColor: Colors.primaryLight,
   },
   removeBatchItemsButton: {
     margin: 10,
@@ -69,4 +65,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default BatchModeControlls
+export default BatchModeOrderControlls

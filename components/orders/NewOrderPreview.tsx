@@ -242,7 +242,6 @@ const styles = StyleSheet.create({
     width: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red',
     zIndex: 1
   },
   editIcon: {

@@ -3,11 +3,11 @@ import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
-import { OrderProductTypes } from "../types/allTsTypes";
+import { OrderProductTypes, OrderTypes } from "../types/allTsTypes";
 
 interface OrdersContextTypes {
-  unprocessedOrders: any[]
-  processedOrders: any[]
+  unprocessedOrders: OrderTypes[]
+  processedOrders: OrderTypes[]
 }
 
 export const OrdersContext = createContext<OrdersContextTypes>({
@@ -30,7 +30,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   // Initial orders data fetch
   useEffect(() => {
     async function fetchUnprocessedOrdersData(){
-      const unprocessedOrdersData = await fetchData(token, 'orders/unprocessed')
+      const unprocessedOrdersData = await fetchData(token, 'orders/unprocessed');
       console.log('> Unprocessed orders fetched length is: ', unprocessedOrdersData.orders.length);
       setUnprocessedOrders(unprocessedOrdersData.orders);
     }
@@ -44,7 +44,35 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       setProcessedOrders(processedOrdersData.orders);
     }
     if(token) fetchProcessedOrdersData();
-  }, [token])
+  }, [token]);
+
+  function handleOrderRemoved(orderId: string) {
+    console.log('Order id is ' + orderId);
+  
+    setUnprocessedOrders((prevUnprocessedOrders) =>
+      prevUnprocessedOrders.filter((order) => order._id !== orderId)
+    );
+  
+    setProcessedOrders((prevProcessedOrders) =>
+      prevProcessedOrders.filter((order) => order._id !== orderId)
+    );
+  }
+  
+  function handleBatchOrderRemoved(orderIds: string[]) {
+    betterConsoleLog('> Order ids are', orderIds);
+  
+    setUnprocessedOrders((prevUnprocessedOrders) =>
+      prevUnprocessedOrders.filter((order) => !orderIds.includes(order._id))
+    );
+  
+    setProcessedOrders((prevProcessedOrders) =>
+      prevProcessedOrders.filter((order) => !orderIds.includes(order._id))
+    );
+  }
+  useEffect(() => {
+    console.log('> Unprocessed orders length is: ', unprocessedOrders.length);
+    console.log('> Processed orders length is: ', unprocessedOrders.length);
+  }, [unprocessedOrders, processedOrders])
 
   // useEffect(() => {
   //   betterConsoleLog('> Neaktivne, procesovane porudzbine: ', processedOrders.length);
@@ -62,14 +90,16 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     if(!socket) return;
 
     socket.on('orderAdded', handleOrderAdded);
-    // socket.on('orderRemoved', handleOrderRemoved);
+    socket.on('orderRemoved', handleOrderRemoved);
+    socket.on('orderBatchRemoved', handleBatchOrderRemoved);
     // socket.on('orderUpdated', handleOrderUpdated);
 
     // Cleans up the listener on unmount
     // Without this we would get 2x the data as we are rendering multiple times
     return () => {
       socket.off('orderAdded', handleOrderAdded);
-      // socket.off('orderRemoved', handleOrderRemoved);
+      socket.off('orderRemoved', handleOrderRemoved);
+      socket.off('orderBatchRemoved', handleBatchOrderRemoved);
       // socket.off('orderUpdated', handleOrderUpdated);
     };
   }, [socket]);

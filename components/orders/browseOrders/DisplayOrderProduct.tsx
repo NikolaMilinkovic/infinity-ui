@@ -12,7 +12,7 @@ function DisplayOrderProduct({ product, index }) {
     setPreviewImage(product.image);
     showImageModal();
   }
-  betterConsoleLog('> Product', product);
+
   return (
     <Animated.View style={styles.container}>
       {previewImage && (

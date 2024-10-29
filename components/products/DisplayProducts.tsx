@@ -40,6 +40,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const [previewImage, setPreviewImage] = useState<string>('');
+  
   function handleImagePreview(image:ImageTypes) {
     setPreviewImage(image);
     showImageModal();

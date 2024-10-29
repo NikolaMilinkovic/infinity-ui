@@ -152,7 +152,6 @@ export async function handleFetchingWithBodyData(data: any, authToken: string, u
     });
 
     console.log('> Returning response...')
-    betterConsoleLog('> Response obj is: ', response);
     if(!response.ok) popupMessage('Fetching with body data failed', 'danger')
     return response;
   } catch (error) {

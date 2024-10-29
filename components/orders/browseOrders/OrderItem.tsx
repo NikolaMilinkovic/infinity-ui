@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Animated, Image, Pressable, Text, View } from 'react-native'
+import { Animated, Image, Pressable, Text, TouchableOpacity, View } from 'react-native'
 import { betterConsoleLog } from '../../../util-methods/LogMethods'
 import { ImageTypes, OrderTypes } from '../../../types/allTsTypes';
 import { StyleSheet } from 'react-native';
@@ -11,22 +11,45 @@ import { useExpandAnimation } from '../../../hooks/useExpand';
 import DisplayOrderProduct from './DisplayOrderProduct';
 import IconButton from '../../../util-components/IconButton';
 
+interface SelectedOrdersTypes {
+  _id: string
+}
 interface PropTypes {
   order: OrderTypes
   setEditedOrder: (order: OrderTypes | null) => void
-  index: number
+  highlightedItems: SelectedOrdersTypes[]
+  batchMode: boolean
+  onRemoveHighlight: (orderId: string) => void
+  onPress: (orderId: string) => void
+  onLongPress: (orderId: string) => void
 }
 
-function OrderItem({ order, setEditedOrder, index }: PropTypes) {
+function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemoveHighlight, onPress, onLongPress }: PropTypes) {
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const [previewImage, setPreviewImage] = useState(order.buyer.profileImage);
+  const [isHighlighted, setIsHighlighted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const expandHeight = useExpandAnimation(isExpanded, 140, (order.products.length * 88 + 164), 180);
+  const styles = getStyles(isHighlighted);
 
-  function handleToggleExpand(){
-    setIsExpanded(!isExpanded);
-    setIsVisible(!isVisible)
+  useEffect(() => {
+    const highlighted = highlightedItems.some((highlightedItem) => order._id === highlightedItem._id);
+    if(highlighted){
+      setIsHighlighted(true);
+    } else {
+      setIsHighlighted(false);
+    }
+  }, [highlightedItems, order])
+
+  function handleOnPress(orderId:string){
+    onPress(orderId);
+    if(batchMode) {
+
+    } else {
+      setIsExpanded(!isExpanded);
+      setIsVisible(!isVisible);
+    }
   }
   function handleImagePreview(image:ImageTypes) {
     setPreviewImage(image);
@@ -38,7 +61,14 @@ function OrderItem({ order, setEditedOrder, index }: PropTypes) {
 
   if(!order) return <></>;
   return (
-    <Pressable onPress={handleToggleExpand}>
+    <Pressable 
+      delayLongPress={100} 
+      onPress={() => handleOnPress(order._id)}
+      onLongPress={() => onLongPress(order._id)}
+    >
+      {isHighlighted && (
+        <View style={styles.itemHighlightedOverlay}/>
+      )}
       <Animated.View style={[styles.container, { height: expandHeight }]}>
         <Text style={styles.timestamp}>{getFormattedDate(order.createdAt)}</Text>
 
@@ -61,15 +91,31 @@ function OrderItem({ order, setEditedOrder, index }: PropTypes) {
             <Text>Otkup: {order.totalPrice} din.</Text>
           </View>
           <View style={styles.buttonsContainer}>
-            <IconButton
-                size={26}
-                color={Colors.secondaryDark}
-                onPress={handleOnEditPress}
-                key={`key-${order._id}-edit-button`}
-                icon='edit'
-                style={styles.editButtonContainer} 
-                pressedStyles={styles.buttonContainerPressed}
-              />
+            {batchMode ? (
+              <>
+                {isHighlighted && (
+                  <IconButton
+                    size={26}
+                    color={Colors.secondaryDark}
+                    onPress={() => onRemoveHighlight(order._id)}
+                    key={`key-${order._id}-highlight-button`}
+                    icon='check'
+                    style={styles.editButtonContainer} 
+                    pressedStyles={styles.buttonContainerPressed}
+                  />
+                )}
+              </>
+            ) : (
+              <IconButton
+                  size={26}
+                  color={Colors.secondaryDark}
+                  onPress={handleOnEditPress}
+                  key={`key-${order._id}-edit-button`}
+                  icon='edit'
+                  style={styles.editButtonContainer} 
+                  pressedStyles={styles.buttonContainerPressed}
+                />
+            )}
           </View>
         </View>
         
@@ -84,63 +130,76 @@ function OrderItem({ order, setEditedOrder, index }: PropTypes) {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    width: '100%',
-    elevation: 2,
-    backgroundColor: Colors.white,
-    minHeight: 140,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    gap: 10
-  },
-  timestamp: {
-    position: 'absolute',
-    right: 10,
-    fontSize: 12,
-    color: Colors.secondaryDark
-  },
-  infoContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    gap: 10,
-    maxHeight: 110,
-    minHeight: 110,
-    alignItems: 'center'
-  },
-  profileImage: {
-    height: 70,
-    width: 140,
-    flex: 2,
-    borderRadius: 4,
-  },
-  info: {
-    flex: 10,
-  },
-  buttonsContainer: {
-    width: 60,
-    height: '100%'
-  },
-  editButtonContainer : {
-    position: 'absolute',
-    right: 8,
-    top: 8,
-    borderRadius: 100,
-    overflow: 'hidden',
-    backgroundColor: Colors.white,
-    padding: 10,
-    elevation: 2
-  },
-  buttonContainerPressed: {
-    opacity: 0.7,
-    elevation: 1,
-  },
-  productsContainer: {
-  },
-  header: {
-    fontWeight: 'bold',
-  }
-})
+function getStyles(isHighlighted:boolean){
+  return StyleSheet.create({
+    container: {
+      position: 'relative',
+      width: '100%',
+      elevation: 2,
+      backgroundColor: Colors.white,
+      minHeight: 140,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      gap: 10
+    },
+    timestamp: {
+      position: 'absolute',
+      right: 10,
+      fontSize: 12,
+      color: Colors.secondaryDark
+    },
+    infoContainer: {
+      flex: 1,
+      flexDirection: 'row',
+      gap: 10,
+      maxHeight: 110,
+      minHeight: 110,
+      alignItems: 'center'
+    },
+    profileImage: {
+      height: 70,
+      width: 140,
+      flex: 2,
+      borderRadius: 4,
+    },
+    info: {
+      flex: 10,
+    },
+    buttonsContainer: {
+      width: 60,
+      height: '100%'
+    },
+    editButtonContainer : {
+      position: 'absolute',
+      right: 8,
+      top: 8,
+      borderRadius: 100,
+      overflow: 'hidden',
+      backgroundColor: Colors.white,
+      padding: 10,
+      elevation: 2
+    },
+    buttonContainerPressed: {
+      opacity: 0.7,
+      elevation: 1,
+    },
+    productsContainer: {
+    },
+    header: {
+      fontWeight: 'bold',
+    },
+    itemHighlightedOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: Colors.primaryDark,
+      zIndex: 12,
+      opacity: 0.4,
+      pointerEvents: 'none'
+    }
+  })
+}
 
 export default OrderItem

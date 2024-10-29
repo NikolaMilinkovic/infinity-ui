@@ -6,6 +6,8 @@ import { Colors } from '../constants/colors'
 import { popupMessage } from './PopupMessage'
 import Button from './Button'
 import { useExpandAnimation } from '../hooks/useExpand';
+import { pickImage } from '../util-methods/GalleryPickImage';
+import { betterConsoleLog } from '../util-methods/LogMethods';
 
 interface PropTypes {
   onTakeImage: (img:any) => void
@@ -45,6 +47,14 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
     onTakeImage(image?.assets?.[0]);
     setIsExpanded(true);
   }
+  async function openGalleryHandler(){
+    const pickedImage = await pickImage();
+    betterConsoleLog('> Picked image',pickedImage);
+    if(!pickedImage) return;
+    setPreviewImage(pickedImage);
+    onTakeImage(pickedImage);
+    setIsExpanded(true);
+  }
 
   function handleToggleExpand(event:any){
     setIsExpanded(!isExpanded);
@@ -73,13 +83,22 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
           {imagePreview}
         </Animated.View>
       </Pressable>
-      <Button 
-        onPress={takeImageHandler}
-        containerStyles={styles.button}
-        textStyles={styles.buttonText}
-      >
-          <Icon name='camera' size={24} color={Colors.primaryDark}/>
-      </Button>
+      <View style={styles.buttonsContainer}>
+        <Button 
+          onPress={takeImageHandler}
+          containerStyles={styles.button}
+          textStyles={styles.buttonText}
+        >
+            <Icon name='camera' size={24} color={Colors.primaryDark}/>
+        </Button>
+        <Button 
+          onPress={openGalleryHandler}
+          containerStyles={styles.button}
+          textStyles={styles.buttonText}
+        >
+            <Icon name='image' size={24} color={Colors.primaryDark}/>
+        </Button>
+      </View>
     </View>
   )
 }
@@ -107,9 +126,14 @@ const styles = StyleSheet.create({
     text: {
       fontSize: 16,
     },
+    buttonsContainer: {
+      flexDirection: 'row',
+      gap: 10
+    },
     button: {
       borderWidth: 0.5,
-      borderColor: Colors.primaryDark
+      borderColor: Colors.primaryDark,
+      flex: 1,
     },
     buttonText: {
       fontWeight: 400,

@@ -16,6 +16,7 @@ interface PropTypes {
 function GalleryImagePicker({ image, setImage, placeholder = 'Dodaj sliku' }: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(true);
   const toggledHeight = useExpandAnimation(isExpanded, 50, 100, 180);
+  
   async function handlePickImage(){
     const pickedImage = await pickImage();
     if(pickedImage){
