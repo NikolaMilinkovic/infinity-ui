@@ -4,7 +4,7 @@ import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { PurseTypes } from "../types/allTsTypes";
 import { betterConsoleLog } from "../util-methods/LogMethods";
-import { decreasePurseStock } from "../util-methods/StockMethods";
+import { decreasePurseStock, increasePurseStock } from "../util-methods/StockMethods";
 
 interface PurseContextType {
   activePurses: PurseTypes[];
@@ -111,8 +111,15 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
   }
 
   function decreasePurseStockHandler(data: any){
-    if(data.stockType === 'Boja-Veličina-Količina'){
+    console.log('> decreasePurseStockHandler called');
+    if(data.stockType === 'Boja-Količina'){
       decreasePurseStock(data, setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>)
+    }
+  }
+  function increasePurseStockHandler(data: any){
+    console.log('> increasePurseStockHandler called');
+    if(data.stockType === 'Boja-Količina'){
+      increasePurseStock(data, setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>)
     }
   }
 
@@ -126,6 +133,7 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
       socket.on('activePurseToInactive', handleActiveToInactive);
       socket.on('inactivePurseToActive', handleInactiveToActive);
       socket.on('handlePurseStockDecrease', decreasePurseStockHandler);
+      socket.on('handlePurseStockIncrease', increasePurseStockHandler);
 
       return () => {
         socket.off("activePurseAdded", handleActivePurseAdded);
@@ -135,6 +143,7 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
         socket.off("activePurseToInactive", handleActiveToInactive);
         socket.off("inactivePurseToActive", handleInactiveToActive);
         socket.off('handlePurseStockDecrease', decreasePurseStockHandler);
+        socket.off('handlePurseStockIncrease', increasePurseStockHandler);
       };
     }
   }, [socket]);

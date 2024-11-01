@@ -48,7 +48,7 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
     setIsExpanded(true);
   }
   async function openGalleryHandler(){
-    const pickedImage = await pickImage();
+    const pickedImage = await pickImage(0.6, true);
     betterConsoleLog('> Picked image',pickedImage);
     if(!pickedImage) return;
     setPreviewImage(pickedImage);

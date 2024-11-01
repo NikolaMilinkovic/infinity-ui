@@ -2,6 +2,7 @@ import { createContext, useState, ReactNode, useMemo, useEffect } from "react";
 import { betterConsoleLog } from "../util-methods/LogMethods";
 import { NewOrderContextTypes, BuyerTypes, ProductTypes, OrderProductTypes, CourierTypes, ProductImageTypes, DressColorTypes, PurseColorTypes, ColorSizeTypes } from "../types/allTsTypes";
 import { popupMessage } from "../util-components/PopupMessage";
+import { getMimeType } from "../util-methods/ImageMethods";
 interface ContextChildrenTypes {
   children: ReactNode;
 }
@@ -94,16 +95,27 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     order.append('packed', 'false');
     order.append('processed', 'false');
     order.append('courier', JSON.stringify(courier));
+    betterConsoleLog('> Logging profile image', profileImage);
     order.append('profileImage', {
-        uri: profileImage.uri, // Ensure this is the correct path
-        type: profileImage.mimeType || 'image/jpeg', // Default to 'image/jpeg' if not provided
-        name: profileImage.fileName || 'profile_image.jpg', // Default name if not provided
-    });
+      uri: profileImage.uri,
+      type: getMimeType(profileImage.mimeType, profileImage.uri),
+      name: profileImage.fileName,
+    } as any);
 
-    // FIELDS THAT WILL NEED TO BE PARSED ON THE BACKEND
-    // buyerData - JSON.parse(req.body.buyerData)
-    // productData - JSON.parse(req.body.productData)
-    // courier - JSON.parse(req.body.courier)
+    // const orderData = {
+    //   buyerData: buyerData,
+    //   productData: productData,
+    //   productsPrice: price.productsPrice.toString(),
+    //   totalPrice: price.totalPrice.toString(),
+    //   reservation: isReservation.toString(),
+    //   packed: 'false',
+    //   processed: 'false',
+    //   courier: courier,
+    //   uri: profileImage.uri,
+    //   type: getMimeType(profileImage.mimeType, profileImage.uri),
+    //   name: profileImage.fileName,
+    // }
+
 
     return order;
   }

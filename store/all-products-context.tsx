@@ -7,7 +7,7 @@ import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
 import { DressTypes, PurseTypes } from "../types/allTsTypes";
 import { popupMessage } from "../util-components/PopupMessage";
-import { decreaseDressStock, decreasePurseStock } from "../util-methods/StockMethods";
+import { batchProductStockIncrease, decreaseDressStock, decreasePurseStock, increaseDressBatchStock, increaseDressStock, increasePurseStock } from "../util-methods/StockMethods";
 
 
 interface AllProductsContextType {
@@ -43,9 +43,9 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
 
   useEffect(() => {
     const filteredInactive = inactiveProducts.map((product) => product.name);
-    betterConsoleLog('> All inactive products are FROM STORE', filteredInactive);
+    // betterConsoleLog('> All inactive products are FROM STORE', filteredInactive);
     const filteredActive = activeProducts.map((product) => product.name);
-    betterConsoleLog('> All active products are FROM STORE', filteredActive);
+    // betterConsoleLog('> All active products are FROM STORE', filteredActive);
   }, [activeProducts, inactiveProducts])
 
   // SOCKET METHODS
@@ -60,7 +60,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
     if(newProduct.active){
       setActiveProducts(prev => [...prev, newProduct]);
     } else {
-        setInactiveProducts(prev => [...prev, newProduct]);
+      setInactiveProducts(prev => [...prev, newProduct]);
     }
     // setInactiveProducts(prev => [...prev, newProduct]);
   }
@@ -93,12 +93,55 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
     });
   }
   function handleStockDecrease(data: any){
+    console.log('> handleStockDecrease called');
     if(!data.stockType) return popupMessage('Update stanja nije uspeo, stockType je obavezan!', 'danger');
     if(data.stockType === 'Boja-Veličina-Količina'){
       decreaseDressStock(data, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>)
     }
     if(data.stockType === 'Boja-Količina'){
       decreasePurseStock(data, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>)
+    }
+  }
+  function handleStockIncrease(data: any){
+    console.log('> handleStockIncrease called')
+    if(!data.stockType) return popupMessage('Update stanja nije uspeo, stockType je obavezan!', 'danger');
+    if(data.stockType === 'Boja-Veličina-Količina'){
+      increaseDressStock(data, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>)
+    }
+    if(data.stockType === 'Boja-Količina'){
+      increasePurseStock(data, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>)
+    }
+  }
+
+  interface PurseStockDataIncrease {
+    purseId: string,
+    colorId: string,
+    increment: number,
+  }
+  interface DressStockDataIncrease {
+    dressId: string,
+    colorId: string,
+    sizeId: string,
+    increment: number,
+  }
+  interface DataProps {
+    dresses: DressStockDataIncrease[]
+    purses: PurseStockDataIncrease[]
+  }
+  const dressesCtx = useContext(DressesContext);
+  const pursesCtx = useContext(PursesContext);
+
+  function handleBatchStockIncrease(data: DataProps){
+
+    // Loop over all dresses and increase for each stock
+    for(const dress of data.dresses){
+      increaseDressStock(dress, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
+      increaseDressStock(dress, dressesCtx.setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
+    }
+    // Loop over all purses and increase for each stock
+    for(const purse of data.purses){
+      increasePurseStock(purse, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
+      increasePurseStock(purse, pursesCtx.setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
     }
   }
   // Handle setting ALL PRODUCTS
@@ -116,6 +159,8 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
       socket.on('activeToInactive', activeToInactive);
       socket.on('inactiveToActive', inactiveToActive);
       socket.on('allProductStockDecrease', handleStockDecrease);
+      socket.on('allProductStockIncrease', handleStockIncrease);
+      socket.on('batchStockIncrease', handleBatchStockIncrease);
 
       return () => {
         socket.off('activeProductAdded');
@@ -125,6 +170,8 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
         socket.off('activeToInactive');
         socket.off('inactiveToActive');
         socket.off('allProductStockDecrease');
+        socket.off('allProductStockIncrease');
+        socket.off('batchStockIncrease');
       };
     }
   },[socket])

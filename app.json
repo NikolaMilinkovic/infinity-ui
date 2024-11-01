@@ -4,6 +4,7 @@
     "slug": "infinity-ui",
     "backgroundColor": "#ffffff",
     "version": "1.0.0",
+    "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/infinity.png",
     "userInterfaceStyle": "light",

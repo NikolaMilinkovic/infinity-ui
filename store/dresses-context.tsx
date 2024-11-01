@@ -4,7 +4,7 @@ import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
 import { DressTypes } from "../types/allTsTypes";
-import { decreaseDressStock } from "../util-methods/StockMethods";
+import { decreaseDressStock, increaseDressStock } from "../util-methods/StockMethods";
 
 interface DressContextType {
   activeDresses: DressTypes[];
@@ -101,8 +101,15 @@ function DressesContextProvider({ children }: DressContextProviderType) {
   }
 
   function decreaseDressStockHandler(data: any){
+    console.log('> decreaseDressStockHandler called')
     if(data.stockType === 'Boja-Veličina-Količina'){
-      decreaseDressStock(data, setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>)
+      decreaseDressStock(data, setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
+    }
+  }
+  function increaseDressStockHandler(data: any){
+    console.log('> increaseDressStockHandler called')
+    if(data.stockType === 'Boja-Veličina-Količina'){
+      increaseDressStock(data, setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
     }
   }
   
@@ -116,8 +123,8 @@ function DressesContextProvider({ children }: DressContextProviderType) {
       socket.on('inactiveDressRemoved', handleInactiveDressRemoved);
       socket.on('activeDressToInactive', handleActiveToInactive);
       socket.on('inactiveDressToActive', handleInactiveToActive);
-      // socket.on('handleStockIncrease', increaseStock);
       socket.on('handleDressStockDecrease', decreaseDressStockHandler);
+      socket.on('handleDressStockIncrease', increaseDressStockHandler);
 
       return () => {
         socket.off("activeDressAdded", handleActiveDressAdded);
@@ -126,8 +133,8 @@ function DressesContextProvider({ children }: DressContextProviderType) {
         socket.off("inactiveDressRemoved", handleInactiveDressRemoved);
         socket.off("activeDressToInactive", handleActiveToInactive);
         socket.off("inactiveDressToActive", handleInactiveToActive);
-        // socket.off('handleStockIncrease', increaseStock);
         socket.off('handleDressStockDecrease', decreaseDressStockHandler);
+        socket.off('handleDressStockIncrease', increaseDressStockHandler);
       };
     }
   }, [socket]);

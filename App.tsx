@@ -10,6 +10,11 @@ import { PopupMessagesComponent } from './util-components/PopupMessage';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import AuthStack from './navigation/AuthStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs([
+  'VirtualizedLists should never be nested inside plain ScrollViews', // Suppress the VirtualizedList nesting warning
+]);
 
 /**
  * Handles different Navigation Stack based on isAuthenticated flag in the context

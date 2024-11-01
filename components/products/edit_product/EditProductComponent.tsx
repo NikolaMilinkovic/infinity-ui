@@ -42,6 +42,12 @@ function EditProductComponent({ item, setItem }: PropTypes) {
   const [colorsDefaultOptions, setColorsDefaultOptions] = useState<string[]>(item.colors.map((obj) => obj.color));
   const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>(item.colors);
 
+  useEffect(() => {
+    console.log('> LOGGING PRICE AN IS ACTIVE:')
+    console.log(price)
+    console.log(isActive)
+    betterConsoleLog('> Item Colors', itemColors);
+  }, [price, isActive, itemColors])
   // useEffect(() => {
   //   betterConsoleLog('> All colors are', allColors);
   // }, [allColors])
@@ -74,20 +80,22 @@ function EditProductComponent({ item, setItem }: PropTypes) {
       const newColors = itemColors.map(({ _id, ...colorWithoutId }) => colorWithoutId);
       const formData = new FormData();
       formData.append('previousStockType', item.stockType);
+      console.log('> appending active')
       formData.append('active', isActive.toString());
       formData.append('name', name);
+      console.log('> Appending price')
       formData.append('price', price.toString());
       formData.append('category', category.name);
       formData.append('stockType', category?.stockType);
       formData.append('colors', JSON.stringify(newColors));
   
-      betterConsoleLog('> Product image is: ', productImage)
+      betterConsoleLog('> Product image is: ', productImage);
       if (productImage) {
         formData.append('image', {
           uri: productImage.uri,
           name: productImage?.fileName || productImage?.imageName,
           type: getMimeType(productImage?.mimeType, productImage.uri)
-        });
+        } as any);
       }
   
       const response = await handleFetchingWithFormData(formData, token, `products/update/${item._id}`, "PUT");

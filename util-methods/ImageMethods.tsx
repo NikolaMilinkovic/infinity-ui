@@ -4,7 +4,7 @@
  * @param {string} uri - The URI of the image.
  * @returns {string} - The determined MIME type.
  */
-export function getMimeType(mimeType: string, uri: string) {
+export function getMimeType(mimeType: string | undefined, uri: string) {
   // Return the provided mimeType if it's valid
   if (mimeType) {
     return mimeType;

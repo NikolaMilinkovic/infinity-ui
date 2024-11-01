@@ -101,7 +101,7 @@ function NewOrder() {
       // get order form with all the data from new-order-context
       const order = orderCtx.createOrderHandler()
       // betterConsoleLog('Logging out order form', order)
-      if(order === undefined) return;
+      if(order === undefined) return popupMessage('Order je undefined iz nekog razloga.','info');
   
       // Send the data via fetch
       if(!token) return popupMessage('Autentifikacioni token ne postoji!', 'danger');

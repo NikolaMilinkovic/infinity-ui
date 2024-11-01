@@ -33,10 +33,6 @@ function OrderItemsList({ data, setEditedOrder }: PropTypes) {
     setSelectedOrders([]);
   }
   useBatchSelectBackHandler(batchMode, resetBatch);
-  
-  useEffect(() => {
-    betterConsoleLog('> Selected orders are', selectedOrders);
-  }, [selectedOrders])
 
   const [longPressActivated, setLongPressActivated] = useState(false);
   function handleLongPress(orderId: string){
