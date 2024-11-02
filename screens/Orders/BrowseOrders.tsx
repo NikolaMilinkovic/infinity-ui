@@ -1,14 +1,13 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import React, { useContext, useMemo, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { OrdersContext } from '../../store/orders-context';
 import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
 import SearchOrders from '../../components/orders/browseOrders/SearchOrders';
 import { useFadeTransition, useFadeTransitionReversed } from '../../hooks/useFadeTransition';
-import SearchProducts from '../../components/products/SearchProducts';
 import { searchOrders } from '../../util-methods/OrderFilterMethods';
 import Button from '../../util-components/Button';
 import Animated from 'react-native-reanimated';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
+import useBackClickHandler from '../../hooks/useBackClickHandler';
 
 interface SearchParamsTypes {
   processed: boolean
@@ -23,6 +22,12 @@ function BrowseOrders() {
   const ordersCtx = useContext(OrdersContext);
   const [searchData, setSearchData] = useState('');
   const [editedOrder, setEditedOrder] = useState(null);
+  const [isDatePicked, setIsDatePicked] = useState(false);
+  const [pickedDate, setPickedDate] = useState('');
+  useBackClickHandler(!!editedOrder, removeEditedOrder);
+  function removeEditedOrder(){
+    setEditedOrder(null);
+  }
 
   // UPDATE WHEN ADDING MORE SEARCH OPTIONS
   const [searchParams, setSearchParams] = useState<SearchParamsTypes>({
@@ -42,10 +47,11 @@ function BrowseOrders() {
   }
 
   const filteredData = useMemo(() => {
+    if(isDatePicked) return searchOrders(searchData, ordersCtx.customOrderSet, searchParams);
     if(searchParams.processed) return searchOrders(searchData, ordersCtx.processedOrders, searchParams);
     if(searchParams.unprocessed) return searchOrders(searchData, ordersCtx.unprocessedOrders, searchParams);
     return [];
-  }, [ordersCtx.processedOrders, ordersCtx.unprocessedOrders, searchData, searchParams]);
+  }, [ordersCtx.customOrderSet, ordersCtx.processedOrders, ordersCtx.unprocessedOrders, searchData, searchParams]);
 
   const editOrderFade = useFadeTransition(editedOrder !== null);
   const overlayView = useFadeTransitionReversed(editedOrder === null, 500, 150);
@@ -55,8 +61,15 @@ function BrowseOrders() {
       {editedOrder === null ? (
         <View style={styles.ordersListContainer}>
           <Animated.View style={[overlayView, styles.overlayView]} />
-          <SearchOrders searchData={searchData} setSearchData={setSearchData} updateSearchParam={updateSearchParam} />
-          <OrderItemsList data={filteredData} setEditedOrder={setEditedOrder} />
+          <SearchOrders 
+            searchData={searchData} 
+            setSearchData={setSearchData} 
+            updateSearchParam={updateSearchParam} 
+            isDatePicked={isDatePicked}
+            setIsDatePicked={setIsDatePicked}
+            setPickedDate={setPickedDate}
+          />
+          <OrderItemsList data={filteredData} setEditedOrder={setEditedOrder} isDatePicked={isDatePicked} pickedDate={pickedDate} />
         </View>
       ) : (
         <Animated.View style={editOrderFade}> 

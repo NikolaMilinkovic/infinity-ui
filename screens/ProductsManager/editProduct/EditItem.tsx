@@ -6,12 +6,16 @@ import Animated from 'react-native-reanimated';
 import { useFadeTransition, useFadeTransitionReversed } from '../../../hooks/useFadeTransition';
 import { StyleSheet } from 'react-native';
 import DisplayProducts from '../../../components/products/DisplayProducts';
+import useBackClickHandler from '../../../hooks/useBackClickHandler';
 
 function EditItem() {
   const [editedProduct, setEditedProduct] = useState<ProductTypes | null>(null);
-  
   const editProductFade = useFadeTransition(editedProduct !== null);
   const overlayView = useFadeTransitionReversed(editedProduct === null, 500, 150);
+  useBackClickHandler(!!editedProduct, handleRemoveEditedProduct);
+  function handleRemoveEditedProduct(){
+    setEditedProduct(null);
+  }
 
   return (
     <>

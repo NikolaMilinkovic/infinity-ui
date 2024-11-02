@@ -7,17 +7,25 @@ import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
 import ExpandButton from '../../../util-components/ExpandButton';
 import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
 import Button from '../../../util-components/Button';
-import { CategoriesContext } from '../../../store/categories-context';
 import { CategoryTypes } from '../../../types/allTsTypes';
 import DropdownList from '../../../util-components/DropdownList';
 import { CouriersContext } from '../../../store/couriers-context';
+import { fetchData, fetchWithBodyData } from '../../../util-methods/FetchMethods';
+import { popupMessage } from '../../../util-components/PopupMessage';
+import { OrdersContext } from '../../../store/orders-context';
+import { AuthContext } from '../../../store/auth-context';
+import { betterConsoleLog } from '../../../util-methods/LogMethods';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface PropTypes {
   searchData: string
   setSearchData: (data: string | number | undefined) => void
   updateSearchParam: (data: boolean) => void
+  isDatePicked: boolean
+  setIsDatePicked: (isDatePicked: boolean) => void
+  setPickedDate: (date:string) => void
 }
-function SearchOrders({ searchData, setSearchData, updateSearchParam }: PropTypes) {
+function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePicked, setIsDatePicked, setPickedDate }: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(false);
   const screenHeight = Dimensions.get('window').height;
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 172, 180);
@@ -130,6 +138,60 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam }: PropType
     }, [selectedCourier]);
 
 
+
+    // DATE PICKER
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [date, setDate] = useState( new Date() );
+    const ordersCtx = useContext(OrdersContext);
+    const authCtx = useContext(AuthContext);
+    const token = authCtx.token;
+
+    function formatDateHandler(date: Date){
+      return date.toLocaleDateString(
+        'en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+          }
+      )
+    }
+
+
+    async function handleFetchOrdersByDate(date: Date, token: any){
+      const formattedDate = date.toISOString().split('T')[0];      
+      setShowDatePicker(false);
+      const response = await fetchData(token, `orders/fetch-by-date/${formattedDate}`);
+      if(response === false) popupMessage('Došlo je do problema prilikom preuzimanja podataka o porudžbinama', 'danger');
+
+      betterConsoleLog('> Logging response', response);
+      popupMessage(response.message, 'success');
+      ordersCtx.setCustomOrderSet(response.orders)
+      return;
+    }
+    function handleSetPickedDate(date: Date){
+      const formattedDate = date.toISOString().split('T')[0].split('-').reverse().join('/');
+      setPickedDate(formattedDate);
+    }
+    function handleOpenDatePicker(){
+      setShowDatePicker(true);
+    }
+    const handleDatePick = async (e, selectedDate: Date) => {
+      if (selectedDate) {
+        setDate(selectedDate);
+        setIsDatePicked(true);
+        await handleFetchOrdersByDate(selectedDate, token);
+        handleSetPickedDate(selectedDate);
+      }
+      setShowDatePicker(false);
+    }
+    const handleDateReset = () => {
+      setDate(new Date());
+      setIsDatePicked(false);
+      setShowDatePicker(false);
+      setPickedDate('');
+      ordersCtx.setCustomOrderSet([]);
+    }
+
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -153,6 +215,51 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam }: PropType
             <Text style={styles.filtersH1}>Filteri</Text>
           </Animated.ScrollView>
 
+          {/* Courier */}
+          <View style={styles.courierContainer}>
+            <Text style={styles.filtersH2}>Pretraga na osnovu kurira</Text>
+            <DropdownList
+              data={couriersCtx.couriers}
+              onSelect={setSelectedCourier}
+              placeholder='Izaberite kurira'
+              defaultValue={couriersCtx.couriers[1].name}
+            />
+          </View>
+
+          {/* Date Picker */}
+          <View style={styles.radioGroupContainer}>
+          <Text style={styles.filtersH2absolute}>Pretrazi po datumu</Text>
+            <View style={styles.dateButtonsContainer}>
+              <Button
+                containerStyles={styles.dateButton}
+                onPress={handleOpenDatePicker}
+              >
+                Izaberi datum
+              </Button>
+              <Button
+                containerStyles={styles.dateButton}
+                onPress={handleDateReset}
+              >
+                Resetuj izbor
+              </Button>
+            </View>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode='date'
+                is24Hour={true}
+                onChange={handleDatePick}
+              />
+            )}
+            {date && isDatePicked && (
+              <View style={styles.dateDisplayContainer}>
+                <Text style={styles.dateLabel}>Izabrani datum:</Text>
+                <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+              </View>
+            )}
+          </View>
+
           {/* Ascending | Descending */}
           <View style={styles.radioGroupContainer}>
             <Text style={styles.filtersH2absolute}>Redosled</Text>
@@ -168,18 +275,20 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam }: PropType
           </View>
 
           {/* Processed | Unprocessed */}
-          <View style={styles.radioGroupContainer}>
-            <Text style={styles.filtersH2absolute}>Da li je porudžbina izvršena</Text>
-            <View style={styles.radioGroup}>
-              <RadioGroup 
-                radioButtons={processedUnprocessedButtons} 
-                onPress={setAreProcessedOrders}
-                selectedId={areProcessedOrders}
-                containerStyle={styles.radioComponentContainer}
-                layout='row'
-              />
+          {!isDatePicked && (
+            <View style={styles.radioGroupContainer}>
+              <Text style={styles.filtersH2absolute}>Da li je porudžbina izvršena</Text>
+              <View style={styles.radioGroup}>
+                <RadioGroup 
+                  radioButtons={processedUnprocessedButtons} 
+                  onPress={setAreProcessedOrders}
+                  selectedId={areProcessedOrders}
+                  containerStyle={styles.radioComponentContainer}
+                  layout='row'
+                />
+              </View>
             </View>
-          </View>
+          )}
 
           {/* Packed | Unpacked */}
           <View style={styles.radioGroupContainer}>
@@ -194,27 +303,6 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam }: PropType
               />
             </View>
           </View>
-
-
-
-          {/* Courier */}
-          <Text style={styles.filtersH2}>Pretraga na osnovu kurira</Text>
-          <DropdownList
-            data={couriersCtx.couriers}
-            onSelect={setSelectedCourier}
-            placeholder='Izaberite kurira'
-            defaultValue={couriersCtx.couriers[1].name}
-          />
-
-          {/* Date | Ascending | Descending */}
-          <View>
-
-          </View>
-
-
-
-          {/* On Date search */}
-
 
           {/* CLOSE BUTTON */}
           <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
@@ -290,7 +378,7 @@ const styles = StyleSheet.create({
     color: Colors.primaryDark,
     marginBottom: 8,
     backgroundColor: Colors.white,
-    paddingHorizontal: 18
+    paddingHorizontal: 14
   },
   filtersH2absolute: {
     fontSize: 14,
@@ -302,133 +390,33 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 4,
     paddingHorizontal: 4
+  },
+  dateButtonsContainer: {
+    flexDirection: 'row',
+    gap: 10
+  },
+  dateButton: {
+    flex: 1,
+    backgroundColor: Colors.secondaryLight,
+    color: Colors.primaryDark
+  },
+  dateDisplayContainer: {
+    flexDirection: 'column',
+    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dateLabel: {
+  },
+  dateText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.highlight,
+    lineHeight: 16,
+  },
+  courierContainer: {
+    marginBottom: 10,
   }
 })
 
 export default SearchOrders
-
-
-
-
-  // // ACTIVE | INACTIVE RADIO BUTTONS
-  // const activeRadioButtons: RadioButtonProps[] = useMemo(() => ([
-  //   {
-  //       id: '1', 
-  //       label: 'Aktivni proizvodi',
-  //       value: 'active',
-  //   },
-  //   {
-  //       id: '2',
-  //       label: 'Neaktivni proizvodi',
-  //       value: 'inactive',
-  //   },
-  // ]), []);
-  // const [areActiveProducts, setAreActiveProducts] = useState<string>('1');
-  // type AscDescPropTypes = {
-  //   active: boolean;
-  //   inactive: boolean;
-  // };
-  // useEffect(() => {
-  //   const updateParams: Record<string, ActiveProductsParams> = {
-  //     '1': { active: true, inactive: false },
-  //     '2': { active: false, inactive: true },
-  //   };
-  //   const params = updateParams[areActiveProducts];
-  //   if (params) {
-  //     Object.entries(params).forEach(([key, value]) => {
-  //       updateSearchParam(key as keyof ActiveProductsParams, value);
-  //     });
-  //   }
-  // }, [areActiveProducts]);
-
-  // // RADIO BUTTONS
-  // const radioButtons: RadioButtonProps[] = useMemo(() => ([
-  //   {
-  //       id: '1', 
-  //       label: 'Na lageru',
-  //       value: 'OnStock',
-  //   },
-  //   {
-  //       id: '2',
-  //       label: 'Rasprodato',
-  //       value: 'isNotOnStock',
-  //   },
-  //   {
-  //       id: '3',
-  //       label: 'Sve',
-  //       value: 'onStockAndSoldOut',
-  //   }
-  // ]), []);
-  // const [selectedId, setSelectedId] = useState<string>('1');
-  // type SearchParams = {
-  //   isOnStock: boolean;
-  //   isNotOnStock: boolean;
-  //   onStockAndSoldOut: boolean;
-  // };
-  // useEffect(() => {
-  //   const updateParams: Record<string, SearchParams> = {
-  //     '1': { isOnStock: true, isNotOnStock: false, onStockAndSoldOut: false },
-  //     '2': { isOnStock: false, isNotOnStock: true, onStockAndSoldOut: false },
-  //     '3': { isOnStock: false, isNotOnStock: false, onStockAndSoldOut: true },
-  //   };
-  //   const params = updateParams[selectedId];
-  //   if (params) {
-  //     Object.entries(params).forEach(([key, value]) => {
-  //       updateSearchParam(key as keyof SearchParams, value);
-  //     });
-  //   }
-  // }, [selectedId]);
-
-  // // COLORS PICKER
-  // const colorsCtx = useContext(ColorsContext);
-  // interface ColorDataType {
-  //   key: string | number
-  //   value: string | number
-  // }
-  // const [colorsData, setColorsData] = useState<ColorDataType[]>([]);
-  // const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  // useEffect(() => {
-  //   setColorsData(colorsCtx.colors.map(item => ({
-  //     key: item.name,
-  //     value: item.name
-  //   })));
-  // }, [colorsCtx.colors])
-
-
-  // // SIZE CHECKBOXES
-  // const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-
-  // // CATEGORIES
-  // interface CategoryTypes {
-  //   _id: string
-  //   name: string
-  //   stockType: string
-  //   __v: number
-  // }
-  // const categoriesCtx = useContext(CategoriesContext);
-  // const [selectedCategory, setSelectedCategory] = useState<CategoryTypes | null>(null);
- 
-  // useEffect(() => {
-  //   if (selectedCategory && selectedCategory?.name === 'Resetuj izbor') {
-  //     resetDropdown();
-  //     return; 
-  //   }
-  //   updateSearchParam('onCategorySearch', selectedCategory?.name);
-  // }, [selectedCategory]);
-
-  // // COLOR | SIZE SEARCH UPDATE
-  // useEffect(() => {
-  //   updateSearchParam('onColorsSearch', selectedColors);
-  //   updateSearchParam('onSizeSearch', selectedSizes);
-  // }, [selectedColors, selectedSizes]);
-
-  // // Dropdown Reset
-  // const [resetKey, setResetKey] = useState(0);
-  // function resetDropdown(){
-  //   updateSearchParam('onCategorySearch', '');
-  //   setResetKey(prevKey => prevKey + 1);
-  //   setSelectedCategory('');
-  // };
-
-
-

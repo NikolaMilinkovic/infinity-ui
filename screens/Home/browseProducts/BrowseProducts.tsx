@@ -5,13 +5,17 @@ import DisplayProducts from '../../../components/products/DisplayProducts';
 import { ProductTypes } from '../../../types/allTsTypes';
 import EditProductComponent from '../../../components/products/edit_product/EditProductComponent';
 import { useFadeTransition, useFadeTransitionReversed } from '../../../hooks/useFadeTransition';
-import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
+import useBackClickHandler from '../../../hooks/useBackClickHandler';
 
 function BrowseProducts() {
   const [editedProduct, setEditedProduct] = useState<ProductTypes | null>(null);
 
   const editProductFade = useFadeTransition(editedProduct !== null);
   const overlayView = useFadeTransitionReversed(editedProduct === null, 500, 150);
+  useBackClickHandler(!!editedProduct, handleRemoveEditedProduct);
+  function handleRemoveEditedProduct(){
+    setEditedProduct(null);
+  }
   
   return (
     <>

@@ -18,11 +18,13 @@ interface RenderPropType {
 interface PropTypes {
   data: OrderTypes[]
   setEditedOrder: (order: OrderTypes | null) => void
+  isDatePicked: boolean
+  pickedDate: string
 }
 interface SelectedOrdersTypes {
   _id: string
 }
-function OrderItemsList({ data, setEditedOrder }: PropTypes) {
+function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: PropTypes) {
   const [batchMode, setBatchMode] = useState(false);
   const [selectedOrders, setSelectedOrders] = useState<SelectedOrdersTypes[]>([]);
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
@@ -113,8 +115,13 @@ function OrderItemsList({ data, setEditedOrder }: PropTypes) {
         }
         style={styles.list}
         contentContainerStyle={styles.listContainer}
-        ListHeaderComponent={() => 
-          <Text style={styles.listHeader}>Ukupno Porudžbina: {data.length}</Text>
+        ListHeaderComponent={() => {
+            return isDatePicked ? (
+              <Text style={styles.listHeader}>Ukupno Porudžbina za {pickedDate}: {data.length}</Text>
+            ):(
+              <Text style={styles.listHeader}>Ukupno Porudžbina: {data.length}</Text>
+            )
+          }
         }
         initialNumToRender={10}
       />

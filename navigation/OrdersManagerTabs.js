@@ -38,14 +38,21 @@ export default function OrdersManagerTabs(){
         name="BrowseOrders" 
         component={BrowseOrders}
         options={{
-          title: 'Lista porudžbina',
+          title: 'Porudžbine',
+        }}
+      />
+      <Tab.Screen 
+        name="BrowseReservations" 
+        component={BrowseOrders}
+        options={{
+          title: 'Rezervacije',
         }}
       />
       <Tab.Screen 
         name="PackOrders" 
         component={PackOrders} 
         options={{
-          title: 'Pakovanje Porudžbina',
+          title: 'Pakovanje',
         }}
       />
     </Tab.Navigator>

@@ -30,7 +30,7 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
   const [isHighlighted, setIsHighlighted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const expandHeight = useExpandAnimation(isExpanded, 140, (order.products.length * 88 + 164), 180);
+  const expandHeight = useExpandAnimation(isExpanded, 160, (order.products.length * 88 + 184), 180);
   const styles = getStyles(isHighlighted);
 
   useEffect(() => {
@@ -89,6 +89,7 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
             <Text>{order.buyer.address}</Text>
             <Text>{order.buyer.phone}</Text>
             <Text>Otkup: {order.totalPrice} din.</Text>
+            <Text>Kurir: {order.courier?.name}</Text>
           </View>
           <View style={styles.buttonsContainer}>
             {batchMode ? (
@@ -137,7 +138,7 @@ function getStyles(isHighlighted:boolean){
       width: '100%',
       elevation: 2,
       backgroundColor: Colors.white,
-      minHeight: 140,
+      minHeight: 160,
       paddingHorizontal: 16,
       paddingVertical: 14,
       gap: 10
@@ -152,8 +153,8 @@ function getStyles(isHighlighted:boolean){
       flex: 1,
       flexDirection: 'row',
       gap: 10,
-      maxHeight: 110,
-      minHeight: 110,
+      maxHeight: 130,
+      minHeight: 130,
       alignItems: 'center'
     },
     profileImage: {

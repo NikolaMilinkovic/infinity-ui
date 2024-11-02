@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
-import { useCallback, useContext, useEffect, useState, useRef } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { AuthContext } from './store/auth-context';
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';

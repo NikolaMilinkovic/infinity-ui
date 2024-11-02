@@ -24,6 +24,7 @@ export async function fetchData(token:string | null, api:string) {
   } catch(error){
     console.error('There was an error while fetching data: ', error);
     popupMessage('Error while fetching data', 'danger');
+    return false;
   }
 }
 
@@ -212,6 +213,19 @@ export async function fetchCategories(token: string | null){
   }
 }
 
-export async function fetchWithBodyData(token: string | null, data: any){
+export async function fetchWithBodyData(token: string | null, api: string, data: any){
+  try {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${api}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: data })
+    });
 
+    return response;
+  } catch (error) {
+    console.error('Error fetching with body data:', error);
+  }
 }

@@ -8,11 +8,15 @@ import { OrderProductTypes, OrderTypes } from "../types/allTsTypes";
 interface OrdersContextTypes {
   unprocessedOrders: OrderTypes[]
   processedOrders: OrderTypes[]
+  customOrderSet: OrderTypes[]
+  setCustomOrderSet: (orders: OrderTypes[]) => void
 }
 
 export const OrdersContext = createContext<OrdersContextTypes>({
   unprocessedOrders: [],
   processedOrders: [],
+  customOrderSet: [],
+  setCustomOrderSet: () => {}
 })
 
 interface OrdersContextProviderTypes {
@@ -22,6 +26,7 @@ interface OrdersContextProviderTypes {
 function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   const [unprocessedOrders, setUnprocessedOrders] = useState<OrderProductTypes[]>([]);
   const [processedOrders, setProcessedOrders] = useState<OrderProductTypes[]>([]);
+  const [customOrderSet, setCustomOrderSet] = useState<OrderProductTypes[]>([]);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
@@ -108,7 +113,9 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     const value = useMemo(() => ({
       unprocessedOrders,
       processedOrders,
-    }), [unprocessedOrders, processedOrders]);
+      customOrderSet,
+      setCustomOrderSet
+    }), [unprocessedOrders, processedOrders, customOrderSet]);
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;
 }

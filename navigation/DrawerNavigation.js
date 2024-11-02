@@ -27,7 +27,7 @@ export function CustomDrawerContent(props) {
         onPress={() => navigatePages('Home')} 
         size={18} 
         color={Colors.secondaryDark}
-        text={'Proizvodi | Porudžbine'}
+        text={'Lista Artikla'}
         type='MaterialCommunityIcons'
       />
 
@@ -37,7 +37,7 @@ export function CustomDrawerContent(props) {
         onPress={() => navigatePages('Orders')} 
         size={18} 
         color={Colors.secondaryDark}
-        text='Porudžbine'
+        text='Porudžbine | Rezervacije'
       />
       {/* <NavigationButton 
         icon="user" 
@@ -74,7 +74,7 @@ export function CustomDrawerContent(props) {
         onPress={() => navigatePages('ProductsManager')} 
         size={18} 
         color={Colors.secondaryDark}
-        text='Upravljanje Proizvodima'
+        text='Dodaj Artikal'
       />
 
       {/* USERS MANAGER */}

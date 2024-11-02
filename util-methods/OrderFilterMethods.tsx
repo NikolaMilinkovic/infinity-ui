@@ -11,10 +11,11 @@ interface OrderSearchParams {
 }
 export function searchOrders(searchData: string, orders:OrderTypes[], searchParams:OrderSearchParams){
   if(orders === undefined || orders.length === 0) return [];
+  const excludedReservations = orders.filter((order) => order.reservation === false);
 
-  let inputBasedSearch = orders;
+  let inputBasedSearch = excludedReservations;
   if(searchData){
-    inputBasedSearch = searchOrdersByInput(orders, searchData);
+    inputBasedSearch = searchOrdersByInput(excludedReservations, searchData);
   }
 
   let processedBasedSearch = filterOrdersByProcessed(inputBasedSearch, searchParams);
