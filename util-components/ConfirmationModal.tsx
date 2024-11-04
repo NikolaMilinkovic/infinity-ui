@@ -3,7 +3,6 @@ import React from 'react';
 import { Animated, Modal, View, Text, StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
 import { Colors } from '../constants/colors';
 import Button from './Button';
-import { useFadeAnimation } from '../hooks/useFadeAnimation';
 
 function ConfirmationModal({ isVisible, onConfirm, onCancel, message }) {
   return (

@@ -23,15 +23,15 @@ function AppContextProvider({ children }: AppContextProviderTypes){
 
   useEffect(() => {
     if(token){
-      async function getAppData(token: string){
+      async function getAppSettings(token: string){
         try{
-          const appData = await fetchData(token, 'app/data');
-          setDefaults(appData.defaults || null);
+          const appSettings = await fetchData(token, 'app/settings');
+          setDefaults(appSettings.defaults || null);
         } catch(error){
           console.log(error)
         }
       }
-      getAppData(token);
+      getAppSettings(token);
     }
   },[token]);
 

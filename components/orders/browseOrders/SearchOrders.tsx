@@ -10,7 +10,7 @@ import Button from '../../../util-components/Button';
 import { CategoryTypes } from '../../../types/allTsTypes';
 import DropdownList from '../../../util-components/DropdownList';
 import { CouriersContext } from '../../../store/couriers-context';
-import { fetchData, fetchWithBodyData } from '../../../util-methods/FetchMethods';
+import { fetchData } from '../../../util-methods/FetchMethods';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { OrdersContext } from '../../../store/orders-context';
 import { AuthContext } from '../../../store/auth-context';

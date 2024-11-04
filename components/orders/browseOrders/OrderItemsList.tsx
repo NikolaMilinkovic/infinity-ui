@@ -96,7 +96,6 @@ function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: Prop
         />
       )}
       <FlatList 
-        ListFooterComponentStyle={styles.flatlistFooterComponent}
         data={data} 
         keyExtractor={(item) => item._id} 
         renderItem={({item, index}) => 

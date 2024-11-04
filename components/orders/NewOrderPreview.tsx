@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
   customPriceInput: {
     marginTop: 16
-  }
+  },
 })
 
 export default NewOrderPreview

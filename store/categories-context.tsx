@@ -27,9 +27,9 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
 
-  useEffect(() => {
-    betterConsoleLog('> Categories are', categories);
-  }, [categories])
+  // useEffect(() => {
+  //   betterConsoleLog('> Categories are', categories);
+  // }, [categories])
 
   const setCategoriesHandler = (categories: CategoryTypes[]) => {
     setCategories(categories);

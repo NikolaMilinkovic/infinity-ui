@@ -1,6 +1,11 @@
 import { popupMessage } from "../util-components/PopupMessage";
 import { betterConsoleLog, betterErrorLog } from "./LogMethods";
 
+/**
+ * @param token - Authentication token
+ * @param api - API Address
+ * @returns - Response data or false if !response.ok
+ */
 export async function fetchData(token:string | null, api:string) {
   try{
     if (token === null) return popupMessage('Auth token nedostaje kako bi se izvršio fetch.', 'danger');
@@ -127,23 +132,6 @@ export async function addNewOrder(formData: any, authToken: string, uri: string)
 // GENERIC FETCHING METHOD WITH FORM DATA
 export async function handleFetchingWithFormData(formData: any, authToken: string, uri: string, method: string) {
   try {
-    // const formData = new FormData();
-    // formData.append("buyerData", JSON.stringify(data.buyerData));
-    // formData.append("productData", JSON.stringify(data.productData));
-    // formData.append("productsPrice", data.productsPrice.toString());
-    // formData.append("totalPrice", data.totalPrice.toString());
-    // formData.append("reservation", data.reservation.toString());
-    // formData.append("packed", 'false');
-    // formData.append("processed", 'false');
-    // formData.append("courier", JSON.stringify(data.courier));
-    // formData.append('profileImage', {
-    //   uri: data.uri,
-    //   type: data.type,
-    //   name: data.name,
-    // } as any);
-
-    // betterConsoleLog('> Logging form data', formData);
-
     const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${uri}`, {
       method: method,
       headers: {
@@ -213,15 +201,15 @@ export async function fetchCategories(token: string | null){
   }
 }
 
-export async function fetchWithBodyData(token: string | null, api: string, data: any){
+export async function fetchWithBodyData(token: string | null, api: string, data: any, method = 'POST'){
   try {
     const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${api}`, {
-      method: 'POST',
+      method: method,
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ data: data })
+      body: JSON.stringify(data)
     });
 
     return response;
