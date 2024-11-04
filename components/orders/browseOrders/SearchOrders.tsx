@@ -167,7 +167,8 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
 
 
     async function handleFetchOrdersByDate(date: Date, token: any){
-      const formattedDate = date.toISOString().split('T')[0];      
+      const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0));
+      const formattedDate = utcDate.toISOString().split('T')[0]; // Gets 'YYYY-MM-DD' format 
       setShowDatePicker(false);
       const response = await fetchData(token, `orders/fetch-by-date/${formattedDate}`);
       if(response === false) popupMessage('Došlo je do problema prilikom preuzimanja podataka o porudžbinama', 'danger');
