@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { OrdersContext } from '../../store/orders-context';
 import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
 import SearchOrders from '../../components/orders/browseOrders/SearchOrders';
@@ -8,6 +8,9 @@ import { searchOrders } from '../../util-methods/OrderFilterMethods';
 import Button from '../../util-components/Button';
 import Animated from 'react-native-reanimated';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
+import EditOrder from '../../components/orders/browseOrders/EditOrder';
+import { OrderTypes } from '../../types/allTsTypes';
+import ImagePicker from '../../util-components/ImagePicker';
 
 interface SearchParamsTypes {
   processed: boolean
@@ -55,6 +58,8 @@ function BrowseOrders() {
 
   const editOrderFade = useFadeTransition(editedOrder !== null);
   const overlayView = useFadeTransitionReversed(editedOrder === null, 500, 150);
+  const [temp, setTemp] = useState(editedOrder?.buyer?.profileImage || '');
+  
 
   return (
     <>
@@ -73,9 +78,10 @@ function BrowseOrders() {
         </View>
       ) : (
         <Animated.View style={editOrderFade}> 
-          <Button
-            onPress={() => setEditedOrder(null)}
-          >BACK</Button>
+          <EditOrder
+            editedOrder={editedOrder}
+            setEditedOrder={setEditedOrder}
+          />
           {/* EDIT ORDER COMPONENT */}
         </Animated.View>
         // style={[editProductFade]}

@@ -13,11 +13,13 @@ interface PropTypes {
   onTakeImage: (img:any) => void
   previewImage: any
   setPreviewImage: (img:any) => void
+  height?: number
+  resizeMode?: string
 }
-function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
+function ImagePicker({ onTakeImage, previewImage, setPreviewImage, height = 400, resizeMode = 'contain' }:PropTypes) {
   const [permissionInfo, requestPermission] = useCameraPermissions()
   const [isExpanded, setIsExpanded] = useState(previewImage ? true : false);
-  const toggleExpandAnimation = useExpandAnimation(isExpanded, 50, 400, 180);
+  const toggleExpandAnimation = useExpandAnimation(isExpanded, 50, height, 180);
 
   async function verifyPermissions(){
     if(permissionInfo?.status === PermissionStatus.UNDETERMINED){
@@ -70,7 +72,7 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
     )
   }
   if(previewImage && isExpanded){
-    imagePreview = <Image resizeMode="contain" source={{ uri: previewImage.uri }} style={styles.image}/>
+    imagePreview = <Image resizeMode={resizeMode} source={{ uri: previewImage.uri }} style={styles.image}/>
   }
 
   return (
@@ -105,7 +107,6 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage }:PropTypes) {
 
 const styles = StyleSheet.create({
     imagePreview: {
-      flex: 1,
       width: '100%',
       marginVertical: 10,
       justifyContent: 'center',

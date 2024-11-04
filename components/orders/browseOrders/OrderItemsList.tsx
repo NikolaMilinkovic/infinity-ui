@@ -29,6 +29,7 @@ function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: Prop
   const [selectedOrders, setSelectedOrders] = useState<SelectedOrdersTypes[]>([]);
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const authCtx = useContext(AuthContext);
+  const styles = getStyles(batchMode);
   const token = authCtx.token;
   function resetBatch(){
     setBatchMode(false);
@@ -95,6 +96,7 @@ function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: Prop
         />
       )}
       <FlatList 
+        ListFooterComponentStyle={styles.flatlistFooterComponent}
         data={data} 
         keyExtractor={(item) => item._id} 
         renderItem={({item, index}) => 
@@ -129,18 +131,21 @@ function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: Prop
   )
 }
 
-const styles = StyleSheet.create({
-  list: {
-  },
-  listHeader: {
-    fontWeight: 'bold',
-    fontSize: 14,
-    textAlign: 'center'
-  },
-  listContainer: {
-    gap: 6,
-    paddingBottom: 16
-  },
-})
+function getStyles(batchMode: boolean){
+  return StyleSheet.create({
+    list: {
+    },
+    listHeader: {
+      fontWeight: 'bold',
+      fontSize: 14,
+      textAlign: 'center'
+    },
+    listContainer: {
+      gap: 6,
+      paddingBottom: batchMode ? 82 : 22,
+      
+    },
+  })
+}
 
 export default OrderItemsList

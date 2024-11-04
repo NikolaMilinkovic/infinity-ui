@@ -292,7 +292,6 @@ function EditProductComponent({ item, setItem }: PropTypes) {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     display: 'flex',
     padding: 16,
   },
