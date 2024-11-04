@@ -20,7 +20,10 @@ export function searchOrders(searchData: string, orders:OrderTypes[], searchPara
 
   let processedBasedSearch = filterOrdersByProcessed(inputBasedSearch, searchParams);
   let packedBasedSearch = filterOrdersByPackedState(processedBasedSearch, searchParams);
-  let courierBasedSearch = filterOrderByCourier(packedBasedSearch, searchParams);
+  let courierBasedSearch = packedBasedSearch;
+  if(searchParams.onCourierSearch){
+    courierBasedSearch = filterOrderByCourier(packedBasedSearch, searchParams);
+  }
   let ascendingDescendingDataDisplay = ascDescDataDisplay(courierBasedSearch, searchParams);
 
 

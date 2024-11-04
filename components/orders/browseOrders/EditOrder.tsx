@@ -17,7 +17,7 @@ import ImagePreviewModal from '../../../util-components/ImagePreviewModal'
 import IconButton from '../../../util-components/IconButton'
 import CustomCheckbox from '../../../util-components/CustomCheckbox'
 import { popupMessage } from '../../../util-components/PopupMessage'
-import { fetchWithBodyData, handleFetchingWithFormData } from '../../../util-methods/FetchMethods'
+import { fetchWithBodyData, handleFetchingWithBodyData, handleFetchingWithFormData } from '../../../util-methods/FetchMethods'
 import { AuthContext } from '../../../store/auth-context'
 import { getMimeType } from '../../../util-methods/ImageMethods'
 
@@ -40,6 +40,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   const [address, setAddress] = useState<string | number | undefined>(editedOrder?.buyer.address || '');
   const [phone, setPhone] = useState<string | number | undefined>(editedOrder?.buyer.phone || '');
   const [profileImage, setProfileImage] = useState(editedOrder?.buyer.profileImage || '');
+  const [originalImage] = useState(editedOrder?.buyer.profileImage.uri);
 
   const [courier, setCourier] = useState<CourierTypesWithNoId>(editedOrder?.courier as CourierTypesWithNoId);
   const [courierDropdownData, setCourierDropdownData] = useState<CourierTypes[]>([]);
@@ -58,17 +59,30 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   const authCtx = useContext(AuthContext);
   const token = authCtx.token || '';
 
-  async function handleUpdateOrder(){
+  async function handleUpdateMethod() {
+    try {
+      if (profileImage.uri === originalImage) {
+        await handleUpdateOrderWithBodyData();
+      } else {
+        await handleUpdateOrderWithFormData();
+      }
+    } catch (error) {
+      console.error('Error updating order:', error);
+    }
+  }
+  async function handleUpdateOrderWithFormData(){
     try{
       const data = new FormData();
       if (profileImage) {
         data.append('profileImage', {
-          uri: profileImage.uri.startsWith('file://') ? profileImage.uri : `file://${profileImage.uri}`,
-          type: getMimeType(profileImage?.mimeType, profileImage.uri),
+          uri: profileImage.uri,
+          type: getMimeType(profileImage?.mimeType || '', profileImage.uri),
           name: profileImage?.imageName || profileImage?.fileName,
         } as any);
       }
-      
+
+      betterConsoleLog('> Logging data', data);
+
       data.append('name', name);
       data.append('address', address);
       data.append('phone', phone);
@@ -90,6 +104,26 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         return popupMessage(parsedResponse.message, 'success');
       }
     } catch(error){
+      betterConsoleLog('> Error while updating an order', error);
+      popupMessage('Došlo je do problema prilikom ažuriranja porudžbine', 'danger');
+    }
+  }
+  async function handleUpdateOrderWithBodyData(){
+    try{
+      const data = {
+        name, address, phone, courier, products, isReservation, isPacked, productsPrice, customPrice: customPrice ? customPrice : totalPrice
+      }
+      const response = await handleFetchingWithBodyData(data, token, `orders/update/${editedOrder._id}`, 'PATCH');
+
+      if(!response.ok) {
+        const parsedResponse = await response.json();
+        return popupMessage(parsedResponse.message, 'danger');
+      } else {
+        const parsedResponse = await response.json();
+        return popupMessage(parsedResponse.message, 'success');
+      }
+
+    } catch(error) {
       betterConsoleLog('> Error while updating an order', error);
       popupMessage('Došlo je do problema prilikom ažuriranja porudžbine', 'danger');
     }
@@ -116,7 +150,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
     if(deliveryPrice && productsPrice){
       let price = deliveryPrice + productsPrice;
       setTotalPrice(price);
-      setCustomPrice(price);
+      if(!customPrice) setCustomPrice(price);
     }
   }, [deliveryPrice, productsPrice])
 
@@ -221,7 +255,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         </View>
         {/* Total Price */}
         <View style={styles.row}>
-          <Text style={styles.rowItem}>Ukupna cena:</Text>
+          <Text style={styles.rowItem}>Ukupno:</Text>
           <Text style={styles.rowItem}>{totalPrice} din.</Text>
         </View>
         {/* Custom Price */}
@@ -241,7 +275,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         {/* SAVE */}
         <Button
           containerStyles={styles.button}
-          onPress={handleUpdateOrder}
+          onPress={handleUpdateMethod}
           backColor={Colors.secondaryDark}
           textColor={Colors.white}
         >Sačuvaj</Button>
@@ -360,6 +394,7 @@ function BuyerDataInputs({ name, setName, address, setAddress, phone, setPhone, 
       label='Kontakt telefon'
       inputText={phone}
       setInputText={setPhone}
+      keyboard='numeric'
     />
     {/* Profile Image */}
     <View style={styles.imagePickerContainer}>

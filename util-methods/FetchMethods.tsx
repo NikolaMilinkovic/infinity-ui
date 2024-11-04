@@ -167,11 +167,10 @@ export async function handleFetchingWithBodyData(data: any, authToken: string, u
       body: JSON.stringify(data),
     });
 
-    console.log('> Returning response...')
-    if(!response.ok) popupMessage('Fetching with body data failed', 'danger')
     return response;
   } catch (error) {
     betterErrorLog('Error adding new order', error);
+    return popupMessage('Došlo je do problema prilikom izvršavanja zahteva', 'danger')
   }
 }
 

@@ -87,8 +87,16 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   // }, [unprocessedOrders])
 
   function handleOrderAdded(newOrder: OrderProductTypes){
-    // betterConsoleLog('> Adding new order to unprocessed orders:', newOrder);
     setUnprocessedOrders((prev) => [...prev, newOrder]);
+  }
+  function handleOrderUpdated(updatedOrder: OrderProductTypes){
+    console.log('> handleOrderUpdated')
+    betterConsoleLog('> Logging updated order', updatedOrder)
+    setUnprocessedOrders((prevOrders) => 
+      prevOrders.map((order) => 
+        order._id === updatedOrder._id ? updatedOrder : order
+      )  
+    )
   }
 
   useEffect(() => {
@@ -97,7 +105,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     socket.on('orderAdded', handleOrderAdded);
     socket.on('orderRemoved', handleOrderRemoved);
     socket.on('orderBatchRemoved', handleBatchOrderRemoved);
-    // socket.on('orderUpdated', handleOrderUpdated);
+    socket.on('orderUpdated', handleOrderUpdated);
 
     // Cleans up the listener on unmount
     // Without this we would get 2x the data as we are rendering multiple times
@@ -105,7 +113,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       socket.off('orderAdded', handleOrderAdded);
       socket.off('orderRemoved', handleOrderRemoved);
       socket.off('orderBatchRemoved', handleBatchOrderRemoved);
-      // socket.off('orderUpdated', handleOrderUpdated);
+      socket.off('orderUpdated', handleOrderUpdated);
     };
   }, [socket]);
 

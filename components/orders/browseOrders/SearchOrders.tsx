@@ -133,10 +133,19 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
     const [selectedCourier, setSelectedCourier] = useState<CategoryTypes | null>(null);
     useEffect(() => {
       if (selectedCourier && selectedCourier?.name === 'Resetuj izbor') {
+        resetDropdown()
+        return; 
       }
       updateSearchParam('onCourierSearch', selectedCourier?.name);
     }, [selectedCourier]);
 
+    // Category Dropdown Reset
+    const [resetKey, setResetKey] = useState(0);
+    function resetDropdown(){
+      updateSearchParam('onCourierSearch', null);
+      setResetKey(prevKey => prevKey + 1);
+      setSelectedCourier(null);
+    };
 
 
     // DATE PICKER
@@ -192,6 +201,8 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
       ordersCtx.setCustomOrderSet([]);
     }
 
+
+
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -219,10 +230,11 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
           <View style={styles.courierContainer}>
             <Text style={styles.filtersH2}>Pretraga na osnovu kurira</Text>
             <DropdownList
-              data={couriersCtx.couriers}
+              key={resetKey}
+              data={[{_id: '', name: 'Resetuj izbor'}, ...couriersCtx.couriers]}
               onSelect={setSelectedCourier}
               placeholder='Izaberite kurira'
-              defaultValue={couriersCtx.couriers[1].name}
+              isDefaultValueOn={false}
             />
           </View>
 
