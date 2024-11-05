@@ -51,11 +51,10 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   const [isPacked, setIsPacked] = useState(editedOrder?.packed);
   
   const [productsPrice, setProductsPrice] = useState(editedOrder?.productsPrice);
-  const [deliveryPrice, setDeliveryPrice] = useState(editedOrder.courier?.deliveryPrice);
+  const [deliveryPrice, setDeliveryPrice] = useState(editedOrder.courier.deliveryPrice);
   const [totalPrice, setTotalPrice] = useState(editedOrder?.totalPrice);
   const [customPrice, setCustomPrice] = useState(editedOrder?.totalPrice);
 
-  betterConsoleLog('> Logging editedOrder', editedOrder);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token || '';
 
@@ -136,8 +135,17 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         newProductsPrice += product.price;
       }
 
-      setTotalPrice(newProductsPrice);
+      console.log('> Calculating new prodcuts price..')
+      setProductsPrice(newProductsPrice);
+      const price = newProductsPrice + deliveryPrice;
+      setCustomPrice(price);
+    } else {
+      console.log('> Setting products price to 0')
+      setProductsPrice(0);
+      setCustomPrice(deliveryPrice);
     }
+    betterConsoleLog('> Logging products', products.length);
+
   }, [products])
 
   useEffect(() => {
@@ -147,12 +155,18 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   }, [courier])
 
   useEffect(() => {
-    if(deliveryPrice && productsPrice){
+    if(deliveryPrice){
+      console.log('> Calculating new custom price')
+      console.log(productsPrice);
       let price = deliveryPrice + productsPrice;
       setTotalPrice(price);
       if(!customPrice) setCustomPrice(price);
     }
   }, [deliveryPrice, productsPrice])
+
+  useEffect(() => {
+    console.log('> Custom price is:', customPrice)
+  }, [customPrice])
 
   useEffect(() => {
     const dropdownData = couriersCtx.couriers.map(courier => ({
@@ -200,6 +214,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             key={`product-${index}`}
             product={product}
             index={index}
+            setProducts={setProducts}
           />
         )}
         {/* Add new product btn */}
@@ -412,8 +427,9 @@ function BuyerDataInputs({ name, setName, address, setAddress, phone, setPhone, 
 interface ProductDisplayTypes {
   product: OrderProductTypes
   index: number
+  setProducts: (product: OrderProductTypes) => void
 }
-function ProductDisplay({ product, index }: ProductDisplayTypes){
+function ProductDisplay({ product, index, setProducts }: ProductDisplayTypes){
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const [previewImage, setPreviewImage] = useState(product?.image);
@@ -424,6 +440,10 @@ function ProductDisplay({ product, index }: ProductDisplayTypes){
   async function handleOnRemovePress(){
     showModal(async () => {
       console.log('> Deleting the item from order..');
+      setProducts((prevProducts: OrderProductTypes) => [
+        ...prevProducts.slice(0, index), 
+        ...prevProducts.slice(index + 1)
+      ]);
     })
   }
   return (
@@ -486,7 +506,7 @@ function ProductDisplay({ product, index }: ProductDisplayTypes){
               size={26}
               color={Colors.highlight}
               onPress={handleOnRemovePress}
-              key={`key-${index}-add-button`}
+              key={`key-${index}-remove-button`}
               icon='delete'
               style={productDisplayStyles.removeButtonContainer} 
               pressedStyles={productDisplayStyles.buttonContainerPressed}
