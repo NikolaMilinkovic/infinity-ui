@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
-import RadioButtonsGroup from 'react-native-radio-buttons-group';
-import { DressColorTypes, DressTypes, OrderProductTypes, ProductTypes, PurseColorTypes } from '../../types/allTsTypes';
-import { Pressable, StyleSheet, Text, View, Animated } from 'react-native';
-import { Colors } from '../../constants/colors';
+import React, { useEffect, useState } from 'react'
+import { DressColorTypes, DressTypes, OrderProductTypes, PurseColorTypes } from '../../../../../../types/allTsTypes'
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Colors } from '../../../../../../constants/colors'
+import RadioButtonsGroup from 'react-native-radio-buttons-group'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { NewOrderContext } from '../../store/new-order-context';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
+import { betterConsoleLog } from '../../../../../../util-methods/LogMethods'
+
 interface ButtonTypes {
   id: string,
   value: string,
@@ -20,16 +20,14 @@ interface PropTypes {
   product: Product
   index: number
 }
-function ColorSizeSelector({ product, index }: PropTypes) {
+function ColorSizeStockSelectorModalComponent({ product, index, setSelectedItems }: any) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const orderCtx = useContext(NewOrderContext);
   const [productColors, setProductColors] = useState([]);
   const [selectedColor, setSelectedColor] = useState('');
   const [colorButtons, setColorButtons] = useState<ButtonTypes[]>([]);
   const [sizeButtons, setSizeButtons] = useState<ButtonTypes[]>([]);
   const styles = getStyles(product.selectedColor, product.selectedSize);
 
-  
   useEffect(() => {
     if(!product) return;
 
@@ -63,7 +61,6 @@ function ColorSizeSelector({ product, index }: PropTypes) {
     }
   },[productColors])
 
-
   // Filter sizes with stock > 0
   useEffect(() => {
     if(product.itemReference.stockType === 'Boja-Količina') return;
@@ -84,42 +81,78 @@ function ColorSizeSelector({ product, index }: PropTypes) {
     }
   }, [product.selectedColor]);
 
+  // SELECTS THE COLOR
+  // IF ITEM IS DRESS TYPE, CREATE FIELDS
+  // selectedSize & selectedSizeId
   function handleColorSelect(index:number, color:string, product: OrderProductTypes){
     // Filter all colors and find the selected color object
     const colorObj = product.itemReference.colors.find((obj) => obj.color === color);
 
     // Update the order object & cache selected color obj
     setSelectedColor(colorObj)
-    orderCtx.updateProductColorByIndex(index, colorObj);
+    setSelectedItems((prev:any) => {
+      const updatedProducts = [...prev]; // Clone the array
+      if (updatedProducts[index]) {
+        updatedProducts[index] = {
+          ...updatedProducts[index],  // Keep other product fields
+          selectedColor: colorObj.color,
+          selectedColorId: colorObj._id,
+        };
+      }
+      return updatedProducts;
+    });
     if(product.hasOwnProperty('selectedSize')){
       const sizeObj = {_id: '', size: ''}
-      orderCtx.updateProductSizeByIndex(index, sizeObj);
+      setSelectedItems((prev:any) => {
+        const updatedProducts = [...prev]; // Clone the array
+        if (updatedProducts[index]) {
+          updatedProducts[index] = {
+            ...updatedProducts[index],  // Keep other product fields
+            selectedSize: sizeObj.size,
+            selectedSizeId: sizeObj._id,
+          };
+        }
+        return updatedProducts;
+      });
     }
   }
 
+  // SETS THE SELECTED SIZE TO THE OBJECT
   function handleSizeSelect(index:number, size:string, product: OrderProductTypes){
     // Find the size object and update the order object with selected size & id
+
+    betterConsoleLog('> LOGGING OUT PRODUCT TO WHICH I AM SEETING THE SIZE', product);
     if(product.hasOwnProperty('selectedSize')){
       const sizeObj = selectedColor.sizes.find((obj) => obj.size === size);
-      orderCtx.updateProductSizeByIndex(index, sizeObj);
+      setSelectedItems((prev:any) => {
+        const updatedProducts = [...prev]; // Clone the array
+        if (updatedProducts[index]) {
+          updatedProducts[index] = {
+            ...updatedProducts[index],  // Keep other product fields
+            selectedSize: sizeObj.size,
+            selectedSizeId: sizeObj._id,
+          };
+        }
+        return updatedProducts;
+      });
+      // orderCtx.updateProductSizeByIndex(index, sizeObj);
     }
   }
 
   if(!product) return;
-  return (
-    
-    <Animated.ScrollView style={styles.container}>
 
+  return (
+    <Animated.ScrollView style={styles.container}>
       {/* TOGGLE  BUTTON */}
       <Pressable onPress={() => setIsExpanded(!isExpanded)} style={styles.headerContainer}>
         <Text style={styles.header}>{product?.itemReference?.name}</Text>
         <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.white}/>
       </Pressable>
+
       {isExpanded && (
         <>
-        <View style={styles.colorsContainer}>
-
-          {/* COLOR PICKERS */}
+          <View style={styles.colorsContainer}>
+            {/* COLOR PICKERS */}
             <Text style={styles.colorHeader}>  Boja</Text>
             <RadioButtonsGroup
               radioButtons={colorButtons} 
@@ -129,9 +162,9 @@ function ColorSizeSelector({ product, index }: PropTypes) {
               selectedId={product.selectedColor}
               labelStyle={styles.label}
             />
-        </View>
-
-        {/* SIZE PICKER */}
+          </View>
+    
+          {/* SIZE PICKER */}
           {product.selectedColor && product.itemReference.stockType !== 'Boja-Količina' && (
             <View style={styles.sizeContainer}>
               <Text style={styles.colorHeader}>  Veličina</Text>
@@ -198,4 +231,4 @@ function getStyles(selectedColor:string, selectedSize:string){
   })
 }
 
-export default ColorSizeSelector
+export default ColorSizeStockSelectorModalComponent

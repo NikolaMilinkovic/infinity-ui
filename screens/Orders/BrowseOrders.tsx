@@ -8,7 +8,7 @@ import { searchOrders } from '../../util-methods/OrderFilterMethods';
 import Button from '../../util-components/Button';
 import Animated from 'react-native-reanimated';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
-import EditOrder from '../../components/orders/browseOrders/EditOrder';
+import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import { OrderTypes } from '../../types/allTsTypes';
 import ImagePicker from '../../util-components/ImagePicker';
 

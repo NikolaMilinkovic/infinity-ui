@@ -90,7 +90,6 @@ function getStyles(isActive: boolean, inputText: string, background:string, colo
       left: 0,
       right: 0,
       zIndex: 10,
-      backgroundColor: 'red'
     },
     container: {
       justifyContent: 'center',

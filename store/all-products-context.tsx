@@ -7,7 +7,7 @@ import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
 import { DressTypes, PurseTypes } from "../types/allTsTypes";
 import { popupMessage } from "../util-components/PopupMessage";
-import { batchProductStockIncrease, decreaseDressStock, decreasePurseStock, increaseDressBatchStock, increaseDressStock, increasePurseStock } from "../util-methods/StockMethods";
+import { batchProductStockIncrease, decreaseDressBatchStock, decreaseDressStock, decreasePurseBatchStock, decreasePurseStock, increaseDressBatchStock, increaseDressStock, increasePurseStock } from "../util-methods/StockMethods";
 
 
 interface AllProductsContextType {
@@ -144,6 +144,30 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
       increasePurseStock(purse, pursesCtx.setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
     }
   }
+
+  function handleBatchStockDecreasee(data: DataProps){
+
+    for(const dress of data.dresses){
+      decreaseDressStock(dress, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
+      decreaseDressStock(dress, dressesCtx.setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
+    }
+    // Loop over all purses and increase for each stock
+    for(const purse of data.purses){
+      decreasePurseStock(purse, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
+      decreasePurseStock(purse, pursesCtx.setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
+    }
+    // // Loop over all dresses and increase for each stock
+    // if(data.dresses.length > 0){
+    //   decreaseDressBatchStock(data.dresses, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
+    //   decreaseDressBatchStock(data.dresses, dressesCtx.setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
+    // }
+    // // Loop over all purses and increase for each stock
+    // if(data.purses.length > 0){
+    //   decreasePurseBatchStock(data.purses, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
+    //   decreasePurseBatchStock(data.purses, pursesCtx.setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
+    // }
+  }
+
   // Handle setting ALL PRODUCTS
   useEffect(() => {
     console.log('> Setting all products: Active + Inactive');
@@ -161,6 +185,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
       socket.on('allProductStockDecrease', handleStockDecrease);
       socket.on('allProductStockIncrease', handleStockIncrease);
       socket.on('batchStockIncrease', handleBatchStockIncrease);
+      socket.on('batchStockDecrease', handleBatchStockDecreasee);
 
       return () => {
         socket.off('activeProductAdded');
@@ -172,6 +197,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
         socket.off('allProductStockDecrease');
         socket.off('allProductStockIncrease');
         socket.off('batchStockIncrease');
+        socket.off('batchStockDecrease');
       };
     }
   },[socket])

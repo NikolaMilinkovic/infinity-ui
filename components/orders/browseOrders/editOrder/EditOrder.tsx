@@ -1,29 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Button from '../../../util-components/Button'
-import { CourierTypesWithNoId, OrderProductTypes, OrderTypes, ProfileImageTypes } from '../../../types/allTsTypes'
-import { betterConsoleLog } from '../../../util-methods/LogMethods'
-import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native'
-import InputField from '../../../util-components/InputField'
+import Button from '../../../../util-components/Button'
+import { CourierTypesWithNoId, OrderProductTypes, OrderTypes } from '../../../../types/allTsTypes'
+import { betterConsoleLog } from '../../../../util-methods/LogMethods'
+import { Image, Modal, Pressable, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
+import InputField from '../../../../util-components/InputField'
 import { Text } from 'react-native'
-import { Colors } from '../../../constants/colors'
-import ImagePicker from '../../../util-components/ImagePicker'
-import { RollInLeft } from 'react-native-reanimated'
-import DropdownList from '../../../util-components/DropdownList'
-import { CouriersContext } from '../../../store/couriers-context'
-import ConfirmationModal from '../../../util-components/ConfirmationModal'
-import useConfirmationModal from '../../../hooks/useConfirmationMondal'
-import useImagePreviewModal from '../../../hooks/useImagePreviewModal'
-import ImagePreviewModal from '../../../util-components/ImagePreviewModal'
-import IconButton from '../../../util-components/IconButton'
-import CustomCheckbox from '../../../util-components/CustomCheckbox'
-import { popupMessage } from '../../../util-components/PopupMessage'
-import { fetchWithBodyData, handleFetchingWithBodyData, handleFetchingWithFormData } from '../../../util-methods/FetchMethods'
-import { AuthContext } from '../../../store/auth-context'
-import { getMimeType } from '../../../util-methods/ImageMethods'
+import { Colors } from '../../../../constants/colors'
+import ImagePicker from '../../../../util-components/ImagePicker'
+import DropdownList from '../../../../util-components/DropdownList'
+import { CouriersContext } from '../../../../store/couriers-context'
+import ConfirmationModal from '../../../../util-components/ConfirmationModal'
+import useConfirmationModal from '../../../../hooks/useConfirmationMondal'
+import useImagePreviewModal from '../../../../hooks/useImagePreviewModal'
+import ImagePreviewModal from '../../../../util-components/ImagePreviewModal'
+import IconButton from '../../../../util-components/IconButton'
+import CustomCheckbox from '../../../../util-components/CustomCheckbox'
+import { popupMessage } from '../../../../util-components/PopupMessage'
+import { handleFetchingWithBodyData, handleFetchingWithFormData } from '../../../../util-methods/FetchMethods'
+import { AuthContext } from '../../../../store/auth-context'
+import { getMimeType } from '../../../../util-methods/ImageMethods'
+import AddItemsModal from './addItemsModal/AddItemsModal'
+import { NavigationContainer } from '@react-navigation/native'
+import NewArticleTabs from '../../../../navigation/NewArticleTabs'
 
-interface InputFieldTypes{
-  input: string | number | undefined
-}
 interface PropTypes {
   editedOrder: OrderTypes
   setEditedOrder: (order: OrderTypes | null) => void
@@ -35,6 +34,7 @@ interface CourierTypes {
 }
 
 function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
+  const [showAddItemModal, setShowAddItemModal] = useState(false);
   const couriersCtx = useContext(CouriersContext);
   const [name, setName] = useState<string | number | undefined>(editedOrder?.buyer.name || '');
   const [address, setAddress] = useState<string | number | undefined>(editedOrder?.buyer.address || '');
@@ -135,12 +135,10 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         newProductsPrice += product.price;
       }
 
-      console.log('> Calculating new prodcuts price..')
       setProductsPrice(newProductsPrice);
       const price = newProductsPrice + deliveryPrice;
       setCustomPrice(price);
     } else {
-      console.log('> Setting products price to 0')
       setProductsPrice(0);
       setCustomPrice(deliveryPrice);
     }
@@ -178,6 +176,11 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
       setCourierDropdownData(dropdownData)
     }
   }, [couriersCtx.couriers, setCourierDropdownData])
+
+  function handleShowAddItemComponent(){
+    setShowAddItemModal(true);
+  }
+
   return (
     <ScrollView style={styles.container}>
 
@@ -208,6 +211,11 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
 
       {/* Products list */}
       <Text style={styles.sectionLabel}>Lista artikla: ({products.length} kom.)</Text>
+      <AddItemsModal
+        isVisible={showAddItemModal}
+        setIsVisible={setShowAddItemModal}
+        setProducts={setProducts}
+      />
       <View style={[styles.sectionContainer, styles.productListContainer]}>
         {products && products.map((product, index) => 
           <ProductDisplay
@@ -218,6 +226,13 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
           />
         )}
         {/* Add new product btn */}
+        <Button
+          backColor={Colors.secondaryLight}
+          textColor={Colors.primaryDark}
+          onPress={handleShowAddItemComponent}
+        >
+          Dodaj Artikal
+        </Button>
       </View>
 
       {/* Reservation | Packed */}
@@ -424,6 +439,8 @@ function BuyerDataInputs({ name, setName, address, setAddress, phone, setPhone, 
   </View>
   )
 }
+
+
 interface ProductDisplayTypes {
   product: OrderProductTypes
   index: number
@@ -576,3 +593,51 @@ const productDisplayStyles = StyleSheet.create({
 })
 
 export default EditOrder
+
+
+const modalStyles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 999
+  },
+  modal: {
+    width: '90%',
+    height: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+    overflow: 'hidden'
+  },
+  contentContainer: {
+    padding: 10,
+    width: '100%',
+    height: '100%',
+  },
+  header: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    backgroundColor: Colors.secondaryLight,
+    width: '100%',
+    textAlign: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: Colors.highlight,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: '13%',
+    paddingTop: 10,
+  },
+  button: {
+    flex: 2,
+  },
+})

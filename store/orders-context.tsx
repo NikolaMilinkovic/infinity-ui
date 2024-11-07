@@ -89,14 +89,18 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   function handleOrderAdded(newOrder: OrderProductTypes){
     setUnprocessedOrders((prev) => [...prev, newOrder]);
   }
-  function handleOrderUpdated(updatedOrder: OrderProductTypes){
+  function handleOrderUpdated(updatedOrder: OrderTypes){
     console.log('> handleOrderUpdated')
     betterConsoleLog('> Logging updated order', updatedOrder)
+    const hasAllIds = updatedOrder.products.every(product => product._id);
+    if (!hasAllIds) {
+      console.warn("Updated order contains products without _id fields:", updatedOrder);
+    }
     setUnprocessedOrders((prevOrders) => 
       prevOrders.map((order) => 
-        order._id === updatedOrder._id ? updatedOrder : order
+        order._id.toString() === updatedOrder._id.toString() ? updatedOrder : order
       )  
-    )
+    );
   }
 
   useEffect(() => {

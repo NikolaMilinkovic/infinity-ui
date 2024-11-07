@@ -8,7 +8,7 @@ interface DressStockDataDecrease {
   dressId: string,
   colorId: string,
   sizeId: string,
-  decrement: number,
+  increment: number,
 }
 // Function to decrease stock for a specific dress, color, and size
 export const decreaseDressStock = (
@@ -25,8 +25,8 @@ export const decreaseDressStock = (
               return {
                 ...color,
                 sizes: color.sizes.map((size) =>
-                  size._id === data.sizeId && size.stock - data.decrement >= 0
-                    ? { ...size, stock: size.stock - data.decrement }
+                  size._id === data.sizeId && size.stock - data.increment >= 0
+                    ? { ...size, stock: size.stock - data.increment }
                     : size
                 ),
               };
@@ -82,7 +82,7 @@ export const increaseDressStock = (
 interface PurseStockDataDecrease {
   purseId: string,
   colorId: string,
-  decrement: number,
+  increment: number,
 }
 // Function to decrease stock for a specific purse, color
 export const decreasePurseStock = (
@@ -98,7 +98,7 @@ export const decreasePurseStock = (
             if (color._id === data.colorId) {
               return {
                 ...color,
-                stock: color.stock - data.decrement >= 0 ? color.stock - data.decrement : color.stock,
+                stock: color.stock - data.increment >= 0 ? color.stock - data.increment : color.stock,
               };
             }
             return color;
@@ -188,6 +188,46 @@ export const increaseDressBatchStock = (
   });
 };
 
+export const decreaseDressBatchStock = (
+  data: DressStockDataIncrease[],
+  setActiveDresses: React.Dispatch<React.SetStateAction<DressTypes[]>>
+) => {
+  console.log('> Increasing active dresses by 1 for multiple items');
+
+  setActiveDresses((prevDresses) => {
+    // Loop over each dress ID in data array until no more IDs are left
+    let remainingData = [...data];
+
+    return prevDresses.map((dress) => {
+      const itemIndex = remainingData.findIndex(d => d.dressId === dress._id);
+      if (itemIndex !== -1) {
+        const itemData = remainingData[itemIndex];
+        // Increment stock for the matching dress
+        remainingData.splice(itemIndex, 1); // Remove processed ID
+
+        return {
+          ...dress,
+          colors: dress.colors.map((color) => {
+            if (color._id === itemData.colorId && color.sizes) {
+              return {
+                ...color,
+                sizes: color.sizes.map((size) =>
+                  size._id === itemData.sizeId
+                    ? { ...size, stock: size.stock - itemData.increment }
+                    : size
+                ),
+              };
+            }
+            return color;
+          }),
+        };
+      }
+
+      return dress;
+    });
+  });
+};
+
 
 interface PurseStockDataIncrease {
   purseId: string;
@@ -220,6 +260,42 @@ export const increasePurseBatchStock = (
               return {
                 ...color,
                 stock: color.stock + itemData.increment,
+              };
+            }
+            return color;
+          }),
+        };
+      }
+
+      return purse;
+    });
+  });
+};
+
+export const decreasePurseBatchStock = (
+  data: PurseStockDataIncrease[],
+  setActivePurses: React.Dispatch<React.SetStateAction<PurseTypes[]>>
+) => {
+  console.log('> Increasing active purses by increments for multiple items');
+
+  setActivePurses((prevPurses) => {
+    let remainingData = [...data]; // Create a copy to keep track of unprocessed IDs
+
+    return prevPurses.map((purse) => {
+      const itemIndex = remainingData.findIndex(d => d.purseId === purse._id);
+
+      if (itemIndex !== -1) {
+        const itemData = remainingData[itemIndex];
+        remainingData.splice(itemIndex, 1); // Remove processed ID from array
+
+        return {
+          ...purse,
+          colors: purse.colors.map((color) => {
+            if (color._id === itemData.colorId) {
+              console.log('> Color object found for increment', color);
+              return {
+                ...color,
+                stock: color.stock - itemData.increment,
               };
             }
             return color;

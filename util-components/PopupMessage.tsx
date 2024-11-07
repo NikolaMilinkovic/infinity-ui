@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
-import { showMessage, hideMessage } from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 import FlashMessage from "react-native-flash-message";
 import { Colors } from "../constants/colors";
 import { useRef } from "react";
@@ -35,10 +35,11 @@ export function popupMessage(message:string, type:PopupMessageTypes['type']){
     },
     container: {
       backgroundColor: backgroundColor,
-      paddingTop: 60,
+      paddingTop: 55,
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
+      zIndex: 10,
     }
   })
 

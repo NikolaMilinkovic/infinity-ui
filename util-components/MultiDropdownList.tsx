@@ -142,9 +142,6 @@ const styles = StyleSheet.create({
     color: Colors.highlight
   },
   labelStyles: {
-    // color: 'white',
-    // backgroundColor: 'red',
-    // fontSize: 34
     color: Colors.primaryDark,
     borderBottomColor: Colors.secondaryLight,
     borderBottomWidth: 0.5
