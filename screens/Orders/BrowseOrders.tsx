@@ -1,16 +1,13 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { OrdersContext } from '../../store/orders-context';
 import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
 import SearchOrders from '../../components/orders/browseOrders/SearchOrders';
 import { useFadeTransition, useFadeTransitionReversed } from '../../hooks/useFadeTransition';
 import { searchOrders } from '../../util-methods/OrderFilterMethods';
-import Button from '../../util-components/Button';
 import Animated from 'react-native-reanimated';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
-import { OrderTypes } from '../../types/allTsTypes';
-import ImagePicker from '../../util-components/ImagePicker';
 
 interface SearchParamsTypes {
   processed: boolean

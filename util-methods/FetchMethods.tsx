@@ -6,12 +6,12 @@ import { betterConsoleLog, betterErrorLog } from "./LogMethods";
  * @param api - API Address
  * @returns - Response data or false if !response.ok
  */
-export async function fetchData(token:string | null, api:string) {
+export async function fetchData(token:string | null, api:string, method:string = 'GET') {
   try{
     if (token === null) return popupMessage('Auth token nedostaje kako bi se izvršio fetch.', 'danger');
     
     const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${api}`, {
-      method: 'GET',
+      method: method,
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',

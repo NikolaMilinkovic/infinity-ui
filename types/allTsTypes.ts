@@ -168,6 +168,7 @@ export interface OrderTypes {
   productsPrice: number;
   totalPrice: number;
   reservation: boolean;
+  packedIndicator: boolean;
   packed: boolean;
   processed: boolean;
   createdAt: string;

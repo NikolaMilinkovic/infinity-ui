@@ -39,7 +39,6 @@ function getStyles(
         paddingHorizontal: 12,
         backgroundColor: backColor,
         elevation: 2,
-        shadowColor: backColor,
         shadowOffset: { width: 1, height: 1 },
         shadowOpacity: 0.25,
         shadowRadius: 4,

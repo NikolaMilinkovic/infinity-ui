@@ -92,6 +92,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     if (price.productsPrice !== undefined) order.append('productsPrice', price.productsPrice.toString());
     if (price.totalPrice !== undefined) order.append('totalPrice', price.totalPrice.toString());
     order.append('reservation', isReservation.toString());
+    order.append('packedIndicator', 'false');
     order.append('packed', 'false');
     order.append('processed', 'false');
     order.append('courier', JSON.stringify(courier));

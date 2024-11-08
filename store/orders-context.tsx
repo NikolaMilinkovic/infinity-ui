@@ -82,9 +82,9 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   // useEffect(() => {
   //   betterConsoleLog('> Neaktivne, procesovane porudzbine: ', processedOrders.length);
   // }, [processedOrders])
-  // useEffect(() => {
-  //   betterConsoleLog('> Aktivne, jos ne procesovane porudzbine: ', unprocessedOrders);
-  // }, [unprocessedOrders])
+  useEffect(() => {
+    betterConsoleLog('> Aktivne, jos ne procesovane porudzbine: ', unprocessedOrders);
+  }, [unprocessedOrders])
 
   function handleOrderAdded(newOrder: OrderProductTypes){
     setUnprocessedOrders((prev) => [...prev, newOrder]);
@@ -103,6 +103,34 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     );
   }
 
+  function handleStockIndicatorToTrue(id: string){
+    setUnprocessedOrders((prevOrders) => 
+      prevOrders.map((order) =>
+        order._id === id 
+        ? {...order, packedIndicator: true} 
+        : order
+      )
+    )
+  }
+  function handleStockIndicatorToFalse(id: string){
+    setUnprocessedOrders((prevOrders) => 
+      prevOrders.map((order) =>
+        order._id === id 
+        ? {...order, packedIndicator: false} 
+        : order
+      )
+    )
+  }
+  function handlePackOrders(orderIds: string[]){
+    setUnprocessedOrders((prevOrders) => 
+      prevOrders.map((order) => 
+        orderIds.includes(order._id)
+          ? { ...order, packed: true }
+          : order
+      )
+    )
+  }
+  
   useEffect(() => {
     if(!socket) return;
 
@@ -110,6 +138,9 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     socket.on('orderRemoved', handleOrderRemoved);
     socket.on('orderBatchRemoved', handleBatchOrderRemoved);
     socket.on('orderUpdated', handleOrderUpdated);
+    socket.on('setStockIndicatorToTrue', handleStockIndicatorToTrue);
+    socket.on('setStockIndicatorToFalse', handleStockIndicatorToFalse);
+    socket.on('packOrdersByIds', handlePackOrders);
 
     // Cleans up the listener on unmount
     // Without this we would get 2x the data as we are rendering multiple times
@@ -118,6 +149,9 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       socket.off('orderRemoved', handleOrderRemoved);
       socket.off('orderBatchRemoved', handleBatchOrderRemoved);
       socket.off('orderUpdated', handleOrderUpdated);
+      socket.off('setStockIndicatorToTrue', handleStockIndicatorToTrue);
+      socket.off('setStockIndicatorToFalse', handleStockIndicatorToFalse);
+      socket.off('packOrdersByIds', handlePackOrders);
     };
   }, [socket]);
 

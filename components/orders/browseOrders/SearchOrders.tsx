@@ -16,6 +16,7 @@ import { OrdersContext } from '../../../store/orders-context';
 import { AuthContext } from '../../../store/auth-context';
 import { betterConsoleLog } from '../../../util-methods/LogMethods';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import useBackClickHandler from '../../../hooks/useBackClickHandler';
 
 interface PropTypes {
   searchData: string
@@ -33,6 +34,7 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
   function handleToggleExpand(){
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
   }
+  useBackClickHandler(isExpanded, handleToggleExpand);
 
     // PROCESSED | UNPROCESSED RADIO BUTTONS
     const processedUnprocessedButtons: RadioButtonProps[] = useMemo(() => ([

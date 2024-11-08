@@ -1,9 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Text } from 'react-native'
+import PackOrdersItemsList from '../../components/orders/packOrders/PackOrdersItemsList'
+import PackOrdersControlls from '../../components/orders/packOrders/PackOrdersControlls';
+import { CategoryTypes } from '../../types/allTsTypes';
 
 function PackOrders() {
+  const [selectedCourier, setSelectedCourier] = useState<CategoryTypes | null>(null);
+
   return (
-    <Text>Ovo je stranica gde ce se pakovati porudzbine</Text>
+    <>
+      <PackOrdersControlls
+        selectedCourier={selectedCourier}
+        setSelectedCourier={setSelectedCourier}
+      />
+      <PackOrdersItemsList
+        selectedCourier={selectedCourier}
+      />
+    </>
   )
 }
 

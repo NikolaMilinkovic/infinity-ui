@@ -14,6 +14,7 @@ import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
 import { useExpandAnimation } from '../../hooks/useExpand';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
 import { Dimensions } from 'react-native';
+import useBackClickHandler from '../../hooks/useBackClickHandler';
 
 interface SearchProductsPropTypes {
   searchData: string
@@ -30,6 +31,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   function handleToggleExpand(){
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
   }
+  useBackClickHandler(isExpanded, handleToggleExpand)
 
   // ACTIVE | INACTIVE RADIO BUTTONS
   const activeRadioButtons: RadioButtonProps[] = useMemo(() => ([
