@@ -4,27 +4,19 @@ import { FlatList, Pressable, StyleSheet} from 'react-native';
 import PackOrderItem from './PackOrderItem';
 import { CourierTypes, OrderTypes } from '../../../types/allTsTypes';
 
-interface PackOrderItemsListPropTypes {
-  selectedCourier: CourierTypes | null
+interface selectedCourier {
+  name: string;
+  stockType: string;
 }
-function PackOrdersItemsList({ selectedCourier }: PackOrderItemsListPropTypes) {
-  const orderCtx = useContext(OrdersContext);
-  const [orders, setOrders] = useState<OrderTypes[]>([]);
-  useEffect(() => {
-    if(selectedCourier === null){
-      setOrders(() => 
-        orderCtx.unprocessedOrders.filter((order) => order.packed === false)
-      )
-    } else {
-      setOrders(() => 
-        orderCtx.unprocessedOrders.filter((order) => order.packed === false && order?.courier?.name === selectedCourier.name)
-      )
-    }
-  }, [orderCtx.unprocessedOrders, selectedCourier]);
+interface PackOrderItemsListPropTypes {
+  selectedCourier: selectedCourier | null
+  data: OrderTypes[]
+}
+function PackOrdersItemsList({ selectedCourier, data }: PackOrderItemsListPropTypes) {
 
   return (
     <FlatList 
-    data={orders} 
+    data={data} 
     keyExtractor={(item) => item._id} 
     renderItem={({item, index}) => 
       <Pressable

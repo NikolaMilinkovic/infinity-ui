@@ -4,7 +4,7 @@ import { OrdersContext } from '../../../store/orders-context';
 import Button from '../../../util-components/Button';
 import DropdownList from '../../../util-components/DropdownList';
 import { CouriersContext } from '../../../store/couriers-context';
-import { CategoryTypes } from '../../../types/allTsTypes';
+import { CategoryTypes, OrderTypes } from '../../../types/allTsTypes';
 import { Colors } from '../../../constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useExpandAnimation } from '../../../hooks/useExpand';
@@ -16,22 +16,21 @@ import { popupMessage } from '../../../util-components/PopupMessage';
 interface PackOrdersControllsPropTypes {
   selectedCourier: CategoryTypes | null
   setSelectedCourier: (courier: CategoryTypes | null) => void
+  orders: OrderTypes[]
 }
-function PackOrdersControlls({selectedCourier, setSelectedCourier }: PackOrdersControllsPropTypes) {
+function PackOrdersControlls({selectedCourier, setSelectedCourier, orders }: PackOrdersControllsPropTypes) {
   const [packedCounter, setPackedCounter] = useState(0);
   const [toBePackedCounter, setToBePackedCounter] = useState(0);
   const [isExpanded, setIsExpanded] = useState(true);
-  const orderCtx = useContext(OrdersContext);
   const height = useExpandAnimation(isExpanded, 40, 200, 180);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
 
   async function finishPackingHandler(){
-    const packedIds = orderCtx.unprocessedOrders
+    const packedIds = orders
       .filter((order) => order.packedIndicator === true)
       .map((order) => order._id );
     const response = await fetchWithBodyData(token, 'orders/pack-orders', { packedIds }, 'POST');
-    betterConsoleLog('> Logging response', response);
     if(response.status === 200){
       const data = await response?.json();
       return popupMessage(data.message, 'success');
@@ -42,7 +41,7 @@ function PackOrdersControlls({selectedCourier, setSelectedCourier }: PackOrdersC
   }
   
   useEffect(() => {
-    const { isPacked, toBePacked } = orderCtx.unprocessedOrders.reduce(
+    const { isPacked, toBePacked } = orders.reduce(
       (acc, order) => {
         if(order.packedIndicator && order.packed === false){
           acc.isPacked += 1;
@@ -56,7 +55,7 @@ function PackOrdersControlls({selectedCourier, setSelectedCourier }: PackOrdersC
 
     setPackedCounter(isPacked);
     setToBePackedCounter(toBePacked);
-  }, [orderCtx.unprocessedOrders]);
+  }, [orders]);
 
   // CATEGORY FILTER
   const couriersCtx = useContext(CouriersContext);
