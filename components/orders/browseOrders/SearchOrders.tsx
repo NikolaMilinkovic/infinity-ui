@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
-import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native'
+import { Animated, Dimensions, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native'
 import InputField from '../../../util-components/InputField'
 import { Colors } from '../../../constants/colors';
 import { useExpandAnimation } from '../../../hooks/useExpand';
@@ -15,7 +15,7 @@ import { popupMessage } from '../../../util-components/PopupMessage';
 import { OrdersContext } from '../../../store/orders-context';
 import { AuthContext } from '../../../store/auth-context';
 import { betterConsoleLog } from '../../../util-methods/LogMethods';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import useBackClickHandler from '../../../hooks/useBackClickHandler';
 
 interface PropTypes {
@@ -80,16 +80,23 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
           label: 'Spakovane',
           value: 'packed',
       },
+      {
+          id: '3',
+          label: 'Sve',
+          value: 'packedAndUnpacked',
+      },
     ]), []);
     type ActiveProductsParams = {
       packed: boolean;
       unpacked: boolean;
+      packedAndUnpacked: boolean;
     };
-    const [arePacked, setArePacked] = useState<string>('1');
+    const [arePacked, setArePacked] = useState<string>('3');
     useEffect(() => {
       const updateParams: Record<string, ActiveProductsParams> = {
-        '1': { unpacked: true, packed: false },
-        '2': { unpacked: false, packed: true },
+        '1': { unpacked: true, packed: false, packedAndUnpacked: false },
+        '2': { unpacked: false, packed: true, packedAndUnpacked: false },
+        '3': { packed: false, unpacked: false, packedAndUnpacked: true },
       };
       const params = updateParams[arePacked];
       if (params) {
@@ -187,7 +194,10 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
     function handleOpenDatePicker(){
       setShowDatePicker(true);
     }
-    const handleDatePick = async (e, selectedDate: Date) => {
+    const handleDatePick = async (e:NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
+      if (e.type === "dismissed") {
+        return handleDateReset();
+      }
       if (selectedDate) {
         setDate(selectedDate);
         setIsDatePicked(true);
@@ -265,6 +275,7 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
                 mode='date'
                 is24Hour={true}
                 onChange={handleDatePick}
+                onTouchCancel={handleDateReset}
               />
             )}
             {date && isDatePicked && (

@@ -5,6 +5,7 @@ interface OrderSearchParams {
   unprocessed: boolean
   packed: boolean
   unpacked: boolean
+  packedAndUnpacked: boolean
   onCourierSearch: string
   ascending: boolean
   descending: boolean
@@ -63,7 +64,8 @@ function filterOrdersByProcessed(orders:OrderTypes[], searchParams:OrderSearchPa
   return processedFilter;
 }
 function filterOrdersByPackedState(orders:OrderTypes[], searchParams:OrderSearchParams){
-  const { packed, unpacked } = searchParams;
+  const { packed, unpacked, packedAndUnpacked } = searchParams;
+  if(packedAndUnpacked) return orders
   const processedFilter = orders.filter((order) => {
     if(packed && order.packed) return order;
     if(unpacked && !order.packed) return order;

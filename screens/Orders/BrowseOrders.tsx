@@ -14,6 +14,7 @@ interface SearchParamsTypes {
   unprocessed: boolean
   packed: boolean
   unpacked: boolean
+  packedAndUnpacked: boolean
   onCourierSearch: string
   ascending: boolean,
   descending: boolean,
@@ -35,6 +36,7 @@ function BrowseOrders() {
     unprocessed: true,
     packed: false,
     unpacked: true,
+    packedAndUnpacked: true,
     onCourierSearch: '',
     ascending: true,
     descending: false,
@@ -55,7 +57,6 @@ function BrowseOrders() {
 
   const editOrderFade = useFadeTransition(editedOrder !== null);
   const overlayView = useFadeTransitionReversed(editedOrder === null, 500, 150);
-  const [temp, setTemp] = useState(editedOrder?.buyer?.profileImage || '');
   
 
   return (

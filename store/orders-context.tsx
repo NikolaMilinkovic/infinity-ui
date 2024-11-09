@@ -10,13 +10,21 @@ interface OrdersContextTypes {
   processedOrders: OrderTypes[]
   customOrderSet: OrderTypes[]
   setCustomOrderSet: (orders: OrderTypes[]) => void
+  customReservationsSet: OrderTypes[]
+  setCustomReservationsSet: (reservations: OrderTypes[]) => void
+  reservations: OrderTypes[]
+  setReservations: (reservations: OrderTypes[]) => void
 }
 
 export const OrdersContext = createContext<OrdersContextTypes>({
   unprocessedOrders: [],
   processedOrders: [],
   customOrderSet: [],
-  setCustomOrderSet: () => {}
+  setCustomOrderSet: () => {},
+  customReservationsSet: [],
+  setCustomReservationsSet: () => {},
+  reservations: [],
+  setReservations: () => {},
 })
 
 interface OrdersContextProviderTypes {
@@ -27,6 +35,8 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   const [unprocessedOrders, setUnprocessedOrders] = useState<OrderProductTypes[]>([]);
   const [processedOrders, setProcessedOrders] = useState<OrderProductTypes[]>([]);
   const [customOrderSet, setCustomOrderSet] = useState<OrderProductTypes[]>([]);
+  const [reservations, setReservations] = useState<OrderProductTypes[]>([]);
+  const [customReservationsSet, setCustomReservationsSet] = useState<OrderProductTypes[]>([]);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
@@ -39,17 +49,22 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       console.log('> Unprocessed orders fetched length is: ', unprocessedOrdersData.orders.length);
       setUnprocessedOrders(unprocessedOrdersData.orders);
     }
-    if(token) fetchUnprocessedOrdersData();
-  }, [token])
-  
-  useEffect(() => {
     async function fetchProcessedOrdersData(){
       const processedOrdersData = await fetchData(token, 'orders/processed');
       console.log('> Processed orders fetched length is: ', processedOrdersData.orders.length);
       setProcessedOrders(processedOrdersData.orders);
     }
-    if(token) fetchProcessedOrdersData();
-  }, [token]);
+    async function fetchReservationsData(){
+      const response = await fetchData(token, 'orders/get-reservations');
+      console.log('> Number of fetched reservations is: ', reservations.length);
+      setReservations(response.reservations || []);
+    }
+    if(token){
+      fetchUnprocessedOrdersData();
+      fetchProcessedOrdersData();
+      fetchReservationsData();
+    }
+  }, [token])
 
   function handleOrderRemoved(orderId: string) {
     console.log('Order id is ' + orderId);
@@ -160,8 +175,10 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       unprocessedOrders,
       processedOrders,
       customOrderSet,
-      setCustomOrderSet
-    }), [unprocessedOrders, processedOrders, customOrderSet]);
+      setCustomOrderSet,
+      customReservationsSet,
+      setCustomReservationsSet
+    }), [unprocessedOrders, processedOrders, customOrderSet, customReservationsSet]);
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;
 }

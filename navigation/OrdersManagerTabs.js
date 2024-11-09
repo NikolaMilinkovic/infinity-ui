@@ -5,6 +5,7 @@ import { Colors } from '../constants/colors';
 import { Dimensions } from 'react-native';
 import BrowseOrders from '../screens/Orders/BrowseOrders';
 import PackOrders from '../screens/Orders/PackOrders';
+import BrowseReservations from '../screens/Reservations/BrowseReservations';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -43,7 +44,7 @@ export default function OrdersManagerTabs(){
       />
       <Tab.Screen 
         name="BrowseReservations" 
-        component={BrowseOrders}
+        component={BrowseReservations}
         options={{
           title: 'Rezervacije',
         }}
