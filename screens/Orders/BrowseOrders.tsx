@@ -53,7 +53,7 @@ function BrowseOrders() {
     if(searchParams.processed) return searchOrders(searchData, ordersCtx.processedOrders, searchParams);
     if(searchParams.unprocessed) return searchOrders(searchData, ordersCtx.unprocessedOrders, searchParams);
     return [];
-  }, [ordersCtx.customOrderSet, ordersCtx.processedOrders, ordersCtx.unprocessedOrders, searchData, searchParams]);
+  }, [ordersCtx.customOrderSet, ordersCtx.processedOrders, ordersCtx.unprocessedOrders, searchData, searchParams, isDatePicked]);
 
   const editOrderFade = useFadeTransition(editedOrder !== null);
   const overlayView = useFadeTransitionReversed(editedOrder === null, 500, 150);
@@ -72,7 +72,12 @@ function BrowseOrders() {
             setIsDatePicked={setIsDatePicked}
             setPickedDate={setPickedDate}
           />
-          <OrderItemsList data={filteredData} setEditedOrder={setEditedOrder} isDatePicked={isDatePicked} pickedDate={pickedDate} />
+          <OrderItemsList 
+            data={filteredData} 
+            setEditedOrder={setEditedOrder} 
+            isDatePicked={isDatePicked} 
+            pickedDate={pickedDate} 
+          />
         </View>
       ) : (
         <Animated.View style={editOrderFade}> 
@@ -80,9 +85,7 @@ function BrowseOrders() {
             editedOrder={editedOrder}
             setEditedOrder={setEditedOrder}
           />
-          {/* EDIT ORDER COMPONENT */}
         </Animated.View>
-        // style={[editProductFade]}
       )}
     </>
   );

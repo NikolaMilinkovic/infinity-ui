@@ -12,11 +12,11 @@ function PackOrders() {
   useEffect(() => {
     if(selectedCourier === null){
       setOrders(() => 
-        orderCtx.unprocessedOrders.filter((order) => order.packed === false)
+        orderCtx.unprocessedOrders.filter((order) => order.packed === false && order.reservation === false )
       )
     } else {
       setOrders(() => 
-        orderCtx.unprocessedOrders.filter((order) => order.packed === false && order?.courier?.name === selectedCourier.name)
+        orderCtx.unprocessedOrders.filter((order) => order.packed === false && order?.courier?.name === selectedCourier.name && order.reservation === false)
       )
     }
   }, [orderCtx.unprocessedOrders, selectedCourier]);

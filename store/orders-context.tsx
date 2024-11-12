@@ -3,7 +3,8 @@ import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
-import { OrderProductTypes, OrderTypes } from "../types/allTsTypes";
+import { CourierTypesWithNoId, OrderProductTypes, OrderTypes } from "../types/allTsTypes";
+import { resetToDefaults } from "@testing-library/react-native";
 
 interface OrdersContextTypes {
   unprocessedOrders: OrderTypes[]
@@ -12,8 +13,6 @@ interface OrdersContextTypes {
   setCustomOrderSet: (orders: OrderTypes[]) => void
   customReservationsSet: OrderTypes[]
   setCustomReservationsSet: (reservations: OrderTypes[]) => void
-  reservations: OrderTypes[]
-  setReservations: (reservations: OrderTypes[]) => void
 }
 
 export const OrdersContext = createContext<OrdersContextTypes>({
@@ -23,8 +22,6 @@ export const OrdersContext = createContext<OrdersContextTypes>({
   setCustomOrderSet: () => {},
   customReservationsSet: [],
   setCustomReservationsSet: () => {},
-  reservations: [],
-  setReservations: () => {},
 })
 
 interface OrdersContextProviderTypes {
@@ -32,11 +29,10 @@ interface OrdersContextProviderTypes {
 }
 
 function OrdersContextProvider({ children }: OrdersContextProviderTypes){
-  const [unprocessedOrders, setUnprocessedOrders] = useState<OrderProductTypes[]>([]);
-  const [processedOrders, setProcessedOrders] = useState<OrderProductTypes[]>([]);
-  const [customOrderSet, setCustomOrderSet] = useState<OrderProductTypes[]>([]);
-  const [reservations, setReservations] = useState<OrderProductTypes[]>([]);
-  const [customReservationsSet, setCustomReservationsSet] = useState<OrderProductTypes[]>([]);
+  const [unprocessedOrders, setUnprocessedOrders] = useState<OrderTypes[]>([]);
+  const [processedOrders, setProcessedOrders] = useState<OrderTypes[]>([]);
+  const [customOrderSet, setCustomOrderSet] = useState<OrderTypes[]>([]);
+  const [customReservationsSet, setCustomReservationsSet] = useState<OrderTypes[]>([]);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
@@ -54,17 +50,11 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       console.log('> Processed orders fetched length is: ', processedOrdersData.orders.length);
       setProcessedOrders(processedOrdersData.orders);
     }
-    async function fetchReservationsData(){
-      const response = await fetchData(token, 'orders/get-reservations');
-      console.log('> Number of fetched reservations is: ', reservations.length);
-      setReservations(response.reservations || []);
-    }
     if(token){
       fetchUnprocessedOrdersData();
       fetchProcessedOrdersData();
-      fetchReservationsData();
     }
-  }, [token])
+  }, [token]);
 
   function handleOrderRemoved(orderId: string) {
     console.log('Order id is ' + orderId);
@@ -97,16 +87,14 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   // useEffect(() => {
   //   betterConsoleLog('> Neaktivne, procesovane porudzbine: ', processedOrders.length);
   // }, [processedOrders])
-  useEffect(() => {
-    betterConsoleLog('> Aktivne, jos ne procesovane porudzbine: ', unprocessedOrders);
-  }, [unprocessedOrders])
+  // useEffect(() => {
+  //   betterConsoleLog('> Aktivne, jos ne procesovane porudzbine: ', unprocessedOrders);
+  // }, [unprocessedOrders])
 
-  function handleOrderAdded(newOrder: OrderProductTypes){
+  function handleOrderAdded(newOrder: OrderTypes){
     setUnprocessedOrders((prev) => [...prev, newOrder]);
   }
   function handleOrderUpdated(updatedOrder: OrderTypes){
-    console.log('> handleOrderUpdated')
-    betterConsoleLog('> Logging updated order', updatedOrder)
     const hasAllIds = updatedOrder.products.every(product => product._id);
     if (!hasAllIds) {
       console.warn("Updated order contains products without _id fields:", updatedOrder);
@@ -145,6 +133,32 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       )
     )
   }
+  interface ReservationType {
+    _id: string
+  }
+  interface ReservationsToOrdersDataTypes {
+    courier: CourierTypesWithNoId
+    reservations: ReservationType[]
+  }
+  function handleReservationsToOrders(data: ReservationsToOrdersDataTypes){
+    const updatedIds = data.reservations.map((data) => String(data._id));
+    setUnprocessedOrders((prevOrders) =>
+      prevOrders.map((item) => {
+        if (updatedIds.includes(item._id)) {
+          return {
+            ...item,
+            reservation: false,
+            courier: {
+              name: data.courier.name,
+              deliveryPrice: data.courier.deliveryPrice,
+            },
+            totalPrice: Number(item.productsPrice) + Number(data.courier.deliveryPrice),
+          };
+        }
+        return item;
+      })
+    );
+  }
   
   useEffect(() => {
     if(!socket) return;
@@ -156,6 +170,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     socket.on('setStockIndicatorToTrue', handleStockIndicatorToTrue);
     socket.on('setStockIndicatorToFalse', handleStockIndicatorToFalse);
     socket.on('packOrdersByIds', handlePackOrders);
+    socket.on('reservationsToOrders', handleReservationsToOrders);
 
     // Cleans up the listener on unmount
     // Without this we would get 2x the data as we are rendering multiple times
@@ -167,6 +182,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       socket.off('setStockIndicatorToTrue', handleStockIndicatorToTrue);
       socket.off('setStockIndicatorToFalse', handleStockIndicatorToFalse);
       socket.off('packOrdersByIds', handlePackOrders);
+      socket.off('reservationsToOrders', handleReservationsToOrders);
     };
   }, [socket]);
 
@@ -177,7 +193,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       customOrderSet,
       setCustomOrderSet,
       customReservationsSet,
-      setCustomReservationsSet
+      setCustomReservationsSet,
     }), [unprocessedOrders, processedOrders, customOrderSet, customReservationsSet]);
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;

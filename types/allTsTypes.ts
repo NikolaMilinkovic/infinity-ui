@@ -98,10 +98,14 @@ export interface ProfileImageTypes {
 export interface BuyerTypes {
   name: string
   address: string
+  place: string
   phone: string | number
+  phone2: string | number
+  bankNumber: string | number
   profileImage: ProfileImageTypes
 }
 export interface OrderProductTypes {
+  _id: string
   itemReference: ProductTypes | string;
   name: string;
   category: string;
@@ -113,6 +117,10 @@ export interface OrderProductTypes {
   selectedColorId: string;
   selectedSize?: string;
   selectedSizeId?: string;
+  value: string
+  weight: string
+  internalRemark: string
+  deliveryRemark: string
 }
 
 export interface NewOrderContextTypes {
@@ -148,6 +156,15 @@ export interface NewOrderContextTypes {
 
   customPrice: string | number
   setCustomPrice: (price: string | number) => void
+
+  weight: string,
+  setWeight: (weight: string) => void,
+  orderValue: string,
+  setOrderValue: (orderValue: string) => void,
+  internalRemark: string,
+  setInternalRemark: (internalRemark: string) => void,
+  deliveryRemark: string,
+  setDeliveryRemark: (deliveryRemark: string) => void,
 }
 
 export interface CourierTypes {
@@ -161,9 +178,9 @@ export interface CourierTypesWithNoId {
 }
 
 export interface OrderTypes {
+  _id: string;
   buyer: BuyerTypes;
   courier?: CourierTypesWithNoId;
-  _id: string;
   products: ProductTypes[];
   productsPrice: number;
   totalPrice: number;
@@ -173,4 +190,8 @@ export interface OrderTypes {
   processed: boolean;
   createdAt: string;
   updatedAt: string;
+  value: string
+  weight: string
+  internalRemark: string
+  deliveryRemark: string
 }

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Animated, Image, Pressable, Text, TouchableOpacity, View } from 'react-native'
-import { betterConsoleLog } from '../../../util-methods/LogMethods'
 import { ImageTypes, OrderTypes } from '../../../types/allTsTypes';
 import { StyleSheet } from 'react-native';
 import { Colors } from '../../../constants/colors';
@@ -86,7 +85,7 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
           </Pressable>
           <View style={styles.info}>
             <Text>{order.buyer.name}</Text>
-            <Text>{order.buyer.address}</Text>
+            <Text>{order.buyer.address}, {order.buyer?.place}</Text>
             <Text>{order.buyer.phone}</Text>
             <Text>Otkup: {order.totalPrice} din.</Text>
             <Text>Kurir: {order.courier?.name}</Text>
@@ -116,6 +115,9 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
                   style={styles.editButtonContainer} 
                   pressedStyles={styles.buttonContainerPressed}
                 />
+            )}
+            {order.packed && order.packedIndicator && (
+              <Text style={styles.packedText}>SPAKOVANO</Text>
             )}
           </View>
         </View>
@@ -165,6 +167,7 @@ function getStyles(isHighlighted:boolean){
     },
     info: {
       flex: 10,
+      position: 'relative',
     },
     buttonsContainer: {
       width: 60,
@@ -199,6 +202,13 @@ function getStyles(isHighlighted:boolean){
       zIndex: 12,
       opacity: 0.4,
       pointerEvents: 'none'
+    },
+    packedText: {
+      position: 'absolute',
+      color: Colors.success,
+      bottom: 10,
+      right: -10,
+      width: 100,
     }
   })
 }

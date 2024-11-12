@@ -11,6 +11,7 @@ import ProductsManagerTabs from './ProductsManagerTabs';
 import CouriersTabs from './CouriersTabs';
 import BrowsePageTabs from './BrowsePageTabs';
 import OrdersManagerTabs from './OrdersManagerTabs';
+import EndOfDay from '../screens/EndOfDay/EndOfDay';
 
 
 const Drawer = createDrawerNavigator();
@@ -86,6 +87,13 @@ export default function AuthenticatedStack() {
         name="Settings" 
         component={Settings} 
       />
+
+      {/* END OF DAY */}
+      <Drawer.Screen 
+        name="EndOfDay" 
+        component={EndOfDay} 
+      />
+
 
       {/* USERMANAGER */}
       <Drawer.Screen 

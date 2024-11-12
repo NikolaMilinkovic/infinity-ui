@@ -41,6 +41,15 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
 
   customPrice: '',
   setCustomPrice: () => {},
+
+  weight: '0.5',
+  setWeight: () => {},
+  orderValue: '',
+  setOrderValue: () => {},
+  internalRemark: '',
+  setInternalRemark: () => {},
+  deliveryRemark: '',
+  setDeliveryRemark: () => {},
 })
 
 function NewOrderContextProvider({ children }: ContextChildrenTypes){
@@ -51,6 +60,10 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const [isReservation, setIsReservation] = useState(false);
   const [profileImage, setProfileImage] = useState<ProductImageTypes | null>(null);
   const [customPrice, setCustomPrice] = useState<string | number>('');
+  const [orderValue, setOrderValue] = useState('');
+  const [weight, setWeight] = useState('0.5');
+  const [internalRemark, setInternalRemark] = useState('');
+  const [deliveryRemark, setDeliveryRemark] = useState('');
 
 
   // Check to see if all products have selectedColor & selectedSize where applicable
@@ -95,6 +108,10 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     order.append('packedIndicator', 'false');
     order.append('packed', 'false');
     order.append('processed', 'false');
+    order.append('value', orderValue);
+    order.append('weight', weight);
+    order.append('internalRemark', internalRemark);
+    order.append('deliveryRemark', deliveryRemark);
     order.append('courier', JSON.stringify(courier));
     betterConsoleLog('> Logging profile image', profileImage);
     order.append('profileImage', {
@@ -230,10 +247,18 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     setBuyerData({
       name: '',
       address: '',
+      place: '',
       phone: '',
+      phone2: '',
+      bankNumber: '',
+      profileImage: {
+        uri: '',
+        imageName: '',
+      }
     });
     setIsReservation(false);
     setProfileImage(null);
+    setDeliveryRemark('');
   }
 
   // COURIER
@@ -278,7 +303,16 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
 
     customPrice,
     setCustomPrice: setCustomPrice,
-  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice]);
+
+    weight,
+    setWeight: setWeight,
+    orderValue,
+    setOrderValue: setOrderValue,
+    internalRemark,
+    setInternalRemark: setInternalRemark,
+    deliveryRemark,
+    setDeliveryRemark: setDeliveryRemark,
+  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice, weight, orderValue, internalRemark, deliveryRemark]);
 
   return <NewOrderContext.Provider value={value}>{ children }</NewOrderContext.Provider>
 }

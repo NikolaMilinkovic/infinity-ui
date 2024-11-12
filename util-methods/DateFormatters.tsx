@@ -7,3 +7,11 @@ export function getFormattedDate(date: string | Date): string {
     minute: '2-digit',
   }).replace(/\//g, '.');;
 }
+
+/**
+ * @param separator - String value that separates the date, like '-' or '.' | Defaults to '.'
+ * @returns - Current date in DD.MM.YYYY
+ */
+export function getCurrentDate(separator:string = '.'): string {
+  return new Date().toLocaleDateString("en-UK").replace(/\//g, separator);
+}

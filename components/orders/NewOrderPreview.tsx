@@ -66,11 +66,25 @@ function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPric
               <Text style={styles.information}>{orderCtx.buyerData?.address || 'N/A'}</Text>
             </View>
 
+            {/* PLACE */}
+            <View style={styles.rowContainer}>
+              <Text style={styles.label}>Mesto:</Text>
+              <Text style={styles.information}>{orderCtx.buyerData?.place || 'N/A'}</Text>
+            </View>
+
             {/* PHONE */}
             <View style={styles.rowContainer}>
               <Text style={styles.label}>Telefon:</Text>
               <Text style={styles.information}>{orderCtx.buyerData?.phone || 'N/A'}</Text>
             </View>
+
+            {/* PHONE2 */}
+            {orderCtx.buyerData?.phone2 !== '' && (
+              <View style={styles.rowContainer}>
+                <Text style={styles.label}>Dodatni telefon:</Text>
+                <Text style={styles.information}>{orderCtx.buyerData?.phone2 || 'N/A'}</Text>
+              </View>
+            )}
 
           </View>
 
@@ -118,6 +132,16 @@ function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPric
             {/* <Pressable onPress={() => setShowEdit(!showEdit)} style={styles.editButton}>
               <Icon name={showEdit ? 'file-edit-outline' : 'cancel'} style={styles.editIcon} size={28} color={Colors.primaryDark}/>
             </Pressable> */}
+            <InputField
+              label='Napomena za dostavu'
+              inputText={orderCtx.deliveryRemark}
+              setInputText={orderCtx.setDeliveryRemark}
+              containerStyles={styles.deliveryRemarkInput}
+              background={Colors.white}
+              selectTextOnFocus={true}
+              multiline={true}
+              numberOfLines={4}
+            />
             <Text style={styles.header2}>Rezervacija:</Text>
             <View style={styles.rowContainer}>
               <CustomCheckbox
@@ -133,6 +157,10 @@ function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPric
             </View>
 
             <Text style={styles.header2}>Ostale informacije:</Text>
+            <View style={styles.rowContainer}>
+              <Text style={styles.label}>Težina:</Text>
+              <Text style={styles.information}>{orderCtx?.weight} kg</Text>
+            </View>
             <View style={styles.rowContainer}>
               <Text style={styles.label}>Kurir:</Text>
               <Text style={styles.information}>{orderCtx.courierData?.name}</Text>
@@ -155,6 +183,7 @@ function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPric
               inputText={orderCtx.customPrice}
               setInputText={orderCtx.setCustomPrice}
               containerStyles={styles.customPriceInput}
+              background={Colors.white}
               keyboard='numeric'
               selectTextOnFocus={true}
             />
@@ -250,6 +279,11 @@ const styles = StyleSheet.create({
   customPriceInput: {
     marginTop: 16
   },
+  deliveryRemarkInput: {
+    marginTop: 16,
+    justifyContent: 'flex-start',
+    textAlignVertical: 'top'
+  }
 })
 
 export default NewOrderPreview

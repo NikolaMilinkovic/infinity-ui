@@ -4,13 +4,13 @@ interface ReservationsSearchParams {
   ascending: boolean
   descending: boolean
 }
-export function searchReservations(searchData: string, reservations:OrderTypes[], searchParams:ReservationsSearchParams){
-  if(reservations === undefined || reservations.length === 0) return [];
-  const includedReservations = reservations.filter((item) => item.reservation === true);
+export function searchReservations(searchData: string, orders:OrderTypes[], searchParams:ReservationsSearchParams){
+  if(orders === undefined || orders.length === 0) return [];
+  const reservations = orders.filter((item) => item.reservation === true);
 
-  let inputBasedSearch = includedReservations;
+  let inputBasedSearch = reservations;
   if(searchData){
-    inputBasedSearch = searchReservationsByInput(includedReservations, searchData);
+    inputBasedSearch = searchReservationsByInput(reservations, searchData);
   }
   let ascendingDescendingDataDisplay = ascDescDataDisplay(inputBasedSearch, searchParams);
 
@@ -23,18 +23,18 @@ function ascDescDataDisplay(reservations:OrderTypes[], searchParams:Reservations
   if(descending) return reservations.reverse();
 }
 
-
 function searchReservationsByInput(reservations:OrderTypes[], searchData:string){
   const inputData = searchData.toLowerCase();
 
   const inputSearch = reservations.filter((item) => {
-    const { name, address, phone } = item.buyer;
+    const { name, address, phone, phone2, place } = item.buyer;
     const { totalPrice } = item;
-
     return (
-      name.toLowerCase().includes(inputData) ||
+      name?.toLowerCase().includes(inputData) ||
       address.toLowerCase().includes(inputData) ||
+      place?.toString().toLowerCase().includes(inputData) ||
       phone.toString().includes(inputData) ||
+      phone2?.toString().includes(inputData) ||
       totalPrice.toString().includes(inputData)
     )
   })

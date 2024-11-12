@@ -2,7 +2,9 @@ import { popupMessage } from "../util-components/PopupMessage";
 interface BuyerDataObjectTypes {
   name: string
   address: string
+  place: string
   phone: number
+  phone2: number
 }
 
 
@@ -31,7 +33,9 @@ export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string
     setBuyerDataObject({
       name: parsedResponse.data.name,
       address: parsedResponse.data.address,
+      place: parsedResponse.data.place,
       phone: parsedResponse.data.phone,
+      phone2: parsedResponse.data.phone2,
     });
     popupMessage(parsedResponse.message, 'success')
     return true;

@@ -42,13 +42,15 @@ function searchOrdersByInput(orders:OrderTypes[], searchData:string){
   const inputData = searchData.toLowerCase();
 
   const inputSearch = orders.filter((order) => {
-    const { name, address, phone } = order.buyer;
+    const { name, address, phone, place, phone2 } = order.buyer;
     const { totalPrice } = order;
 
     return (
-      name.toLowerCase().includes(inputData) ||
+      name?.toLowerCase().includes(inputData) ||
       address.toLowerCase().includes(inputData) ||
+      place?.toString().toLowerCase().includes(inputData) ||
       phone.toString().includes(inputData) ||
+      phone2?.toString().includes(inputData) ||
       totalPrice.toString().includes(inputData)
     )
   })

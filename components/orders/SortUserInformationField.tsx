@@ -34,7 +34,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
   // Expand animation that makescontent visible when expanded
   // Used to fix the padding issue when expand is collapsed
   const [isContentVisible, setIsContentVisible] = useState(false);
-  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 591, 180);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 711, 180);
 
   function handleToggleExpand(){
     if (isExpanded) {
@@ -58,6 +58,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
     } else {
       if(!orderCtx.buyerData?.name) return popupMessage('Unesite ime / prezime kupca', 'danger');
       if(!orderCtx.buyerData?.address) return popupMessage('Unesite adresu kupca', 'danger');
+      if(!orderCtx.buyerData?.place) return popupMessage('Unesite mesto kupca', 'danger');
       if(!orderCtx.buyerData?.phone) return popupMessage('Unesite broj telefona kupca', 'danger');
       if(!orderCtx.profileImage) return popupMessage('Unesite sliku profila kupca', 'danger');
     }
@@ -111,9 +112,24 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
+            label='Mesto'
+            inputText={orderCtx.buyerData?.place}
+            setInputText={(text:(string | number | undefined)) => orderCtx.setBuyerData((prev) => ({ ...prev, place: text }))}
+            labelBorders={false}
+            containerStyles={styles.inputFieldStyle}
+          />
+          <InputField
             label='Broj telefona'
             inputText={orderCtx.buyerData?.phone}
             setInputText={(text:(string | number | undefined)) => orderCtx.setBuyerData((prev) => ({ ...prev, phone: Number(text) }))}
+            labelBorders={false}
+            containerStyles={styles.inputFieldStyle}
+            keyboard='numeric'
+          />
+          <InputField
+            label='Broj drugog telefona'
+            inputText={orderCtx.buyerData?.phone2}
+            setInputText={(text:(string | number | undefined)) => orderCtx.setBuyerData((prev) => ({ ...prev, phone2: Number(text) }))}
             labelBorders={false}
             containerStyles={styles.inputFieldStyle}
             keyboard='numeric'

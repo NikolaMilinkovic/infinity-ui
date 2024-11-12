@@ -16,6 +16,8 @@ interface InputFieldProps {
   labelBorders?: boolean
   containerStyles?: any
   selectTextOnFocus?: boolean
+  multiline?: boolean
+  numberOfLines?: number
 }
 
 function InputField({ 
@@ -32,11 +34,13 @@ function InputField({
   labelBorders=true,
   containerStyles,
   selectTextOnFocus=false,
+  multiline=false,
+  numberOfLines=1,
 
 } :InputFieldProps) {
   const [isActive, setIsActive] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const styles = getStyles(isActive, inputText, background, color, activeColor, labelBorders);
+  const styles = getStyles(isActive, inputText, background, color, activeColor, labelBorders, multiline);
   const inputRef = useRef(null);
 
   // Fade in / out animation
@@ -71,6 +75,8 @@ function InputField({
             secureTextEntry={isSecure && !showPassword}
             keyboardType={keyboard}
             selectTextOnFocus={selectTextOnFocus}
+            multiline={multiline}
+            numberOfLines={numberOfLines}
           />
         {isSecure && isSecure === true && (
           <Pressable onPress={() => setShowPassword(!showPassword)} style={({ pressed }) => [styles.showHideText, pressed && styles.pressed]}>
@@ -81,7 +87,7 @@ function InputField({
   )
 }
 
-function getStyles(isActive: boolean, inputText: string, background:string, color:string, activeColor:string, labelBorders: string){
+function getStyles(isActive: boolean, inputText: string, background:string, color:string, activeColor:string, labelBorders: string, multiline: boolean){
   const styles = StyleSheet.create({
     touchable: {
       position: 'absolute',
@@ -120,6 +126,7 @@ function getStyles(isActive: boolean, inputText: string, background:string, colo
       borderRadius: 4,
       paddingHorizontal: 22,
       color: color,
+      textAlignVertical: multiline ? 'top' : 'center' 
     },
     showHideText: {
       position: 'absolute',

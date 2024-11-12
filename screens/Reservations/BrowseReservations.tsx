@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { OrdersContext } from '../../store/orders-context'
 import useBackClickHandler from '../../hooks/useBackClickHandler'
 import { searchReservations } from '../../util-methods/ReservationFilterMethods';
@@ -6,8 +6,9 @@ import { StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useFadeTransition, useFadeTransitionReversed } from '../../hooks/useFadeTransition';
 import SearchReservations from '../../components/reservations/SearchReservations';
-import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
+import ReservationsItemsList from '../../components/reservations/ReservationsItemsList';
+import { OrderTypes } from '../../types/allTsTypes';
 
 interface SearchParamsTypes {
   ascending: boolean,
@@ -16,12 +17,12 @@ interface SearchParamsTypes {
 function BrowseReservations() {
   const ordersCtx = useContext(OrdersContext);
   const [searchData, setSearchData] = useState('');
-  const [editedOrder, setEditedOrder] = useState(null);
+  const [editedReservation, setEditedReservation] = useState<OrderTypes | null>(null);
   const [isDatePicked, setIsDatePicked] = useState(false);
   const [pickedDate, setPickedDate] = useState('');
-  useBackClickHandler(!!editedOrder, removeEditedORder);
+  useBackClickHandler(!!editedReservation, removeEditedORder);
   function removeEditedORder(){
-    setEditedOrder(null);
+    setEditedReservation(null);
   }
   
   const [searchParams, setSearchParams] = useState<SearchParamsTypes>({
@@ -34,24 +35,30 @@ function BrowseReservations() {
       [paramName]: value,
     }));
   }
+
   const filteredData = useMemo(() => {
     if(isDatePicked) return searchReservations(searchData, ordersCtx.customReservationsSet, searchParams);
     return searchReservations(searchData, ordersCtx.unprocessedOrders, searchParams);
-  }, [ordersCtx.unprocessedOrders, searchData, searchParams])
+  }, [ordersCtx.customReservationsSet, ordersCtx.unprocessedOrders, searchData, searchParams, isDatePicked]);
   
-  const overlayView = useFadeTransitionReversed(editedOrder === null, 500, 150);
-  const editOrderFade = useFadeTransition(editedOrder !== null);
+  const overlayView = useFadeTransitionReversed(editedReservation === null, 500, 150);
+  const editOrderFade = useFadeTransition(editedReservation !== null);
   return (
     <>
-      {editedOrder === null ? (
-        <View>
+      {editedReservation === null ? (
+        <View style={styles.reservationsContainer}>
           <Animated.View style={[overlayView, styles.overlayView]}/>
-
-          {/* TODO */}
-          <SearchReservations/>
-          <OrderItemsList
-            data={filteredData}
-            setEditedOrder={setEditedOrder}
+          <SearchReservations
+            searchData={searchData} 
+            setSearchData={setSearchData} 
+            updateSearchParam={updateSearchParam} 
+            isDatePicked={isDatePicked}
+            setIsDatePicked={setIsDatePicked}
+            setPickedDate={setPickedDate}
+          />
+          <ReservationsItemsList
+            data={filteredData as OrderTypes[]}
+            setEditedReservation={setEditedReservation}
             isDatePicked={isDatePicked}
             pickedDate={pickedDate}
           />
@@ -59,8 +66,8 @@ function BrowseReservations() {
       ) : (
         <Animated.View style={editOrderFade}> 
           <EditOrder
-            editedOrder={editedOrder}
-            setEditedOrder={setEditedOrder}
+            editedOrder={editedReservation}
+            setEditedOrder={setEditedReservation}
           />
         </Animated.View>
       )}
@@ -70,7 +77,11 @@ function BrowseReservations() {
 
 const styles = StyleSheet.create({
   overlayView: {
-
+    
+  },
+  reservationsContainer: {
+    flex: 1,
+    paddingBottom: 70,
   }
 })
 

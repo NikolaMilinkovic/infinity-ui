@@ -1,38 +1,37 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { OrdersContext } from '../../store/orders-context'
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { OrderTypes } from '../../types/allTsTypes';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
 import useBatchSelectBackHandler from '../../hooks/useBatchSelectBackHandler';
 import { handleFetchingWithBodyData } from '../../util-methods/FetchMethods';
 import { AuthContext } from '../../store/auth-context';
 import { popupMessage } from '../../util-components/PopupMessage';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
-import BatchModeOrderControlls from '../orders/browseOrders/BatchModeOrderControlls';
+import ReservationItem from './ReservationItem';
+import BatchModeReservationsControlls from './BatchModeReservationsControlls';
 
 interface RenderPropType {
   item: OrderTypes
 }
 interface PropTypes {
   data: OrderTypes[]
-  setEditedOrder: (order: OrderTypes | null) => void
+  setEditedReservation: (order: OrderTypes | null) => void
   isDatePicked: boolean
   pickedDate: string
 }
 interface SelectedOrdersTypes {
   _id: string
 }
-function ReservationsItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: PropTypes) {
+function ReservationsItemsList({ data, setEditedReservation, isDatePicked, pickedDate }: PropTypes) {
   const [batchMode, setBatchMode] = useState(false);
-  const [selectedOrders, setSelectedOrders] = useState<SelectedOrdersTypes[]>([]);
+  const [selectedReservations, setSelectedReservations] = useState<SelectedOrdersTypes[]>([]);
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const authCtx = useContext(AuthContext);
   const styles = getStyles(batchMode);
   const token = authCtx.token;
   function resetBatch(){
     setBatchMode(false);
-    setSelectedOrders([]);
+    setSelectedReservations([]);
   }
   useBatchSelectBackHandler(batchMode, resetBatch);
 
@@ -41,27 +40,28 @@ function ReservationsItemsList({ data, setEditedOrder, isDatePicked, pickedDate 
     if(batchMode) return;
     setLongPressActivated(true);
     setTimeout(() => setLongPressActivated(false), 500); // Reset flag after 500ms
-    if(selectedOrders.length === 0) setSelectedOrders([{_id: orderId}])
+    if(selectedReservations.length === 0) setSelectedReservations([{_id: orderId}])
     setBatchMode(true);
   }
   // Press handler after select mode is initialized
   function handlePress(orderId: string){
     if(!batchMode) return;
     if (longPressActivated) return;
-    if(selectedOrders.length === 0) return;
-    const isIdSelected = selectedOrders?.some((presentItem) => presentItem._id === orderId)
+    if(selectedReservations.length === 0) return;
+    const isIdSelected = selectedReservations?.some((presentItem) => presentItem._id === orderId)
     if(isIdSelected){
-      if(selectedOrders.length === 1) setBatchMode(false);
-      setSelectedOrders(selectedOrders.filter((order) => order._id !== orderId));
+      if(selectedReservations.length === 1) setBatchMode(false);
+      setSelectedReservations(selectedReservations.filter((order) => order._id !== orderId));
     } else {
-      setSelectedOrders((prev) => [...prev, {_id: orderId}]);
+      setSelectedReservations((prev) => [...prev, {_id: orderId}]);
     }
   }
 
+  // TO DO => Implement new api that uses the same logic, new socket needed
   async function removeBatchOrdersHandler(){
     showModal(async () => {
       let removeData = [];
-      for(const order of selectedOrders) removeData.push(order._id);
+      for(const order of selectedReservations) removeData.push(order._id);
       const response = await handleFetchingWithBodyData(removeData, token, 'orders/remove-orders-batch', 'DELETE');
 
       if (response && !response.ok) {
@@ -86,12 +86,14 @@ function ReservationsItemsList({ data, setEditedOrder, isDatePicked, pickedDate 
         isVisible={isModalVisible}
         onConfirm={confirmAction}
         onCancel={hideModal}
-        message="Da li sigurno želiš da obrišeš selektovane porudžbine?"
+        message="Da li sigurno želiš da obrišeš selektovane rezervacije?"
       />
       {batchMode && (
-        <BatchModeOrderControlls
+        <BatchModeReservationsControlls
           active={batchMode}
           onRemoveBatchPress={removeBatchOrdersHandler}
+          selectedReservations={selectedReservations}
+          resetBatchMode={resetBatch}
         />
       )}
       <FlatList 
@@ -102,10 +104,10 @@ function ReservationsItemsList({ data, setEditedOrder, isDatePicked, pickedDate 
             delayLongPress={100}
 
           >
-            <OrderItem 
+            <ReservationItem
               order={item} 
-              setEditedOrder={setEditedOrder} 
-              highlightedItems={selectedOrders}
+              setEditedOrder={setEditedReservation} 
+              highlightedItems={selectedReservations}
               batchMode={batchMode}
               onRemoveHighlight={handlePress}
               onPress={handlePress}
@@ -117,9 +119,9 @@ function ReservationsItemsList({ data, setEditedOrder, isDatePicked, pickedDate 
         contentContainerStyle={styles.listContainer}
         ListHeaderComponent={() => {
             return isDatePicked ? (
-              <Text style={styles.listHeader}>Ukupno Porudžbina za {pickedDate}: {data.length}</Text>
+              <Text style={styles.listHeader}>Ukupno Rezervacija za {pickedDate}: {data.length}</Text>
             ):(
-              <Text style={styles.listHeader}>Ukupno Porudžbina: {data.length}</Text>
+              <Text style={styles.listHeader}>Ukupno Rezervacija: {data.length}</Text>
             )
           }
         }

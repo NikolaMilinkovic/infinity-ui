@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
   },
   removeBatchItemsButton: {
     margin: 10,
-    padding: 10,
     borderWidth: 0.5,
     borderColor: Colors.primaryDark,
     backgroundColor: Colors.white,

@@ -86,10 +86,9 @@ function ReservationItem({ order, setEditedOrder, highlightedItems, batchMode, o
           </Pressable>
           <View style={styles.info}>
             <Text>{order.buyer.name}</Text>
-            <Text>{order.buyer.address}</Text>
+            <Text>{order.buyer.address}, {order.buyer.place}</Text>
             <Text>{order.buyer.phone}</Text>
-            <Text>Otkup: {order.totalPrice} din.</Text>
-            <Text>Kurir: {order.courier?.name}</Text>
+            {/* <Text>Otkup: {order.totalPrice} din.</Text> */}
           </View>
           <View style={styles.buttonsContainer}>
             {batchMode ? (

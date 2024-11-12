@@ -82,7 +82,7 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
             {/* ADDRESS */}
             <View style={styles.rowInfo}>
               <Text style={styles.rowLabel}>Adresa:</Text>
-              <Text style={styles.rowText}>{order.buyer.address}</Text>
+              <Text style={styles.rowText}>{order.buyer.address}, {order.buyer.place}</Text>
             </View>
 
             {/* PHONE */}

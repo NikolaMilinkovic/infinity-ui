@@ -95,6 +95,16 @@ export function CustomDrawerContent(props) {
         text='Podešavanja'
       />
 
+      {/* END OF DAY */}
+      <NavigationButton 
+        icon="file-excel" 
+        onPress={() => navigatePages('EndOfDay')} 
+        size={18} 
+        color={Colors.secondaryDark}
+        text='Završi dan'
+        type='MaterialCommunityIcons'
+      />
+
       {/* Bottom Buttons */}
       <View style={{
         marginTop: 'auto'

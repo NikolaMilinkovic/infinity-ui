@@ -195,15 +195,13 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
       setShowDatePicker(true);
     }
     const handleDatePick = async (e:NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
-      if (e.type === "dismissed") {
-        return handleDateReset();
-      }
-      if (selectedDate) {
+      if(e.type === "set"){
         setDate(selectedDate);
         setIsDatePicked(true);
         await handleFetchOrdersByDate(selectedDate, token);
         handleSetPickedDate(selectedDate);
       }
+
       setShowDatePicker(false);
     }
     const handleDateReset = () => {

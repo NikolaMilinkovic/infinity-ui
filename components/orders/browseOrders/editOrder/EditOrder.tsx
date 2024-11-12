@@ -20,11 +20,9 @@ import { handleFetchingWithBodyData, handleFetchingWithFormData } from '../../..
 import { AuthContext } from '../../../../store/auth-context'
 import { getMimeType } from '../../../../util-methods/ImageMethods'
 import AddItemsModal from './addItemsModal/AddItemsModal'
-import { NavigationContainer } from '@react-navigation/native'
-import NewArticleTabs from '../../../../navigation/NewArticleTabs'
 
 interface PropTypes {
-  editedOrder: OrderTypes
+  editedOrder: OrderTypes | null
   setEditedOrder: (order: OrderTypes | null) => void
 }
 interface CourierTypes {
@@ -38,7 +36,9 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   const couriersCtx = useContext(CouriersContext);
   const [name, setName] = useState<string | number | undefined>(editedOrder?.buyer.name || '');
   const [address, setAddress] = useState<string | number | undefined>(editedOrder?.buyer.address || '');
+  const [place, setPlace] = useState<string>(editedOrder?.buyer.place || '');
   const [phone, setPhone] = useState<string | number | undefined>(editedOrder?.buyer.phone || '');
+  const [phone2, setPhone2] = useState<string | number | undefined>(editedOrder?.buyer.phone2 || '');
   const [profileImage, setProfileImage] = useState(editedOrder?.buyer.profileImage || '');
   const [originalImage] = useState(editedOrder?.buyer.profileImage.uri);
 
@@ -51,7 +51,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   const [isPacked, setIsPacked] = useState(editedOrder?.packed);
   
   const [productsPrice, setProductsPrice] = useState(editedOrder?.productsPrice);
-  const [deliveryPrice, setDeliveryPrice] = useState(editedOrder.courier.deliveryPrice);
+  const [deliveryPrice, setDeliveryPrice] = useState(editedOrder?.courier?.deliveryPrice);
   const [totalPrice, setTotalPrice] = useState(editedOrder?.totalPrice);
   const [customPrice, setCustomPrice] = useState(editedOrder?.totalPrice);
 
@@ -71,7 +71,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   }
   async function handleUpdateOrderWithFormData(){
     try{
-      const data = new FormData();
+      const data: any = new FormData();
       if (profileImage) {
         data.append('profileImage', {
           uri: profileImage.uri,
@@ -84,7 +84,9 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
 
       data.append('name', name);
       data.append('address', address);
+      data.append('place', place);
       data.append('phone', phone);
+      data.append('phone2', phone2);
       data.append('courier', JSON.stringify(courier) as string);
       data.append('products', JSON.stringify(products) as string);
       data.append('isReservation', isReservation ? 'true' : 'false');
@@ -92,14 +94,14 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
       data.append('productsPrice', productsPrice);
       data.append('customPrice',  customPrice ? customPrice : totalPrice);
 
-      const response = await handleFetchingWithFormData(data, token, `orders/update/${editedOrder._id}`, 'PATCH');
+      const response = await handleFetchingWithFormData(data, token, `orders/update/${editedOrder?._id}`, 'PATCH');
 
       
       if(!response.ok) {
-        const parsedResponse = await response.json();
+        const parsedResponse = await response?.json();
         return popupMessage(parsedResponse.message, 'danger');
       } else {
-        const parsedResponse = await response.json();
+        const parsedResponse = await response?.json();
         return popupMessage(parsedResponse.message, 'success');
       }
     } catch(error){
@@ -110,15 +112,15 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   async function handleUpdateOrderWithBodyData(){
     try{
       const data = {
-        name, address, phone, courier, products, isReservation, isPacked, productsPrice, customPrice: customPrice ? customPrice : totalPrice
+        name, address, place, phone, phone2, courier, products, isReservation, isPacked, productsPrice, customPrice: customPrice ? customPrice : totalPrice
       }
-      const response = await handleFetchingWithBodyData(data, token, `orders/update/${editedOrder._id}`, 'PATCH');
+      const response = await handleFetchingWithBodyData(data, token, `orders/update/${editedOrder?._id}`, 'PATCH');
 
-      if(!response.ok) {
-        const parsedResponse = await response.json();
+      if(!response?.ok) {
+        const parsedResponse = await response?.json();
         return popupMessage(parsedResponse.message, 'danger');
       } else {
-        const parsedResponse = await response.json();
+        const parsedResponse = await response?.json();
         return popupMessage(parsedResponse.message, 'success');
       }
 
@@ -129,20 +131,22 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   }
 
   useEffect(() => {
-    if(products.length > 0){
+    if(products && products.length > 0){
       let newProductsPrice = 0; 
       for(const product of products){
         newProductsPrice += product.price;
       }
 
       setProductsPrice(newProductsPrice);
-      const price = newProductsPrice + deliveryPrice;
-      setCustomPrice(price);
+      if(deliveryPrice){
+        const price = newProductsPrice + deliveryPrice;
+        setCustomPrice(price);
+      }
     } else {
       setProductsPrice(0);
       setCustomPrice(deliveryPrice);
     }
-    betterConsoleLog('> Logging products', products.length);
+    betterConsoleLog('> Logging products', products?.length);
 
   }, [products])
 
@@ -156,9 +160,11 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
     if(deliveryPrice){
       console.log('> Calculating new custom price')
       console.log(productsPrice);
-      let price = deliveryPrice + productsPrice;
-      setTotalPrice(price);
-      if(!customPrice) setCustomPrice(price);
+      if(productsPrice){
+        let price = deliveryPrice + productsPrice;
+        setTotalPrice(price);
+        setCustomPrice(price);
+      }
     }
   }, [deliveryPrice, productsPrice])
 
@@ -191,7 +197,11 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         setName={setName}
         address={address}
         setAddress={setAddress}
+        place={place}
+        setPlace={setPlace}
         phone={phone}
+        phone2={phone2}
+        setPhone2={setPhone2}
         setPhone={setPhone}
         profileImage={profileImage}
         setProfileImage={setProfileImage}
@@ -398,7 +408,7 @@ const styles = StyleSheet.create({
 });
 
 
-function BuyerDataInputs({ name, setName, address, setAddress, phone, setPhone, profileImage, setProfileImage }: any){
+function BuyerDataInputs({ name, setName, address, place, setPlace, setAddress, phone, setPhone, phone2, setPhone2, profileImage, setProfileImage }: any){
   return(
     <View style={styles.sectionContainer}>
     {/* Name */}
@@ -417,6 +427,14 @@ function BuyerDataInputs({ name, setName, address, setAddress, phone, setPhone, 
       inputText={address}
       setInputText={setAddress}
     />
+    {/* Place */}
+    <InputField
+      containerStyles={styles.input}
+      background={Colors.white}
+      label='Mesto'
+      inputText={place}
+      setInputText={setPlace}
+    />
     {/* Phone */}
     <InputField
       containerStyles={styles.input}
@@ -424,6 +442,15 @@ function BuyerDataInputs({ name, setName, address, setAddress, phone, setPhone, 
       label='Kontakt telefon'
       inputText={phone}
       setInputText={setPhone}
+      keyboard='numeric'
+    />
+    {/* Phone2 */}
+    <InputField
+      containerStyles={styles.input}
+      background={Colors.white}
+      label='Dodatni kontakt telefon'
+      inputText={phone2}
+      setInputText={setPhone2}
       keyboard='numeric'
     />
     {/* Profile Image */}
