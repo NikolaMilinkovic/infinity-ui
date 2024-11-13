@@ -88,14 +88,14 @@ export const generateExcellForOrders = (orders: OrderTypes[]) => {
   adjustCellsWidth(ws);
   XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate}`, true);
   const base64 = XLSX.write(wb, { type: 'base64' });
-  // return {
-  //   "filename": `porudžbine-za-${currentDate}.xlsx`,
-  //   "fileData": base64
-  // }
-  const filename = FileSystem.documentDirectory + `porudžbine-za-${currentDate}.xlsx`;
-  FileSystem.writeAsStringAsync(filename, base64, {
-    encoding: FileSystem.EncodingType.Base64
-  }).then(() => {
-    Sharing.shareAsync(filename);
-  });
+  return {
+    "filename": `porudžbine-za-${currentDate}.xlsx`,
+    "fileData": base64
+  }
+  // const filename = FileSystem.documentDirectory + `porudžbine-za-${currentDate}.xlsx`;
+  // FileSystem.writeAsStringAsync(filename, base64, {
+  //   encoding: FileSystem.EncodingType.Base64
+  // }).then(() => {
+  //   Sharing.shareAsync(filename);
+  // });
 }

@@ -159,6 +159,27 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       })
     );
   }
+
+  function handleProcessOrdersByIds(orderIds: string[]){
+    const ids = orderIds.map((data) => String(data));
+    let items: OrderTypes[] = [];
+
+    // Filter and remove matching orders from setUnprocessedOrders
+    setUnprocessedOrders((prevOrders) => {
+      return prevOrders.filter((order) => {
+        if (ids.includes(String(order._id))) {
+          items.push({ ...order, processed: true });
+          return false;
+        }
+        return true;
+      });
+    });
+
+    // Add updated items to setProcessedOrders
+    setProcessedOrders((prevProcessedOrders) => {
+      return [...prevProcessedOrders, ...items];
+    });
+  }
   
   useEffect(() => {
     if(!socket) return;
@@ -171,6 +192,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     socket.on('setStockIndicatorToFalse', handleStockIndicatorToFalse);
     socket.on('packOrdersByIds', handlePackOrders);
     socket.on('reservationsToOrders', handleReservationsToOrders);
+    socket.on('processOrdersByIds', handleProcessOrdersByIds);
 
     // Cleans up the listener on unmount
     // Without this we would get 2x the data as we are rendering multiple times
@@ -183,6 +205,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       socket.off('setStockIndicatorToFalse', handleStockIndicatorToFalse);
       socket.off('packOrdersByIds', handlePackOrders);
       socket.off('reservationsToOrders', handleReservationsToOrders);
+      socket.off('processOrdersByIds', handleProcessOrdersByIds);
     };
   }, [socket]);
 
