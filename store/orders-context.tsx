@@ -13,6 +13,8 @@ interface OrdersContextTypes {
   setCustomOrderSet: (orders: OrderTypes[]) => void
   customReservationsSet: OrderTypes[]
   setCustomReservationsSet: (reservations: OrderTypes[]) => void
+  unpackedOrders: OrderTypes[]
+  setUnpackedOrders: (orders: OrderTypes[]) => void
 }
 
 export const OrdersContext = createContext<OrdersContextTypes>({
@@ -22,6 +24,8 @@ export const OrdersContext = createContext<OrdersContextTypes>({
   setCustomOrderSet: () => {},
   customReservationsSet: [],
   setCustomReservationsSet: () => {},
+  unpackedOrders: [],
+  setUnpackedOrders: () => {},
 })
 
 interface OrdersContextProviderTypes {
@@ -33,6 +37,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   const [processedOrders, setProcessedOrders] = useState<OrderTypes[]>([]);
   const [customOrderSet, setCustomOrderSet] = useState<OrderTypes[]>([]);
   const [customReservationsSet, setCustomReservationsSet] = useState<OrderTypes[]>([]);
+  const [unpackedOrders, setUnpackedOrders] = useState<OrderTypes[]>([]);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
@@ -50,9 +55,15 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       console.log('> Processed orders fetched length is: ', processedOrdersData.orders.length);
       setProcessedOrders(processedOrdersData.orders);
     }
+    async function fetchUnpackedOrders(){
+      const unpackedOrdersData = await fetchData(token, 'orders/unpacked');
+      console.log('> Unpacked orders fetched length is: ', unpackedOrdersData.orders.length);
+      setUnpackedOrders(unpackedOrdersData.orders);
+    }
     if(token){
       fetchUnprocessedOrdersData();
       fetchProcessedOrdersData();
+      fetchUnpackedOrders();
     }
   }, [token]);
 
@@ -107,7 +118,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   }
 
   function handleStockIndicatorToTrue(id: string){
-    setUnprocessedOrders((prevOrders) => 
+    setUnpackedOrders((prevOrders) => 
       prevOrders.map((order) =>
         order._id === id 
         ? {...order, packedIndicator: true} 
@@ -116,7 +127,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     )
   }
   function handleStockIndicatorToFalse(id: string){
-    setUnprocessedOrders((prevOrders) => 
+    setUnpackedOrders((prevOrders) => 
       prevOrders.map((order) =>
         order._id === id 
         ? {...order, packedIndicator: false} 
@@ -125,7 +136,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     )
   }
   function handlePackOrders(orderIds: string[]){
-    setUnprocessedOrders((prevOrders) => 
+    setUnpackedOrders((prevOrders) => 
       prevOrders.map((order) => 
         orderIds.includes(order._id)
           ? { ...order, packed: true }
@@ -217,7 +228,9 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       setCustomOrderSet,
       customReservationsSet,
       setCustomReservationsSet,
-    }), [unprocessedOrders, processedOrders, customOrderSet, customReservationsSet]);
+      unpackedOrders,
+      setUnpackedOrders,
+    }), [unprocessedOrders, processedOrders, customOrderSet, customReservationsSet, unpackedOrders]);
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;
 }
