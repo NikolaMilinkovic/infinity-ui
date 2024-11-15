@@ -4,7 +4,6 @@ import { SocketContext } from "./socket-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
 import { CourierTypesWithNoId, OrderProductTypes, OrderTypes } from "../types/allTsTypes";
-import { resetToDefaults } from "@testing-library/react-native";
 
 interface OrdersContextTypes {
   unprocessedOrders: OrderTypes[]
@@ -15,6 +14,7 @@ interface OrdersContextTypes {
   setCustomReservationsSet: (reservations: OrderTypes[]) => void
   unpackedOrders: OrderTypes[]
   setUnpackedOrders: (orders: OrderTypes[]) => void
+  processedOrdersStats: any
 }
 
 export const OrdersContext = createContext<OrdersContextTypes>({
@@ -26,6 +26,7 @@ export const OrdersContext = createContext<OrdersContextTypes>({
   setCustomReservationsSet: () => {},
   unpackedOrders: [],
   setUnpackedOrders: () => {},
+  processedOrdersStats: {},
 })
 
 interface OrdersContextProviderTypes {
@@ -38,6 +39,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   const [customOrderSet, setCustomOrderSet] = useState<OrderTypes[]>([]);
   const [customReservationsSet, setCustomReservationsSet] = useState<OrderTypes[]>([]);
   const [unpackedOrders, setUnpackedOrders] = useState<OrderTypes[]>([]);
+  const [processedOrdersStats, setProcessedOrdersStats] = useState(null);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
@@ -55,17 +57,22 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       console.log('> Processed orders fetched length is: ', processedOrdersData.orders.length);
       setProcessedOrders(processedOrdersData.orders);
     }
-    async function fetchUnpackedOrders(){
-      const unpackedOrdersData = await fetchData(token, 'orders/unpacked');
-      console.log('> Unpacked orders fetched length is: ', unpackedOrdersData.orders.length);
-      setUnpackedOrders(unpackedOrdersData.orders);
-    }
     if(token){
       fetchUnprocessedOrdersData();
       fetchProcessedOrdersData();
-      fetchUnpackedOrders();
     }
   }, [token]);
+
+  // FILTER AND SET UNPACKED ORDERS
+  useEffect(() => {
+    const unpackedUnprocessed = unprocessedOrders.filter(
+      (order) => order.packed === false && order.reservation === false
+    )
+    const unpackedProcessed = processedOrders.filter(
+      (order) => order.packed === false && order.reservation === false
+    )
+    setUnpackedOrders([...unpackedUnprocessed, ...unpackedProcessed]);
+  },[unprocessedOrders, processedOrders])
 
   function handleOrderRemoved(orderId: string) {
     console.log('Order id is ' + orderId);
@@ -136,7 +143,14 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     )
   }
   function handlePackOrders(orderIds: string[]){
-    setUnpackedOrders((prevOrders) => 
+    setUnprocessedOrders((prevOrders) => 
+      prevOrders.map((order) => 
+        orderIds.includes(order._id)
+          ? { ...order, packed: true }
+          : order
+      )
+    )
+    setProcessedOrders((prevOrders) => 
       prevOrders.map((order) => 
         orderIds.includes(order._id)
           ? { ...order, packed: true }
@@ -191,6 +205,13 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       return [...prevProcessedOrders, ...items];
     });
   }
+
+
+  // TO DO: Type for statistics file
+  function handleGetProcessedOrdersStatistics(statisticsFile: any){
+    betterConsoleLog('> statisticsFile', statisticsFile);
+    setProcessedOrdersStats(statisticsFile);
+  }
   
   useEffect(() => {
     if(!socket) return;
@@ -204,6 +225,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
     socket.on('packOrdersByIds', handlePackOrders);
     socket.on('reservationsToOrders', handleReservationsToOrders);
     socket.on('processOrdersByIds', handleProcessOrdersByIds);
+    socket.on('getProcessedOrdersStatistics', handleGetProcessedOrdersStatistics);
 
     // Cleans up the listener on unmount
     // Without this we would get 2x the data as we are rendering multiple times
@@ -217,6 +239,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       socket.off('packOrdersByIds', handlePackOrders);
       socket.off('reservationsToOrders', handleReservationsToOrders);
       socket.off('processOrdersByIds', handleProcessOrdersByIds);
+      socket.off('getProcessedOrdersStatistics', handleGetProcessedOrdersStatistics);
     };
   }, [socket]);
 
@@ -230,7 +253,8 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       setCustomReservationsSet,
       unpackedOrders,
       setUnpackedOrders,
-    }), [unprocessedOrders, processedOrders, customOrderSet, customReservationsSet, unpackedOrders]);
+      processedOrdersStats
+    }), [unprocessedOrders, processedOrders, customOrderSet, customReservationsSet, unpackedOrders, processedOrdersStats]);
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;
 }

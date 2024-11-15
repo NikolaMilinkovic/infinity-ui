@@ -5,7 +5,7 @@ import { DressesContext } from "./dresses-context";
 import { PursesContext } from "./purses-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
-import { DressTypes, PurseTypes } from "../types/allTsTypes";
+import { DressTypes, ProductTypes, PurseTypes } from "../types/allTsTypes";
 import { popupMessage } from "../util-components/PopupMessage";
 import { batchProductStockIncrease, decreaseDressBatchStock, decreaseDressStock, decreasePurseBatchStock, decreasePurseStock, increaseDressBatchStock, increaseDressStock, increasePurseStock } from "../util-methods/StockMethods";
 
@@ -174,6 +174,21 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
     setAllProducts([...activeProducts, ...inactiveProducts]);
   }, [activeProducts, inactiveProducts]);
 
+  function handleActiveProductUpdated(updatedProduct: ProductTypes){
+    setActiveProducts((prevProducts) => 
+      prevProducts.map((product) => 
+        product._id === updatedProduct._id.toString() ? updatedProduct : product
+      )
+    )
+  }
+  function handleInactiveProductUpdated(updatedProduct: ProductTypes){
+    setInactiveProducts((prevProducts) => 
+      prevProducts.map((product) => 
+        product._id === updatedProduct._id.toString() ? updatedProduct : product
+      )
+    )
+  }
+
   useEffect(() => {
     if(socket){
       socket.on('activeProductAdded', activeProductAddedHandler);
@@ -186,6 +201,8 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
       socket.on('allProductStockIncrease', handleStockIncrease);
       socket.on('batchStockIncrease', handleBatchStockIncrease);
       socket.on('batchStockDecrease', handleBatchStockDecreasee);
+      socket.on('activeProductUpdated', handleActiveProductUpdated);
+      socket.on('inactiveProductUpdated', handleInactiveProductUpdated);
 
       return () => {
         socket.off('activeProductAdded');
@@ -198,6 +215,8 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
         socket.off('allProductStockIncrease');
         socket.off('batchStockIncrease');
         socket.off('batchStockDecrease');
+        socket.off('activeProductUpdated', handleActiveProductUpdated);
+        socket.off('inactiveProductUpdated', handleInactiveProductUpdated);
       };
     }
   },[socket])

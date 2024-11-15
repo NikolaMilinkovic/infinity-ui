@@ -1,5 +1,7 @@
 import { popupMessage } from "../util-components/PopupMessage";
 import { betterConsoleLog, betterErrorLog } from "./LogMethods";
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 /**
  * @param token - Authentication token
@@ -214,5 +216,22 @@ export async function fetchWithBodyData(token: string | null, api: string, data:
     return response;
   } catch (error) {
     console.error('Error fetching with body data:', error);
+  }
+}
+
+export async function downloadAndShareFileViaLink(name:string, link:string) {
+  try {
+    const fileName = name || "default.xlsx";
+    const targetPath = `${FileSystem.documentDirectory}${fileName}`;
+    await FileSystem.downloadAsync(link, targetPath);
+
+    // Open share dialog
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(targetPath);
+    } else {
+      console.log("Sharing not supported on this platform.");
+    }
+  } catch (error) {
+    console.error("Error sharing file:", error);
   }
 }

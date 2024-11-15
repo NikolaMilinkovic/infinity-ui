@@ -4,6 +4,7 @@ import PackOrdersItemsList from '../../components/orders/packOrders/PackOrdersIt
 import PackOrdersControlls from '../../components/orders/packOrders/PackOrdersControlls';
 import { CategoryTypes, OrderTypes } from '../../types/allTsTypes';
 import { OrdersContext } from '../../store/orders-context';
+import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 function PackOrders() {
   const [selectedCourier, setSelectedCourier] = useState<CategoryTypes | null>(null);
@@ -11,13 +12,12 @@ function PackOrders() {
   const [orders, setOrders] = useState<OrderTypes[]>([]);
   useEffect(() => {
     if(selectedCourier === null){
-      setOrders(() => 
-        orderCtx.unpackedOrders.filter((order) => order.packed === false && order.reservation === false )
-      )
+      setOrders(() => orderCtx.unpackedOrders);
     } else {
-      setOrders(() => 
-        orderCtx.unpackedOrders.filter((order) => order.packed === false && order?.courier?.name === selectedCourier.name && order.reservation === false)
-      )
+      const filteredUnpackedOrders = orderCtx.unpackedOrders.filter(
+        (order) => order.packed === false && order?.courier?.name === selectedCourier.name && order.reservation === false
+      );
+      setOrders(() => [...filteredUnpackedOrders]);
     }
   }, [orderCtx.unpackedOrders, selectedCourier]);
   

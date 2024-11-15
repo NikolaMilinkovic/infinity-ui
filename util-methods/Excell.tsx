@@ -89,7 +89,7 @@ export const generateExcellForOrders = (orders: OrderTypes[]) => {
   XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate}`, true);
   const base64 = XLSX.write(wb, { type: 'base64' });
   return {
-    "filename": `porudžbine-za-${currentDate}.xlsx`,
+    "filename": `porudzbine-za-${currentDate}.xlsx`,
     "fileData": base64
   }
   // const filename = FileSystem.documentDirectory + `porudžbine-za-${currentDate}.xlsx`;

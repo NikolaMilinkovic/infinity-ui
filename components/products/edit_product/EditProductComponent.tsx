@@ -14,7 +14,7 @@ import PurseColor from '../../../models/PurseColor';
 import { betterConsoleLog, betterErrorLog } from '../../../util-methods/LogMethods';
 import DropdownList from '../../../util-components/DropdownList';
 import { CategoriesContext } from '../../../store/categories-context';
-import RadioButtonsGroup, { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
+import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { handleFetchingWithFormData } from '../../../util-methods/FetchMethods';
 import { AuthContext } from '../../../store/auth-context';

@@ -12,6 +12,7 @@ import CouriersTabs from './CouriersTabs';
 import BrowsePageTabs from './BrowsePageTabs';
 import OrdersManagerTabs from './OrdersManagerTabs';
 import EndOfDay from '../screens/EndOfDay/EndOfDay';
+import EndOfDayTabs from './EndOfDayTabs';
 
 
 const Drawer = createDrawerNavigator();
@@ -56,6 +57,7 @@ export default function AuthenticatedStack() {
    * Postavlja stranice tako da kada kliknemo na dugme u DrawerNavigation
    * One usmeravaju ka jednoj od ovih stranica
    * Uzima CustomDrawerContent > To su dugmici unutar ove DrawerNavigation.js
+   * Ovde se stavljaju Tabovi
    */
   return (
     <Drawer.Navigator 
@@ -90,8 +92,8 @@ export default function AuthenticatedStack() {
 
       {/* END OF DAY */}
       <Drawer.Screen 
-        name="EndOfDay" 
-        component={EndOfDay} 
+        name="EndOfDayTabs" 
+        component={EndOfDayTabs} 
       />
 
 

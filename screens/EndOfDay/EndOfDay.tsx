@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
+import { Animated as RNAnimated } from 'react-native'
 import Button from '../../util-components/Button'
 import { OrdersContext } from '../../store/orders-context';
 import { generateExcellForOrders } from '../../util-methods/Excell';
@@ -9,15 +10,24 @@ import { popupMessage } from '../../util-components/PopupMessage';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
 import CourierSelector from '../../util-components/CourierSelector';
 import { CourierTypes } from '../../types/allTsTypes';
+import { useFadeAnimation } from '../../hooks/useFadeAnimation';
+import { Colors } from '../../constants/colors';
+import { useFadeTransitionReversed } from '../../hooks/useFadeTransition';
+import Animated from 'react-native-reanimated';
+import EndOfDayStatistics from '../../components/statistics/EndOfDayStatistics';
 
 function EndOfDay() {
   const orders = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
   const [selectedCourier, setSelectedCourier] = useState<CourierTypes>();
   const token = authCtx.token;
+  const fade = useFadeAnimation();
+
   async function handleOnDayEnd(){
     try{
-      const filteredOrders = orders.unprocessedOrders.filter((order) => order?.courier?.name === selectedCourier?.name);
+      const filteredOrders = orders.unprocessedOrders.filter((order) => order?.courier?.name === selectedCourier?.name && order.reservation === false);
+      betterConsoleLog('> LOGGING FILTERED ORDERS', filteredOrders);
+      if(filteredOrders.length === 0) return popupMessage('Nemate preostalih porudžbina za ovog kurira', 'info');
       const excellFile = generateExcellForOrders(filteredOrders);
       if(!excellFile) return popupMessage('Problem prilikom generisanja excell fajla', 'danger');
       const data = {
@@ -38,19 +48,60 @@ function EndOfDay() {
       return betterConsoleLog('> ERROR: ', error);
     }
   }
+  const overlayView = useFadeTransitionReversed(orders.processedOrdersStats !== null, 500, 150);
 
   return (
-    <View>
-      <CourierSelector
-        setSelectedCourier={setSelectedCourier}
-      />
-      <Button 
-        onPress={handleOnDayEnd}
-      >
-        Zavrsi dan test button
-      </Button>
-    </View>
+    <RNAnimated.View style={[styles.container, { opacity: fade }]}>
+      <View style={styles.controllsContainer}>
+        <CourierSelector
+          setSelectedCourier={setSelectedCourier}
+        />
+        <Button 
+          onPress={handleOnDayEnd}
+          backColor={Colors.highlight}
+          textColor={Colors.white}
+        >
+          Završi dan i izvuci porudžbine
+        </Button>
+      </View>
+      <View style={styles.statisticsContainer}>
+        {/* <Animated.View style={[overlayView, styles.overlay]}/> */}
+        {orders.processedOrdersStats === null ? (
+          null
+        ) : (
+          <EndOfDayStatistics
+            stats={orders.processedOrdersStats}
+          />
+        )}  
+      </View>
+    </RNAnimated.View>
   )
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  },
+  controllsContainer: {
+    gap: 10,
+    backgroundColor: Colors.white,
+    elevation: 2,
+    padding: 16,
+  },
+  statisticsContainer: {
+    position: 'relative',
+    flex: 1
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'red',
+    zIndex: 1,
+  }
+})
 
 export default EndOfDay

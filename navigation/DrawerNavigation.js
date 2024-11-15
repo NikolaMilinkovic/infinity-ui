@@ -98,7 +98,7 @@ export function CustomDrawerContent(props) {
       {/* END OF DAY */}
       <NavigationButton 
         icon="file-excel" 
-        onPress={() => navigatePages('EndOfDay')} 
+        onPress={() => navigatePages('EndOfDayTabs')} 
         size={18} 
         color={Colors.secondaryDark}
         text='Završi dan'
