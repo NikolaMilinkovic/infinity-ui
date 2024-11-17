@@ -43,7 +43,7 @@ const adjustCellsWidth = (ws: XLSX.WorkSheet): void => {
  *   "fileData": base64
  * }
  */
-export const generateExcellForOrders = (orders: OrderTypes[]) => {
+export const generateExcellForOrders = (orders: OrderTypes[], courier: string) => {
   let allOrdersData = [];
   let index = 1;
   for(const order of orders){
@@ -86,10 +86,10 @@ export const generateExcellForOrders = (orders: OrderTypes[]) => {
   ]);
 
   adjustCellsWidth(ws);
-  XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate}`, true);
+  XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate} | Kurir-${courier}`, true);
   const base64 = XLSX.write(wb, { type: 'base64' });
   return {
-    "filename": `porudzbine-za-${currentDate}.xlsx`,
+    "filename": `porudzbine-za-${courier}-${currentDate}.xlsx`,
     "fileData": base64
   }
   // const filename = FileSystem.documentDirectory + `porudžbine-za-${currentDate}.xlsx`;

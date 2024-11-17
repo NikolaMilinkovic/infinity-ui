@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Colors } from '../constants/colors';
-import CouriersManager from '../screens/CouriersManager/CouriersManager';
 import EndOfDay from '../screens/EndOfDay/EndOfDay';
+import PreviousStatisticFiles from '../screens/EndOfDay/PreviousStatisticFiles';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -34,7 +34,7 @@ export default function EndOfDayTabs(){
       />
       <Tab.Screen 
         name="StatisticFiles" 
-        component={EndOfDay}
+        component={PreviousStatisticFiles}
         options={{
           title: 'Prethodni Dani',
         }}

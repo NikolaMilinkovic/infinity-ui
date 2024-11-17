@@ -22,14 +22,14 @@ interface TopAndLeastSellingProductsPropTypes {
   data: DataTypes
 }
 function TopAndLeastSellingProducts({ data }: TopAndLeastSellingProductsPropTypes) {
-  const [topIsExpanded, setTopIsExpanded] = useState(true);
-  const [leastIsExpanded, setLeastIsExpanded] = useState(true);
+  const [topIsExpanded, setTopIsExpanded] = useState(false);
+  const [leastIsExpanded, setLeastIsExpanded] = useState(false);
   const styles = getStyles(topIsExpanded, leastIsExpanded);
   return (
     <>
       <View style={[styles.container, styles.topContainer]}>
         <Pressable onPress = {() => setTopIsExpanded(!topIsExpanded)} style={[styles.pressable, styles.topBorder]}>
-          <Text style={styles.header}>Najviše prodatih proizvoda</Text>
+          <Text style={styles.header}>Najviše prodato</Text>
           <Icon name={topIsExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.primaryDark}/>
         </Pressable>
         {data.top && topIsExpanded &&
@@ -39,7 +39,7 @@ function TopAndLeastSellingProducts({ data }: TopAndLeastSellingProductsPropType
       </View>
       <View style={[styles.container, styles.leastContainer]}>
         <Pressable onPress = {() => setLeastIsExpanded(!leastIsExpanded)} style={[styles.pressable, styles.leastBorder]}>
-          <Text style={styles.header}>Najmanje prodatih proizvoda</Text>
+          <Text style={styles.header}>Najmanje prodato</Text>
           <Icon name={topIsExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.primaryDark}/>
         </Pressable>
         {data.least && leastIsExpanded &&
@@ -73,8 +73,9 @@ function getStyles(topIsExpanded?:boolean, leastIsExpanded?:boolean){
       borderWidth: 0.5,
       borderColor: Colors.primaryDark,
       borderRadius: 8,
-      backgroundColor: Colors.primaryLight,
       marginBottom: 0,
+      elevation: 2,
+      backgroundColor: Colors.primaryLight
     },
     topContainer: {
       paddingBottom: topIsExpanded ? 10 : 0,
@@ -83,7 +84,7 @@ function getStyles(topIsExpanded?:boolean, leastIsExpanded?:boolean){
       paddingBottom: leastIsExpanded ? 10 : 0,
     },
     pressable: {
-      padding: 10,
+      padding: 16,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
@@ -119,7 +120,7 @@ function getStyles(topIsExpanded?:boolean, leastIsExpanded?:boolean){
     },
     labeledRow: {
       flexDirection: 'row',
-      marginBottom: 8,
+      marginBottom: 4,
     },
     label: {
       flex: 1,

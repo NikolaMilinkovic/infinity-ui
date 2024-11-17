@@ -13,6 +13,7 @@ import BrowsePageTabs from './BrowsePageTabs';
 import OrdersManagerTabs from './OrdersManagerTabs';
 import EndOfDay from '../screens/EndOfDay/EndOfDay';
 import EndOfDayTabs from './EndOfDayTabs';
+import EndOfDayStatisticsContextProvider from '../store/end-of-day-statistics';
 
 
 const Drawer = createDrawerNavigator();
@@ -91,10 +92,15 @@ export default function AuthenticatedStack() {
       />
 
       {/* END OF DAY */}
-      <Drawer.Screen 
-        name="EndOfDayTabs" 
-        component={EndOfDayTabs} 
-      />
+        <Drawer.Screen 
+          name="EndOfDayTabs" 
+        >
+          {(props) => (
+            <EndOfDayStatisticsContextProvider>
+              <EndOfDayTabs {...props} />
+            </EndOfDayStatisticsContextProvider>
+          )}
+        </Drawer.Screen>
 
 
       {/* USERMANAGER */}

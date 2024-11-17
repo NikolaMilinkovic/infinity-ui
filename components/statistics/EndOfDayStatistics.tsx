@@ -1,59 +1,62 @@
 import React from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { popupMessage } from '../../util-components/PopupMessage';
 import Button from '../../util-components/Button';
 import { Colors } from '../../constants/colors';
 import { downloadAndShareFileViaLink } from '../../util-methods/FetchMethods';
 import SalesPerStockType from './statsDisplays/SalesPerStockType';
 import TopAndLeastSellingProducts from './statsDisplays/TopAndLeastSellingProducts';
+import PerColorSold from './statsDisplays/PerColorSold';
+import OrdersByCategory from './statsDisplays/OrdersByCategory';
+import PerLocationStats from './statsDisplays/PerLocationStats';
+import PerProductStats from './statsDisplays/PerProductStats';
+import BasicInformationsForEndOfDay from './statsDisplays/BasicInformations';
+import IconButton from '../../util-components/IconButton';
 
 function EndOfDayStatistics({ stats }) {
 
   return (
     <ScrollView style={styles.container}>
-      <Button
-        onPress={() => downloadAndShareFileViaLink(stats.fileName, stats.excellLink)}
-        backColor={Colors.secondaryLight}
-        textColor={Colors.primaryDark}
-      >
-        Prosledi Excell Fajl
-      </Button>
-      <View>
-        {/* FILE NAME */}
-        <View style={styles.labeledRow}>
-          <Text style={styles.label}>Naziv fajla:</Text>
-          <Text style={styles.info}>{stats.fileName}</Text>
-        </View>
-        {/* COURIER NAME */}
-        <View style={styles.labeledRow}>
-          <Text style={styles.label}>Kurir:</Text>
-          <Text style={styles.info}>{stats.courierName}</Text>
-        </View>
-        {/* NUM OF ORDERS */}
-        <View style={styles.labeledRow}>
-          <Text style={styles.label}>Broj porudžbina:</Text>
-          <Text style={styles.info}>{stats.numOfOrders} porudžbina</Text>
-        </View>
-        {/* TOTAL SALES VALUE */}
-        <View style={styles.labeledRow}>
-          <Text style={styles.label}>Ukupna vrednost:</Text>
-          <Text style={styles.info}>{stats.totalSalesValue} rsd</Text>
-        </View>
-        {/* AVG ORDER VALUE */}
-        <View style={styles.labeledRow}>
-          <Text style={styles.label}>Prosecna vrednost porudžbine:</Text>
-          <Text style={styles.info}>{stats.averageOrderValue} rsd</Text>
-        </View>
-        {/* SALES PER STOCK TYPE */}
-      </View>
-      <SalesPerStockType
-        data={stats.salesPerStockType}
+      <Pressable onPress={() => downloadAndShareFileViaLink(stats.fileName, stats.excellLink)} style={styles.controllsContainer}>
+        <Text style={styles.header}>Statistika za {stats.courierName}</Text>
+        <IconButton
+          icon = 'share'
+          size={20}
+          color ={Colors.white}
+          onPress={() => downloadAndShareFileViaLink(stats.fileName, stats.excellLink)}
+          style={styles.shareBtn}
+        />
+      </Pressable>
+      <BasicInformationsForEndOfDay
+        data = {{
+          fileName: stats.fileName,
+          excellLink: stats.excellLink,
+          courierName: stats.courierName,
+          numOfOrders: stats.numOfOrders,
+          totalSalesValue: stats.totalSalesValue,
+          averageOrderValue: stats.averageOrderValue,
+        }}
+      />
+      <PerProductStats
+        data={stats.perProductStats}
       />
       <TopAndLeastSellingProducts 
         data = {{
           top: stats.topSellingProducts,
           least: stats.leastSellingProducts,
         }}
+      />
+      <SalesPerStockType
+        data={stats.salesPerStockType}
+      />
+      <OrdersByCategory
+        data={stats.numOfOrdersByCategory}
+      />
+      <PerColorSold
+        data={stats.perColorSold}
+      />
+      <PerLocationStats
+        data={stats.perLocationSales}
       />
     </ScrollView>
   )
@@ -62,20 +65,37 @@ function EndOfDayStatistics({ stats }) {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    flex: 1,
-    paddingBottom: 50,
   },
-  labeledRow: {
+  controllsContainer: {
+    paddingHorizontal: 10,
     flexDirection: 'row',
-    marginTop: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderColor: Colors.primaryDark,
+    borderWidth: 0.5,
+    borderRadius: 8,
+    padding: 10,
+    marginHorizontal: 10,
+    elevation: 2,
+    backgroundColor: Colors.primaryLight
   },
-  label: {
-    flex: 2,
+  header: {
+    fontSize: 24,
     fontWeight: 'bold',
+    color: Colors.primaryDark,
+    textAlign: 'center',
+    flex: 8,
   },
-  info: {
-    flex: 3,
-    textAlignVertical: 'center'
+  shareBtn: {
+    borderRadius: 100,
+    elevation: 4,
+    backgroundColor: Colors.highlight,
+    padding: 16,
+    maxWidth: 60,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 2,
   }
 })
 

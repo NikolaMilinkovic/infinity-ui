@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Animated as RNAnimated } from 'react-native'
 import Button from '../../util-components/Button'
 import { OrdersContext } from '../../store/orders-context';
@@ -13,7 +13,6 @@ import { CourierTypes } from '../../types/allTsTypes';
 import { useFadeAnimation } from '../../hooks/useFadeAnimation';
 import { Colors } from '../../constants/colors';
 import { useFadeTransitionReversed } from '../../hooks/useFadeTransition';
-import Animated from 'react-native-reanimated';
 import EndOfDayStatistics from '../../components/statistics/EndOfDayStatistics';
 
 function EndOfDay() {
@@ -25,23 +24,25 @@ function EndOfDay() {
 
   async function handleOnDayEnd(){
     try{
-      const filteredOrders = orders.unprocessedOrders.filter((order) => order?.courier?.name === selectedCourier?.name && order.reservation === false);
-      betterConsoleLog('> LOGGING FILTERED ORDERS', filteredOrders);
-      if(filteredOrders.length === 0) return popupMessage('Nemate preostalih porudžbina za ovog kurira', 'info');
-      const excellFile = generateExcellForOrders(filteredOrders);
-      if(!excellFile) return popupMessage('Problem prilikom generisanja excell fajla', 'danger');
-      const data = {
-        courier: selectedCourier?.name,
-        fileData: excellFile?.fileData,
-        fileName: excellFile?.filename
-      }
-      const response = await fetchWithBodyData(token, 'orders/parse-orders-for-latest-period', data, 'POST');
-
-      if(response?.status === 200){
-        const data = await response?.json();
-        return popupMessage(data.message, 'success');
-      } else {
-        const data = await response?.json();
+      if(selectedCourier){
+        const filteredOrders = orders.unprocessedOrders.filter((order) => order?.courier?.name === selectedCourier?.name && order.reservation === false);
+        betterConsoleLog('> LOGGING FILTERED ORDERS', filteredOrders);
+        if(filteredOrders.length === 0) return popupMessage('Nemate preostalih porudžbina za ovog kurira', 'info');
+        const excellFile = generateExcellForOrders(filteredOrders, selectedCourier.name);
+        if(!excellFile) return popupMessage('Problem prilikom generisanja excell fajla', 'danger');
+        const data = {
+          courier: selectedCourier?.name,
+          fileData: excellFile?.fileData,
+          fileName: excellFile?.filename
+        }
+        const response = await fetchWithBodyData(token, 'orders/parse-orders-for-latest-period', data, 'POST');
+  
+        if(response?.status === 200){
+          const data = await response?.json();
+          return popupMessage(data.message, 'success');
+        } else {
+          const data = await response?.json();
+        }
       }
     } catch (error){
       popupMessage('Došlo je do problema prilikom izvlačenja informacija o porudžbinama za kurira', 'danger')
@@ -64,7 +65,7 @@ function EndOfDay() {
           Završi dan i izvuci porudžbine
         </Button>
       </View>
-      <View style={styles.statisticsContainer}>
+      <ScrollView style={styles.statisticsContainer}>
         {/* <Animated.View style={[overlayView, styles.overlay]}/> */}
         {orders.processedOrdersStats === null ? (
           null
@@ -73,7 +74,7 @@ function EndOfDay() {
             stats={orders.processedOrdersStats}
           />
         )}  
-      </View>
+      </ScrollView>
     </RNAnimated.View>
   )
 }
@@ -81,7 +82,7 @@ function EndOfDay() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   controllsContainer: {
     gap: 10,
@@ -101,6 +102,9 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'red',
     zIndex: 1,
+  },
+  temp: {
+    // height: 40,
   }
 })
 

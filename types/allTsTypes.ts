@@ -195,3 +195,63 @@ export interface OrderTypes {
   internalRemark: string
   deliveryRemark: string
 }
+
+export interface ProcessedOrderStatisticsFileTypes {
+  fileName: string;
+  excellLink: string;
+  courierName: string;
+  numOfOrders: number;
+  totalSalesValue: number;
+  averageOrderValue: number;
+  salesPerStockType: {
+    stockType: string;
+    amountSold: number;
+    totalValue: number;
+  }[];
+  topSellingProducts: {
+    id: string;
+    name: string;
+    amountSold: number;
+  }[];
+  leastSellingProducts: {
+    id: string;
+    name: string;
+    amountSold: number;
+  }[];
+  numOfOrdersByCategory: {
+    category: string;
+    amountSold: number;
+    totalValue: number;
+  }[];
+  perColorSold: {
+    color: string;
+    amountSold: number;
+  }[];
+  perProductStats: {
+    productReference: string;
+    productName: string;
+    productCategory: string;
+    productPrice: number;
+    productTotalSalesValue: number;
+    amountSold: number;
+    productImage: {
+      uri: string;
+      imageName: string;
+    };
+    perSizeSold: {
+      size: string;
+      amountSold: number;
+    }[];
+    perColorSold: {
+      color: string;
+      amountSold: number;
+    }[];
+  }[];
+  perLocationSales: {
+    location: string;
+    amountSold: number;
+    totalValue: number;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}

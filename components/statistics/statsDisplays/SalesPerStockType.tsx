@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
 import { Colors } from '../../../constants/colors';
-import { useExpandAnimation } from '../../../hooks/useExpand';
-import Button from '../../../util-components/Button';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface SalesPerStockType {
@@ -16,11 +13,12 @@ interface SalesPerStockTypePropTypes {
 }
 
 function SalesPerStockType({ data }: SalesPerStockTypePropTypes) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const styles = getStyles(isExpanded);
   return (
     <View style={styles.container}>
       <Pressable onPress = {() => setIsExpanded(!isExpanded)} style={styles.pressable}>
-        <Text style={styles.header}>Statistika po tipu proizvoda</Text>
+        <Text style={styles.header}>Tip proizvoda</Text>
         <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.primaryDark}/>
       </Pressable>
       {data && isExpanded &&
@@ -36,6 +34,7 @@ function DisplayStockTypeData({
 }: {
   stockTypeData: SalesPerStockType;
 }) {
+  const styles = getStyles();
   return (
     <View style={styles.dataContainer}>
       <View style={styles.labeledRow}>
@@ -54,58 +53,61 @@ function DisplayStockTypeData({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    margin: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    borderRadius: 8,
-    backgroundColor: Colors.primaryLight,
-    marginBottom: 0,
-  },
-  pressable: {
-    padding: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    borderBottomColor: Colors.primaryDark,
-    borderBottomWidth: 0.5,
-    marginHorizontal: 10,
-  },
-  iconStyle: {
-    flex: 2
-  },
-  header: {
-    fontWeight: 'bold',
-    fontSize: 20,
-    color: Colors.primaryDark,
-    textAlign: 'center',
-    flex: 20,
-  },
-  dataContainer: {
-    padding: 12,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    borderRadius: 8,
-    backgroundColor: Colors.secondaryLight,
-    margin: 10,
-  },
-  labeledRow: {
-    flexDirection: 'row',
-    marginBottom: 8,
-  },
-  label: {
-    flex: 1,
-    fontWeight: '600',
-    color: Colors.secondaryDark,
-  },
-  info: {
-    flex: 1,
-    textAlign: 'right',
-    fontWeight: 'bold',
-    color: Colors.primaryDark,
-  },
-});
+function getStyles(isExpanded?: boolean){
+    return StyleSheet.create({
+    container: {
+      margin: 10,
+      borderWidth: 0.5,
+      borderColor: Colors.primaryDark,
+      borderRadius: 8,
+      elevation: 2,
+      backgroundColor: Colors.primaryLight,
+      marginBottom: 0,
+    },
+    pressable: {
+      padding: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 10,
+      borderBottomColor: Colors.primaryDark,
+      borderBottomWidth: isExpanded ? 0.5 : 0,
+      marginHorizontal: 10,
+    },
+    iconStyle: {
+      flex: 2
+    },
+    header: {
+      fontWeight: 'bold',
+      fontSize: 20,
+      color: Colors.primaryDark,
+      textAlign: 'center',
+      flex: 20,
+    },
+    dataContainer: {
+      padding: 12,
+      borderWidth: 0.5,
+      borderColor: Colors.primaryDark,
+      borderRadius: 8,
+      backgroundColor: Colors.secondaryLight,
+      margin: 10,
+    },
+    labeledRow: {
+      flexDirection: 'row',
+      marginBottom: 4,
+    },
+    label: {
+      flex: 1,
+      fontWeight: '600',
+      color: Colors.secondaryDark,
+    },
+    info: {
+      flex: 1,
+      textAlign: 'right',
+      fontWeight: 'bold',
+      color: Colors.primaryDark,
+    },
+  });
+}
 
 export default SalesPerStockType;
