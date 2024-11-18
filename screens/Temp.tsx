@@ -4,6 +4,8 @@ import Button from '../util-components/Button'
 import { AuthContext } from '../store/auth-context'
 import { useContext } from 'react'
 import { SocketContext } from '../store/socket-context';
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function Temp() {
   const [counter, setCounter] = useState(0);
@@ -15,7 +17,7 @@ function Temp() {
   useEffect(() => {
 
     async function getCounterData(){
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/testCounter`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/testCounter`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -47,7 +49,7 @@ function Temp() {
   }, [token, socket])
 
   async function incrementCounter(){
-    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/testCounter`, {
+    const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/testCounter`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

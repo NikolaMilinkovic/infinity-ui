@@ -6,6 +6,8 @@ import Button from '../../util-components/Button';
 import { Colors } from '../../constants/colors';
 import { popupMessage } from '../../util-components/PopupMessage';
 import DropdownList from '../../util-components/DropdownList';
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 interface DropdownTypes {
   _id: string | number
@@ -52,7 +54,7 @@ function AddCategories() {
         name: inputText,
         stockType: stockType.name
       };
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,

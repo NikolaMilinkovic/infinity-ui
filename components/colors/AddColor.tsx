@@ -5,6 +5,8 @@ import InputField from '../../util-components/InputField';
 import Button from '../../util-components/Button';
 import { Colors } from '../../constants/colors';
 import { popupMessage } from '../../util-components/PopupMessage';
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function AddColor() {
   const authCtx = useContext(AuthContext);
@@ -37,7 +39,7 @@ function AddColor() {
         name: inputText,
         colorCode: ''
       };
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/colors`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colors`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,

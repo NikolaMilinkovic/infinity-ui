@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "infinity-ui",
-    "slug": "infinity-ui",
+    "name": "Infinity Boutique App",
+    "slug": "infinity-boutique-app",
     "backgroundColor": "#ffffff",
     "version": "1.0.0",
     "jsEngine": "hermes",
     "orientation": "portrait",
-    "icon": "./assets/infinity.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/infinity_1.png",
+      "image": "./assets/infinity.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -23,17 +23,28 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ffffff",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "backgroundColor": "#ffffff",
       "adaptiveIcon": {
         "foregroundImage": "./assets/infinity.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.infinity.infinityboutiqueapp"
     },
     "web": {
       "favicon": "./assets/infinity.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "426b99c7-d15c-4c36-bce4-daf8890090a4"
+      }
     }
   }
 }

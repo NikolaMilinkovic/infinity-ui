@@ -2,6 +2,8 @@ import { popupMessage } from "../util-components/PopupMessage";
 import { betterConsoleLog, betterErrorLog } from "./LogMethods";
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 /**
  * @param token - Authentication token
@@ -12,7 +14,7 @@ export async function fetchData(token:string | null, api:string, method:string =
   try{
     if (token === null) return popupMessage('Auth token nedostaje kako bi se izvršio fetch.', 'danger');
     
-    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${api}`, {
+    const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/${api}`, {
       method: method,
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -38,7 +40,7 @@ export async function fetchData(token:string | null, api:string, method:string =
 // Handles sending the POST request to add a new product | Generic method
 async function handleAddingProductFetch(formData:any, authToken:string, productName:string, uri: string):Promise<boolean>{
   try{
-    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/products/${uri}`, {
+    const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/products/${uri}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -134,7 +136,7 @@ export async function addNewOrder(formData: any, authToken: string, uri: string)
 // GENERIC FETCHING METHOD WITH FORM DATA
 export async function handleFetchingWithFormData(formData: any, authToken: string, uri: string, method: string) {
   try {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${uri}`, {
+    const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/${uri}`, {
       method: method,
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -160,7 +162,7 @@ export async function handleFetchingWithFormData(formData: any, authToken: strin
 // GENERIC FETCHING METHOD WITH FORM DATA
 export async function handleFetchingWithBodyData(data: any, authToken: string, uri: string, method: string) {
   try {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${uri}`, {
+    const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/${uri}`, {
       method: method,
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -179,7 +181,7 @@ export async function handleFetchingWithBodyData(data: any, authToken: string, u
 // CATEGORIES FETCH
 export async function fetchCategories(token: string | null){
   try {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
+    const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -204,7 +206,7 @@ export async function fetchCategories(token: string | null){
 
 export async function fetchWithBodyData(token: string | null, api: string, data: any, method = 'POST'){
   try {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/${api}`, {
+    const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/${api}`, {
       method: method,
       headers: {
         'Authorization': `Bearer ${token}`,

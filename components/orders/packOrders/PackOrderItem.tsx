@@ -141,12 +141,12 @@ function getStyles(isPacked: boolean){
     container: {
       position: 'relative',
       width: '100%',
-      elevation: 2,
       backgroundColor: isPacked ? Colors.white : Colors.secondaryHighlight,
       minHeight: 160,
       paddingHorizontal: 16,
       paddingVertical: 14,
       gap: 10,
+      elevation: 2,
     },
     timestamp: {
       position: 'absolute',
@@ -160,7 +160,7 @@ function getStyles(isPacked: boolean){
       gap: 10,
       maxHeight: 130,
       minHeight: 130,
-      alignItems: 'center'
+      alignItems: 'center',
     },
     info: {
       flex: 10,
@@ -205,6 +205,7 @@ function getStyles(isPacked: boolean){
       elevation: 1,
     },
     productsContainer: {
+
     },
     header: {
       fontWeight: 'bold',

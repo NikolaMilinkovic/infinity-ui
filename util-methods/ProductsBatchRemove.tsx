@@ -1,9 +1,11 @@
 import { popupMessage } from "../util-components/PopupMessage";
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 
 export async function handleRemoveBatch(selectedItems, token){
   try{
-    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/products/delete-item-batch`, {
+    const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/products/delete-item-batch`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

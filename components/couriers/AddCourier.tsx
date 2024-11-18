@@ -5,6 +5,8 @@ import InputField from '../../util-components/InputField';
 import Button from '../../util-components/Button';
 import { Colors } from '../../constants/colors';
 import { popupMessage } from '../../util-components/PopupMessage';
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function AddCourier() {
   const authCtx = useContext(AuthContext);
@@ -44,7 +46,7 @@ function AddCourier() {
         name: inputText,
         deliveryPrice: inputPrice
       };
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/couriers`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/couriers`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,

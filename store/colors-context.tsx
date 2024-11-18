@@ -3,6 +3,8 @@ import { AuthContext } from "./auth-context";
 import { SocketContext } from "./socket-context";
 import Color from "../models/Color";
 import { ColorTypes } from "../types/allTsTypes";
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 
 interface ColorsContextType{
@@ -38,7 +40,7 @@ function ColorsContextProvider({ children }: ColorsContextProviderType){
   }
   async function fetchColors(token:string){
     try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/colors`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colors`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

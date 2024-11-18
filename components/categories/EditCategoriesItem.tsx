@@ -7,6 +7,8 @@ import { AuthContext } from '../../store/auth-context'
 import { popupMessage } from '../../util-components/PopupMessage'
 import { CategoryTypes } from '../../types/allTsTypes'
 import DropdownList from '../../util-components/DropdownList'
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 interface DropdownTypes {
   _id: string | number
@@ -73,7 +75,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
         popupMessage('Kategorija mora imati jedinicu lagera', 'danger');
         return;
       }
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/categories/${categoryData._id}`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/categories/${categoryData._id}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,
@@ -105,7 +107,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
   async function removeCategoryHandler(){
     setDisplay(false);
     try{
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/categories/${categoryData._id}`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/categories/${categoryData._id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,

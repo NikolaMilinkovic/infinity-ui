@@ -6,8 +6,8 @@ import IconButton from '../../util-components/IconButton'
 import { AuthContext } from '../../store/auth-context'
 import { popupMessage } from '../../util-components/PopupMessage'
 import { CourierTypes } from '../../types/allTsTypes'
-import { betterConsoleLog } from '../../util-methods/LogMethods'
-import InputField from '../../util-components/InputField'
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function EditCourierItem({ data }: { data: CourierTypes }) {
   const [courierData, setCourierData] = useState<CourierTypes>({
@@ -71,7 +71,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
         popupMessage('Kurir mora cenu dostave', 'danger');
         return;
       }
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/couriers/${courierData._id}`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/couriers/${courierData._id}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,
@@ -103,7 +103,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
   async function removeCourierHandler(){
     setDisplay(false);
     try{
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/couriers/${courierData._id}`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/couriers/${courierData._id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,

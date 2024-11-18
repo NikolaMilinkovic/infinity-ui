@@ -6,6 +6,8 @@ import IconButton from '../../util-components/IconButton'
 import { AuthContext } from '../../store/auth-context'
 import { popupMessage } from '../../util-components/PopupMessage'
 import { ColorTypes } from '../../types/allTsTypes'
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function EditColorItem({ data }: { data: ColorTypes }) {
   const [colorData, setColorData] = useState<ColorTypes>({
@@ -56,7 +58,7 @@ function EditColorItem({ data }: { data: ColorTypes }) {
         popupMessage('Boja mora imati ime', 'danger');
         return;
       }
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/colors/${colorData._id}`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colors/${colorData._id}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,
@@ -88,7 +90,7 @@ function EditColorItem({ data }: { data: ColorTypes }) {
   async function removeColorHandler(){
     setDisplay(false);
     try{
-      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/colors/${colorData._id}`, {
+      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colors/${colorData._id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${authCtx.token}`,

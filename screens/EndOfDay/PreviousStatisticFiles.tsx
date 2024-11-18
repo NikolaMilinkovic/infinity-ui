@@ -31,7 +31,6 @@ function PreviousStatisticFiles() {
             contentContainerStyle={styles.flatListContainer}
           />
         ) : (
-          // <Text>Ne postoji</Text>
           null
         )}
       </View>
@@ -41,6 +40,7 @@ function PreviousStatisticFiles() {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: Colors.primaryDark,
   },
   controllsContainer: {
   },

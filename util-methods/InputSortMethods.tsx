@@ -1,4 +1,6 @@
 import { popupMessage } from "../util-components/PopupMessage";
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 interface BuyerDataObjectTypes {
   name: string
   address: string
@@ -14,7 +16,7 @@ export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string
     return;
   }
   try {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URI}/orders/parse`, {
+    const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/orders/parse`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authToken}`,

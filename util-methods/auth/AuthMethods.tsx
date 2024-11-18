@@ -1,4 +1,8 @@
+import { Alert } from "react-native"
+
 const BACKEND_URI = process.env.EXPO_PUBLIC_BACKEND_URI
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 interface LoginUserTypes{
   username: string
@@ -27,7 +31,7 @@ interface AuthStatus{
  */
 export async function loginUser({username, password}: LoginUserTypes): Promise<AuthStatus>{
   try{
-    const response = await fetch(`${BACKEND_URI}/login`, {
+    const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/login`, {
       method: 'POST',
       headers: {
         'Content-Type' : 'application/json',
@@ -61,6 +65,14 @@ export async function loginUser({username, password}: LoginUserTypes): Promise<A
     }
   } catch (error){
     console.error(`[ERROR] Failed to login user: ` + error)
+    Alert.alert(
+      "Login Error",
+      `Backend uri: ${BACKEND_URI} | An error occurred: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+    Alert.alert(
+      "Login Error",
+      `Backend uri: ${BACKEND_URI} | An error occurred: ${error}`
+    );
     return {
       isAuthenticated: false,
       message: "Network error. Please check your connection or try again later.",
