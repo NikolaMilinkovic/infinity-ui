@@ -93,15 +93,25 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
     });
   }
   function handleStockDecrease(data: any){
-    console.log('> handleStockDecrease called');
-    if(!data.stockType) return popupMessage('Update stanja nije uspeo, stockType je obavezan!', 'danger');
-    if(data.stockType === 'Boja-Veličina-Količina'){
-      decreaseDressStock(data, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>)
-    }
-    if(data.stockType === 'Boja-Količina'){
-      decreasePurseStock(data, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>)
+    try{
+      console.log('> handleStockDecrease called');
+      betterConsoleLog('> Data in handleSrockDecrease is', data);
+      // if(!data[0].stockType) return popupMessage('Update stanja nije uspeo, stockType je obavezan!', 'danger');
+      for(const item of data){
+        if(item.stockType === 'Boja-Veličina-Količina'){
+          console.log('> Decreasing Dress Stock');
+          decreaseDressStock(item, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>)
+        }
+        if(item.stockType === 'Boja-Količina'){
+          console.log('> Decreasing Purse Stock');
+          decreasePurseStock(item, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>)
+        }
+      }
+    } catch (error){
+      console.error(error);
     }
   }
+
   function handleStockIncrease(data: any){
     console.log('> handleStockIncrease called')
     if(!data.stockType) return popupMessage('Update stanja nije uspeo, stockType je obavezan!', 'danger');
@@ -205,16 +215,16 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
       socket.on('inactiveProductUpdated', handleInactiveProductUpdated);
 
       return () => {
-        socket.off('activeProductAdded');
-        socket.off('inactiveProductAdded');
-        socket.off('activeProductRemoved');
-        socket.off('inactiveProductRemoved');
-        socket.off('activeToInactive');
-        socket.off('inactiveToActive');
-        socket.off('allProductStockDecrease');
-        socket.off('allProductStockIncrease');
-        socket.off('batchStockIncrease');
-        socket.off('batchStockDecrease');
+        socket.off('activeProductAdded', activeProductAddedHandler);
+        socket.off('inactiveProductAdded', inactiveProductAddedHandler);
+        socket.off('activeProductRemoved', activeProductRemovedHandler);
+        socket.off('inactiveProductRemoved', inactiveProductRemovedHandler);
+        socket.off('activeToInactive', activeToInactive);
+        socket.off('inactiveToActive', inactiveToActive);
+        socket.off('allProductStockDecrease', handleStockDecrease);
+        socket.off('allProductStockIncrease', handleStockIncrease);
+        socket.off('batchStockIncrease', handleBatchStockIncrease);
+        socket.off('batchStockDecrease', handleBatchStockDecreasee);
         socket.off('activeProductUpdated', handleActiveProductUpdated);
         socket.off('inactiveProductUpdated', handleInactiveProductUpdated);
       };

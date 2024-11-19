@@ -3,7 +3,22 @@ import { betterConsoleLog, betterErrorLog } from "./LogMethods";
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import Constants from 'expo-constants';
+import { Context, useContext } from "react";
+import { AuthContext } from "../store/auth-context";
+import { useAuthContext } from "../hooks/useAuthContext";
 const backendURI = Constants.expoConfig?.extra?.backendURI;
+
+let authContextInstance:any;
+
+export function initializeAuthContext(authCtx:any) {
+  authContextInstance = authCtx;
+}
+export function handleUnauthorized() {
+  if (!authContextInstance) {
+    throw new Error('Auth context not initialized');
+  }
+  authContextInstance.logout();
+}
 
 /**
  * @param token - Authentication token
@@ -23,6 +38,7 @@ export async function fetchData(token:string | null, api:string, method:string =
     });
 
     if(!response.ok){
+      if(response.status === 401) return handleUnauthorized();
       const parsedResponse = await response.json();
       popupMessage(parsedResponse?.message, 'danger');
       return false;
@@ -49,6 +65,10 @@ async function handleAddingProductFetch(formData:any, authToken:string, productN
     })
 
     if(!response.ok) {
+      if(response.status === 401) {
+        handleUnauthorized();
+        return false;
+      } 
       const parsedResponse = await response.json();
       popupMessage(parsedResponse.message, 'danger');
       return false;
@@ -171,6 +191,7 @@ export async function handleFetchingWithBodyData(data: any, authToken: string, u
       body: JSON.stringify(data),
     });
 
+    if(response.status === 401) return handleUnauthorized();
     return response;
   } catch (error) {
     betterErrorLog('Error adding new order', error);
@@ -190,6 +211,7 @@ export async function fetchCategories(token: string | null){
     });
 
     if (!response.ok) {
+      if(response.status === 401) return handleUnauthorized();
       throw new Error('Failed to fetch categories');
     }
 
@@ -215,6 +237,7 @@ export async function fetchWithBodyData(token: string | null, api: string, data:
       body: JSON.stringify(data)
     });
 
+    if(response.status === 401) return handleUnauthorized();
     return response;
   } catch (error) {
     console.error('Error fetching with body data:', error);

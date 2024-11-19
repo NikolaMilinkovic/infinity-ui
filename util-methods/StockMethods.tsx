@@ -15,30 +15,69 @@ export const decreaseDressStock = (
   data: DressStockDataDecrease,
   setActiveDresses: React.Dispatch<React.SetStateAction<DressTypes[]>>
 ) => {
-  setActiveDresses((prevDresses) =>
-    prevDresses.map((dress) => {
-      if (dress._id === data.dressId) {
-        return {
-          ...dress,
-          colors: dress.colors.map((color) => {
-            if (color._id === data.colorId && color.sizes && color.sizes.length > 0) {
-              return {
-                ...color,
-                sizes: color.sizes.map((size) =>
-                  size._id === data.sizeId && size.stock - data.increment >= 0
-                    ? { ...size, stock: size.stock - data.increment }
-                    : size
-                ),
-              };
-            }
-            return color;
-          }),
-        };
-      }
-      return dress;
-    })
-  );
+  setActiveDresses((prevDresses) => {
+    const updatedDresses = prevDresses.map((dress) => {
+        if (dress._id.toString() === data.dressId.toString()) {
+            return {
+                ...dress,
+                colors: dress.colors.map((color) => {
+                    if (color._id.toString() === data.colorId.toString()) {
+                        return {
+                            ...color,
+                            sizes: color.sizes.map((size) => {
+                                if (size._id.toString() === data.sizeId.toString()) {
+                                    return { ...size, stock: size.stock - 1 };
+                                }
+                                return size;
+                            }),
+                        };
+                    }
+                    return color;
+                }),
+            };
+        }
+        return dress;
+    });
+    return updatedDresses;
+  });
 };
+// Function to decrease stock for a specific dress, color, and size
+// export const decreaseDressStock = (
+//   data: DressStockDataDecrease,
+//   setActiveDresses: React.Dispatch<React.SetStateAction<DressTypes[]>>
+// ) => {
+// setActiveDresses((prevDresses) => {
+//   console.log('> Updating dresses with data:', data);
+//   return prevDresses.map((dress) => {
+//     if (dress._id.toString() === data.dressId.toString()) {
+//       console.log('> Found matching dress:', dress);
+//       return {
+//         ...dress,
+//         colors: dress.colors.map((color) => {
+//           if (color._id.toString() === data.colorId.toString()) {
+//             console.log('> Found matching color:', color);
+//             return {
+//               ...color,
+//               sizes: color.sizes.map((size) => {
+//                 if (size._id.toString() === data.sizeId.toString()) {
+//                   console.log('> Found matching size:', size);
+//                   if (size.stock - data.increment >= 0) {
+//                     console.log('> Decreasing stock for size:', size);
+//                     return { ...size, stock: size.stock - 1};
+//                   }
+//                 }
+//                 return size;
+//               }),
+//             };
+//           }
+//           return color;
+//         }),
+//       };
+//     }
+//     return dress;
+//   });
+// });
+// }
 
 interface DressStockDataIncrease {
   dressId: string,
@@ -52,30 +91,31 @@ export const increaseDressStock = (
   data: DressStockDataIncrease,
   setActiveDresses: React.Dispatch<React.SetStateAction<DressTypes[]>>
 ) => {
-  console.log('> Increasing active dresses by 1')
-  setActiveDresses((prevDresses) =>
-    prevDresses.map((dress) => {
-      if (dress._id === data.dressId) {
-        return {
-          ...dress,
-          colors: dress.colors.map((color) => {
-            if (color._id === data.colorId && color.sizes) {
-              return {
-                ...color,
-                sizes: color.sizes.map((size) =>
-                  size._id === data.sizeId
-                    ? { ...size, stock: size.stock + data.increment }
-                    : size
-                ),
-              };
-            }
-            return color;
-          }),
-        };
-      }
-      return dress;
-    })
-  );
+  setActiveDresses((prevDresses) => {
+    const updatedDresses = prevDresses.map((dress) => {
+        if (dress._id.toString() === data.dressId.toString()) {
+            return {
+                ...dress,
+                colors: dress.colors.map((color) => {
+                    if (color._id.toString() === data.colorId.toString()) {
+                        return {
+                            ...color,
+                            sizes: color.sizes.map((size) => {
+                                if (size._id.toString() === data.sizeId.toString()) {
+                                    return { ...size, stock: size.stock + 1 };
+                                }
+                                return size;
+                            }),
+                        };
+                    }
+                    return color;
+                }),
+            };
+        }
+        return dress;
+    });
+    return updatedDresses;
+  });
 };
 
 
@@ -91,11 +131,11 @@ export const decreasePurseStock = (
 ) => {
   setActivePurses((prevPurses) =>
     prevPurses.map((purse) => {
-      if (purse._id === data.purseId) {
+      if (purse._id.toString() === data.purseId.toString()) {
         return {
           ...purse,
           colors: purse.colors.map((color) => {
-            if (color._id === data.colorId) {
+            if (color._id.toString() === data.colorId.toString()) {
               return {
                 ...color,
                 stock: color.stock - data.increment >= 0 ? color.stock - data.increment : color.stock,
@@ -126,12 +166,12 @@ export const increasePurseStock = (
   betterConsoleLog('> Logging out data object', data);
   setActivePurses((prevPurses) =>
     prevPurses.map((purse) => {
-      if (purse._id === data.purseId) {
+      if (purse._id.toString() === data.purseId.toString()) {
         betterConsoleLog('> Purse found', purse);
         return {
           ...purse,
           colors: purse.colors.map((color) => {
-            if (color._id === data.colorId) {
+            if (color._id.toString() === data.colorId.toString()) {
               betterConsoleLog('> Color obj found', color);
               return {
                 ...color,
@@ -159,7 +199,7 @@ export const increaseDressBatchStock = (
     let remainingData = [...data];
 
     return prevDresses.map((dress) => {
-      const itemIndex = remainingData.findIndex(d => d.dressId === dress._id);
+      const itemIndex = remainingData.findIndex(d => d.dressId.toString() === dress._id.toString());
       if (itemIndex !== -1) {
         const itemData = remainingData[itemIndex];
         // Increment stock for the matching dress
@@ -168,11 +208,11 @@ export const increaseDressBatchStock = (
         return {
           ...dress,
           colors: dress.colors.map((color) => {
-            if (color._id === itemData.colorId && color.sizes) {
+            if (color._id.toString() === itemData.colorId.toString() && color.sizes) {
               return {
                 ...color,
                 sizes: color.sizes.map((size) =>
-                  size._id === itemData.sizeId
+                  size._id.toString() === itemData.sizeId.toString()
                     ? { ...size, stock: size.stock + itemData.increment }
                     : size
                 ),
@@ -199,7 +239,7 @@ export const decreaseDressBatchStock = (
     let remainingData = [...data];
 
     return prevDresses.map((dress) => {
-      const itemIndex = remainingData.findIndex(d => d.dressId === dress._id);
+      const itemIndex = remainingData.findIndex(d => d.dressId.toString() === dress._id.toString());
       if (itemIndex !== -1) {
         const itemData = remainingData[itemIndex];
         // Increment stock for the matching dress
@@ -208,11 +248,11 @@ export const decreaseDressBatchStock = (
         return {
           ...dress,
           colors: dress.colors.map((color) => {
-            if (color._id === itemData.colorId && color.sizes) {
+            if (color._id.toString() === itemData.colorId.toString() && color.sizes) {
               return {
                 ...color,
                 sizes: color.sizes.map((size) =>
-                  size._id === itemData.sizeId
+                  size._id.toString() === itemData.sizeId.toString()
                     ? { ...size, stock: size.stock - itemData.increment }
                     : size
                 ),
@@ -246,7 +286,7 @@ export const increasePurseBatchStock = (
     let remainingData = [...data]; // Create a copy to keep track of unprocessed IDs
 
     return prevPurses.map((purse) => {
-      const itemIndex = remainingData.findIndex(d => d.purseId === purse._id);
+      const itemIndex = remainingData.findIndex(d => d.purseId.toString() === purse._id.toString());
 
       if (itemIndex !== -1) {
         const itemData = remainingData[itemIndex];
@@ -255,7 +295,7 @@ export const increasePurseBatchStock = (
         return {
           ...purse,
           colors: purse.colors.map((color) => {
-            if (color._id === itemData.colorId) {
+            if (color._id.toString() === itemData.colorId.toString()) {
               console.log('> Color object found for increment', color);
               return {
                 ...color,
@@ -282,7 +322,7 @@ export const decreasePurseBatchStock = (
     let remainingData = [...data]; // Create a copy to keep track of unprocessed IDs
 
     return prevPurses.map((purse) => {
-      const itemIndex = remainingData.findIndex(d => d.purseId === purse._id);
+      const itemIndex = remainingData.findIndex(d => d.purseId.toString() === purse._id.toString());
 
       if (itemIndex !== -1) {
         const itemData = remainingData[itemIndex];
@@ -291,7 +331,7 @@ export const decreasePurseBatchStock = (
         return {
           ...purse,
           colors: purse.colors.map((color) => {
-            if (color._id === itemData.colorId) {
+            if (color._id.toString() === itemData.colorId.toString()) {
               console.log('> Color object found for increment', color);
               return {
                 ...color,

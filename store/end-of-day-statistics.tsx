@@ -27,13 +27,11 @@ function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextP
 
   // Fetched data
   useEffect(() => {
-    console.log('> getOrderStatisticsData USE EFFECT IS RUNNING NOW.')
     if (token) {
       async function getOrderStatisticsData(token: string) {
         try{
           const fetchedData = await fetchData(token, 'orders/get-order-statistic-files-for-period');
           setStatisticData(fetchedData.data);
-          betterConsoleLog('> LOGGING OUT FETCHED ORDERS STATISTICS DATA FILE LENGTH', fetchedData.data.length);
         } catch(error){
           console.error(error);
         }
@@ -42,13 +40,18 @@ function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextP
     }
   }, [token]);
 
+  // TO DO : Add types
+  function handleAddNewStatisticFile(file: any){
+    setStatisticData((prev) => [file, ...prev]);
+  }
+
   // Set up socket listeners
   useEffect(() => {
     if (socket) {
-      // socket.on('activeDressAdded', handleActiveDressAdded);
-
+      socket.on('addNewStatisticFile', handleAddNewStatisticFile);
+      
       return () => {
-        // socket.off("activeDressAdded", handleActiveDressAdded);
+        socket.off('addNewStatisticFile', handleAddNewStatisticFile);
       };
     }
   }, [socket]);

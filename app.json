@@ -9,7 +9,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/infinity.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -29,10 +29,9 @@
     "android": {
       "backgroundColor": "#ffffff",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/infinity.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "versionCode": 1,
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],

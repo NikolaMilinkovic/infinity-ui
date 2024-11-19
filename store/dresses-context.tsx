@@ -102,8 +102,10 @@ function DressesContextProvider({ children }: DressContextProviderType) {
 
   function decreaseDressStockHandler(data: any){
     console.log('> decreaseDressStockHandler called')
-    if(data.stockType === 'Boja-Veličina-Količina'){
-      decreaseDressStock(data, setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
+    if(data.length > 0){
+      for(const dress of data){
+        decreaseDressStock(dress, setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
+      }
     }
   }
   function increaseDressStockHandler(data: any){

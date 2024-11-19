@@ -71,6 +71,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
 
   // Memoize the filtered products
   const filteredData = useMemo(() => {
+    console.log('> filtered data calculating..')
     // console.log('> ACTIVE Search params are> ', searchParams.active)
     // console.log('> INACTIVE Search params are> ', searchParams.inactive)
     // const filteredInactive = productsCtx.allInactiveProducts.map((product) => product.name);

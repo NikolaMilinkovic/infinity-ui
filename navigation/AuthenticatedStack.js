@@ -14,12 +14,22 @@ import OrdersManagerTabs from './OrdersManagerTabs';
 import EndOfDay from '../screens/EndOfDay/EndOfDay';
 import EndOfDayTabs from './EndOfDayTabs';
 import EndOfDayStatisticsContextProvider from '../store/end-of-day-statistics';
+import { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../store/auth-context';
+import { initializeAuthContext } from '../util-methods/FetchMethods';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { betterConsoleLog } from '../util-methods/LogMethods';
 
 
 const Drawer = createDrawerNavigator();
 
 export default function AuthenticatedStack() {
   const navigation = useNavigation();
+  const authCtx = useAuthContext();
+  useEffect(() => {
+    betterConsoleLog('> Logging auth ctx', authCtx);
+    initializeAuthContext(authCtx);
+  }, [authCtx])
 
   function logoOnPressNavigator(){
     navigation.navigate('BrowseProducts')
