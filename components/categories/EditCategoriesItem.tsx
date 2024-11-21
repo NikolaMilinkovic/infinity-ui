@@ -13,6 +13,7 @@ const backendURI = Constants.expoConfig?.extra?.backendURI;
 interface DropdownTypes {
   _id: string | number
   name: string
+  value: string
 }
 
 function EditCategoriesItem({ data }: { data: CategoryTypes }) {
@@ -29,8 +30,8 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
   const [display, setDisplay] = useState(true);
   const [stockType, setStockType] = useState<DropdownTypes | undefined>()
   const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([
-    {_id: 0, name: 'Boja-Veličina-Količina'},
-    {_id: 1, name: 'Boja-Količina'}
+    {_id: 0, name: 'Veličina', value: 'Boja-Veličina-Količina'},
+    {_id: 1, name: 'Boja', value: 'Boja-Količina'},
   ]);
 
   // Resets Error & Success 
@@ -84,7 +85,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
         body: JSON.stringify({ 
           id: categoryData._id,
           name: newName,
-          stockType: stockType.name
+          stockType: stockType.value
         })
       })
 
@@ -139,6 +140,11 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
     )
   }
 
+  function getStockTypeName(){
+    if(data.stockType === 'Boja-Veličina-Količina') return 'Veličina';
+    if(data.stockType === 'Boja-Količina') return 'Boja';
+    return '';
+  }
   return (
     <Pressable 
       style={styles.colorItem}
@@ -154,7 +160,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
           />
           <DropdownList
             data={dropdownData}
-            defaultValue={data.stockType || 'Boja-Veličina-Količina'}
+            defaultValue={getStockTypeName()}
             onSelect={setStockType}
             buttonContainerStyles={styles.dropdown}
           />
@@ -183,7 +189,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
         <View style={styles.displayCategory}>
           <View style={styles.categoryData}>
               <Text style={[styles.text, styles.categoryName]}>{categoryData.name}</Text>
-              <Text style={styles.text}>{categoryData.stockType}</Text>
+              <Text style={styles.text}>{getStockTypeName()}</Text>
           </View>
           <IconButton
             icon='delete'
