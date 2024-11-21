@@ -16,12 +16,12 @@ export default class DressColor{
     this.color = color || ''
     this.colorCode = colorCode || ''
     this.sizes = sizes || [
+      {size: 'UNI', stock: 0},
       {size: 'XS', stock: 0},
       {size: 'S', stock: 0},
       {size: 'M', stock: 0},
       {size: 'L', stock: 0},
       {size: 'XL', stock: 0},
-      {size: 'UNI', stock: 0}
     ]
   }
 

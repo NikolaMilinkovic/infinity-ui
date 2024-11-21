@@ -55,6 +55,7 @@ function AddProduct(){
         selectedColors.includes(existingColor.color)
       );
   
+      betterConsoleLog('> Selected color obj are:',[...updatedItemColors, ...newColors]);
       // Return combined list of existing valid and newly added dress colors
       return [...updatedItemColors, ...newColors];
     });

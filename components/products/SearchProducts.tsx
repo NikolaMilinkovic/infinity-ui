@@ -220,7 +220,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
                 {/* SIZES FILTER INPUT */}
                 {(!selectedCategory || selectedCategory?.stockType === 'Boja-Veličina-Količina') && (
                   <SizePickerCheckboxes
-                    sizes={['XS', 'S', 'M', 'L', 'XL', 'UNI']}
+                    sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
                     selectedSizes={selectedSizes}
                     setSelectedSizes={setSelectedSizes}
                   />

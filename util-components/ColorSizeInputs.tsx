@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler';
 import { Colors } from '../constants/colors';
 import { DressColorTypes } from '../types/allTsTypes';
+import { betterConsoleLog } from '../util-methods/LogMethods';
 
 interface PropTypes{
   colorsData: DressColorTypes[],
@@ -25,6 +26,7 @@ function ColorSizeInputs({
 
   // Method for handling input changes
   function handleInputChange(color: string, size: string, value: string){
+    betterConsoleLog(`> Changing value for color: ${color}, size: ${size}, value: ${value}`, '')
     const newStock = parseInt(value, 10) || 0;
     const updatedColors = initializedColorsData.map((item) => {
       if (item.color === color) {
@@ -48,12 +50,12 @@ function ColorSizeInputs({
     <View style={styles.container}>
       <View style={styles.sizesContainer}>
         <Text style={{ width: 100, fontWeight: 'bold', textAlign: 'center' }}>Boja</Text>
+        <Text style={styles.header}>UNI</Text>
         <Text style={styles.header}>XS</Text>
         <Text style={styles.header}>S</Text>
         <Text style={styles.header}>M</Text>
         <Text style={styles.header}>L</Text>
         <Text style={styles.header}>XL</Text>
-        <Text style={styles.header}>UNI</Text>
       </View>
       {initializedColorsData.map((item, index) => (
         <KeyboardAvoidingView 

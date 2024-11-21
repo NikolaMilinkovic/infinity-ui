@@ -14,12 +14,12 @@ function SizePickerCheckboxes({ selectedSizes, setSelectedSizes, sizes = [] }: P
     setSizeData(sizes);
   },[sizes])
   const [sizeValues, setSizevalue] = useState({
+    UNI: false,
     XS: false,
     S: false,
     M: false,
     L: false,
     XL: false,
-    UNI: false,
   }) 
   function insertSizeHandler(size: string){
     setSelectedSizes((prev) => [...prev, size]);
@@ -30,29 +30,31 @@ function SizePickerCheckboxes({ selectedSizes, setSelectedSizes, sizes = [] }: P
   return (
     <View style={styles.checkboxesContainer}>
       {sizeData.map((size) => (
-        <CustomCheckbox
-          key={`key-size-${size}`}
-          label={size}
-          checked={sizeValues[size]}
-          onCheckedChange={
-            (newValue) => {
-                // Update the checkbox state
-                setSizevalue((prev) => ({
-                ...prev,
-                [size]: newValue,
-              }));
-              
-              // true > add size to checkedSizes arr
-              if (newValue) {
-                insertSizeHandler(size);
+        <View key={`key-size-${size}`} style={styles.checkboxWrapper}>
+          <CustomCheckbox
+            key={`key-size-${size}`}
+            label={size}
+            checked={sizeValues[size]}
+            onCheckedChange={
+              (newValue) => {
+                  // Update the checkbox state
+                  setSizevalue((prev) => ({
+                  ...prev,
+                  [size]: newValue,
+                }));
+                
+                // true > add size to checkedSizes arr
+                if (newValue) {
+                  insertSizeHandler(size);
 
-              // false > remove size from checkedSizes arr
-              } else {
-                removeSizeHandler(size);
+                // false > remove size from checkedSizes arr
+                } else {
+                  removeSizeHandler(size);
+                }
               }
             }
-          }
-        />
+          />
+        </View>
       ))
     }
   </View>
@@ -66,9 +68,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderRadius: 4,
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
+  },
+  checkboxWrapper: {
+    marginVertical: 4,
     alignItems: 'center',
   },
-})
+});
 
 export default SizePickerCheckboxes
