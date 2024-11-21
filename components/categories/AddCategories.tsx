@@ -12,14 +12,15 @@ const backendURI = Constants.expoConfig?.extra?.backendURI;
 interface DropdownTypes {
   _id: string | number
   name: string
+  value: string
 }
 function AddCategories() {
   const authCtx = useContext(AuthContext);
   const [inputText, setInputText] = useState<string>('')
-  const [stockType, setStockType] = useState<DropdownTypes>({_id: 0, name: 'Boja-Veličina-Količina'})
+  const [stockType, setStockType] = useState<DropdownTypes>({_id: 0, name: 'Veličina', value:'Boja-Veličina-Količina'})
   const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([
-    {_id: 0, name: 'Boja-Veličina-Količina'},
-    {_id: 1, name: 'Boja-Količina'}
+    {_id: 0, name: 'Veličina', value: 'Boja-Veličina-Količina'},
+    {_id: 1, name: 'Boja', value: 'Boja-Količina'}
   ]);
   const [error, setError] = useState<string>('')
   
@@ -48,11 +49,10 @@ function AddCategories() {
   async function addCategoryHandler(){
     const validated = validateInput();
     if(!validated) return;
-
     try{
       const newCategory = {
         name: inputText,
-        stockType: stockType.name
+        stockType: stockType.value
       };
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
         method: 'POST',
@@ -103,7 +103,7 @@ function AddCategories() {
         <View style={styles.dropdownContainer}>
           <DropdownList
             data={dropdownData}
-            defaultValue={'Boja-Veličina-Količina'}
+            defaultValue={'Veličina'}
             onSelect={setStockType}
             buttonContainerStyles={styles.dropdown}
           />

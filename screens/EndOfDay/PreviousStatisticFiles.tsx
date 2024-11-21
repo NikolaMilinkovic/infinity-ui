@@ -41,6 +41,7 @@ function PreviousStatisticFiles() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.primaryDark,
+    flex: 1,
   },
   controllsContainer: {
   },
