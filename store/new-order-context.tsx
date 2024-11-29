@@ -50,8 +50,8 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
   setInternalRemark: () => {},
   deliveryRemark: '',
   setDeliveryRemark: () => {},
-  orderNote: '',
-  setOrderNote: () => {},
+  orderNotes: '',
+  setOrderNotes: () => {},
 })
 
 function NewOrderContextProvider({ children }: ContextChildrenTypes){
@@ -66,7 +66,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const [weight, setWeight] = useState('0.5');
   const [internalRemark, setInternalRemark] = useState('');
   const [deliveryRemark, setDeliveryRemark] = useState('');
-  const [orderNote, setOrderNote] = useState('');
+  const [orderNotes, setOrderNotes] = useState('');
 
 
 
@@ -117,7 +117,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     order.append('internalRemark', internalRemark);
     order.append('deliveryRemark', deliveryRemark);
     order.append('courier', JSON.stringify(courier));
-    order.append('orderNote', orderNote);
+    order.append('orderNotes', orderNotes);
     betterConsoleLog('> Logging profile image', profileImage);
     order.append('profileImage', {
       uri: profileImage.uri,
@@ -317,9 +317,9 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     setInternalRemark: setInternalRemark,
     deliveryRemark,
     setDeliveryRemark: setDeliveryRemark,
-    orderNote,
-    setOrderNote: setOrderNote,
-  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice, weight, orderValue, internalRemark, deliveryRemark, orderNote]);
+    orderNotes,
+    setOrderNotes: setOrderNotes,
+  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice, weight, orderValue, internalRemark, deliveryRemark, orderNotes]);
 
   return <NewOrderContext.Provider value={value}>{ children }</NewOrderContext.Provider>
 }

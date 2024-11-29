@@ -131,8 +131,8 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
           />
           <InputField
             label='Napomena za porudžbinu'
-            inputText={orderCtx?.orderNote}
-            setInputText={(text:(string | number | undefined)) => orderCtx.setOrderNote((prev) => ({...prev, orderNote: text}))}
+            inputText={orderCtx?.orderNotes}
+            setInputText={(text:(string | number | undefined)) => orderCtx.setOrderNotes((prev) => ({...prev, orderNotes: text}))}
             containerStyles={styles.deliveryRemarkInput}
             selectTextOnFocus={true}
             multiline={true}

@@ -29,7 +29,8 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
   const [isHighlighted, setIsHighlighted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const expandHeight = useExpandAnimation(isExpanded, 160, (order.products.length * 88 + 184), 180);
+  const [noteHeight] = useState(order.orderNotes ? 40 : 0);
+  const expandHeight = useExpandAnimation(isExpanded, 160, (order.products.length * 88 + 184 + noteHeight), 180);
   const styles = getStyles(isHighlighted);
 
   useEffect(() => {
@@ -89,6 +90,9 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
             <Text>{order.buyer.phone}</Text>
             <Text>Otkup: {order.totalPrice} din.</Text>
             <Text>Kurir: {order.courier?.name}</Text>
+            {order.orderNotes && (
+              <Text style={styles.orderNoteIndicator}>NAPOMENA</Text>
+            )}
           </View>
           <View style={styles.buttonsContainer}>
             {batchMode ? (
@@ -124,6 +128,12 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
         
         {isVisible && (
           <Animated.View style={styles.productsContainer}>
+            {order.orderNotes && (
+              <View style={styles.orderNoteContainer}>
+                <Text style={styles.orderNoteLabel}>Napomena:</Text>
+                <Text style={styles.orderNoteText}>{order.orderNotes}</Text>
+              </View>
+            )}
             <Text style={styles.header}>Lista artikala:</Text>
             {order.products.map((product, index) => <DisplayOrderProduct key={`${index}-${product._id}`} product={product} index={index}/>)}
           </Animated.View>
@@ -145,6 +155,14 @@ function getStyles(isHighlighted:boolean){
       paddingVertical: 14,
       gap: 10
     },
+    orderNoteIndicator: {
+      position: 'absolute',
+      right: -60,
+      bottom: 0,
+      backgroundColor: Colors.white,
+      color: Colors.error,
+      fontWeight: 'bold',
+    },
     timestamp: {
       position: 'absolute',
       right: 10,
@@ -157,7 +175,7 @@ function getStyles(isHighlighted:boolean){
       gap: 10,
       maxHeight: 130,
       minHeight: 130,
-      alignItems: 'center'
+      alignItems: 'center',
     },
     profileImage: {
       height: 70,
@@ -209,6 +227,21 @@ function getStyles(isHighlighted:boolean){
       bottom: 10,
       right: -10,
       width: 100,
+    },
+    orderNoteContainer: {
+      flexDirection: 'row',
+      height: 40,
+      gap: 10,
+    },
+    orderNoteLabel: {
+      fontWeight: 'bold',
+      minWidth: 25,
+      flex: 4,
+    },
+    orderNoteText: {
+      // flex: 8,
+      fontWeight: 'bold',
+      color: Colors.error,
     }
   })
 }

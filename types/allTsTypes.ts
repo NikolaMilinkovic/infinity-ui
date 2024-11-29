@@ -121,7 +121,7 @@ export interface OrderProductTypes {
   weight: string
   internalRemark: string
   deliveryRemark: string
-  orderNote: string
+  orderNotes: string
 }
 
 export interface NewOrderContextTypes {
@@ -166,8 +166,8 @@ export interface NewOrderContextTypes {
   setInternalRemark: (internalRemark: string) => void,
   deliveryRemark: string,
   setDeliveryRemark: (deliveryRemark: string) => void,
-  orderNote: string,
-  setOrderNote: (note: string) => void,
+  orderNotes: string,
+  setOrderNotes: (note: string) => void,
 }
 
 export interface CourierTypes {
@@ -197,7 +197,7 @@ export interface OrderTypes {
   weight: string
   internalRemark: string
   deliveryRemark: string
-  orderNote: string
+  orderNotes: string
 }
 
 export interface ProcessedOrderStatisticsFileTypes {

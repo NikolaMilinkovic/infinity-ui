@@ -17,7 +17,8 @@ interface PackOrderItemPropTypes {
 function PackOrderItem({ order }: PackOrderItemPropTypes) {
   const [isExpanded, setIsExpanded] = useState(!order.packedIndicator);
   const [isPacked, setIsPacked] = useState(order.packedIndicator || false);
-  const expandHeight = useExpandAnimation(isExpanded, 160, (order.products.length * 88 + 184), 180);
+  const [noteHeight] = useState(order.orderNotes ? 40 : 0);
+  const expandHeight = useExpandAnimation(isExpanded, 160, (order.products.length * 88 + 184 + noteHeight), 180);
   const styles = getStyles(isPacked);
   const authCtx = useContext(AuthContext)
   const token = authCtx.token;
@@ -102,6 +103,11 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
               <Text style={styles.rowLabel}>Kurir:</Text>
               <Text style={styles.rowText}>{order.courier?.name}</Text>
             </View>
+
+            {/* ORDER NOTE INDICATOR */}
+            {order.orderNotes && (
+              <Text style={styles.orderNoteIndicator}>NAPOMENA</Text>
+            )}
           </View>
           <View style={styles.buttonsContainer}>
             <View style={styles.buttonBorder}>
@@ -127,6 +133,12 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
         
         {isExpanded && (
           <Animated.View style={styles.productsContainer}>
+            {order.orderNotes && (
+              <View style={styles.orderNoteContainer}>
+                <Text style={styles.orderNoteLabel}>Napomena:</Text>
+                <Text style={styles.orderNoteText}>{order.orderNotes}</Text>
+              </View>
+            )}
             <Text style={styles.header}>Lista artikala:</Text>
             {order.products.map((product, index) => <DisplayOrderProduct key={`${index}-${product._id}`} product={product} index={index}/>)}
           </Animated.View>
@@ -147,6 +159,13 @@ function getStyles(isPacked: boolean){
       paddingVertical: 14,
       gap: 10,
       elevation: 2,
+    },
+    orderNoteIndicator: {
+      position: 'absolute',
+      right: -60,
+      bottom: 0,
+      color: Colors.error,
+      fontWeight: 'bold',
     },
     timestamp: {
       position: 'absolute',
@@ -220,6 +239,20 @@ function getStyles(isPacked: boolean){
       zIndex: 12,
       opacity: 0.4,
       pointerEvents: 'none'
+    },
+    orderNoteContainer: {
+      flexDirection: 'row',
+      height: 40,
+      gap: 10,
+    },
+    orderNoteLabel: {
+      fontWeight: 'bold',
+      minWidth: 25,
+      flex: 4,
+    },
+    orderNoteText: {
+      fontWeight: 'bold',
+      color: Colors.error,
     }
   })
 }

@@ -42,7 +42,7 @@ export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string
       phone: parsedResponse.data.phone,
       phone2: parsedResponse.data.phone2,
     });
-    orderCtx.setOrderNote(parsedResponse.data.orderNote);
+    orderCtx.setOrderNotes(parsedResponse.data.orderNotes);
     popupMessage(parsedResponse.message, 'success')
     return true;
 
