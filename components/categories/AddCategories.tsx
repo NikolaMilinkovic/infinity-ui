@@ -19,8 +19,8 @@ function AddCategories() {
   const [inputText, setInputText] = useState<string>('')
   const [stockType, setStockType] = useState<DropdownTypes>({_id: 0, name: 'Veličina', value:'Boja-Veličina-Količina'})
   const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([
-    {_id: 0, name: 'Veličina', value: 'Boja-Veličina-Količina'},
-    {_id: 1, name: 'Boja', value: 'Boja-Količina'}
+    {_id: 0, name: 'Boja-Veličina-Količina', value: 'Boja-Veličina-Količina'},
+    {_id: 1, name: 'Boja-Količina', value: 'Boja-Količina'}
   ]);
   const [error, setError] = useState<string>('')
   
@@ -103,7 +103,7 @@ function AddCategories() {
         <View style={styles.dropdownContainer}>
           <DropdownList
             data={dropdownData}
-            defaultValue={'Veličina'}
+            defaultValue={'Boja-Veličina-Količina'}
             onSelect={setStockType}
             buttonContainerStyles={styles.dropdown}
           />

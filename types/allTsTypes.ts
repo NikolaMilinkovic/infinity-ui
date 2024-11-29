@@ -101,8 +101,8 @@ export interface BuyerTypes {
   place: string
   phone: string | number
   phone2: string | number
-  bankNumber: string | number
-  profileImage: ProfileImageTypes
+  bankNumber?: string | number
+  profileImage?: ProfileImageTypes
 }
 export interface OrderProductTypes {
   _id: string
@@ -121,6 +121,7 @@ export interface OrderProductTypes {
   weight: string
   internalRemark: string
   deliveryRemark: string
+  orderNote: string
 }
 
 export interface NewOrderContextTypes {
@@ -150,7 +151,7 @@ export interface NewOrderContextTypes {
   isReservation: boolean;
   setIsReservation: (isReservation:boolean) => void;
 
-  profileImage: string | null
+  profileImage: ProductImageTypes | null
   setProfileImage: (image:string | null) => void;
   createOrderHandler: () => void;
 
@@ -165,6 +166,8 @@ export interface NewOrderContextTypes {
   setInternalRemark: (internalRemark: string) => void,
   deliveryRemark: string,
   setDeliveryRemark: (deliveryRemark: string) => void,
+  orderNote: string,
+  setOrderNote: (note: string) => void,
 }
 
 export interface CourierTypes {
@@ -194,6 +197,7 @@ export interface OrderTypes {
   weight: string
   internalRemark: string
   deliveryRemark: string
+  orderNote: string
 }
 
 export interface ProcessedOrderStatisticsFileTypes {

@@ -133,7 +133,7 @@ function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPric
               <Icon name={showEdit ? 'file-edit-outline' : 'cancel'} style={styles.editIcon} size={28} color={Colors.primaryDark}/>
             </Pressable> */}
             <InputField
-              label='Napomena za dostavu'
+              label='Napomena za kurira'
               inputText={orderCtx.deliveryRemark}
               setInputText={orderCtx.setDeliveryRemark}
               containerStyles={styles.deliveryRemarkInput}

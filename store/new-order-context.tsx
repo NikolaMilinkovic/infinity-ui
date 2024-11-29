@@ -50,6 +50,8 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
   setInternalRemark: () => {},
   deliveryRemark: '',
   setDeliveryRemark: () => {},
+  orderNote: '',
+  setOrderNote: () => {},
 })
 
 function NewOrderContextProvider({ children }: ContextChildrenTypes){
@@ -64,6 +66,8 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const [weight, setWeight] = useState('0.5');
   const [internalRemark, setInternalRemark] = useState('');
   const [deliveryRemark, setDeliveryRemark] = useState('');
+  const [orderNote, setOrderNote] = useState('');
+
 
 
   // Check to see if all products have selectedColor & selectedSize where applicable
@@ -113,10 +117,11 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     order.append('internalRemark', internalRemark);
     order.append('deliveryRemark', deliveryRemark);
     order.append('courier', JSON.stringify(courier));
+    order.append('orderNote', orderNote);
     betterConsoleLog('> Logging profile image', profileImage);
     order.append('profileImage', {
       uri: profileImage.uri,
-      type: getMimeType(profileImage.mimeType, profileImage.uri),
+      type: getMimeType(profileImage.mimeType, profileImage?.uri || ''),
       name: profileImage.fileName,
     } as any);
 
@@ -312,7 +317,9 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     setInternalRemark: setInternalRemark,
     deliveryRemark,
     setDeliveryRemark: setDeliveryRemark,
-  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice, weight, orderValue, internalRemark, deliveryRemark]);
+    orderNote,
+    setOrderNote: setOrderNote,
+  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice, weight, orderValue, internalRemark, deliveryRemark, orderNote]);
 
   return <NewOrderContext.Provider value={value}>{ children }</NewOrderContext.Provider>
 }

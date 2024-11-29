@@ -14,7 +14,10 @@ function EditCategories() {
   useEffect(() => {
     const fetchCategories = async () => {
       const ctxCategories = categoriesCtx.getCategories();
-      setCategories(ctxCategories.sort((a, b) => (b.stockType || '').localeCompare(a.stockType || '')));
+      setCategories(ctxCategories.sort((a, b) => 
+          (b.stockType || '').localeCompare(a.stockType || '')
+        )
+      );
       setIsLoading(false);
     };
     fetchCategories();

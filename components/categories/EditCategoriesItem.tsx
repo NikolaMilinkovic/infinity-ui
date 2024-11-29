@@ -140,11 +140,11 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
     )
   }
 
-  function getStockTypeName(){
-    if(data.stockType === 'Boja-Veličina-Količina') return 'Veličina';
-    if(data.stockType === 'Boja-Količina') return 'Boja';
-    return '';
-  }
+  // function getStockTypeName(){
+  //   if(data.stockType === 'Boja-Veličina-Količina') return 'Veličina';
+  //   if(data.stockType === 'Boja-Količina') return 'Količina';
+  //   return '';
+  // }
   return (
     <Pressable 
       style={styles.colorItem}
@@ -160,7 +160,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
           />
           <DropdownList
             data={dropdownData}
-            defaultValue={getStockTypeName()}
+            defaultValue={data.stockType}
             onSelect={setStockType}
             buttonContainerStyles={styles.dropdown}
           />
@@ -189,7 +189,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
         <View style={styles.displayCategory}>
           <View style={styles.categoryData}>
               <Text style={[styles.text, styles.categoryName]}>{categoryData.name}</Text>
-              <Text style={styles.text}>{getStockTypeName()}</Text>
+              <Text style={styles.text}>{data.stockType}</Text>
           </View>
           <IconButton
             icon='delete'

@@ -7,6 +7,7 @@ interface AuthContextType {
   isAuthenticated: boolean
   authenticate: (token:string) => void
   logout: () => void
+  verifyToken: (token: string) => boolean
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -14,6 +15,7 @@ export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   authenticate: (token) => {},
   logout: () => {},
+  verifyToken: (token) => false,
 });
 
 
@@ -31,12 +33,19 @@ function AuthContextProvider({ children }:AuthContextProviderType){
     setAuthToken(null);
     AsyncStorage.removeItem('token');
   }
+  function verifyToken(token: string){
+    console.log('Logging out token:');
+    console.log(token);
+    // FETCH CLL HERE AND SOMETHING, WE RETURN TRUE OR FALSE!!!
+    return false;
+  }
 
   const value:AuthContextType = {
     token: authToken,
     isAuthenticated: !!authToken,
     authenticate: authenticate,
     logout: logout,
+    verifyToken: verifyToken,
   }
 
   return <AuthContext.Provider value={value}>{ children }</AuthContext.Provider>

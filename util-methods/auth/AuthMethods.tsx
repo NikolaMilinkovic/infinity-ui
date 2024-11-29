@@ -31,6 +31,7 @@ interface AuthStatus{
  */
 export async function loginUser({username, password}: LoginUserTypes): Promise<AuthStatus>{
   try{
+    console.log('> Fetching..')
     const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/login`, {
       method: 'POST',
       headers: {
@@ -41,6 +42,8 @@ export async function loginUser({username, password}: LoginUserTypes): Promise<A
         password,
       })
     });
+
+    console.log('> Fetching complete..')
 
     // Parsing server response
     const parsedResponse: LoginResponse = await response.json();
@@ -80,3 +83,23 @@ export async function loginUser({username, password}: LoginUserTypes): Promise<A
     };
   }
 }
+
+// export async function verifyUser(username: string, password: string, token: string){
+//   try{
+//     const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/verify-user`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type' : 'application/json',
+//       },
+//       body: JSON.stringify({
+//         token,
+//         username,
+//         password,
+//       })
+//     });
+
+//     return false;
+//   } catch(error){
+//     console.error(`[ERROR] Failed to verify user: ` + error)
+//   }
+// }

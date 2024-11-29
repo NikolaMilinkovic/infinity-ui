@@ -1,5 +1,7 @@
+import { NewOrderContextTypes } from "../types/allTsTypes";
 import { popupMessage } from "../util-components/PopupMessage";
 import Constants from 'expo-constants';
+import { betterConsoleLog } from "./LogMethods";
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 interface BuyerDataObjectTypes {
   name: string
@@ -10,7 +12,7 @@ interface BuyerDataObjectTypes {
 }
 
 
-export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string, setBuyerDataObject:(data:BuyerDataObjectTypes) => void) => {
+export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string, orderCtx: NewOrderContextTypes) => {
   if(buyerInfo.trim() === ''){
     popupMessage('Morate uneti podatke o kupcu','danger')
     return;
@@ -32,13 +34,15 @@ export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string
       return false;
     }
     const parsedResponse = await response.json();
-    setBuyerDataObject({
+    betterConsoleLog('> Logging parsed data', parsedResponse.data);
+    orderCtx.setBuyerData({
       name: parsedResponse.data.name,
       address: parsedResponse.data.address,
       place: parsedResponse.data.place,
       phone: parsedResponse.data.phone,
       phone2: parsedResponse.data.phone2,
     });
+    orderCtx.setOrderNote(parsedResponse.data.orderNote);
     popupMessage(parsedResponse.message, 'success')
     return true;
 

@@ -11,6 +11,7 @@ import { useNetworkStatus } from './hooks/useNetworkStatus';
 import AuthStack from './navigation/AuthStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
 import { LogBox } from 'react-native';
+import { betterConsoleLog } from './util-methods/LogMethods';
 
 LogBox.ignoreLogs([
   'VirtualizedLists should never be nested inside plain ScrollViews', // Suppress the VirtualizedList nesting warning
@@ -22,6 +23,7 @@ LogBox.ignoreLogs([
  */
 function Navigation(){
   const authCtx = useContext(AuthContext);
+  betterConsoleLog('> Logging is Authenticated', authCtx.isAuthenticated);
 
   return (
       <NavigationContainer>
@@ -48,6 +50,10 @@ function Root(){
       const token = await AsyncStorage.getItem('token');
       if(token){
         authCtx.authenticate(token);
+        // if(authCtx.verifyToken(token)){
+        // } else {
+          // authCtx.logout();
+        // }
       } else {
         authCtx.logout();
       }

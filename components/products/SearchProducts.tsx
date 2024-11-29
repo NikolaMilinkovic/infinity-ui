@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState, useMemo } from 'react'
-import { View, StyleSheet, Animated, Pressable, Text, TouchableWithoutFeedback  } from 'react-native'
+import { View, StyleSheet, Animated, Pressable, Text, TouchableWithoutFeedback, ScrollView  } from 'react-native'
 import InputField from '../../util-components/InputField'
 import { Colors } from '../../constants/colors';
 import ExpandButton from '../../util-components/ExpandButton';
@@ -26,8 +26,9 @@ interface SearchProductsPropTypes {
 function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, updateSearchParam }: SearchProductsPropTypes) {
   // EXPAND ANIMATION & TOGGLING
   const screenHeight = Dimensions.get('window').height;
-  const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 172, 180);
+  const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 132, 180);
   const toggleFade = useToggleFadeAnimation(isExpanded, 180);
+  const styles = getStyles(isExpanded);
   function handleToggleExpand(){
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
   }
@@ -162,6 +163,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
 
   return (
     <View style={styles.container}>
+      {/* INPUT CONTAINER */}
       <View style={styles.inputContainer}>
         <InputField
           label='Pretraži proizvode'
@@ -178,152 +180,157 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
           containerStyles={styles.expandButton}
         />
       </View>
-        <Animated.View style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
-            <Animated.View style={{ opacity: toggleFade }}>
-              <Text style={styles.filtersH1}>Filteri</Text>
 
-              {/* ACTIVE INACTIVE */}
-              <View style={styles.radioGroupContainer}>
-                <Text style={styles.filtersH2absolute}>Izbor Aktivni | Neaktivni proizvodi</Text>
-                <View style={styles.radioGroup}>
-                  <RadioGroup 
-                    radioButtons={activeRadioButtons} 
-                    onPress={setAreActiveProducts}
-                    selectedId={areActiveProducts}
-                    layout='row'
-                  />
-                </View>
-              </View>
+      {/* FILTERS */}
+      <Animated.View style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
+          <Animated.View style={{ opacity: toggleFade, height: screenHeight - 172 }}>
+            <Text style={styles.filtersH1}>Filteri</Text>
 
-              {/* STOCK AVAILABILITY FILTER INPUT */}
-              <View style={styles.radioGroupContainer}>
-                <Text style={styles.filtersH2absolute}>Stanje na lageru</Text>
-                <View style={styles.radioGroup}>
-                  <RadioGroup 
-                    radioButtons={radioButtons} 
-                    onPress={setSelectedId}
-                    selectedId={selectedId}
-                    layout='row'
-                  />
-                </View>
-              </View>
-
-                {/* CATEGORIES FILTER INPUT */}
-                <DropdownList
-                  key={resetKey}
-                  data={[{_id: '', name: 'Resetuj izbor'}, ...categoriesCtx.categories]}
-                  onSelect={setSelectedCategory}
-                  placeholder='Izaberite kategoriju'
-                  isDefaultValueOn={false}
+            {/* ACTIVE INACTIVE */}
+            <View style={styles.radioGroupContainer}>
+              <Text style={styles.filtersH2absolute}>Izbor Aktivni | Neaktivni proizvodi</Text>
+              <View style={styles.radioGroup}>
+                <RadioGroup 
+                  radioButtons={activeRadioButtons} 
+                  onPress={setAreActiveProducts}
+                  selectedId={areActiveProducts}
+                  layout='row'
                 />
+              </View>
+            </View>
 
-                {/* SIZES FILTER INPUT */}
-                {(!selectedCategory || selectedCategory?.stockType === 'Boja-Veličina-Količina') && (
-                  <SizePickerCheckboxes
-                    sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
-                    selectedSizes={selectedSizes}
-                    setSelectedSizes={setSelectedSizes}
-                  />
-                )}
+            {/* STOCK AVAILABILITY FILTER INPUT */}
+            <View style={styles.radioGroupContainer}>
+              <Text style={styles.filtersH2absolute}>Stanje na lageru</Text>
+              <View style={styles.radioGroup}>
+                <RadioGroup 
+                  radioButtons={radioButtons} 
+                  onPress={setSelectedId}
+                  selectedId={selectedId}
+                  layout='row'
+                />
+              </View>
+            </View>
 
-                {/* COLORS FILTER INPUT */}
-                <View style={{ marginTop: 8, }}>
-                  <MultiDropdownList
-                    data={colorsData}
-                    setSelected={setSelectedColors}
-                    isOpen={true}
-                    label='Boje'
-                    placeholder='Filtriraj po bojama'
-                  />
-                </View>
-            </Animated.View>
-            {/* CLOSE BUTTON */}
-            <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
-              <Button
-                onPress={() => setIsExpanded(!isExpanded)}
-                backColor={Colors.highlight}
-                textColor={Colors.white}
-                containerStyles={{ marginBottom: 16, marginTop: 10}}
-              >
-                Zatvori
-              </Button>
-            </Animated.View>
-        </Animated.View>
+              {/* CATEGORIES FILTER INPUT */}
+              <DropdownList
+                key={resetKey}
+                data={[{_id: '', name: 'Resetuj izbor'}, ...categoriesCtx.categories]}
+                onSelect={setSelectedCategory}
+                placeholder='Izaberite kategoriju'
+                isDefaultValueOn={false}
+              />
+
+              {/* SIZES FILTER INPUT */}
+              {(!selectedCategory || selectedCategory?.stockType === 'Boja-Veličina-Količina') && (
+                <SizePickerCheckboxes
+                  sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
+                  selectedSizes={selectedSizes}
+                  setSelectedSizes={setSelectedSizes}
+                />
+              )}
+
+              {/* COLORS FILTER INPUT */}
+              <View style={{ marginTop: 8, }}>
+                <MultiDropdownList
+                  data={colorsData}
+                  setSelected={setSelectedColors}
+                  isOpen={true}
+                  label='Boje'
+                  placeholder='Filtriraj po bojama'
+                  dropdownStyles={{maxHeight: 150}}
+                />
+              </View>
+          </Animated.View>
+          {/* CLOSE BUTTON */}
+          <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
+            <Button
+              onPress={() => setIsExpanded(!isExpanded)}
+              backColor={Colors.highlight}
+              textColor={Colors.white}
+              containerStyles={{ marginBottom: 10, marginTop: -90, position: 'static'}}
+            >
+              Zatvori
+            </Button>
+          </Animated.View>
+      </Animated.View>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    backgroundColor: Colors.white,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    marginBottom: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 32,
-  },
-  inputField: {
-    marginTop: 18,
-    backgroundColor: Colors.white,
-    flex: 7,
-    height: 50
-  },
-  expandButton: {
-    position: 'relative',
-    flex: 1.5,
-    marginLeft: 10,
-    height: 45,
-    right: 0,
-    top: 10
-  },
-  searchParamsContainer: {
-    // flex: 1,
-  },
-  overlay: {
-    // flex: 1,
-  },
-  radioGroupContainer: {
-    padding: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    borderRadius: 4,
-    marginBottom: 8,
-    position: 'relative',
-    marginTop: 10
-  },
-  radioGroup: {
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  filtersH1: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.primaryDark
-  },
-  filtersH2: {
-    fontSize: 14,
-    color: Colors.primaryDark,
-    marginBottom: 8,
-    backgroundColor: Colors.white,
-    paddingHorizontal: 18
-  },
-  filtersH2absolute: {
-    fontSize: 14,
-    color: Colors.primaryDark,
-    marginBottom: 8,
-    position: 'absolute',
-    left: 10,
-    top: -12,
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    paddingHorizontal: 4
-  }
-})
+function getStyles(isExpanded?:boolean){
+  return StyleSheet.create({
+    container: {
+      paddingHorizontal: 16,
+      borderWidth: 0.5,
+      borderColor: Colors.primaryDark,
+      backgroundColor: Colors.white,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      flex: 1,
+      marginBottom: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 32,
+    },
+    inputField: {
+      marginTop: 18,
+      backgroundColor: Colors.white,
+      flex: 7,
+      height: 50
+    },
+    expandButton: {
+      position: 'relative',
+      flex: 1.5,
+      marginLeft: 10,
+      height: 45,
+      right: 0,
+      top: 10
+    },
+    searchParamsContainer: {
+      // flex: 1,
+    },
+    overlay: {
+      // flex: 1,
+    },
+    radioGroupContainer: {
+      padding: 10,
+      borderWidth: 0.5,
+      borderColor: Colors.primaryDark,
+      borderRadius: 4,
+      marginBottom: 8,
+      position: 'relative',
+      marginTop: 10
+    },
+    radioGroup: {
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    filtersH1: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: Colors.primaryDark
+    },
+    filtersH2: {
+      fontSize: 14,
+      color: Colors.primaryDark,
+      marginBottom: 8,
+      backgroundColor: Colors.white,
+      paddingHorizontal: 18
+    },
+    filtersH2absolute: {
+      fontSize: 14,
+      color: Colors.primaryDark,
+      marginBottom: 8,
+      position: 'absolute',
+      left: 10,
+      top: -12,
+      backgroundColor: Colors.white,
+      borderRadius: 4,
+      paddingHorizontal: 4
+    }
+  })
+}
 
 export default SearchProducts

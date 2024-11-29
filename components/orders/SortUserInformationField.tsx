@@ -13,11 +13,6 @@ import GalleryImagePicker from '../../util-components/GalleryImagePicker';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { handleBuyerDataInputSort } from '../../util-methods/InputSortMethods';
 
-interface BuyerDataObjectTypes {
-  name: string
-  address: string
-  phone: number
-}
 interface PropTypes {
   isExpanded: boolean
   setIsExpanded: (expanded: boolean) => void
@@ -34,7 +29,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
   // Expand animation that makescontent visible when expanded
   // Used to fix the padding issue when expand is collapsed
   const [isContentVisible, setIsContentVisible] = useState(false);
-  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 711, 180);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 831, 180);
 
   function handleToggleExpand(){
     if (isExpanded) {
@@ -46,7 +41,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
 
   // Sends buyer data for sorting and resets the input field
   async function handleInputSort(){
-    const result = await handleBuyerDataInputSort(authCtx.token || '', buyerInfo, orderCtx.setBuyerData);
+    const result = await handleBuyerDataInputSort(authCtx.token || '', buyerInfo, orderCtx);
     if(result) setBuyerInfo('');
   }
 
@@ -134,6 +129,16 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
             containerStyles={styles.inputFieldStyle}
             keyboard='numeric'
           />
+          <InputField
+            label='Napomena za porudžbinu'
+            inputText={orderCtx?.orderNote}
+            setInputText={(text:(string | number | undefined)) => orderCtx.setOrderNote((prev) => ({...prev, orderNote: text}))}
+            containerStyles={styles.deliveryRemarkInput}
+            selectTextOnFocus={true}
+            multiline={true}
+            numberOfLines={4}
+            labelBorders={false}
+          />
           <Button
             backColor={Colors.highlight}
             textColor={Colors.white}
@@ -182,6 +187,11 @@ const styles = StyleSheet.create({
   },
   inputFieldStyle: {
     marginVertical: 8
+  },
+  deliveryRemarkInput: {
+    justifyContent: 'flex-start',
+    textAlignVertical: 'top',
+    marginVertical: 8,
   }
 })
 

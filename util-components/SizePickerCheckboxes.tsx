@@ -70,9 +70,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    paddingHorizontal: 16,
   },
   checkboxWrapper: {
-    marginVertical: 4,
     alignItems: 'center',
   },
 });
