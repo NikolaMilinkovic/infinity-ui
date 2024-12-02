@@ -64,18 +64,18 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
   // Event handlers for socket updates
   function handleActivePurseAdded(newPurse: PurseTypes) {
     if(newPurse.active){
-      setActivePurses(prev => [...prev, newPurse]);
+      setActivePurses(prev => [newPurse, ...prev]);
     } else {
-      setInactivePurses(prev => [...prev, newPurse]);
+      setInactivePurses(prev => [newPurse, ...prev]);
     }
     // setActivePurses((prevPurses) => [...prevPurses, newPurse]);
   }
 
   function handleInactivePurseAdded(newPurse: PurseTypes) {
     if(newPurse.active){
-      setActivePurses(prev => [...prev, newPurse]);
+      setActivePurses(prev => [newPurse, ...prev]);
     } else {
-      setInactivePurses(prev => [...prev, newPurse]);
+      setInactivePurses(prev => [newPurse, ...prev]);
     }
     // setInactivePurses((prevPurses) => [...prevPurses, newPurse]);
   }

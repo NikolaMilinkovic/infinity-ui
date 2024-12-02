@@ -52,6 +52,8 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
   setDeliveryRemark: () => {},
   orderNotes: '',
   setOrderNotes: () => {},
+  reservationDate: null,
+  setReservationDate: () => {},
 })
 
 function NewOrderContextProvider({ children }: ContextChildrenTypes){
@@ -67,8 +69,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const [internalRemark, setInternalRemark] = useState('');
   const [deliveryRemark, setDeliveryRemark] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
-
-
+  const [reservationDate, setReservationDate] = useState<Date>( new Date() );
 
   // Check to see if all products have selectedColor & selectedSize where applicable
   function validateProductData(){
@@ -109,6 +110,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     if (price.productsPrice !== undefined) order.append('productsPrice', price.productsPrice.toString());
     if (price.totalPrice !== undefined) order.append('totalPrice', price.totalPrice.toString());
     order.append('reservation', isReservation.toString());
+    if(isReservation === true) order.append('reservationDate', reservationDate.toISOString());
     order.append('packedIndicator', 'false');
     order.append('packed', 'false');
     order.append('processed', 'false');
@@ -319,7 +321,9 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     setDeliveryRemark: setDeliveryRemark,
     orderNotes,
     setOrderNotes: setOrderNotes,
-  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice, weight, orderValue, internalRemark, deliveryRemark, orderNotes]);
+    reservationDate,
+    setReservationDate: setReservationDate,
+  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice, weight, orderValue, internalRemark, deliveryRemark, orderNotes, reservationDate]);
 
   return <NewOrderContext.Provider value={value}>{ children }</NewOrderContext.Provider>
 }

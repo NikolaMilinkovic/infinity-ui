@@ -110,7 +110,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   // }, [unprocessedOrders])
 
   function handleOrderAdded(newOrder: OrderTypes){
-    setUnprocessedOrders((prev) => [...prev, newOrder]);
+    setUnprocessedOrders((prev) => [newOrder, ...prev]);
   }
   function handleOrderUpdated(updatedOrder: OrderTypes){
     const hasAllIds = updatedOrder.products.every(product => product._id);

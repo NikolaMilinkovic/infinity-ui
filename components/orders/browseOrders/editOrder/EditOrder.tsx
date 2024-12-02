@@ -48,8 +48,9 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   const [products, setProducts] = useState(editedOrder?.products);
   
   const [isReservation, setIsReservation] = useState(editedOrder?.reservation);
+  const [reservationDate, setReservationDate] = useState(editedOrder?.reservationDate || new Date());
   const [isPacked, setIsPacked] = useState(editedOrder?.packed);
-  
+
   const [productsPrice, setProductsPrice] = useState(editedOrder?.productsPrice);
   const [deliveryPrice, setDeliveryPrice] = useState(editedOrder?.courier?.deliveryPrice);
   const [totalPrice, setTotalPrice] = useState(editedOrder?.totalPrice);
@@ -252,16 +253,47 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         {/* Reservation */}
         <View style={styles.radioGroupContainer}>
           <Text style={styles.radioGroupHeader}>Rezervacija:</Text>
-            <CustomCheckbox
-              label={'Da'}
-              checked={isReservation === true}
-              onCheckedChange={() => setIsReservation(true)}
-            />
-            <CustomCheckbox
-              label={'Ne'}
-              checked={isReservation === false}
-              onCheckedChange={() => setIsReservation(false)}
-            />
+          <CustomCheckbox
+            label={'Da'}
+            checked={isReservation === true}
+            onCheckedChange={() => setIsReservation(true)}
+          />
+          <CustomCheckbox
+            label={'Ne'}
+            checked={isReservation === false}
+            onCheckedChange={() => setIsReservation(false)}
+          />
+
+          {/* DATE PICKER */}
+          {/* {isReservation === true && ( */}
+            {/* <View style={styles.radioGroupContainer}> */}
+            {/* {reservationDate && pickedDateDisplay && ( */}
+              {/* <View style={styles.dateDisplayContainer}> */}
+                {/* <Text style={styles.dateLabel}>Izabrani datum:</Text> */}
+                {/* <Text style={styles.dateText}>{formatDateHandler(orderCtx.reservationDate)}</Text> */}
+              {/* </View> */}
+            {/* )} */}
+            {/* <Text style={styles.filtersH2absolute}>Datum rezervacije</Text> */}
+              {/* <View style={styles.dateButtonsContainer}> */}
+                {/* <Button */}
+                  {/* containerStyles={styles.dateButton} */}
+                  {/* onPress={handleOpenDatePicker} */}
+                {/* > */}
+                  {/* Izaberi datum */}
+                {/* </Button> */}
+              {/* </View> */}
+
+              {/* {showDatePicker && ( */}
+                {/* <DateTimePicker */}
+                  {/* value={orderCtx.reservationDate} */}
+                  {/* mode='date' */}
+                  {/* is24Hour={true} */}
+                  {/* onChange={handleDatePick} */}
+                  {/* onTouchCancel={handleDateReset} */}
+                {/* /> */}
+              {/* )} */}
+            {/* </View> */}
+          {/* )} */}
         </View>
 
         {/* Packed */}

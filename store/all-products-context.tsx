@@ -51,16 +51,16 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
   // SOCKET METHODS
   function activeProductAddedHandler(newProduct: DressTypes | PurseTypes){
     if(newProduct.active){
-        setActiveProducts(prev => [...prev, newProduct]);
+        setActiveProducts(prev => [newProduct, ...prev ]);
     } else {
-        setInactiveProducts(prev => [...prev, newProduct]);
+        setInactiveProducts(prev => [newProduct, ...prev ]);
     }
   }
   function inactiveProductAddedHandler(newProduct: DressTypes | PurseTypes){
     if(newProduct.active){
-      setActiveProducts(prev => [...prev, newProduct]);
+      setActiveProducts(prev => [newProduct, ...prev ]);
     } else {
-      setInactiveProducts(prev => [...prev, newProduct]);
+      setInactiveProducts(prev => [newProduct, ...prev ]);
     }
     // setInactiveProducts(prev => [...prev, newProduct]);
   }
@@ -86,7 +86,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
         const movedProduct = prevInactive.find((product) => product._id === productId);
         if (movedProduct) {
             const updatedInactiveProducts = prevInactive.filter(product => product._id !== productId);
-            setActiveProducts(prevActive => [...prevActive, movedProduct]);
+            setActiveProducts(prevActive => [movedProduct, ...prevActive]);
             return updatedInactiveProducts;
         }
         return prevInactive;

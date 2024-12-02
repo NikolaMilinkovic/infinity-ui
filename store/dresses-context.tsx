@@ -63,11 +63,11 @@ function DressesContextProvider({ children }: DressContextProviderType) {
 
   // Event handlers for socket updates
   function handleActiveDressAdded(newDress: DressTypes) {
-    setActiveDresses((prevDresses) => [...prevDresses, newDress]);
+    setActiveDresses((prevDresses) => [newDress, ...prevDresses]);
   }
 
   function handleInactiveDressAdded(newDress: DressTypes) {
-    setInactiveDresses((prevDresses) => [...prevDresses, newDress]);
+    setInactiveDresses((prevDresses) => [newDress, ...prevDresses]);
   }
 
   function handleActiveDressRemoved(dressId: string) {

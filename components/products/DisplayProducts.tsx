@@ -1,5 +1,5 @@
 import React, { useContext, useState, useMemo, useEffect } from 'react'
-import { View, StyleSheet, Pressable, Share } from 'react-native'
+import { View, StyleSheet, Pressable, Share, Text } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler';
 import SearchProducts from './SearchProducts';
 import DisplayProduct from './display_product/DisplayProduct';
@@ -170,6 +170,9 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
           }
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.productsContainer}
+          ListHeaderComponent={() => 
+            <Text style={styles.listHeader}>Ukupno Proizvoda: {filteredData.length}</Text>
+          }
         />
       )}
     </View>
@@ -183,6 +186,11 @@ const styles = StyleSheet.create({
   },
   productsContainer: {
     flexGrow: 1,
+  },
+  listHeader: {
+    fontWeight: 'bold',
+    fontSize: 14,
+    textAlign: 'center'
   },
 })
 

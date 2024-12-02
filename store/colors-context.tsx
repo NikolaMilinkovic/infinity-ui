@@ -4,6 +4,7 @@ import { SocketContext } from "./socket-context";
 import Color from "../models/Color";
 import { ColorTypes } from "../types/allTsTypes";
 import Constants from 'expo-constants';
+import { sortByProperty } from "../util-methods/SortingMethods";
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 
@@ -38,38 +39,34 @@ function ColorsContextProvider({ children }: ColorsContextProviderType){
   const getColorsHandler = () => {
     return colors;
   }
-  async function fetchColors(token:string){
+  async function fetchColors(token: string) {
     try {
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colors`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
-        }
+        },
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to fetch colors');
       }
-
+  
       const data = await response.json();
-      if(data.length > 0){
-        const colorsArr: ColorTypes[] = [];
-        data.forEach((entry) => {
-          const newColor = new Color(
-            entry._id,
-            entry.name,
-            entry.colorCode
-          )
-          colorsArr.push(newColor);
-        });
-        setColors(colorsArr);
+      if (data.length > 0) {
+        const colorsArr = data.map((entry) => new Color(entry._id, entry.name, entry.colorCode));
+        
+        // Sort colors alphabetically by name
+        const sortedColors = sortByProperty(colorsArr, 'name');
+        
+        setColors(sortedColors);
       }
-      
     } catch (error) {
       console.error('Error fetching colors:', error);
     }
   }
+  
 
   useEffect(() => {
     if(token) fetchColors(token);

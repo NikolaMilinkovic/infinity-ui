@@ -9,6 +9,8 @@ import SearchReservations from '../../components/reservations/SearchReservations
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import ReservationsItemsList from '../../components/reservations/ReservationsItemsList';
 import { OrderTypes } from '../../types/allTsTypes';
+import filterReservations from '../../components/reservations/filterReservations';
+import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 interface SearchParamsTypes {
   ascending: boolean,
@@ -37,8 +39,10 @@ function BrowseReservations() {
   }
 
   const filteredData = useMemo(() => {
-    if(isDatePicked) return searchReservations(searchData, ordersCtx.customReservationsSet, searchParams);
-    return searchReservations(searchData, ordersCtx.unprocessedOrders, searchParams);
+    // if(isDatePicked) return searchReservations(searchData, ordersCtx.customReservationsSet, searchParams);
+    // return searchReservations(searchData, ordersCtx.unprocessedOrders, searchParams);
+    const filteredRes = filterReservations(ordersCtx.unprocessedOrders);
+    return filteredRes;
   }, [ordersCtx.customReservationsSet, ordersCtx.unprocessedOrders, searchData, searchParams, isDatePicked]);
   
   const overlayView = useFadeTransitionReversed(editedReservation === null, 500, 150);
@@ -48,16 +52,16 @@ function BrowseReservations() {
       {editedReservation === null ? (
         <View style={styles.reservationsContainer}>
           <Animated.View style={[overlayView, styles.overlayView]}/>
-          <SearchReservations
+          {/* <SearchReservations
             searchData={searchData} 
             setSearchData={setSearchData} 
             updateSearchParam={updateSearchParam} 
             isDatePicked={isDatePicked}
             setIsDatePicked={setIsDatePicked}
             setPickedDate={setPickedDate}
-          />
+          /> */}
           <ReservationsItemsList
-            data={filteredData as OrderTypes[]}
+            data={filteredData}
             setEditedReservation={setEditedReservation}
             isDatePicked={isDatePicked}
             pickedDate={pickedDate}

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import { Animated as RNAnimated } from 'react-native'
 import Button from '../../util-components/Button'
 import { OrdersContext } from '../../store/orders-context';

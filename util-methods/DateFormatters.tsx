@@ -8,6 +8,15 @@ export function getFormattedDate(date: string | Date): string {
   }).replace(/\//g, '.');;
 }
 
+export function getFormattedDateWithoutTime(date: string | Date): string {
+  return new Date(date).toLocaleDateString('en-GB', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).replace(/\//g, '.');;
+}
+
 /**
  * @param separator - String value that separates the date, like '-' or '.' | Defaults to '.'
  * @returns - Current date in DD.MM.YYYY

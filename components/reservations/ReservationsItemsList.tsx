@@ -9,12 +9,26 @@ import ConfirmationModal from '../../util-components/ConfirmationModal';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
 import ReservationItem from './ReservationItem';
 import BatchModeReservationsControlls from './BatchModeReservationsControlls';
+import { getFormattedDateWithoutTime } from '../../util-methods/DateFormatters';
+import { betterConsoleLog } from '../../util-methods/LogMethods';
+import { useExpandAnimation } from '../../hooks/useExpand';
+import Button from '../../util-components/Button';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Colors } from '../../constants/colors';
+import { opacity } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
+import { useFadeAnimation } from '../../hooks/useFadeAnimation';
+import { useFadeTransition } from '../../hooks/useFadeTransition';
+import Animated from 'react-native-reanimated';
 
 interface RenderPropType {
   item: OrderTypes
 }
+interface DataTypes {
+  date: Date
+  reservations: OrderTypes[]
+}
 interface PropTypes {
-  data: OrderTypes[]
+  data: DataTypes[]
   setEditedReservation: (order: OrderTypes | null) => void
   isDatePicked: boolean
   pickedDate: string
@@ -80,8 +94,17 @@ function ReservationsItemsList({ data, setEditedReservation, isDatePicked, picke
     });
   }
 
+  const [numOfReservations, setNumOfReservations] = useState(0);
+  useEffect(() => {
+    let count = 0;
+    for(const obj of data){
+      count += obj.reservations.length;
+    }
+    setNumOfReservations(count);
+  }, [data])
+
   return (
-    <View>
+    <View style={{ flex: 1, minHeight: '100%' }}>
       <ConfirmationModal
         isVisible={isModalVisible}
         onConfirm={confirmAction}
@@ -98,36 +121,78 @@ function ReservationsItemsList({ data, setEditedReservation, isDatePicked, picke
       )}
       <FlatList 
         data={data} 
-        keyExtractor={(item) => item._id} 
+        keyExtractor={(item, index) => `item-${index}-${item.date}`} 
         renderItem={({item, index}) => 
-          <Pressable
-            delayLongPress={100}
-
-          >
-            <ReservationItem
-              order={item} 
-              setEditedOrder={setEditedReservation} 
-              highlightedItems={selectedReservations}
-              batchMode={batchMode}
-              onRemoveHighlight={handlePress}
-              onPress={handlePress}
-              onLongPress={handleLongPress}
-            />
-          </Pressable>
+          <ReservationsGroup
+            data={item}
+            setEditedReservation={setEditedReservation}
+            selectedReservations={selectedReservations}
+            batchMode={batchMode}
+            handlePress={handlePress}
+            handleLongPress={handleLongPress}
+            key={`${index}-${item.date}`}
+          />
         }
         style={styles.list}
         contentContainerStyle={styles.listContainer}
         ListHeaderComponent={() => {
             return isDatePicked ? (
-              <Text style={styles.listHeader}>Ukupno Rezervacija za {pickedDate}: {data.length}</Text>
+              <Text style={styles.listHeader}>Ukupno Rezervacija za {pickedDate}: {numOfReservations}</Text>
             ):(
-              <Text style={styles.listHeader}>Ukupno Rezervacija: {data.length}</Text>
+              <Text style={styles.listHeader}>Ukupno Rezervacija: {numOfReservations}</Text>
             )
           }
         }
         initialNumToRender={10}
       />
     </View>
+  )
+}
+
+interface ItemTypes {
+  date: Date
+  reservations: OrderTypes
+}
+
+function ReservationsGroup({data, setEditedReservation, selectedReservations, batchMode, handlePress, handleLongPress}: any){
+  const [isExpanded, setIsExpanded] = useState(true);
+  const fade = useFadeTransition(isExpanded, 280);
+
+  return(
+    <>
+      <Pressable onPress={() => setIsExpanded(!isExpanded)} style={ResGroupStyles.headerContainer}>
+        <Text style={ResGroupStyles.header}>{getFormattedDateWithoutTime(data.date)} - Rezervacija: {data.reservations.length}</Text>
+        <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={ResGroupStyles.iconStyle} size={26} color={Colors.white}/>
+      </Pressable>
+      <Animated.View style={fade}>
+        {isExpanded && (
+          <>
+            <FlatList 
+              data={data.reservations} 
+              style={ResGroupStyles.list}
+              keyExtractor={(item, index) => `list-${index}`} 
+              renderItem={({item}) => 
+                <Pressable
+                  delayLongPress={100}
+
+                >
+                  <ReservationItem
+                    order={item} 
+                    setEditedOrder={setEditedReservation} 
+                    highlightedItems={selectedReservations}
+                    batchMode={batchMode}
+                    onRemoveHighlight={handlePress}
+                    onPress={handlePress}
+                    onLongPress={handleLongPress}
+                  />
+                </Pressable>
+              }
+              initialNumToRender={10}
+            />
+          </>
+        )}
+      </Animated.View>
+    </>
   )
 }
 
@@ -143,9 +208,36 @@ function getStyles(batchMode: boolean){
     listContainer: {
       gap: 6,
       paddingBottom: batchMode ? 82 : 22,
-      
+      backgroundColor: Colors.primaryLight,
+      overflow: 'hidden'
     },
   })
 }
+
+const ResGroupStyles = StyleSheet.create({
+  headerContainer: {
+    padding: 10,
+    borderRadius: 4,
+    borderWidth: 0.5,
+    borderColor: Colors.primaryDark,
+    backgroundColor: Colors.secondaryDark,
+    marginBottom: 6,
+    flexDirection: 'row'
+  },
+  iconStyle: {
+    marginLeft:'auto'
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: Colors.white
+  },
+  container: {
+    paddingHorizontal: 8,
+  },
+  list: {
+    gap: 5,
+  }
+})
 
 export default ReservationsItemsList

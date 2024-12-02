@@ -245,6 +245,7 @@ function getStyles(onStock:boolean, isHighlighted:boolean){
       fontWeight: 'bold',
       color: Colors.primaryDark,
       maxHeight: 40,
+      maxWidth: '85%',
     },
     soldText: {
       color: Colors.error,

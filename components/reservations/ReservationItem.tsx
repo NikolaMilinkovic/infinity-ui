@@ -3,7 +3,7 @@ import { Animated, Image, Pressable, Text, View } from 'react-native'
 import { ImageTypes, OrderTypes } from '../../types/allTsTypes';
 import { StyleSheet } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { getFormattedDate } from '../../util-methods/DateFormatters';
+import { getFormattedDate, getFormattedDateWithoutTime } from '../../util-methods/DateFormatters';
 import ImagePreviewModal from '../../util-components/ImagePreviewModal';
 import useImagePreviewModal from '../../hooks/useImagePreviewModal';
 import { useExpandAnimation } from '../../hooks/useExpand';
@@ -89,6 +89,12 @@ function ReservationItem({ order, setEditedOrder, highlightedItems, batchMode, o
             <Text>{order.buyer.name}</Text>
             <Text>{order.buyer.address}, {order.buyer.place}</Text>
             <Text>{order.buyer.phone}</Text>
+            {order.reservation && order.reservationDate && (
+              <>
+                <Text style={{fontWeight: 'bold'}}>Rezervisano za:</Text>
+                <Text style={{fontWeight: 'bold'}}>{getFormattedDateWithoutTime(order.reservationDate)}</Text>
+              </>
+            )}
             {order.orderNotes && (
               <Text style={styles.orderNoteIndicator}>NAPOMENA</Text>
             )}

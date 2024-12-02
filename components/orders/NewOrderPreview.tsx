@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Animated, NativeSyntheticEvent, Pressable, StyleSheet, Text, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
 import { NewOrderContext } from '../../store/new-order-context';
 import { popupMessage } from '../../util-components/PopupMessage';
 import InputField from '../../util-components/InputField';
 import CustomCheckbox from '../../util-components/CustomCheckbox';
+import Button from '../../util-components/Button';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 
 interface PropTypes {
@@ -37,6 +39,42 @@ function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPric
 
   function handleToggleExpand(){
     setIsExpanded(!isExpanded)
+  }
+
+  // DATE PICKER
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [pickedDateDisplay, setPickedDateDisplay] = useState<Date | string>( new Date() );
+  function formatDateHandler(date: Date){
+    return date.toLocaleDateString(
+      'en-GB', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }
+    )
+  }
+
+  function handleSetPickedDate(date: Date){
+    const formattedDate = date.toISOString().split('T')[0].split('-').reverse().join('/');
+    setPickedDateDisplay(formattedDate);
+  }
+  function handleOpenDatePicker(){
+    setShowDatePicker(true);
+  }
+  const handleDatePick = async (e:NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
+    if(e.type === "set"){
+      orderCtx.setReservationDate(selectedDate);
+      // setIsDatePicked(true);
+      // await handleFetchReservationsByDate(selectedDate, token);
+      handleSetPickedDate(selectedDate);
+    }
+
+    setShowDatePicker(false);
+  }
+  const handleDateReset = () => {
+    orderCtx.setReservationDate(null);
+    setShowDatePicker(false);
+    setPickedDateDisplay('');
   }
 
   return (
@@ -155,6 +193,37 @@ function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPric
                 onCheckedChange={() => orderCtx.setIsReservation(false)}
               />
             </View>
+
+          {/* DATE PICKER */}
+          {orderCtx.isReservation === true && (
+            <View style={styles.radioGroupContainer}>
+            {orderCtx.reservationDate && pickedDateDisplay && (
+              <View style={styles.dateDisplayContainer}>
+                {/* <Text style={styles.dateLabel}>Izabrani datum:</Text> */}
+                <Text style={styles.dateText}>{formatDateHandler(orderCtx.reservationDate)}</Text>
+              </View>
+            )}
+            <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+              <View style={styles.dateButtonsContainer}>
+                <Button
+                  containerStyles={styles.dateButton}
+                  onPress={handleOpenDatePicker}
+                >
+                  Izaberi datum
+                </Button>
+              </View>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={orderCtx.reservationDate}
+                  mode='date'
+                  is24Hour={true}
+                  onChange={handleDatePick}
+                  onTouchCancel={handleDateReset}
+                />
+              )}
+            </View>
+          )}
 
             <Text style={styles.header2}>Ostale informacije:</Text>
             <View style={styles.rowContainer}>
@@ -283,7 +352,51 @@ const styles = StyleSheet.create({
     marginTop: 16,
     justifyContent: 'flex-start',
     textAlignVertical: 'top'
-  }
+  },
+  dateButtonsContainer: {
+    flexDirection: 'row',
+    gap: 10
+  },
+  dateButton: {
+    flex: 1,
+    backgroundColor: Colors.secondaryLight,
+    color: Colors.primaryDark
+  },
+  dateDisplayContainer: {
+    flexDirection: 'column',
+    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dateLabel: {
+  },
+  dateText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.highlight,
+    lineHeight: 16,
+    marginBottom: 8,
+  },
+  filtersH2absolute: {
+    fontSize: 14,
+    color: Colors.primaryDark,
+    marginBottom: 8,
+    position: 'absolute',
+    left: 10,
+    top: -12,
+    backgroundColor: Colors.primaryLight,
+    borderRadius: 4,
+    paddingHorizontal: 4
+  },
+  radioGroupContainer: {
+    padding: 10,
+    borderWidth: 0.5,
+    borderColor: Colors.primaryDark,
+    borderRadius: 4,
+    marginBottom: 8,
+    paddingTop: 20,
+    marginTop: 10,
+  },
 })
 
 export default NewOrderPreview

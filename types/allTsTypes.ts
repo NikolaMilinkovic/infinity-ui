@@ -168,6 +168,8 @@ export interface NewOrderContextTypes {
   setDeliveryRemark: (deliveryRemark: string) => void,
   orderNotes: string,
   setOrderNotes: (note: string) => void,
+  reservationDate: Date,
+  setReservationDate: (date: Date) => void
 }
 
 export interface CourierTypes {
@@ -198,6 +200,7 @@ export interface OrderTypes {
   internalRemark: string
   deliveryRemark: string
   orderNotes: string
+  reservationDate: Date
 }
 
 export interface ProcessedOrderStatisticsFileTypes {
