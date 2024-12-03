@@ -25,6 +25,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 interface PropTypes {
   editedOrder: OrderTypes | null
   setEditedOrder: (order: OrderTypes | null) => void
+  onBackClickMethod?: () => void
 }
 interface CourierTypes {
   _id: string
@@ -33,6 +34,7 @@ interface CourierTypes {
 }
 
 function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
+
   const [showAddItemModal, setShowAddItemModal] = useState(false);
   const couriersCtx = useContext(CouriersContext);
   const [name, setName] = useState<string | number | undefined>(editedOrder?.buyer.name || '');
@@ -409,6 +411,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    backgroundColor: Colors.primaryLight
   },
   sectionContainer: {
     padding: 10,

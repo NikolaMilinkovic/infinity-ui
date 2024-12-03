@@ -137,7 +137,7 @@ function getStyles(batchMode: boolean){
     listHeader: {
       fontWeight: 'bold',
       fontSize: 14,
-      textAlign: 'center'
+      textAlign: 'center',
     },
     listContainer: {
       gap: 6,

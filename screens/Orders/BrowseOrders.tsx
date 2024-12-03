@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Modal } from 'react-native';
 import { OrdersContext } from '../../store/orders-context';
 import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
 import SearchOrders from '../../components/orders/browseOrders/SearchOrders';
@@ -8,6 +8,7 @@ import { searchOrders } from '../../util-methods/OrderFilterMethods';
 import Animated from 'react-native-reanimated';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
+import { Colors } from '../../constants/colors';
 
 interface SearchParamsTypes {
   processed: boolean
@@ -27,6 +28,7 @@ function BrowseOrders() {
   const [pickedDate, setPickedDate] = useState('');
   useBackClickHandler(!!editedOrder, removeEditedOrder);
   function removeEditedOrder(){
+    console.log('> removeEditedOrder called')
     setEditedOrder(null);
   }
 
@@ -61,32 +63,35 @@ function BrowseOrders() {
 
   return (
     <>
-      {editedOrder === null ? (
-        <View style={styles.ordersListContainer}>
-          <Animated.View style={[overlayView, styles.overlayView]} />
-          <SearchOrders 
-            searchData={searchData} 
-            setSearchData={setSearchData} 
-            updateSearchParam={updateSearchParam} 
-            isDatePicked={isDatePicked}
-            setIsDatePicked={setIsDatePicked}
-            setPickedDate={setPickedDate}
-          />
-          <OrderItemsList 
-            data={filteredData} 
-            setEditedOrder={setEditedOrder} 
-            isDatePicked={isDatePicked} 
-            pickedDate={pickedDate} 
-          />
-        </View>
-      ) : (
-        <Animated.View style={editOrderFade}> 
-          <EditOrder
-            editedOrder={editedOrder}
-            setEditedOrder={setEditedOrder}
-          />
-        </Animated.View>
-      )}
+      <View style={styles.ordersListContainer}>
+        <Animated.View style={[overlayView, styles.overlayView]} />
+        <SearchOrders 
+          searchData={searchData} 
+          setSearchData={setSearchData} 
+          updateSearchParam={updateSearchParam} 
+          isDatePicked={isDatePicked}
+          setIsDatePicked={setIsDatePicked}
+          setPickedDate={setPickedDate}
+        />
+        <OrderItemsList 
+          data={filteredData} 
+          setEditedOrder={setEditedOrder} 
+          isDatePicked={isDatePicked} 
+          pickedDate={pickedDate} 
+        />
+      </View>
+      <Modal
+        animationType="slide"
+        visible={editedOrder !== null}
+        onRequestClose={removeEditedOrder}
+        >
+          <Animated.View style={editOrderFade}> 
+            <EditOrder
+              editedOrder={editedOrder}
+              setEditedOrder={setEditedOrder}
+            />
+          </Animated.View>
+      </Modal>
     </>
   );
 }

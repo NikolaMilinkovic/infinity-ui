@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { Modal, StyleSheet, View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import DisplayProducts from '../../../components/products/DisplayProducts';
 import { ProductTypes } from '../../../types/allTsTypes';
@@ -19,21 +19,24 @@ function BrowseProducts() {
   
   return (
     <>
-      {editedProduct === null ? (
-        <View>
-          <Animated.View style={[overlayView, styles.overlayView]}/>
-          <DisplayProducts
-            setEditItem={setEditedProduct}
-          />
-        </View>
-      ) : (
+      <View>
+        <Animated.View style={[overlayView, styles.overlayView]}/>
+        <DisplayProducts
+          setEditItem={setEditedProduct}
+        />
+      </View>
+      <Modal
+        animationType="slide"
+        visible={editedProduct !== null}
+        onRequestClose={handleRemoveEditedProduct}
+        >
         <Animated.View style={editProductFade}>
           <EditProductComponent
             item={editedProduct}
             setItem={setEditedProduct}
           />
         </Animated.View>
-      )}
+      </Modal>
     </>
   )
 }

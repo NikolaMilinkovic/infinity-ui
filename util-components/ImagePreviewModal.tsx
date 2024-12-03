@@ -44,13 +44,13 @@ function ImagePreviewModal({ isVisible, onCancel, image }: ImageModalPropTypes) 
                     pressedStyles={styles.shareButtonPressed}
                   />
                 </View>
-                <Button
+                {/* <Button
                   backColor={Colors.highlight}
                   textColor={Colors.white}
                   onPress={onCancel}
                 >
                   Zatvori
-                </Button>
+                </Button> */}
               </View>
           </TouchableWithoutFeedback>
         </Animated.View>
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.76)',
     position: 'absolute',
     top: 0,
     left: 0,
@@ -75,14 +75,14 @@ const styles = StyleSheet.create({
     zIndex: 999
   },
   modalContent: {
-    width: '80%',
+    width: '100%',
     marginHorizontal: 100,
     height: '70%',
     marginVertical: 100,
     padding: 20,
-    backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',
+    backgroundColor: 'black'
   },
   imageContainer: {
     borderRadius: 4,
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   shareButtonContainer : {
     position: 'absolute',
-    bottom: 60,
+    bottom: 10,
     right: 10,
     borderRadius: 100,
     overflow: 'hidden',
@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     maxWidth: '100%',
-    gap: 10,
     alignItems: 'center',
   },
   button: {

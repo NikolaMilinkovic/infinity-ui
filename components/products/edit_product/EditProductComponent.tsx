@@ -294,6 +294,7 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     padding: 16,
+    backgroundColor: Colors.primaryLight
   },
   sectionText: {
     fontSize: 18,

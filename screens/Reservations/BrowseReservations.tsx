@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { OrdersContext } from '../../store/orders-context'
 import useBackClickHandler from '../../hooks/useBackClickHandler'
 import { searchReservations } from '../../util-methods/ReservationFilterMethods';
-import { StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useFadeTransition, useFadeTransitionReversed } from '../../hooks/useFadeTransition';
 import SearchReservations from '../../components/reservations/SearchReservations';
@@ -22,8 +22,8 @@ function BrowseReservations() {
   const [editedReservation, setEditedReservation] = useState<OrderTypes | null>(null);
   const [isDatePicked, setIsDatePicked] = useState(false);
   const [pickedDate, setPickedDate] = useState('');
-  useBackClickHandler(!!editedReservation, removeEditedORder);
-  function removeEditedORder(){
+  useBackClickHandler(!!editedReservation, removeEditedReservation);
+  function removeEditedReservation(){
     setEditedReservation(null);
   }
   
@@ -49,32 +49,35 @@ function BrowseReservations() {
   const editOrderFade = useFadeTransition(editedReservation !== null);
   return (
     <>
-      {editedReservation === null ? (
-        <View style={styles.reservationsContainer}>
-          <Animated.View style={[overlayView, styles.overlayView]}/>
-          {/* <SearchReservations
-            searchData={searchData} 
-            setSearchData={setSearchData} 
-            updateSearchParam={updateSearchParam} 
-            isDatePicked={isDatePicked}
-            setIsDatePicked={setIsDatePicked}
-            setPickedDate={setPickedDate}
-          /> */}
-          <ReservationsItemsList
-            data={filteredData}
-            setEditedReservation={setEditedReservation}
-            isDatePicked={isDatePicked}
-            pickedDate={pickedDate}
-          />
-        </View>
-      ) : (
+      <View style={styles.reservationsContainer}>
+        <Animated.View style={[overlayView, styles.overlayView]}/>
+        {/* <SearchReservations
+          searchData={searchData} 
+          setSearchData={setSearchData} 
+          updateSearchParam={updateSearchParam} 
+          isDatePicked={isDatePicked}
+          setIsDatePicked={setIsDatePicked}
+          setPickedDate={setPickedDate}
+        /> */}
+        <ReservationsItemsList
+          data={filteredData}
+          setEditedReservation={setEditedReservation}
+          isDatePicked={isDatePicked}
+          pickedDate={pickedDate}
+        />
+      </View>
+      <Modal
+        animationType="slide"
+        visible={editedReservation !== null}
+        onRequestClose={removeEditedReservation}
+        >
         <Animated.View style={editOrderFade}> 
           <EditOrder
             editedOrder={editedReservation}
             setEditedOrder={setEditedReservation}
           />
         </Animated.View>
-      )}
+      </Modal>
     </>
   )
 }

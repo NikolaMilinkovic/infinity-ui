@@ -199,6 +199,7 @@ function ReservationsGroup({data, setEditedReservation, selectedReservations, ba
 function getStyles(batchMode: boolean){
   return StyleSheet.create({
     list: {
+      paddingHorizontal: 10,
     },
     listHeader: {
       fontWeight: 'bold',
