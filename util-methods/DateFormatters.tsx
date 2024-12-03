@@ -9,7 +9,7 @@ export function getFormattedDate(date: string | Date): string {
 }
 
 export function getFormattedDateWithoutTime(date: string | Date): string {
-  return new Date(date).toLocaleDateString('en-GB', {
+  return new Date(date).toLocaleDateString('sr-Latn', {
     weekday: 'short',
     year: 'numeric',
     month: 'numeric',

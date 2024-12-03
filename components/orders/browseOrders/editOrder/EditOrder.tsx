@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import Button from '../../../../util-components/Button'
 import { CourierTypesWithNoId, OrderProductTypes, OrderTypes } from '../../../../types/allTsTypes'
 import { betterConsoleLog } from '../../../../util-methods/LogMethods'
-import { Image, Modal, Pressable, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
+import { Image, Modal, NativeSyntheticEvent, Pressable, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import InputField from '../../../../util-components/InputField'
 import { Text } from 'react-native'
 import { Colors } from '../../../../constants/colors'
@@ -20,6 +20,7 @@ import { handleFetchingWithBodyData, handleFetchingWithFormData } from '../../..
 import { AuthContext } from '../../../../store/auth-context'
 import { getMimeType } from '../../../../util-methods/ImageMethods'
 import AddItemsModal from './addItemsModal/AddItemsModal'
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 interface PropTypes {
   editedOrder: OrderTypes | null
@@ -48,13 +49,16 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   const [products, setProducts] = useState(editedOrder?.products);
   
   const [isReservation, setIsReservation] = useState(editedOrder?.reservation);
-  const [reservationDate, setReservationDate] = useState(editedOrder?.reservationDate || new Date());
+  // betterConsoleLog('> Edited order reservation date is', editedOrder?.reservationDate);
+  const [reservationDate, setReservationDate] = useState(new Date(editedOrder?.reservationDate) || new Date());
+  const [orderNotes, setOrderNotes] = useState(editedOrder?.orderNotes || '');
   const [isPacked, setIsPacked] = useState(editedOrder?.packed);
 
   const [productsPrice, setProductsPrice] = useState(editedOrder?.productsPrice);
   const [deliveryPrice, setDeliveryPrice] = useState(editedOrder?.courier?.deliveryPrice);
   const [totalPrice, setTotalPrice] = useState(editedOrder?.totalPrice);
   const [customPrice, setCustomPrice] = useState(editedOrder?.totalPrice);
+
 
   const authCtx = useContext(AuthContext);
   const token = authCtx.token || '';
@@ -94,6 +98,8 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
       data.append('isPacked', isPacked ? 'true' : 'false');
       data.append('productsPrice', productsPrice);
       data.append('customPrice',  customPrice ? customPrice : totalPrice);
+      if(isReservation === true) data.append('reservationDate', reservationDate.toISOString());
+      data.append('orderNotes', orderNotes || '');
 
       const response = await handleFetchingWithFormData(data, token, `orders/update/${editedOrder?._id}`, 'PATCH');
 
@@ -113,7 +119,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   async function handleUpdateOrderWithBodyData(){
     try{
       const data = {
-        name, address, place, phone, phone2, courier, products, isReservation, isPacked, productsPrice, customPrice: customPrice ? customPrice : totalPrice
+        name, address, place, phone, phone2, courier, products, isReservation, isPacked, productsPrice, customPrice: customPrice ? customPrice : totalPrice, orderNotes, reservationDate
       }
       const response = await handleFetchingWithBodyData(data, token, `orders/update/${editedOrder?._id}`, 'PATCH');
 
@@ -188,6 +194,40 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
     setShowAddItemModal(true);
   }
 
+  // DATE PICKER
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [pickedDateDisplay, setPickedDateDisplay] = useState<Date | string>( new Date() );
+  function formatDateHandler(date: Date){
+    return date.toLocaleDateString(
+      'en-GB', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }
+    )
+  }
+
+  function handleSetPickedDate(date: Date){
+    const formattedDate = date.toISOString().split('T')[0].split('-').reverse().join('/');
+    setPickedDateDisplay(formattedDate);
+  }
+  function handleOpenDatePicker(){
+    setShowDatePicker(true);
+  }
+  const handleDatePick = async (e:NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
+    if(e.type === "set"){
+      setReservationDate(selectedDate);
+      handleSetPickedDate(selectedDate);
+    }
+
+    setShowDatePicker(false);
+  }
+  const handleDateReset = () => {
+    setReservationDate( new Date() );
+    setShowDatePicker(false);
+    setPickedDateDisplay('');
+  }
+
   return (
     <ScrollView style={styles.container}>
 
@@ -204,6 +244,8 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         phone2={phone2}
         setPhone2={setPhone2}
         setPhone={setPhone}
+        orderNotes={orderNotes}
+        setOrderNotes={setOrderNotes}
         profileImage={profileImage}
         setProfileImage={setProfileImage}
       />
@@ -264,37 +306,37 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             onCheckedChange={() => setIsReservation(false)}
           />
 
-          {/* DATE PICKER */}
-          {/* {isReservation === true && ( */}
-            {/* <View style={styles.radioGroupContainer}> */}
-            {/* {reservationDate && pickedDateDisplay && ( */}
-              {/* <View style={styles.dateDisplayContainer}> */}
-                {/* <Text style={styles.dateLabel}>Izabrani datum:</Text> */}
-                {/* <Text style={styles.dateText}>{formatDateHandler(orderCtx.reservationDate)}</Text> */}
-              {/* </View> */}
-            {/* )} */}
-            {/* <Text style={styles.filtersH2absolute}>Datum rezervacije</Text> */}
-              {/* <View style={styles.dateButtonsContainer}> */}
-                {/* <Button */}
-                  {/* containerStyles={styles.dateButton} */}
-                  {/* onPress={handleOpenDatePicker} */}
-                {/* > */}
-                  {/* Izaberi datum */}
-                {/* </Button> */}
-              {/* </View> */}
-
-              {/* {showDatePicker && ( */}
-                {/* <DateTimePicker */}
-                  {/* value={orderCtx.reservationDate} */}
-                  {/* mode='date' */}
-                  {/* is24Hour={true} */}
-                  {/* onChange={handleDatePick} */}
-                  {/* onTouchCancel={handleDateReset} */}
-                {/* /> */}
-              {/* )} */}
-            {/* </View> */}
-          {/* )} */}
         </View>
+        {/* DATE PICKER */}
+        {isReservation === true && (
+          <View style={styles.radioGroupContainer}>
+          {reservationDate && pickedDateDisplay && (
+            <View style={styles.dateDisplayContainer}>
+              <Text style={styles.dateLabel}>Izabrani datum:</Text>
+              <Text style={styles.dateText}>{formatDateHandler(reservationDate)}</Text>
+            </View>
+          )}
+          <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+            <View style={styles.dateButtonsContainer}>
+              <Button
+                containerStyles={styles.dateButton}
+                onPress={handleOpenDatePicker}
+              >
+                Izaberi datum
+              </Button>
+            </View>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={reservationDate}
+                mode='date'
+                is24Hour={true}
+                onChange={handleDatePick}
+                onTouchCancel={handleDateReset}
+              />
+            )}
+          </View>
+        )}
 
         {/* Packed */}
         <View style={styles.radioGroupContainer}>
@@ -436,11 +478,58 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     flex: 2
+  },
+  dateButtonsContainer: {
+    flexDirection: 'column',
+    gap: 10,
+  },
+  dateButton: {
+    flex: 1,
+    backgroundColor: Colors.secondaryLight,
+    color: Colors.primaryDark,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dateDisplayContainer: {
+    flexDirection: 'column',
+    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dateLabel: {
+  },
+  dateText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.highlight,
+    lineHeight: 16,
+    marginBottom: 8,
+  },
+  filtersH2absolute: {
+    fontSize: 14,
+    color: Colors.primaryDark,
+    marginBottom: 8,
+    position: 'absolute',
+    left: 10,
+    top: -12,
+    backgroundColor: Colors.white,
+    borderWidth: 0.5,
+    borderRadius: 4,
+    paddingHorizontal: 4
+  },
+  orderNotesInput: {
+    justifyContent: 'flex-start',
+    textAlignVertical: 'top',
+    marginVertical: 8,
+    backgroundColor: Colors.white,
+  },
+  inputFieldLabelStyles: {
+    backgroundColor: Colors.white,
   }
 });
 
 
-function BuyerDataInputs({ name, setName, address, place, setPlace, setAddress, phone, setPhone, phone2, setPhone2, profileImage, setProfileImage }: any){
+function BuyerDataInputs({ name, setName, address, place, setPlace, setAddress, phone, setPhone, phone2, setPhone2, profileImage, setProfileImage, orderNotes, setOrderNotes }: any){
   return(
     <View style={styles.sectionContainer}>
     {/* Name */}
@@ -484,6 +573,18 @@ function BuyerDataInputs({ name, setName, address, place, setPlace, setAddress, 
       inputText={phone2}
       setInputText={setPhone2}
       keyboard='numeric'
+    />
+    {/* Order Notes */}
+    <InputField
+      label='Napomena za porudžbinu'
+      labelStyles={styles.inputFieldLabelStyles}
+      inputText={orderNotes}
+      setInputText={(text: string | number | undefined) => setOrderNotes(text as string)}
+      containerStyles={[styles.orderNotesInput, styles.input]}
+      selectTextOnFocus={true}
+      multiline={true}
+      numberOfLines={4}
+      labelBorders={true}
     />
     {/* Profile Image */}
     <View style={styles.imagePickerContainer}>
@@ -578,6 +679,7 @@ function ProductDisplay({ product, index, setProducts }: ProductDisplayTypes){
               </View>
             )}
 
+            {/* Delete button */}
             <IconButton
               size={26}
               color={Colors.highlight}
@@ -628,7 +730,7 @@ const productDisplayStyles = StyleSheet.create({
   removeButtonContainer: {
     position: 'absolute',
     right: 8,
-    top: 0,
+    bottom: 0,
     borderRadius: 100,
     overflow: 'hidden',
     backgroundColor: Colors.white,

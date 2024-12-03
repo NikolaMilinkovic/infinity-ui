@@ -110,6 +110,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
   // }, [unprocessedOrders])
 
   function handleOrderAdded(newOrder: OrderTypes){
+    betterConsoleLog('> NEW ORDER ADDED IS:', newOrder);
     setUnprocessedOrders((prev) => [newOrder, ...prev]);
   }
   function handleOrderUpdated(updatedOrder: OrderTypes){

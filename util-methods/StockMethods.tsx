@@ -122,13 +122,14 @@ export const increaseDressStock = (
 interface PurseStockDataDecrease {
   purseId: string,
   colorId: string,
-  increment: number,
+  decrement: number,
 }
 // Function to decrease stock for a specific purse, color
 export const decreasePurseStock = (
   data: PurseStockDataDecrease,
   setActivePurses: React.Dispatch<React.SetStateAction<PurseTypes[]>>
 ) => {
+  betterConsoleLog('> decreasePurseStock method has received following data', data);
   setActivePurses((prevPurses) =>
     prevPurses.map((purse) => {
       if (purse._id.toString() === data.purseId.toString()) {
@@ -138,7 +139,7 @@ export const decreasePurseStock = (
             if (color._id.toString() === data.colorId.toString()) {
               return {
                 ...color,
-                stock: color.stock - data.increment >= 0 ? color.stock - data.increment : color.stock,
+                stock: color.stock - data.decrement >= 0 ? color.stock - data.decrement : color.stock,
               };
             }
             return color;

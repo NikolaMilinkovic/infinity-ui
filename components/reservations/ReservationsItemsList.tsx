@@ -161,7 +161,7 @@ function ReservationsGroup({data, setEditedReservation, selectedReservations, ba
   return(
     <>
       <Pressable onPress={() => setIsExpanded(!isExpanded)} style={ResGroupStyles.headerContainer}>
-        <Text style={ResGroupStyles.header}>{getFormattedDateWithoutTime(data.date)} - Rezervacija: {data.reservations.length}</Text>
+        <Text style={ResGroupStyles.header}>{getFormattedDateWithoutTime(data.date)}   Rezervacija: {data.reservations.length}</Text>
         <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={ResGroupStyles.iconStyle} size={26} color={Colors.white}/>
       </Pressable>
       <Animated.View style={fade}>

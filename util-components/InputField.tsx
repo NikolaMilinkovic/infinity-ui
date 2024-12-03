@@ -1,23 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { StyleSheet, View , TextInput, Animated, Pressable, TouchableWithoutFeedback, Keyboard, Modal  } from 'react-native';
+import { StyleSheet, View , TextInput, Animated, Pressable, TouchableWithoutFeedback, Keyboard, Modal, StyleProp, ViewStyle, TextStyle, KeyboardTypeOptions  } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 
 interface InputFieldProps {
-  label?: string | null | undefined,
-  isSecure?: boolean,
-  inputText: string | number | undefined,
-  setInputText: (text: string | number | undefined) => void,
-  capitalize?: ("sentences" | "none" | "words" | "characters" | undefined),
-  background?: string 
-  color?: string
-  activeColor?:string
-  keyboard?: string
-  labelBorders?: boolean
-  containerStyles?: any
-  selectTextOnFocus?: boolean
-  multiline?: boolean
-  numberOfLines?: number
+  label?: string | null;
+  isSecure?: boolean;
+  inputText: string | number | undefined;
+  setInputText: (text: string | number | undefined) => void;
+  capitalize?: 'sentences' | 'none' | 'words' | 'characters';
+  background?: string;
+  color?: string;
+  activeColor?: string;
+  keyboard?: KeyboardTypeOptions; // Use React Native's `KeyboardTypeOptions` for better type checking
+  labelBorders?: boolean;
+  containerStyles?: StyleProp<ViewStyle>; // For styling containers
+  labelStyles?: StyleProp<TextStyle>; // For text-specific styles
+  selectTextOnFocus?: boolean;
+  multiline?: boolean;
+  numberOfLines?: number;
 }
 
 function InputField({ 
@@ -36,6 +37,7 @@ function InputField({
   selectTextOnFocus=false,
   multiline=false,
   numberOfLines=1,
+  labelStyles,
 
 } :InputFieldProps) {
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -56,8 +58,8 @@ function InputField({
   return (
       <View style={[styles.container, containerStyles]}>
         {label && (
-          <Animated.View style={[styles.labelContainer, { transform: [{ translateY }] }]}>
-            <Animated.Text style={styles.label}>
+          <Animated.View style={[styles.labelContainer, { transform: [{ translateY },]}, labelStyles ]}>
+            <Animated.Text style={[styles.label, labelStyles]}>
               {label}
             </Animated.Text>
           </Animated.View>

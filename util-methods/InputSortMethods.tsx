@@ -42,8 +42,9 @@ export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string
       phone: parsedResponse.data.phone,
       phone2: parsedResponse.data.phone2,
     });
+    // console.log(`> Logging orderNotes: ${parsedResponse.data.orderNotes}`);
     orderCtx.setOrderNotes(parsedResponse.data.orderNotes);
-    popupMessage(parsedResponse.message, 'success')
+    popupMessage(parsedResponse.message, 'success');
     return true;
 
   } catch(error) {

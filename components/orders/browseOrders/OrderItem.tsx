@@ -235,13 +235,13 @@ function getStyles(isHighlighted:boolean){
     },
     orderNoteLabel: {
       fontWeight: 'bold',
-      minWidth: 25,
+      minWidth: 85,
       flex: 4,
     },
     orderNoteText: {
-      // flex: 8,
       fontWeight: 'bold',
       color: Colors.error,
+      flexShrink: 1,
     }
   })
 }

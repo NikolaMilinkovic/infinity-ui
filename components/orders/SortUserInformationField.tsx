@@ -133,7 +133,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
             label='Napomena za porudžbinu'
             inputText={orderCtx?.orderNotes}
             setInputText={(text:(string | number | undefined)) => orderCtx.setOrderNotes((prev) => ({...prev, orderNotes: text}))}
-            containerStyles={styles.deliveryRemarkInput}
+            containerStyles={styles.orderNotesInput}
             selectTextOnFocus={true}
             multiline={true}
             numberOfLines={4}
@@ -187,6 +187,11 @@ const styles = StyleSheet.create({
   },
   inputFieldStyle: {
     marginVertical: 8
+  },
+  orderNotesInput: {
+    justifyContent: 'flex-start',
+    textAlignVertical: 'top',
+    marginVertical: 8,
   },
   deliveryRemarkInput: {
     justifyContent: 'flex-start',
