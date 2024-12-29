@@ -2,6 +2,7 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import DisplayProductModalComponent from "./DisplayProductModalComponent";
 import { useContext, useMemo } from "react";
 import { AllProductsContext } from "../../../../../../store/all-products-context";
+import SearchProducts from "../../../../../products/SearchProducts";
 
 // DISPLAYS A LIST OF PRODUCTS
 export default function ProductsListModalComponent({ newProducts, setNewProducts }: any){
@@ -18,6 +19,10 @@ export default function ProductsListModalComponent({ newProducts, setNewProducts
 
   return(
     <View style={styles.container}>
+      {/* <SearchProducts
+        searchData={filteredData}
+        setSearchData={filteredData}
+      /> */}
       {filteredData && filteredData.length > 0 && (
         <FlatList
           data={filteredData}

@@ -26,7 +26,6 @@ function EndOfDay() {
     try{
       if(selectedCourier){
         const filteredOrders = orders.unprocessedOrders.filter((order) => order?.courier?.name === selectedCourier?.name && order.reservation === false);
-        betterConsoleLog('> LOGGING FILTERED ORDERS', filteredOrders);
         if(filteredOrders.length === 0) return popupMessage('Nemate preostalih porudžbina za ovog kurira', 'info');
         const excellFile = generateExcellForOrders(filteredOrders, selectedCourier.name);
         if(!excellFile) return popupMessage('Problem prilikom generisanja excell fajla', 'danger');
@@ -56,6 +55,7 @@ function EndOfDay() {
       <View style={styles.controllsContainer}>
         <CourierSelector
           setSelectedCourier={setSelectedCourier}
+          defaultValueByMatch='Bex'
         />
         <Button 
           onPress={handleOnDayEnd}

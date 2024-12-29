@@ -54,7 +54,7 @@ export function CustomDrawerContent(props) {
         onPress={() => navigatePages('ColorsCategoriesTabs')} 
         size={18} 
         color={Colors.secondaryDark}
-        text='Boje i Kategorije'
+        text='Boje, Kategorije i Dobabljači'
         type='Ionicons'
       />
 

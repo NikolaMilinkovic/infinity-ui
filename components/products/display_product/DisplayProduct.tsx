@@ -39,7 +39,7 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
     } else {
       setIsHighlighted(false);
     }
-  }, [highlightedItems, item])
+  }, [highlightedItems, item]);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -87,7 +87,7 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
       
       popupMessage(`${item.name} dodat u porudžbinu.\nTrenuthin artikala u porudžbini: ${newOrderCtx.productData.length + 1}`, 'success');
     } else {
-      popupMessage(`${item.name} je rasprodati i nije dodat u porudžbinu!`,'danger')
+      popupMessage(`${item.name} je rasprodati i nije dodat u porudžbinu!`,'danger');
     }
   }
   // EDIT
@@ -100,10 +100,34 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
   //   await useShareMessage({ message: message, image: item.image });
   // }
 
+  const [longPressActivated, setLongPressActivated] = useState(false);
+  // function handleLongPress(orderId: string){
+  //   if(batchMode) return;
+  //   setLongPressActivated(true);
+  //   setTimeout(() => setLongPressActivated(false), 500); // Reset flag after 500ms
+  //   if(selectedReservations.length === 0) setSelectedReservations([{_id: orderId}])
+  //   setBatchMode(true);
+  // }
+  // Press handler after select mode is initialized
+  // function handlePress(orderId: string){
+  //   if(!batchMode) return;
+  //   if (longPressActivated) return;
+  //   if(selectedReservations.length === 0) return;
+  //   const isIdSelected = selectedReservations?.some((presentItem) => presentItem._id === orderId)
+  //   if(isIdSelected){
+  //     if(selectedReservations.length === 1) setBatchMode(false);
+  //     setSelectedReservations(selectedReservations.filter((order) => order._id !== orderId));
+  //   } else {
+  //     setSelectedReservations((prev) => [...prev, {_id: orderId}]);
+  //   }
+  // }
+
   return (
-    <View 
+    <View
       key={item._id} 
       style={styles.container} 
+      // onPress={toggleExpand}
+      // delayLongPress={100}
     >
       {isHighlighted && (
         <View style={styles.itemHighlightedOverlay}/>
@@ -112,12 +136,20 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
       {/* IMAGE AND INFORMATIONS */}
       <View style={styles.infoContainer}>
 
-        <Pressable style={styles.imageContainer} onPress={() => showImagePreview(item.image)}>
+        <Pressable style={styles.imageContainer} onPress={() => showImagePreview(item.image as any)}>
           <Image source={{ uri: item.image.uri }} style={styles.image} />
         </Pressable>
 
         <View style={styles.info}>
           <Text style={styles.headerText}>{item.name}</Text>
+
+
+
+          {/* TEMP | REMOVE AFTER TESTING */}
+          {/* <Text style={styles.headerText}>{item.displayPriority}</Text> */}
+
+
+
           <Text>Kategorija: {item.category}</Text>
           <Text>Cena: {item.price} RSD</Text>
 
@@ -194,12 +226,35 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
           />
         )}
       </View>
+      {item.supplier && isExpanded && (
+        <View style={styles.descriptionContainer}>
+          <Text style={styles.descriptionLabel}>Dobavljač:  </Text>
+          <Text style={styles.descriptionText}>{item.supplier}</Text>
+        </View>
+      )}
+      {item.description && isExpanded && (
+        <View style={styles.descriptionContainer}>
+          <Text style={styles.descriptionLabel}>Opis:  </Text>
+          <Text style={styles.descriptionText}>{item.description}</Text>
+        </View>
+      )}
     </View>
   )
 }
 
 function getStyles(onStock:boolean, isHighlighted:boolean){
   return StyleSheet.create({
+    descriptionContainer: {
+      flexDirection: 'row',
+      paddingHorizontal: 10,
+    },
+    descriptionLabel: {
+      fontWeight: 'bold',
+      minWidth: 20,
+    },
+    descriptionText: {
+      flex: 1,
+    },
     container: {
       minHeight: 160,
       padding: 6,
@@ -310,7 +365,7 @@ function getStyles(onStock:boolean, isHighlighted:boolean){
       opacity: 0.4,
       pointerEvents: 'none'
     }
-  })
+  });
 }
 
 export default DisplayProduct

@@ -8,7 +8,7 @@ import MultiDropdownList from '../../../util-components/MultiDropdownList';
 import { ColorsContext } from '../../../store/colors-context';
 import AddDressComponents from '../unique_product_components/add/AddDressComponents';
 import AddPurseComponents from '../unique_product_components/add/AddPurseComponents';
-import { ProductTypes, CategoryTypes, DressColorTypes, PurseColorTypes, ProductImageTypes } from '../../../types/allTsTypes';
+import { ProductTypes, CategoryTypes, DressColorTypes, PurseColorTypes, ProductImageTypes, SupplierTypes } from '../../../types/allTsTypes';
 import DressColor from '../../../models/DressColor';
 import PurseColor from '../../../models/PurseColor';
 import { betterConsoleLog, betterErrorLog } from '../../../util-methods/LogMethods';
@@ -19,6 +19,7 @@ import { popupMessage } from '../../../util-components/PopupMessage';
 import { handleFetchingWithFormData } from '../../../util-methods/FetchMethods';
 import { AuthContext } from '../../../store/auth-context';
 import { getMimeType } from '../../../util-methods/ImageMethods';
+import { SuppliersContext } from '../../../store/suppliers-context';
 
 interface PropTypes {
   item: ProductTypes;
@@ -28,7 +29,8 @@ interface PropTypes {
 function EditProductComponent({ item, setItem }: PropTypes) {
   const authCtx = useContext(AuthContext);
   const colorsCtx = useContext(ColorsContext);
-  const categoryCtx = useContext(CategoriesContext)
+  const categoryCtx = useContext(CategoriesContext);
+  const suppliersCtx = useContext(SuppliersContext);
 
   const token = authCtx.token;
   const [name, setName] = useState(item.name);
@@ -39,15 +41,14 @@ function EditProductComponent({ item, setItem }: PropTypes) {
   const [category, setCategory] = useState<CategoryTypes>(item.category);
   const [isActive, setIsActive] = useState(item.active)
   const [allColors, setAllColors] = useState(colorsCtx.colors);
+  const [description, setDescription] = useState(item.description);
   const [colorsDefaultOptions, setColorsDefaultOptions] = useState<string[]>(item.colors.map((obj) => obj.color));
   const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>(item.colors);
+  const [supplier, setSupplier] = useState<SupplierTypes | string>(item?.supplier || '');
 
-  useEffect(() => {
-    console.log('> LOGGING PRICE AN IS ACTIVE:')
-    console.log(price)
-    console.log(isActive)
-    betterConsoleLog('> Item Colors', itemColors);
-  }, [price, isActive, itemColors])
+  // useEffect(() => {
+  //   betterConsoleLog('> Item Colors', itemColors);
+  // }, [price, isActive, itemColors])
   // useEffect(() => {
   //   betterConsoleLog('> All colors are', allColors);
   // }, [allColors])
@@ -88,6 +89,8 @@ function EditProductComponent({ item, setItem }: PropTypes) {
       formData.append('category', category.name);
       formData.append('stockType', category?.stockType);
       formData.append('colors', JSON.stringify(newColors));
+      formData.append('description', description);
+      formData.append('supplier', supplier?.name || '');
   
       betterConsoleLog('> Product image is: ', productImage);
       if (productImage) {
@@ -180,6 +183,20 @@ function EditProductComponent({ item, setItem }: PropTypes) {
     setIsActive(selectedId === '1');
   };
 
+  // Supplier Dropdown Reset
+  useEffect(() => {
+    betterConsoleLog('> Dobavljac je ', supplier);
+    if (supplier && supplier?.name === 'Resetuj izbor') {
+      resetDropdown();
+      return; 
+    }
+  }, [supplier]);
+  const [resetKey, setResetKey] = useState(0);
+  function resetDropdown(){
+    setResetKey(prevKey => prevKey + 1);
+    setSupplier('');
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View>
@@ -225,6 +242,8 @@ function EditProductComponent({ item, setItem }: PropTypes) {
         setPreviewImage={setPreviewImage}
       />
     </View>
+
+    {/* CATEGORY */}
     <View>
       <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Kategorija</Text>
       <DropdownList
@@ -235,6 +254,8 @@ function EditProductComponent({ item, setItem }: PropTypes) {
         buttonContainerStyles={{marginTop: 4}}
       />
     </View>
+
+    {/* COLORS */}
     <View>
       <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Boje, veličine i količina lagera</Text>
       {colorsDefaultOptions && allColors && (
@@ -264,18 +285,35 @@ function EditProductComponent({ item, setItem }: PropTypes) {
       />
     )}
 
+    <Text style={styles.sectionText}>Dodatne informacije:</Text>
+    <InputField
+      label='Opis proizvoda'
+      labelStyles={styles.inputFieldLabelStyles}
+      inputText={description}
+      setInputText={(text: string | number | undefined) => setDescription(text as string)}
+      containerStyles={styles.descriptionField}
+      selectTextOnFocus={true}
+      multiline={true}
+      numberOfLines={4}
+      labelBorders={true}
+    />
+
+    {/* SUPPLIER */}
+    <View>
+      <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</Text>
+      <DropdownList
+        key={resetKey}
+        data={[{_id: '', name: 'Resetuj izbor'}, ...suppliersCtx.suppliers]}
+        placeholder='Izaberite dobavljača'
+        onSelect={setSupplier}
+        buttonContainerStyles={{marginTop: 4}}
+        defaultValue={supplier}
+      />
+    </View>
+
 
       {/* BUTTONS */}
       <View style={styles.buttonsContainer}>
-        <Button
-          onPress={handleProductUpdate}
-          textColor={Colors.white}
-          backColor={Colors.secondaryDark}
-          containerStyles={styles.button}
-          textStyles={{}}
-        >
-          Sačuvaj izmene
-        </Button>
         <Button
           onPress={handleOnPress}
           textColor={Colors.white}
@@ -284,6 +322,15 @@ function EditProductComponent({ item, setItem }: PropTypes) {
           textStyles={{}}
         >
           Nazad
+        </Button>
+        <Button
+          onPress={handleProductUpdate}
+          textColor={Colors.white}
+          backColor={Colors.secondaryDark}
+          containerStyles={styles.button}
+          textStyles={{}}
+        >
+          Sačuvaj izmene
         </Button>
       </View>
     </ScrollView>
@@ -326,8 +373,17 @@ const styles = StyleSheet.create({
   radioButtionsContainer: {
     flexDirection: 'row',
     marginBottom: 10,
+  },
+  descriptionField: {
+    justifyContent: 'flex-start',
+    textAlignVertical: 'top',
+    marginTop: 18,
+    marginBottom: 8,
+    backgroundColor: Colors.white,
+  },
+  inputFieldLabelStyles: {
+    backgroundColor: Colors.white,
   }
-
 })
 
 export default EditProductComponent

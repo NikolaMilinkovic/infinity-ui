@@ -132,7 +132,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
         ? {...order, packedIndicator: true} 
         : order
       )
-    )
+    );
   }
   function handleStockIndicatorToFalse(id: string){
     setUnpackedOrders((prevOrders) => 
@@ -206,6 +206,10 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes){
       return [...prevProcessedOrders, ...items];
     });
   }
+
+  // useEffect(() => {
+  //   betterConsoleLog('> Logging custom order set:', customOrderSet);
+  // }, [customOrderSet])
 
 
   // TO DO: Type for statistics file

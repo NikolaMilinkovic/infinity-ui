@@ -14,7 +14,7 @@ interface DropdownPropTypes{
   placeholder?: string
   onSelect: (selectedItem: any) => void
   isDefaultValueOn?: boolean
-  defaultValue?: any
+  defaultValue?: string
   reference?: any
   buttonContainerStyles?: any
   defaultValueByIndex?: number
@@ -41,17 +41,24 @@ const DropdownList = ({
     // If value is found > set that object as default & give onSelect that object
     let defaultDataObject;
     data.forEach(element => {
+      console.log(element.name);
       if(element?.name === defaultValue){
+        console.log(`> Match found, setting for name ${element.name}, defaultValue is ${defaultValue}`);
         defaultDataObject = element;
         onSelect(element);
       }
       if(element?.value === defaultValue){
+        console.log(`> Match found, setting for value ${element.name}, defaultValue is ${defaultValue}`);
         defaultDataObject = element;
         onSelect(element);
       }
     });
+    betterConsoleLog('> defaultDataObject is:', defaultDataObject);
     setDefaultVal(defaultDataObject || []);
-  }, [data, defaultValue])
+  }, [data, defaultValue]);
+  useEffect(() => {
+    betterConsoleLog('> Logging defaultVal: ', defaultVal);
+  },[defaultVal])
 
   if(dropdownData.length > 0){
     return (

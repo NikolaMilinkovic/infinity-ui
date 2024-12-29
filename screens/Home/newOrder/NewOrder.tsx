@@ -26,9 +26,22 @@ function NewOrder() {
   const [isArticleListOpen, setIsArticleListOpen] = useState(true);
   function handleArticleListOk(){
     setIsArticleListOpen(false);
-    setIsColorSizeSelectorsOpen(false);
+    setIsBuyerInfoOpen(false);
     setIsOrderPreviewOpen(false);
     setIsCourierPreviewOpen(false);
+    
+    setTimeout(() => {
+      setIsColorSizeSelectorsOpen(true);
+    }, 360)
+  }
+
+  // COLOR SIZES SELECTORS
+  const [isColorSizeSelectorsOpen, setIsColorSizeSelectorsOpen] = useState(false);
+  function handleColorSizeSelectorsOk(){
+    setIsArticleListOpen(false);
+    setIsCourierPreviewOpen(false);
+    setIsColorSizeSelectorsOpen(false);
+    setIsOrderPreviewOpen(false)
     
     setTimeout(() => {
       setIsBuyerInfoOpen(true);
@@ -43,26 +56,12 @@ function NewOrder() {
     setIsArticleListOpen(false);
     setIsBuyerInfoOpen(false);
     setIsOrderPreviewOpen(false);
-    setIsCourierPreviewOpen(false);
-
-    setTimeout(() => {
-      setIsColorSizeSelectorsOpen(true);
-    }, 360)
-  }
-
-  // COLOR SIZES SELECTORS
-  const [isColorSizeSelectorsOpen, setIsColorSizeSelectorsOpen] = useState(false);
-  function handleColorSizeSelectorsOk(){
-    setIsArticleListOpen(false);
-    setIsBuyerInfoOpen(false);
     setIsColorSizeSelectorsOpen(false);
-    setIsOrderPreviewOpen(false)
-    
+
     setTimeout(() => {
       setIsCourierPreviewOpen(true);
     }, 360)
   }
-
 
   // COURIER SELECTOR
   const [isCourierPreviewOpen, setIsCourierPreviewOpen] = useState(false);
@@ -130,18 +129,18 @@ function NewOrder() {
           onNext={handleArticleListOk}
           ordersCtx={orderCtx}
         />
+        <ColorSizeSelectorsList
+          ordersCtx={orderCtx}
+          isExpanded={isColorSizeSelectorsOpen}
+          setIsExpanded={setIsColorSizeSelectorsOpen}
+          onNext={handleColorSizeSelectorsOk}
+        />
         <SortUserInformationField
           setIsExpanded={setIsBuyerInfoOpen}
           isExpanded={isBuyerInfoOpen}
           onNext={handleBuyerInfoOk}
           buyerInfo={buyerInfo}
           setBuyerInfo={setBuyerInfo}
-        />
-        <ColorSizeSelectorsList
-          ordersCtx={orderCtx}
-          isExpanded={isColorSizeSelectorsOpen}
-          setIsExpanded={setIsColorSizeSelectorsOpen}
-          onNext={handleColorSizeSelectorsOk}
         />
         <CourierSelector
           isExpanded={isCourierPreviewOpen}
@@ -156,20 +155,20 @@ function NewOrder() {
         />
         <View style={styles.buttonsContainer}>
           <Button
-            backColor={Colors.secondaryDark}
-            textColor={Colors.white}
-            containerStyles={[styles.button, {marginBottom: 6}]}
-            onPress={handleSubmitOrder}
-          >
-            Dodaj porudžbinu
-          </Button>
-          <Button
             backColor={Colors.error}
             textColor={Colors.white}
             containerStyles={[styles.button, {marginBottom: 6}]}
             onPress={handleResetOrderData}
           >
             Odustani i resetuj
+          </Button>
+          <Button
+            backColor={Colors.secondaryDark}
+            textColor={Colors.white}
+            containerStyles={[styles.button, {marginBottom: 6}]}
+            onPress={handleSubmitOrder}
+          >
+            Dodaj porudžbinu
           </Button>
         </View>
       </Animated.ScrollView>

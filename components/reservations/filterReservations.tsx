@@ -2,7 +2,7 @@ import { OrderTypes } from '../../types/allTsTypes'
 import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 function filterReservations(data: OrderTypes[]) {
-  console.log('> Filter reservations called');
+  // console.log('> Filter reservations called');
 
   const dates = new Set();
   const reservations = [];
@@ -28,7 +28,7 @@ function filterReservations(data: OrderTypes[]) {
     }
   }
 
-  betterConsoleLog('> Logging sorted reservations by date:', reservations);
+  // betterConsoleLog('> Logging sorted reservations by date:', reservations);
   return reservations;
 }
 

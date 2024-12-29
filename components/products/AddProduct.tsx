@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
+import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text } from 'react-native'
 import { Colors } from '../../constants/colors';
 import { CategoriesContext } from '../../store/categories-context';
 import { ColorsContext } from '../../store/colors-context';
@@ -12,13 +12,18 @@ import AddDressComponents from './unique_product_components/add/AddDressComponen
 import GenericProductInputComponents from './GenericProductInputComponents';
 import AddPurseComponents from './unique_product_components/add/AddPurseComponents';
 import PurseColor from '../../models/PurseColor';
-import { CategoryTypes, ColorTypes, DressColorTypes, PurseColorTypes, ProductImageTypes } from '../../types/allTsTypes';
+import { CategoryTypes, ColorTypes, DressColorTypes, PurseColorTypes, ProductImageTypes, SupplierTypes } from '../../types/allTsTypes';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
+import InputField from '../../util-components/InputField';
+import DropdownList from '../../util-components/DropdownList';
+import { SuppliersContext } from '../../store/suppliers-context';
+import { types } from '@babel/core';
 
 function AddProduct(){
   const authCtx = useContext(AuthContext);
   const categoriesCtx = useContext(CategoriesContext);
   const colorsCtx = useContext(ColorsContext);
+  const suppliersCtx = useContext(SuppliersContext);
 
   // Other data
   const [allCategories, setAllCategories] = useState<CategoryTypes[]>([]);
@@ -67,6 +72,8 @@ function AddProduct(){
   const [price, setPrice] = useState<number | string>('');
   const [productImage, setProductImage] = useState<ProductImageTypes>();
   const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>([]);
+  const [description, setDescription] = useState('');
+  const [selectedSupplier, setSelectedSupplier] = useState<SupplierTypes>();
 
 
   useEffect(() => {
@@ -104,14 +111,17 @@ function AddProduct(){
   }
   function resetInputsHandler(){
     setItemColors([]);
-    setSelectedColors([])
-    setProductName('')
-    setSelectedCategory()
-    setPrice('')
+    setSelectedColors([]);
+    setProductName('');
+    setSelectedCategory();
+    setPrice('');
     setAllCategories([]);
     setAllColors([]);
     setPreviewImage('');
     setProductImage(undefined);
+    setDescription('');
+    setSelectedSupplier();
+    resetDropdown();
   }
 
   // useEffect(() => {
@@ -131,7 +141,9 @@ function AddProduct(){
       stockType: selectedCategory?.stockType,
       price,
       itemColors,
-      productImage
+      productImage,
+      description,
+      supplier: selectedSupplier?.name || ''
     }
 
     let result = false;
@@ -156,7 +168,9 @@ function AddProduct(){
       stockType: selectedCategory?.stockType,
       price,
       itemColors,
-      productImage
+      productImage,
+      description,
+      supplier: selectedSupplier?.name || ''
     }
 
     let result = false;
@@ -191,7 +205,20 @@ function AddProduct(){
     if(allCategories.length === 0){
       setAllCategories(categoriesCtx.getCategories());
     }
-  }, [allColors])
+  }, [allColors]);
+
+  // Supplier Dropdown Reset
+  useEffect(() => {
+    if (selectedSupplier && selectedSupplier?.name === 'Resetuj izbor') {
+      resetDropdown();
+      return;
+    }
+  }, [selectedSupplier]);
+  const [resetKey, setResetKey] = useState(0);
+  function resetDropdown(){
+    setResetKey(prevKey => prevKey + 1);
+    setSelectedSupplier();
+  };
 
   return (
     <TouchableWithoutFeedback onPress={handleOutsideClick} style={{ flex: 1 }}>
@@ -232,6 +259,29 @@ function AddProduct(){
           setDressColors={setItemColors}
         /> */}
         {/* )} */}
+        <Text style={styles.sectionText}>Dodatne informacije:</Text>
+        <InputField
+          label='Opis proizvoda'
+          labelStyles={styles.inputFieldLabelStyles}
+          inputText={description}
+          setInputText={(text: string | number | undefined) => setDescription(text as string)}
+          containerStyles={styles.descriptionField}
+          selectTextOnFocus={true}
+          multiline={true}
+          numberOfLines={4}
+          labelBorders={true}
+        />
+        <View style={styles.wrapper}>
+          <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</Text>
+          <DropdownList
+            key={resetKey}
+            data={[{_id: '', name: 'Resetuj izbor'}, ...suppliersCtx.suppliers]}
+            placeholder='Izaberite dobavljača'
+            onSelect={setSelectedSupplier}
+            buttonContainerStyles={{marginTop: 4}}
+            isDefaultValueOn={false}
+          />
+        </View>
         <View style={styles.buttonContainer}>
           <Button
             onPress={handleAddProduct}
@@ -263,6 +313,16 @@ const styles = StyleSheet.create({
   sectionTextTopMargin: {
     marginTop: 16
   },
+  descriptionField: {
+    justifyContent: 'flex-start',
+    textAlignVertical: 'top',
+    marginTop: 18,
+    marginBottom: 8,
+    backgroundColor: Colors.white,
+  },
+  inputFieldLabelStyles: {
+    backgroundColor: Colors.white,
+  }
 })
 
 export default AddProduct

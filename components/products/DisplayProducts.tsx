@@ -16,6 +16,9 @@ import useConfirmationModal from '../../hooks/useConfirmationMondal';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
 import useImagePreviewModal from '../../hooks/useImagePreviewModal';
 import ImagePreviewModal from '../../util-components/ImagePreviewModal';
+import { fetchWithBodyData } from '../../util-methods/FetchMethods';
+import Constants from 'expo-constants';
+const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 interface DisplayProductsPropTypes {
   setEditItem: (data: ProductTypes | null) => void
@@ -36,6 +39,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
 
   const productsCtx = useContext(AllProductsContext);
   const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
   const [searchData, setSearchData] = useState('');
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
@@ -53,6 +57,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
     isNotOnStock: false,
     onStockAndSoldOut: false,
     onCategorySearch: '',
+    onSupplierSearch: '',
     onColorsSearch: [],
     onSizeSearch: [],
     active: true,
@@ -81,6 +86,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
 
     if(searchParams.active) return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
     if(searchParams.inactive) return serachProducts(searchData, productsCtx.allInactiveProducts, searchParams); 
+    return [];
   }, [productsCtx.allActiveProducts, productsCtx.allInactiveProducts, searchData, searchParams]);
 
   // Long press that initializes select mode
@@ -123,6 +129,38 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
     });
   }
 
+  async function handleSortProducts(position: string){
+    try{
+      const purses = selectedItems
+        .filter((purse) => purse.stockType === 'Boja-Količina')
+        .map((purse) => purse._id);
+      const dresses = selectedItems
+        .filter((dress) => dress.stockType === 'Boja-Veličina-Količina')
+        .map((dress) => dress._id);
+
+      const data = {
+        position,
+        purses,
+        dresses,
+      }
+  
+      const response = await fetchWithBodyData(token, `products/update-display-priority`, data, 'POST');
+      if(!response.ok) return popupMessage('Došlo je do problema prilikom sortiranja proizvoda', 'danger');
+  
+      if(response?.status === 200){
+        const data = await response?.json();
+        resetBatch();
+        return popupMessage(data.message, 'success');
+      } else {
+        const data = await response?.json();
+        return popupMessage(data.message, 'danger');
+      }
+    } catch(error){
+      console.error(error);
+      betterConsoleLog('> There was an error while sorting products,', error);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <ConfirmationModal
@@ -148,6 +186,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
       <BatchModeControlls
         active={batchMode}
         onRemoveBatchPress={handleRemoveBatchProducts}
+        handleSortProducts={handleSortProducts}
       />
       {filteredData && filteredData.length > 0 && (
         <FlatList

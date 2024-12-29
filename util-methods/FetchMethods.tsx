@@ -95,6 +95,8 @@ export async function addDress(dressData:any, authToken:string):Promise<boolean>
   formData.append('stockType', dressData.stockType);
   formData.append('price', dressData.price);
   formData.append('colors', JSON.stringify(dressData.itemColors));
+  formData.append('description', dressData.description);
+  formData.append('supplier', dressData.supplier);
 
   // Attach image
   if (dressData.productImage) {
@@ -118,6 +120,8 @@ export async function addPurse(purseData:any, authToken:string):Promise<boolean>
   formData.append('stockType', purseData.stockType);
   formData.append('price', purseData.price);
   formData.append('colors', JSON.stringify(purseData.itemColors));
+  formData.append('description', purseData.description);
+  formData.append('supplier', purseData.supplier);
 
   // Attach image
   if (purseData.productImage) {

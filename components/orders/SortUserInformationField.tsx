@@ -29,7 +29,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
   // Expand animation that makescontent visible when expanded
   // Used to fix the padding issue when expand is collapsed
   const [isContentVisible, setIsContentVisible] = useState(false);
-  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 831, 180);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 941, 180);
 
   function handleToggleExpand(){
     if (isExpanded) {
@@ -69,11 +69,6 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
 
       {isContentVisible && (
         <Animated.View style={{height: toggleExpandAnimation, opacity: toggleFade, overflow: 'hidden', paddingHorizontal: 8}}>
-          <GalleryImagePicker
-            image={orderCtx.profileImage}
-            setImage={orderCtx.setProfileImage}
-            placeholder='Dodaj sliku profila'
-          />
           <TextInput 
             style={styles.input}
             multiline={true}
@@ -83,7 +78,6 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
             placeholder="Unesite puno ime, adresu i broj telefona kupca"
             textAlignVertical="top"
           />
-
           <Button
             textColor={Colors.primaryDark}
             backColor={Colors.secondaryLight}
@@ -130,14 +124,30 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
             keyboard='numeric'
           />
           <InputField
-            label='Napomena za porudžbinu'
+            label='Napomena za kurira'
+            inputText={orderCtx.deliveryRemark}
+            setInputText={orderCtx.setDeliveryRemark}
+            containerStyles={styles.deliveryRemarkInput}
+            background={Colors.primaryLight}
+            selectTextOnFocus={true}
+            multiline={true}
+            numberOfLines={4}
+            labelBorders={false}
+          />
+          <InputField
+            label='Naša interna napomena za porudžbinu'
             inputText={orderCtx?.orderNotes}
-            setInputText={(text:(string | number | undefined)) => orderCtx.setOrderNotes((prev) => ({...prev, orderNotes: text}))}
+            setInputText={orderCtx.setOrderNotes}
             containerStyles={styles.orderNotesInput}
             selectTextOnFocus={true}
             multiline={true}
             numberOfLines={4}
             labelBorders={false}
+          />
+          <GalleryImagePicker
+            image={orderCtx.profileImage}
+            setImage={orderCtx.setProfileImage}
+            placeholder='Dodaj sliku profila'
           />
           <Button
             backColor={Colors.highlight}
@@ -183,7 +193,7 @@ const styles = StyleSheet.create({
     maxHeight: 135,
   },
   sortButton: {
-    marginBottom: 5
+    marginBottom: 10
   },
   inputFieldStyle: {
     marginVertical: 8

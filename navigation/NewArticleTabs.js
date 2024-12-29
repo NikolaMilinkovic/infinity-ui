@@ -4,6 +4,7 @@ import ProductsListModalComponent from "../components/orders/browseOrders/editOr
 import BrowseProducts from "../screens/Home/browseProducts/BrowseProducts";
 import { Dimensions, Text } from "react-native";
 import SelectedItemsModalComponent from "../components/orders/browseOrders/editOrder/addItemsModal/modalComponents/SelectedItemsModalComponent";
+import SearchProducts from "../components/products/SearchProducts";
 
 
 const Tab = createMaterialTopTabNavigator();

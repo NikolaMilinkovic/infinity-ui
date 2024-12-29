@@ -5,6 +5,7 @@ interface SearchParamsType {
   isNotOnStock: boolean
   onStockAndSoldOut: boolean
   onCategorySearch: string
+  onSupplierSearch: string
   onColorsSearch: string[]
   onSizeSearch: string[]
 }
@@ -24,10 +25,16 @@ export function serachProducts(searchData: string, allActiveProducts: ProductTyp
     categoriesBasedSearch = filterByCategories(nameBasedSearch, searchParams.onCategorySearch)
   }
 
+  // Filter by supplier
+  let suppliersBasedSearch = categoriesBasedSearch;
+  if(searchParams.onSupplierSearch){
+    suppliersBasedSearch = filterBySuppliers(categoriesBasedSearch, searchParams.onSupplierSearch)
+  }
+
   // Filter by color
-  let colorBasedSearch = categoriesBasedSearch;
+  let colorBasedSearch = suppliersBasedSearch;
   if(searchParams.onColorsSearch.length > 0){
-    colorBasedSearch = filterByColor(categoriesBasedSearch, searchParams.onColorsSearch);
+    colorBasedSearch = filterByColor(suppliersBasedSearch, searchParams.onColorsSearch);
   }
 
   // Filter by availability [on stock & sold out]
@@ -53,7 +60,16 @@ export function serachProducts(searchData: string, allActiveProducts: ProductTyp
     })
   }
   
-  return sizeFilteredResults;
+  const sortedResults = sortByDisplayPriority(sizeFilteredResults);
+  return sortedResults;
+}
+
+export function sortByDisplayPriority(products: ProductType[]): ProductType[] {
+  return [...products].sort((a, b) => {
+    const priorityA = a.displayPriority ?? Number.MAX_SAFE_INTEGER;
+    const priorityB = b.displayPriority ?? Number.MAX_SAFE_INTEGER;
+    return priorityB - priorityA;
+  });
 }
 
 // Search by inserted name compares inserted query with [Item Name, Item Colors]
@@ -117,6 +133,14 @@ export function filterByCategories(allActiveProducts:any, category:string){
     item.category === category
   )
   return categoriesBasedSearch;
+}
+
+// FILTER FOR ITEMS ON SUPPLIERS
+export function filterBySuppliers(allActiveProducts:any, supplier:string){
+  const suppliersBasedSearch = allActiveProducts.filter((item: any) => 
+    item.supplier && item.supplier === supplier
+  )
+  return suppliersBasedSearch;
 }
 
 // METHOD FOR FILTERING BY COLOR

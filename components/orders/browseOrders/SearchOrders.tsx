@@ -299,7 +299,7 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
           </View>
 
           {/* Processed | Unprocessed */}
-          {!isDatePicked && (
+          {/* {!isDatePicked && ( */}
             <View style={styles.radioGroupContainer}>
               <Text style={styles.filtersH2absolute}>Da li je porudžbina izvršena</Text>
               <View style={styles.radioGroup}>
@@ -312,7 +312,7 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
                 />
               </View>
             </View>
-          )}
+          {/* )} */}
 
           {/* Packed | Unpacked */}
           <View style={styles.radioGroupContainer}>

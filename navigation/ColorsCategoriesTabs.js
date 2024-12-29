@@ -2,13 +2,14 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { Colors } from '../constants/colors';
 import ColorsManager from '../screens/ColorsManager/ColorsManager';
 import CategoriesManager from '../screens/CategoriesManager/CategoriesManager';
+import SuppliersManager from '../screens/SuppliersManager/SuppliersManager';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function ColorsCategoriesTabs(){
 
   /**
-   * BOJE i KATEGORIJE tabovi
+   * BOJE, KATEGORIJE i DOBAVLJAČI tabovi
    */
   return (
     <Tab.Navigator screenOptions={{
@@ -37,6 +38,12 @@ export default function ColorsCategoriesTabs(){
         component={CategoriesManager} 
         options={{
           title: 'Kategorije',
+        }}/>
+      <Tab.Screen 
+        name="SuppliersManager" 
+        component={SuppliersManager} 
+        options={{
+          title: 'Dobavljači',
         }}/>
     </Tab.Navigator>
   )

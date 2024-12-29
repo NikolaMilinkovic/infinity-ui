@@ -31,7 +31,7 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
   const [isVisible, setIsVisible] = useState(false);
   const [noteHeight] = useState(order.orderNotes ? 40 : 0);
   const expandHeight = useExpandAnimation(isExpanded, 160, (order.products.length * 88 + 184 + noteHeight), 180);
-  const styles = getStyles(isHighlighted);
+  const styles = getStyles(isHighlighted, order.packed);
 
   useEffect(() => {
     const highlighted = highlightedItems.some((highlightedItem) => order._id === highlightedItem._id);
@@ -143,7 +143,7 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
   )
 }
 
-function getStyles(isHighlighted:boolean){
+function getStyles(isHighlighted:boolean, packed: boolean){
   return StyleSheet.create({
     container: {
       position: 'relative',
@@ -157,8 +157,11 @@ function getStyles(isHighlighted:boolean){
     },
     orderNoteIndicator: {
       position: 'absolute',
+      // bottom: 10,
+      // right: -10,
+      // width: 100,
       right: -60,
-      bottom: 0,
+      bottom: packed ? 20 : 0,
       backgroundColor: Colors.white,
       color: Colors.error,
       fontWeight: 'bold',

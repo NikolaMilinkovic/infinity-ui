@@ -6,13 +6,15 @@ import { useExpandAnimation, useExpandAnimationWithContentVisibility } from '../
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation'
 import { AuthContext } from '../../store/auth-context'
 import { popupMessage } from '../../util-components/PopupMessage'
+import Button from '../../util-components/Button'
 
 
 interface PropTypes {
   active: boolean
   onRemoveBatchPress: () => void
+  handleSortProducts: (position: string) => void
 }
-function BatchModeControlls({ active, onRemoveBatchPress }:PropTypes) {
+function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }:PropTypes) {
   useEffect(() => {
     setIsExpanded(active);
   }, [active])
@@ -21,12 +23,25 @@ function BatchModeControlls({ active, onRemoveBatchPress }:PropTypes) {
   const toggleFade = useToggleFadeAnimation(isExpanded, 100);
   const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 0, 60, 100);
 
-
-
   return (
     <>
       {isContentVisible && (
         <Animated.View style={[styles.container, { height: toggleExpandAnimation, opacity: toggleFade }]}>
+
+          {/* Product sorting buttons */}
+          <View style={styles.sortProductsContainer}>
+            <Button containerStyles={styles.button} onPress={() => handleSortProducts('top')}>
+              Top
+            </Button>
+            <Button containerStyles={styles.button} onPress={() => handleSortProducts('mid')}>
+              Mid
+            </Button>
+            <Button containerStyles={styles.button} onPress={() => handleSortProducts('bot')}>
+              Bot
+            </Button>
+          </View>
+
+          {/* DELETE button */}
           <IconButton
             size={22}
             color={Colors.highlight}
@@ -48,6 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.primaryDark,
+    flexDirection: 'row',
   },
   removeBatchItemsButton: {
     margin: 10,
@@ -66,6 +82,27 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     elevation: 1,
   },
+  sortProductsContainer: {
+    flexDirection: 'row',
+    flex: 1,
+  },
+  button: {
+    flex: 1,
+    maxWidth: 60,
+    height: 40,
+    borderWidth: 0.5,
+    borderColor: Colors.primaryDark,
+    backgroundColor: Colors.white,
+    borderRadius: 4,
+    elevation: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+    padding: 0,
+    marginRight: 5,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+  }
 })
 
 export default BatchModeControlls

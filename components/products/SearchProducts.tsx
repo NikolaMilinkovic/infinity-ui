@@ -15,6 +15,8 @@ import { useExpandAnimation } from '../../hooks/useExpand';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
 import { Dimensions } from 'react-native';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
+import { SuppliersContext } from '../../store/suppliers-context';
+import { SupplierTypes } from '../../types/allTsTypes';
 
 interface SearchProductsPropTypes {
   searchData: string
@@ -130,12 +132,10 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
     __v: number
   }
   const categoriesCtx = useContext(CategoriesContext);
+  const suppliersCtx = useContext(SuppliersContext);
   const [selectedCategory, setSelectedCategory] = useState<CategoryTypes | null>(null);
+  const [selectedSupplier, setSelectedSupplier] = useState<SupplierTypes | null>(null);
 
-  useEffect(() => {
-    betterConsoleLog('> Selected category is', selectedCategory);
-  }, [selectedCategory])
- 
   useEffect(() => {
     if(selectedCategory?.stockType !== 'Boja-Veličina-Količina'){
       setSelectedSizes([]);
@@ -147,6 +147,14 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
     updateSearchParam('onCategorySearch', selectedCategory?.name);
   }, [selectedCategory]);
 
+  useEffect(() => {
+    if(selectedSupplier && selectedSupplier?.name === 'Resetuj izbor'){
+      resetSupplierDropdown();
+      return;
+    }
+    updateSearchParam('onSupplierSearch', selectedSupplier?.name);
+  }, [selectedSupplier]);
+
   // COLOR | SIZE SEARCH UPDATE
   useEffect(() => {
     updateSearchParam('onColorsSearch', selectedColors);
@@ -154,12 +162,18 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   }, [selectedColors, selectedSizes]);
 
   // Dropdown Reset
-  const [resetKey, setResetKey] = useState(0);
+  const [resetKey, setResetKey] = useState(10000);
+  const [supplierResetKey, setSupplierResetKey] = useState(0);
   function resetDropdown(){
     updateSearchParam('onCategorySearch', '');
     setResetKey(prevKey => prevKey + 1);
     setSelectedCategory('');
   };
+  function resetSupplierDropdown(){
+    updateSearchParam('onSupplierSearch', '');
+    setSupplierResetKey(prevKey => prevKey + 1);
+    setSelectedSupplier('');
+  }
 
   return (
     <View style={styles.container}>
@@ -187,7 +201,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
             <Text style={styles.filtersH1}>Filteri</Text>
 
             {/* ACTIVE INACTIVE */}
-            <View style={styles.radioGroupContainer}>
+            {/* <View style={styles.radioGroupContainer}>
               <Text style={styles.filtersH2absolute}>Izbor Aktivni | Neaktivni proizvodi</Text>
               <View style={styles.radioGroup}>
                 <RadioGroup 
@@ -197,7 +211,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
                   layout='row'
                 />
               </View>
-            </View>
+            </View> */}
 
             {/* STOCK AVAILABILITY FILTER INPUT */}
             <View style={styles.radioGroupContainer}>
@@ -212,14 +226,25 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
               </View>
             </View>
 
-              {/* CATEGORIES FILTER INPUT */}
+            {/* CATEGORIES FILTER INPUT */}
+            <DropdownList
+              key={resetKey}
+              data={[{_id: '', name: 'Resetuj izbor'}, ...categoriesCtx.categories]}
+              onSelect={setSelectedCategory}
+              placeholder='Izaberite kategoriju'
+              isDefaultValueOn={false}
+            />
+
+            {/* SUPPLIER */}
+            <View style={{marginTop: 8,}}>
               <DropdownList
-                key={resetKey}
-                data={[{_id: '', name: 'Resetuj izbor'}, ...categoriesCtx.categories]}
-                onSelect={setSelectedCategory}
-                placeholder='Izaberite kategoriju'
+                key={supplierResetKey}
+                data={[{_id: '', name: 'Resetuj izbor'}, ...suppliersCtx.suppliers]}
+                onSelect={setSelectedSupplier}
+                placeholder='Izaberite dobavljača'
                 isDefaultValueOn={false}
               />
+            </View>
 
               {/* SIZES FILTER INPUT */}
               {(!selectedCategory || selectedCategory?.stockType === 'Boja-Veličina-Količina') && (

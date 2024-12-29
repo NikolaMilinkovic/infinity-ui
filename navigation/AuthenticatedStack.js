@@ -123,7 +123,7 @@ export default function AuthenticatedStack() {
       <Drawer.Screen
         name="ColorsCategoriesTabs"
         component={ColorsCategoriesTabs}
-        options={{ drawerLabel: 'Boje i Kategorije' }}
+        options={{ drawerLabel: 'Boje, Kategorije i Dobavljači' }}
       />
 
       {/* COURIERS TAB SCREEN */}

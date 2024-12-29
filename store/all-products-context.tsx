@@ -41,12 +41,12 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
   const socketCtx = useContext(SocketContext)
   const socket = socketCtx?.socket
 
-  useEffect(() => {
-    const filteredInactive = inactiveProducts.map((product) => product.name);
-    // betterConsoleLog('> All inactive products are FROM STORE', filteredInactive);
-    const filteredActive = activeProducts.map((product) => product.name);
-    // betterConsoleLog('> All active products are FROM STORE', filteredActive);
-  }, [activeProducts, inactiveProducts])
+  // useEffect(() => {
+  //   const filteredInactive = inactiveProducts.map((product) => product.name);
+  //   // betterConsoleLog('> All inactive products are FROM STORE', filteredInactive);
+  //   const filteredActive = activeProducts.map((product) => product.name);
+  //   // betterConsoleLog('> All active products are FROM STORE', filteredActive);
+  // }, [activeProducts, inactiveProducts])
 
   // SOCKET METHODS
   function activeProductAddedHandler(newProduct: DressTypes | PurseTypes){
@@ -199,6 +199,22 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
     )
   }
 
+  interface DisplayPriorityUpdateDataTypes {
+    displayPriority: number
+    products: string[]
+  }
+  function handleUpdateProductDisplayPriority(updateData: DisplayPriorityUpdateDataTypes){
+    setActiveProducts((prev) => {
+      const updated = prev.map((item) =>
+        updateData.products.includes(item._id)
+          ? { ...item, displayPriority: updateData.displayPriority }
+          : item
+      );
+      betterConsoleLog('> updated active products', updated);
+      return updated;
+    });
+  }
+
   useEffect(() => {
     if(socket){
       socket.on('activeProductAdded', activeProductAddedHandler);
@@ -213,6 +229,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
       socket.on('batchStockDecrease', handleBatchStockDecreasee);
       socket.on('activeProductUpdated', handleActiveProductUpdated);
       socket.on('inactiveProductUpdated', handleInactiveProductUpdated);
+      socket.on('updateProductDisplayPriority', handleUpdateProductDisplayPriority);
 
       return () => {
         socket.off('activeProductAdded', activeProductAddedHandler);
@@ -227,9 +244,25 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
         socket.off('batchStockDecrease', handleBatchStockDecreasee);
         socket.off('activeProductUpdated', handleActiveProductUpdated);
         socket.off('inactiveProductUpdated', handleInactiveProductUpdated);
+        socket.off('updateProductDisplayPriority', handleUpdateProductDisplayPriority);
       };
     }
   },[socket])
+
+  function mergeSortedProductArrays(arrA: DressTypes[], arrB: PurseTypes[]) {
+    let i = 0, j = 0;
+    const merged = [];
+  
+    while (i < arrA.length && j < arrB.length) {
+      if (arrA[i].displayPriority > arrB[j].displayPriority) {
+        merged.push(arrA[i++]);
+      } else {
+        merged.push(arrB[j++]);
+      }
+    }
+  
+    return merged.concat(arrA.slice(i)).concat(arrB.slice(j));
+  }
 
   useEffect(() => {
     async function getProductsData() {
@@ -241,9 +274,9 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
             fetchData(token, 'products/inactive-dresses'),
             fetchData(token, 'products/inactive-purses')
           ]);
-  
-          setActiveProducts([...activeDresses, ...activePurses]);
-          setInactiveProducts([...inactiveDresses, ...inactivePurses]);
+          
+          setActiveProducts(mergeSortedProductArrays(activeDresses, activePurses));
+          setInactiveProducts(mergeSortedProductArrays(inactiveDresses, inactivePurses));
         } catch (error) {
           console.error('Error fetching products:', error);
         }

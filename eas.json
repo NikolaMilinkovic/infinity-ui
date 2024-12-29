@@ -12,6 +12,9 @@
       "android": {
         "buildType": "apk"
       },
+      "ios": {
+        "simulator": false
+      },
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_BACKEND_URI": "https://infinity-server-b8ecd56d9909.herokuapp.com"
@@ -20,6 +23,9 @@
     "production": {
       "android": {
         "buildType": "apk"
+      },
+      "ios": {
+        "simulator": false
       },
       "distribution": "internal",
       "env": {

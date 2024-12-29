@@ -36,14 +36,13 @@ export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string
     const parsedResponse = await response.json();
     betterConsoleLog('> Logging parsed data', parsedResponse.data);
     orderCtx.setBuyerData({
-      name: parsedResponse.data.name,
-      address: parsedResponse.data.address,
-      place: parsedResponse.data.place,
-      phone: parsedResponse.data.phone,
-      phone2: parsedResponse.data.phone2,
+      name: parsedResponse.data.name || '',
+      address: parsedResponse.data.address || '',
+      place: parsedResponse.data.place || '',
+      phone: parsedResponse.data.phone || '',
+      phone2: parsedResponse.data.phone2 || '',
     });
-    // console.log(`> Logging orderNotes: ${parsedResponse.data.orderNotes}`);
-    orderCtx.setOrderNotes(parsedResponse.data.orderNotes);
+    orderCtx.setDeliveryRemark(parsedResponse.data.orderNotes || '');
     popupMessage(parsedResponse.message, 'success');
     return true;
 

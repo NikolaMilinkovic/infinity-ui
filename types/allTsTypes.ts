@@ -34,6 +34,7 @@ export interface SearchParamsTypes {
   isNotOnStock: boolean
   onStockAndSoldOut: boolean
   onCategorySearch: string
+  onSupplierSearch: string
   onColorsSearch: string[]
   onSizeSearch: string[]
   active: boolean
@@ -66,6 +67,9 @@ export interface DressTypes {
   price: number;
   colors: DressColorTypes[];
   image: ImageTypes;
+  description: string;
+  displayPriority: number;
+  supplier?: string;
 }
 
 // PURSES
@@ -84,6 +88,9 @@ export interface PurseTypes {
   price: number;
   colors: PurseColorTypes[];
   image: ImageTypes;
+  description: string;
+  displayPriority: number;
+  supplier?: string;
 }
 
 // PURSE & DRESS TYPE
@@ -117,11 +124,14 @@ export interface OrderProductTypes {
   selectedColorId: string;
   selectedSize?: string;
   selectedSizeId?: string;
-  value: string
-  weight: string
-  internalRemark: string
-  deliveryRemark: string
-  orderNotes: string
+  value: string;
+  weight: string;
+  internalRemark: string;
+  deliveryRemark: string;
+  orderNotes: string;
+  description: string;
+  displayPriority: number;
+  supplier?: string;
 }
 
 export interface NewOrderContextTypes {
@@ -261,4 +271,9 @@ export interface ProcessedOrderStatisticsFileTypes {
   }[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface SupplierTypes {
+  _id: string;
+  name: string;
 }

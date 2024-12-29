@@ -171,8 +171,16 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
       console.log(productsPrice);
       if(productsPrice){
         let price = deliveryPrice + productsPrice;
+
+        // price of delivery + products for Ukupno field
         setTotalPrice(price);
-        setCustomPrice(price);
+
+        // Custom price
+        if(editedOrder?.totalPrice === price){
+          setCustomPrice(price);
+        } else {
+          setCustomPrice(editedOrder?.totalPrice);
+        }
       }
     }
   }, [deliveryPrice, productsPrice])
@@ -388,14 +396,6 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
       {/* Buttons */}
       <View style={styles.buttonsContainer}>
 
-        {/* SAVE */}
-        <Button
-          containerStyles={styles.button}
-          onPress={handleUpdateMethod}
-          backColor={Colors.secondaryDark}
-          textColor={Colors.white}
-        >Sačuvaj</Button>
-
         {/* CANCEL */}
         <Button
           containerStyles={styles.button}
@@ -403,6 +403,14 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
           backColor={Colors.error}
           textColor={Colors.white}
         >Nazad</Button>
+
+        {/* SAVE */}
+        <Button
+          containerStyles={styles.button}
+          onPress={handleUpdateMethod}
+          backColor={Colors.secondaryDark}
+          textColor={Colors.white}
+        >Sačuvaj</Button>
       </View>
 
     </ScrollView>

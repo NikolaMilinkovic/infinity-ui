@@ -14,6 +14,7 @@ interface PropTypes {
   isExpanded: boolean
   setIsExpanded: (expanded: boolean) => void
   onNext: () => void
+  defaultValueByMatch: string
 }
 interface DropdownTypes {
   _id: string
@@ -21,7 +22,7 @@ interface DropdownTypes {
   deliveryPrice: number
 }
 
-function CourierSelector({ isExpanded, setIsExpanded, onNext }: PropTypes) {
+function CourierSelector({ isExpanded, setIsExpanded, onNext, defaultValueByMatch='Bex' }: PropTypes) {
   const couriersCtx = useContext(CouriersContext);
   const orderCtx = useContext(NewOrderContext);
   const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([]);
@@ -34,7 +35,8 @@ function CourierSelector({ isExpanded, setIsExpanded, onNext }: PropTypes) {
       deliveryPrice: courier.deliveryPrice
     }));
     setDropdownData(dropdownData)
-  }, [couriersCtx.couriers, setDropdownData])
+    betterConsoleLog('> DropdownData is:', dropdownData);
+  }, [couriersCtx.couriers, setDropdownData]);
 
   return (
     <Animated.ScrollView>
@@ -50,7 +52,8 @@ function CourierSelector({ isExpanded, setIsExpanded, onNext }: PropTypes) {
           onSelect={orderCtx.setCourierData}
           isDefaultValueOn={true}
           placeholder='Izaberite kurira za dostavu'
-          defaultValueByIndex={1}
+          // defaultValueByIndex={0}
+          defaultValue={defaultValueByMatch}
         />
         {/* ON NEXT BUTTON */}
         <Button

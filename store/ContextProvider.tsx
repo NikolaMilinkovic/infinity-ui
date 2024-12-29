@@ -11,6 +11,7 @@ import CouriersContextProvider from './couriers-context';
 import OrdersContextProvider from './orders-context';
 import AppContextProvider from './app-context';
 import UserContextProvider from './user-context';
+import SuppliersContextProvider from './suppliers-context';
 
 interface ContextChildrenType {
   children: ReactNode;
@@ -25,17 +26,19 @@ const ContextProvider: React.FC<ContextChildrenType> = ({ children }) => {
             <ColorsContextProvider>
               <CategoriesContextProvider>
                 <CouriersContextProvider>
-                  <DressesContextProvider>
-                    <PursesContextProvider>
-                      <AllProductsContextProvider>
-                        <NewOrderContextProvider>
-                          <OrdersContextProvider>
-                            {children}
-                          </OrdersContextProvider>
-                        </NewOrderContextProvider>
-                      </AllProductsContextProvider>
-                    </PursesContextProvider>
-                  </DressesContextProvider>
+                  <SuppliersContextProvider>
+                    <DressesContextProvider>
+                      <PursesContextProvider>
+                        <AllProductsContextProvider>
+                          <NewOrderContextProvider>
+                            <OrdersContextProvider>
+                              {children}
+                            </OrdersContextProvider>
+                          </NewOrderContextProvider>
+                        </AllProductsContextProvider>
+                      </PursesContextProvider>
+                    </DressesContextProvider>
+                  </SuppliersContextProvider>
                 </CouriersContextProvider>
               </CategoriesContextProvider>
             </ColorsContextProvider>

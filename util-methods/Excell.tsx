@@ -3,6 +3,7 @@ import { getCurrentDate } from "./DateFormatters";
 import * as XLSX from 'xlsx';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { betterConsoleLog } from "./LogMethods";
 
 // Adjust column widths to fit the content | Thank you chatGPT :)
 const adjustCellsWidth = (ws: XLSX.WorkSheet): void => {
@@ -35,7 +36,7 @@ const adjustCellsWidth = (ws: XLSX.WorkSheet): void => {
 
 
 /**
- * 
+ * Creates an excell file with all the neccessary data that courier expects
  * @param orders - OrderTypes[] - Array of orders
  * @returns - Object that contains
  * {
@@ -44,9 +45,11 @@ const adjustCellsWidth = (ws: XLSX.WorkSheet): void => {
  * }
  */
 export const generateExcellForOrders = (orders: OrderTypes[], courier: string) => {
+  betterConsoleLog('> Logging orders:', orders);
+  const filteredByCreationTime = sortOrdersByDate(orders);
   let allOrdersData = [];
   let index = 1;
-  for(const order of orders){
+  for(const order of filteredByCreationTime){
     const orderData = [];
     orderData.push(order.buyer?.name || '');            // Ime i prezime
     orderData.push(order.buyer?.address || '');         // Adresa
@@ -54,13 +57,18 @@ export const generateExcellForOrders = (orders: OrderTypes[], courier: string) =
     orderData.push(order.buyer?.phone || '');           // Telefon
     orderData.push(order.buyer?.phone2 || '');          // Telefon 2
     orderData.push(order?.weight || '0.5');             // Tezina
-    orderData.push(index);                              // Br paketa
+    orderData.push('1');                                // Br paketa
     orderData.push(order?.value || '');                 // Vrednost
-    orderData.push(order?.totalPrice || '');             // Otkup
-    orderData.push(order?.buyer.bankNumber || '');      // Ziro rcun
-    orderData.push(order.courier?.deliveryPrice || ''); // Postarina
+    orderData.push(order?.totalPrice || '');            // Otkup
+    orderData.push(order?.buyer.bankNumber || '');      // Ziro racun
+    orderData.push('0');                                // Lično uručenje
+    orderData.push('0');                                // Otpremnica
+    orderData.push('0');                                // Povratnica
+    orderData.push('0');                                // Placen odgovor
+    orderData.push('1');                                // Postarina
     orderData.push(order?.internalRemark || '');        // Inerna napomena
     orderData.push(order?.deliveryRemark || '');        // Napomena za dostavu
+    orderData.push('0');                                // Pravno lice
     index += 1;
     allOrdersData.push(orderData);
   }
@@ -77,10 +85,15 @@ export const generateExcellForOrders = (orders: OrderTypes[], courier: string) =
       'broj paketa', 
       'vrednost', 
       'otkup', 
-      'žiro/račun', 
+      'žiro račun', 
+      'lično uručenje',
+      'otpremnica',
+      'povratnica',
+      'plaćen odgovor',
       'poštarina', 
       'interna napomena', 
-      'napomena za dostavu'
+      'napomena za dostavu',
+      'pravno lice'
     ],
     ...allOrdersData,
   ]);
@@ -98,4 +111,18 @@ export const generateExcellForOrders = (orders: OrderTypes[], courier: string) =
   // }).then(() => {
   //   Sharing.shareAsync(filename);
   // });
+}
+
+/**
+ * Sorts an array of orders based on createdAt field, oldest order is at the starting position
+ * of the array and the latest is at the end
+ * @param orders - OrderTypes[]
+ * @returns - OrderTypes[]
+ */
+function sortOrdersByDate(orders: OrderTypes[]): OrderTypes[] {
+  return orders.sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return dateA - dateB;
+  });
 }

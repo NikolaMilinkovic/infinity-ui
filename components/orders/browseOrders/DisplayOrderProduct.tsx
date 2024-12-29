@@ -34,12 +34,12 @@ function DisplayOrderProduct({ product, index }) {
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Boja:</Text>
-          <Text style={styles.data}>{product.selectedColor}</Text>
+          <Text style={[styles.data, {fontWeight: 'bold'}]}>{product.selectedColor}</Text>
         </View>
         {product.selectedSize && (
             <View style={styles.row}>
             <Text style={styles.label}>Veličina:</Text>
-            <Text style={styles.data}>{product.selectedSize}</Text>
+            <Text style={[styles.data, {fontWeight: 'bold'}]}>{product.selectedSize}</Text>
           </View>
         )}
         <View style={styles.row}>

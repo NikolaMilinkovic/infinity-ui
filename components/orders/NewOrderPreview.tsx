@@ -170,16 +170,6 @@ function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPric
             {/* <Pressable onPress={() => setShowEdit(!showEdit)} style={styles.editButton}>
               <Icon name={showEdit ? 'file-edit-outline' : 'cancel'} style={styles.editIcon} size={28} color={Colors.primaryDark}/>
             </Pressable> */}
-            <InputField
-              label='Napomena za kurira'
-              inputText={orderCtx.deliveryRemark}
-              setInputText={orderCtx.setDeliveryRemark}
-              containerStyles={styles.deliveryRemarkInput}
-              background={Colors.white}
-              selectTextOnFocus={true}
-              multiline={true}
-              numberOfLines={4}
-            />
             <Text style={styles.header2}>Rezervacija:</Text>
             <View style={styles.rowContainer}>
               <CustomCheckbox

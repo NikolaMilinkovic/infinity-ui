@@ -54,6 +54,8 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
   setOrderNotes: () => {},
   reservationDate: null,
   setReservationDate: () => {},
+  // description: '',
+  // setDescription: () => {},
 })
 
 function NewOrderContextProvider({ children }: ContextChildrenTypes){
@@ -70,6 +72,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const [deliveryRemark, setDeliveryRemark] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
   const [reservationDate, setReservationDate] = useState<Date>( new Date() );
+  // const [description, setDescription] = useState('');
 
   // Check to see if all products have selectedColor & selectedSize where applicable
   function validateProductData(){
@@ -94,6 +97,8 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     if(!courierData) return popupMessage('Nedostaju podaci o kuriru', 'danger');
     if(!profileImage) return popupMessage('Nedostaje slika kupčevog profila', 'danger');
     if(!validateProductData()) return popupMessage('Svi proizvodi moraju imati selektovane boje i veličine', 'danger');
+    if(internalRemark === null) setInternalRemark('');
+    if(deliveryRemark === null) setInternalRemark('');
 
 
     // Reshape data
@@ -122,7 +127,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     order.append('deliveryRemark', deliveryRemark);
     order.append('courier', JSON.stringify(courier));
     order.append('orderNotes', orderNotes || '');
-    betterConsoleLog('> Logging profile image', profileImage);
+    // order.append('description', description || '');
     order.append('profileImage', {
       uri: profileImage.uri,
       type: getMimeType(profileImage.mimeType, profileImage?.uri || ''),
@@ -271,6 +276,8 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     setIsReservation(false);
     setProfileImage(null);
     setDeliveryRemark('');
+    setInternalRemark('');
+    setOrderNotes('');
   }
 
   // COURIER
@@ -328,6 +335,8 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     setOrderNotes: setOrderNotes,
     reservationDate,
     setReservationDate: setReservationDate,
+    // description,
+    // setDescription: setDescription
   }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice, weight, orderValue, internalRemark, deliveryRemark, orderNotes, reservationDate]);
 
   return <NewOrderContext.Provider value={value}>{ children }</NewOrderContext.Provider>
