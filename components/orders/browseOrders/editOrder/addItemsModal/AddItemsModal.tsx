@@ -70,19 +70,19 @@ export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: 
                   <View style={modalStyles.buttonsContainer}>
                     <Button
                       containerStyles={modalStyles.button}
-                      backColor={Colors.secondaryDark}
-                      textColor={Colors.white}
-                      onPress={handleSaveItems}
-                    >
-                      Sačuvaj
-                    </Button>
-                    <Button
-                      containerStyles={modalStyles.button}
                       backColor={Colors.error}
                       textColor={Colors.white}
                       onPress={handleCancel}
                     >
                       Odustani
+                    </Button>
+                    <Button
+                      containerStyles={modalStyles.button}
+                      backColor={Colors.secondaryDark}
+                      textColor={Colors.white}
+                      onPress={handleSaveItems}
+                    >
+                      Sačuvaj
                     </Button>
                 </View>
               </View>
@@ -105,11 +105,10 @@ const modalStyles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 1,
-    marginTop: 56
   },
   modal: {
     width: '90%',
-    height: '80%',
+    height: '90%',
     backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',

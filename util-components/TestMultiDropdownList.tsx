@@ -176,29 +176,29 @@ const TestMultipleDropdownList: React.FC<any> = ({
                                 
                            
                         </View>
-                        
                     </View>
                 :
 
                 (selectedval?.length > 0 )
 
                 ?
-                    <TouchableOpacity style={[styles.wrapper,boxStyles]} onPress={() => { if(!dropdown){ Keyboard.dismiss(); slidedown() }else{ slideup() } }} >
-                        <View>
-                            <Text style={[{fontWeight:'600',fontFamily},labelStyles]}>{ label }</Text>
-                            <View style={{flexDirection:'row',marginBottom:8,flexWrap:'wrap'}}>
-                                {
-                                    selectedval?.map((item: any,index: number) => {
-                                        return (
-                                            <View key={index} style={[{backgroundColor:'gray',paddingHorizontal:20,paddingVertical:5,borderRadius:50,marginRight:10,marginTop:10}, badgeStyles]}>
-                                                <Text style={[{color:'white',fontSize:12,fontFamily}, badgeTextStyles]}>{item}</Text>
-                                            </View>
-                                        )
-                                    })
-                                }
-                            </View>
-                        </View>
-                    </TouchableOpacity>
+                    // <TouchableOpacity style={[styles.wrapper,boxStyles]} onPress={() => { if(!dropdown){ Keyboard.dismiss(); slidedown() }else{ slideup() } }} >
+                    //     <View>
+                    //         <Text style={[{fontWeight:'600',fontFamily},labelStyles]}>{ label }</Text>
+                    //         <View style={{flexDirection:'row',marginBottom:8,flexWrap:'wrap'}}>
+                    //             {
+                    //                 selectedval?.map((item: any,index: number) => {
+                    //                     return (
+                    //                         <View key={index} style={[{backgroundColor:'gray',paddingHorizontal:20,paddingVertical:5,borderRadius:50,marginRight:10,marginTop:10}, badgeStyles]}>
+                    //                             <Text style={[{color:'white',fontSize:12,fontFamily}, badgeTextStyles]}>{item}</Text>
+                    //                         </View>
+                    //                     )
+                    //                 })
+                    //             }
+                    //         </View>
+                    //     </View>
+                    // </TouchableOpacity>
+                    <></>
                 :
                     <TouchableOpacity style={[styles.wrapper,boxStyles]} onPress={() => { if(!dropdown){ Keyboard.dismiss(); slidedown() }else{ slideup() } }}>
                         <Text style={[{fontFamily},inputStyles]}>{ (selectedval == "") ? (placeholder) ? placeholder : 'Select option' : selectedval  }</Text>

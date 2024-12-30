@@ -22,6 +22,7 @@ interface DropdownPropTypes {
   containerStyles?: any
   defaultOption?: any
   defaultValues?: any
+  search?: boolean
 }
 
 export default function MultiDropdownList({
@@ -34,6 +35,7 @@ export default function MultiDropdownList({
   containerStyles,
   defaultOption,
   defaultValues = [],
+  search = true,
 }:DropdownPropTypes){
 
   const [dropdownData, setDropdownData] = useState([])
@@ -63,6 +65,7 @@ export default function MultiDropdownList({
           save="value"
           label={label}
           notFoundText='Oof, ništa nije pronađeno pod tim imenom..'
+          // search={false}
           searchPlaceholder='Pretraži'
           arrowicon={
             <Icon name={'chevron-down'} style={styles.dropdown1ButtonArrowStyle} size={18}/>

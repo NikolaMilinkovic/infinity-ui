@@ -419,7 +419,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: Colors.primaryLight
+    backgroundColor: Colors.primaryLight,
   },
   sectionContainer: {
     padding: 10,
@@ -717,7 +717,7 @@ const productDisplayStyles = StyleSheet.create({
     backgroundColor: Colors.white,
     padding: 10,
     borderRadius: 4,
-    elevation: 2
+    elevation: 2,
   },
   subContainer: {
     flexDirection: 'row',
@@ -778,7 +778,7 @@ const modalStyles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 999
+    zIndex: 999,
   },
   modal: {
     width: '90%',
