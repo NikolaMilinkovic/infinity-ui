@@ -183,15 +183,25 @@ function AddProduct(){
   }
 
   // Handles choosing correct method to add a product
+  const [isAdding, setIsAdding] = useState(false);
   async function handleAddProduct(){
-    if(!selectedCategory){
-      return popupMessage('Izaberite Kategoriju proizvoda', 'danger');
-    } else {
-      if(!selectedCategory.name) return popupMessage('Morate izabrati kategoriju','danger');
-
-      // Methods for adding productus based on category
-      if(selectedCategory.stockType === 'Boja-Veličina-Količina') return await handleAddDress();
-      if(selectedCategory.stockType === 'Boja-Količina') return await handleAddPurse();
+    try{
+      if(isAdding){
+        return popupMessage('Dodavanje proizvoda u toku..', 'info');
+      }
+      if(!selectedCategory){
+        return popupMessage('Izaberite Kategoriju proizvoda', 'danger');
+      } else {
+        setIsAdding(true);
+        if(!selectedCategory.name) return popupMessage('Morate izabrati kategoriju','danger');
+  
+        // Methods for adding productus based on category
+        if(selectedCategory.stockType === 'Boja-Veličina-Količina') return await handleAddDress();
+        if(selectedCategory.stockType === 'Boja-Količina') return await handleAddPurse();
+        setIsAdding(false);
+      }
+    } catch (error){
+      setIsAdding(false);
     }
   }
 

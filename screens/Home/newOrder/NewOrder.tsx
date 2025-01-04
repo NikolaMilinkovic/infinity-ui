@@ -95,7 +95,9 @@ function NewOrder() {
     orderCtx.resetOrderData();
   }
 
+  const[isAddingOrder, setIsAddingOrder] = useState(false);
   async function handleSubmitOrder(){
+    if(isAddingOrder) return popupMessage('Dodavanje porudzbine u toku, sačekajte.', 'info');
     try{
       // get order form with all the data from new-order-context
       const order = orderCtx.createOrderHandler()
@@ -104,7 +106,9 @@ function NewOrder() {
   
       // Send the data via fetch
       if(!token) return popupMessage('Autentifikacioni token ne postoji!', 'danger');
+      setIsAddingOrder(true);
       const response = await addNewOrder(order, token, 'orders');
+      setIsAddingOrder(false);
   
       if(response){
         handleResetOrderData();
@@ -114,6 +118,7 @@ function NewOrder() {
       }
     } catch (error){
       console.error(error);
+      setIsAddingOrder(false);
       popupMessage('Došlo je do problema prilikom slanja nove porudžbine', 'danger');
     }
   }

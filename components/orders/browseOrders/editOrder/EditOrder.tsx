@@ -52,7 +52,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   
   const [isReservation, setIsReservation] = useState(editedOrder?.reservation);
   // betterConsoleLog('> Edited order reservation date is', editedOrder?.reservationDate);
-  const [reservationDate, setReservationDate] = useState(new Date(editedOrder?.reservationDate) || new Date());
+  const [reservationDate, setReservationDate] = useState(new Date(editedOrder?.reservationDate ? editedOrder.reservationDate : new Date()) );
   const [orderNotes, setOrderNotes] = useState(editedOrder?.orderNotes || '');
   const [isPacked, setIsPacked] = useState(editedOrder?.packed);
 
@@ -139,6 +139,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
     }
   }
 
+  // PRICE CALCULATION HANDLING
   useEffect(() => {
     if(products && products.length > 0){
       let newProductsPrice = 0; 
@@ -149,8 +150,10 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
       setProductsPrice(newProductsPrice);
       if(deliveryPrice){
         const price = newProductsPrice + deliveryPrice;
+        betterConsoleLog('> Setting new custom price to', price);
         setCustomPrice(price);
       }
+
     } else {
       setProductsPrice(0);
       setCustomPrice(deliveryPrice);
@@ -159,12 +162,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
 
   }, [products])
 
-  useEffect(() => {
-    if(courier){
-      setDeliveryPrice(courier.deliveryPrice);
-    }
-  }, [courier])
-
+  // PRICE CALCULATION HANDLING
   useEffect(() => {
     if(deliveryPrice){
       console.log('> Calculating new custom price')
@@ -174,21 +172,32 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
 
         // price of delivery + products for Ukupno field
         setTotalPrice(price);
-
-        // Custom price
-        if(editedOrder?.totalPrice === price){
-          setCustomPrice(price);
-        } else {
-          setCustomPrice(editedOrder?.totalPrice);
-        }
+        setCustomPrice(price);
       }
     }
   }, [deliveryPrice, productsPrice])
 
+  // Sets the displayed custom price, since we are calculating the custom price render
+  // this will bypass setting the newly calculated custom price upon rendering
   useEffect(() => {
-    console.log('> Custom price is:', customPrice)
-  }, [customPrice])
+    let dp = deliveryPrice ? deliveryPrice : 0;
+    let pp = productsPrice ? productsPrice : 0;
+    let price = dp + pp;
+    if(editedOrder?.totalPrice === price){
+      setCustomPrice(price);
+    } else {
+      setCustomPrice(editedOrder?.totalPrice);
+    }
+  }, []);
 
+  // Handles price update for courier change
+  useEffect(() => {
+    if(courier){
+      setDeliveryPrice(courier.deliveryPrice);
+    }
+  }, [courier])
+
+  // Courier update handler
   useEffect(() => {
     const dropdownData = couriersCtx.couriers.map(courier => ({
       _id: courier._id,
@@ -237,6 +246,10 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
     setShowDatePicker(false);
     setPickedDateDisplay('');
   }
+
+  useEffect(() => {
+    betterConsoleLog('> Logging custom price:', customPrice);
+  }, [customPrice]);
 
   return (
     <ScrollView style={styles.container}>
@@ -385,7 +398,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         {/* Custom Price */}
           <InputField
             label='Finalna cena'
-            inputText={customPrice.toString()}
+            inputText={customPrice ? customPrice.toString() : '0'}
             setInputText={setCustomPrice}
             background={Colors.white}
             containerStyles={{marginTop: 22}}
@@ -624,10 +637,10 @@ function ProductDisplay({ product, index, setProducts }: ProductDisplayTypes){
   function handleImagePreview() {
     showImageModal();
   }
-  
+
+  // REMOVE PRODUCTS HANDLER
   async function handleOnRemovePress(){
     showModal(async () => {
-      console.log('> Deleting the item from order..');
       setProducts((prevProducts: OrderProductTypes) => [
         ...prevProducts.slice(0, index), 
         ...prevProducts.slice(index + 1)

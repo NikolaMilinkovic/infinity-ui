@@ -40,9 +40,17 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
   }
 
   // Sends buyer data for sorting and resets the input field
+  const [isSortingUserInformation, setIsSortingUserInformation] = useState(false);
   async function handleInputSort(){
-    const result = await handleBuyerDataInputSort(authCtx.token || '', buyerInfo, orderCtx);
-    if(result) setBuyerInfo('');
+    try{
+      if(isSortingUserInformation) return popupMessage('Sortiranje informacija u toku, sačekajte', 'info');
+      setIsSortingUserInformation(true);
+      const result = await handleBuyerDataInputSort(authCtx.token || '', buyerInfo, orderCtx);
+      if(result) setBuyerInfo('');
+      setIsSortingUserInformation(false);
+    } catch (error){
+      setIsSortingUserInformation(false);
+    }
   }
 
   
