@@ -120,6 +120,8 @@ function NewOrder() {
       console.error(error);
       setIsAddingOrder(false);
       popupMessage('Došlo je do problema prilikom slanja nove porudžbine', 'danger');
+    } finally {
+      setIsAddingOrder(false);
     }
   }
   
