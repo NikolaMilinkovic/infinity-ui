@@ -11,14 +11,16 @@ interface PropTypes {
   image: ProductImageTypes | null,
   setImage: (image: ProductImageTypes | null) => void
   placeholder: string
+  quality: number
+  crop: boolean
 }
 
-function GalleryImagePicker({ image, setImage, placeholder = 'Dodaj sliku' }: PropTypes) {
+function GalleryImagePicker({ image, setImage, placeholder = 'Dodaj sliku', quality = 0.6, crop = false }: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(true);
   const toggledHeight = useExpandAnimation(isExpanded, 50, 100, 180);
   
   async function handlePickImage(){
-    const pickedImage = await pickImage();
+    const pickedImage = await pickImage(quality, crop);
     if(pickedImage){
       setImage(pickedImage);
       setIsExpanded(true);

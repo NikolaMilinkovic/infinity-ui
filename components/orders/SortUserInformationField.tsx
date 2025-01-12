@@ -156,6 +156,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
             image={orderCtx.profileImage}
             setImage={orderCtx.setProfileImage}
             placeholder='Dodaj sliku profila'
+            crop={true}
           />
           <Button
             backColor={Colors.highlight}

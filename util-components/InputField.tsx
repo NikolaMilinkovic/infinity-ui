@@ -19,6 +19,7 @@ interface InputFieldProps {
   selectTextOnFocus?: boolean;
   multiline?: boolean;
   numberOfLines?: number;
+  displayClearInputButton?: boolean;
 }
 
 function InputField({ 
@@ -38,6 +39,7 @@ function InputField({
   multiline=false,
   numberOfLines=1,
   labelStyles,
+  displayClearInputButton=false
 
 } :InputFieldProps) {
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -83,6 +85,11 @@ function InputField({
         {isSecure && isSecure === true && (
           <Pressable onPress={() => setShowPassword(!showPassword)} style={({ pressed }) => [styles.showHideText, pressed && styles.pressed]}>
             <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color="#333" />
+          </Pressable>
+        )}
+        {displayClearInputButton && displayClearInputButton === true && (
+          <Pressable onPress={() => setInputText('')} style={({ pressed }) => [styles.showHideText, pressed && styles.pressed]}>
+            <Ionicons name={'close'} size={24} color="#333" />
           </Pressable>
         )}
       </View>

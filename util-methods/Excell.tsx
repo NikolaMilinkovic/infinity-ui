@@ -51,8 +51,8 @@ export const generateExcellForOrders = (orders: OrderTypes[], courier: string) =
   let index = 1;
   for(const order of filteredByCreationTime){
     const orderData = [];
-    orderData.push(order.buyer?.name || '');            // Ime i prezime
-    orderData.push(order.buyer?.address || '');         // Adresa
+    orderData.push(order.buyer?.name.toUpperCase() || '');            // Ime i prezime
+    orderData.push(order.buyer?.address.toUpperCase() || '');         // Adresa
     orderData.push(order.buyer?.place || '');           // Mesto
     orderData.push(order.buyer?.phone || '');           // Telefon
     orderData.push(order.buyer?.phone2 || '');          // Telefon 2

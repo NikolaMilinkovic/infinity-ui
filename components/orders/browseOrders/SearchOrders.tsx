@@ -225,6 +225,7 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
           color={Colors.primaryDark}
           labelBorders={false}
           containerStyles={styles.input}
+          displayClearInputButton={true}
         />
         <ExpandButton
           isExpanded={isExpanded}
@@ -358,6 +359,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
   },
   input: {
     marginTop: 18,

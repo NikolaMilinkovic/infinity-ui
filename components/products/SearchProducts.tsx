@@ -187,6 +187,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
           containerStyles={styles.inputField}
           labelBorders={false}
           background={Colors.white}
+          displayClearInputButton={true}
         />
         <ExpandButton
           isExpanded={isExpanded}
