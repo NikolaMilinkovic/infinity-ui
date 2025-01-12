@@ -198,9 +198,12 @@ function AddProduct(){
         // Methods for adding productus based on category
         if(selectedCategory.stockType === 'Boja-Veličina-Količina') return await handleAddDress();
         if(selectedCategory.stockType === 'Boja-Količina') return await handleAddPurse();
-        setIsAdding(false);
       }
     } catch (error){
+      setIsAdding(false);
+      betterConsoleLog('> Došlo je do errora prilikom dodavanja novog proizvoda', error);
+      popupMessage('Došlo je do problema prilikom dodavanja novog proizvoda', 'danger');
+    } finally {
       setIsAdding(false);
     }
   }
