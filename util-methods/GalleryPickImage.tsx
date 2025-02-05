@@ -6,6 +6,7 @@ export const pickImage = async(quality:number = 0.6, allowsEditing = false) => {
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsEditing: allowsEditing,
     quality: quality,
+    aspect: allowsEditing ? [1, 1] : undefined,
   });
 
   if(!result.canceled){

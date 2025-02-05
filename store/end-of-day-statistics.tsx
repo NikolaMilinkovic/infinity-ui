@@ -8,6 +8,7 @@ import { betterConsoleLog } from "../util-methods/LogMethods";
 interface OrderStatisticsContextType {
   statisticData: StatFileTypes[];
   setStatisticData: (data: StatFileTypes[]) => void;
+  fetchOrderStatisticsData: () => Promise<void>
 }
 interface OrderStatisticsContextProviderType {
   children: ReactNode;
@@ -16,6 +17,7 @@ interface OrderStatisticsContextProviderType {
 export const OrderStatisticsContext = createContext<OrderStatisticsContextType>({
   statisticData: [],
   setStatisticData: () => {},
+  fetchOrderStatisticsData: async() =>{},
 });
 
 function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextProviderType) {
@@ -56,10 +58,21 @@ function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextP
     }
   }, [socket]);
 
+  async function fetchOrderStatisticsData() {
+    if(!token) return;
+    try{
+      const fetchedData = await fetchData(token, 'orders/get-order-statistic-files-for-period');
+      setStatisticData(fetchedData.data);
+    } catch(error){
+      console.error(error);
+    }
+  }
+
   // Memoizing the getters
   const value = useMemo(() => ({
     statisticData,
     setStatisticData: setStatisticData,
+    fetchOrderStatisticsData: fetchOrderStatisticsData,
   }), [statisticData]);
 
   return <OrderStatisticsContext.Provider value={value}>{children}</OrderStatisticsContext.Provider>;

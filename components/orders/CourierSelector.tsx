@@ -35,7 +35,6 @@ function CourierSelector({ isExpanded, setIsExpanded, onNext, defaultValueByMatc
       deliveryPrice: courier.deliveryPrice
     }));
     setDropdownData(dropdownData)
-    betterConsoleLog('> DropdownData is:', dropdownData);
   }, [couriersCtx.couriers, setDropdownData]);
 
   return (

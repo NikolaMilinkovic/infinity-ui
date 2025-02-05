@@ -17,6 +17,7 @@ interface AllProductsContextType {
   setAllActiveProducts: (products: (DressTypes | PurseTypes)[]) => void;
   setAllInactiveProducts: (products: (DressTypes | PurseTypes)[]) => void;
   setAllProducts: (products: (DressTypes | PurseTypes)[]) => void;
+  fetchAllProducts: () => Promise<void>;
 }
 
 interface AllProductsProviderType {
@@ -29,6 +30,7 @@ export const AllProductsContext = createContext<AllProductsContextType>({
   setAllActiveProducts: () => {},
   setAllInactiveProducts: () => {},
   setAllProducts: () => {},
+  fetchAllProducts: async() => {},
 })
 
 function AllProductsContextProvider({ children }: AllProductsProviderType){
@@ -285,6 +287,24 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
     getProductsData();
   }, [token]);
 
+  async function getProductsData() {
+    if (token) {
+      try {
+        const [activeDresses, activePurses, inactiveDresses, inactivePurses] = await Promise.all([
+          fetchData(token, 'products/active-dresses'),
+          fetchData(token, 'products/active-purses'),
+          fetchData(token, 'products/inactive-dresses'),
+          fetchData(token, 'products/inactive-purses')
+        ]);
+        
+        setActiveProducts(mergeSortedProductArrays(activeDresses, activePurses));
+        setInactiveProducts(mergeSortedProductArrays(inactiveDresses, inactivePurses));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    }
+  }
+
   // Memoizing the getters
   const value = useMemo(() => ({
     allActiveProducts: activeProducts,
@@ -293,6 +313,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
     setAllActiveProducts: setActiveProducts,
     setAllInactiveProducts: setInactiveProducts,
     setAllProducts,
+    fetchAllProducts: getProductsData,
   }), [activeProducts, inactiveProducts, allProducts]);
 
   return <AllProductsContext.Provider value={value}>{children}</AllProductsContext.Provider>;

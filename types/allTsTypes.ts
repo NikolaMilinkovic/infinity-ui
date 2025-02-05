@@ -277,3 +277,19 @@ export interface SupplierTypes {
   _id: string;
   name: string;
 }
+
+
+export interface LastUpdatedDataType {
+  appSchemaLastUpdatedAt: Date
+  userLastUpdatedAt: Date
+  categoryLastUpdatedAt: Date
+  colorLastUpdatedAt: Date
+  dressLastUpdatedAt: Date
+  dressColorLastUpdatedAt: Date
+  purseLastUpdatedAt: Date
+  purseColorLastUpdatedAt: Date
+  supplierLastUpdatedAt: Date
+  productDisplayCounterLastUpdatedAt: Date
+  processedOrdersForPeriodLastUpdatedAt: Date
+  orderLastUpdatedAt: Date
+}

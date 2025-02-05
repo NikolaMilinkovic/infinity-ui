@@ -56,7 +56,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
   
   // ON NEXT
   function handleOnNext(){
-    if(orderCtx.buyerData?.name && orderCtx.buyerData?.address && orderCtx.buyerData?.phone && orderCtx.profileImage){
+    if(orderCtx.buyerData?.name && orderCtx.buyerData?.address && orderCtx.buyerData?.phone && orderCtx.profileImage && orderCtx.buyerData?.place){
       onNext()
     } else {
       if(!orderCtx.buyerData?.name) return popupMessage('Unesite ime / prezime kupca', 'danger');
@@ -156,7 +156,7 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
             image={orderCtx.profileImage}
             setImage={orderCtx.setProfileImage}
             placeholder='Dodaj sliku profila'
-            crop={true}
+            crop={false}
           />
           <Button
             backColor={Colors.highlight}

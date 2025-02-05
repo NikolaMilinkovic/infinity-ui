@@ -8,7 +8,7 @@ interface IconButtonProps {
   onPress: () => void
   size: number
   text?: string
-  style?: object
+  style?: object 
   textStyle?: object
   iconStyle?: object
   pressedStyles?: object

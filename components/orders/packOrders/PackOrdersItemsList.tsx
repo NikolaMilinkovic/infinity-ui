@@ -22,7 +22,6 @@ function PackOrdersItemsList({ selectedCourier, data }: PackOrderItemsListPropTy
     renderItem={({item, index}) => 
       <Pressable
         delayLongPress={100}
-
       >
         <PackOrderItem 
           order={item} 

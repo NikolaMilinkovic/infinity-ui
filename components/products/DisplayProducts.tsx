@@ -85,7 +85,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
     // betterConsoleLog('> All active products are', filteredActive)
 
     if(searchParams.active) return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
-    if(searchParams.inactive) return serachProducts(searchData, productsCtx.allInactiveProducts, searchParams); 
+    if(searchParams.inactive) return serachProducts(searchData, productsCtx.allInactiveProducts, searchParams);
     return [];
   }, [productsCtx.allActiveProducts, productsCtx.allInactiveProducts, searchData, searchParams]);
 

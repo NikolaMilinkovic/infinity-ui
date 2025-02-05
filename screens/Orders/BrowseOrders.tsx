@@ -9,6 +9,7 @@ import Animated from 'react-native-reanimated';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import { Colors } from '../../constants/colors';
+import SocketDcRc from '../../util-components/SocketDcRc';
 
 interface SearchParamsTypes {
   processed: boolean
@@ -65,6 +66,7 @@ function BrowseOrders() {
     <>
       <View style={styles.ordersListContainer}>
         <Animated.View style={[overlayView, styles.overlayView]} />
+        <SocketDcRc/>
         <SearchOrders 
           searchData={searchData} 
           setSearchData={setSearchData} 

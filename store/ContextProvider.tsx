@@ -12,6 +12,7 @@ import OrdersContextProvider from './orders-context';
 import AppContextProvider from './app-context';
 import UserContextProvider from './user-context';
 import SuppliersContextProvider from './suppliers-context';
+import LastUpdatedContextProvider from './last-updated-context';
 
 interface ContextChildrenType {
   children: ReactNode;
@@ -32,7 +33,11 @@ const ContextProvider: React.FC<ContextChildrenType> = ({ children }) => {
                         <AllProductsContextProvider>
                           <NewOrderContextProvider>
                             <OrdersContextProvider>
-                              {children}
+
+                              {/* Last Updated needs to be wrapped by all context that store data */}
+                              <LastUpdatedContextProvider>
+                                {children}
+                              </LastUpdatedContextProvider>
                             </OrdersContextProvider>
                           </NewOrderContextProvider>
                         </AllProductsContextProvider>

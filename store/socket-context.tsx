@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useState, ReactNode, useContext } from
 import { io, Socket } from 'socket.io-client';
 import { AuthContext } from './auth-context';
 import Constants from 'expo-constants';
+import { LastUpdatedContext } from './last-updated-context';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 interface ISocketContext {
@@ -15,8 +16,9 @@ interface SocketProviderProps {
 }
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
+  // const lastUpdatedCtx = useContext(LastUpdatedContext);
   const authCtx = useContext(AuthContext);
-
+  
   useEffect(() => {
     if (authCtx.isAuthenticated) {
       const newSocket = io(process.env.EXPO_PUBLIC_BACKEND_URI || backendURI, {
@@ -24,8 +26,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         reconnectionAttempts: 5,
       });
 
-      newSocket.on('connect', () => {
-        console.log('> Socket connected');
+      newSocket.on('reconnect', (attempt) => {
+        console.log(`> Socket reconnected after ${attempt} attempts`);
+      });
+
+      newSocket.on('disconnect', (reason) => {
+        console.log('> Socket disconnected:', reason);
       });
 
       newSocket.on('connect_error', (error) => {

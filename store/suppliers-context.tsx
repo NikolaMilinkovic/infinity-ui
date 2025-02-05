@@ -70,13 +70,11 @@ function SuppliersContextProvider({ children }: SuppliersContextProviderType) {
   }
 
   useEffect(() => {
-    betterConsoleLog('> Logging suppliers arr', suppliers);
   }, [suppliers])
 
   // TO DO: Fix the filter issue, for some reason this always returns an empty array..
   function handleSupplierRemoved(supplier: string) {
     fetchSuppliers(token as string)
-    // betterConsoleLog('> Logging supplier', supplier);
   
     // const filteredSuppliers = suppliers.filter((supplierInstance) => 
     //   supplierInstance._id.toString() !== supplier

@@ -56,9 +56,9 @@ const DropdownList = ({
     betterConsoleLog('> defaultDataObject is:', defaultDataObject);
     setDefaultVal(defaultDataObject || []);
   }, [data, defaultValue]);
-  useEffect(() => {
-    betterConsoleLog('> Logging defaultVal: ', defaultVal);
-  },[defaultVal])
+  // useEffect(() => {
+  //   betterConsoleLog('> Logging defaultVal: ', defaultVal);
+  // },[defaultVal])
 
   if(dropdownData.length > 0){
     return (

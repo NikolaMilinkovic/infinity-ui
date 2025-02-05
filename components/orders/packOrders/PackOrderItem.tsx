@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Colors } from '../../../constants/colors'
 import { Pressable, StyleSheet, Text, View, Animated } from 'react-native'
 import { OrderTypes } from '../../../types/allTsTypes';
@@ -25,6 +25,9 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
   function handleOnPress(){
     setIsExpanded(() => !isExpanded);
   }
+  useEffect(() => {
+    setIsPacked(order.packedIndicator);
+  }, [order.packedIndicator]);
 
   async function handlePackOrder(){
     try{
