@@ -49,6 +49,7 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
   const contexts = useAppContexts();
+  const [firstConnect, setFirstConnect] = useState(true)
 
 
   /**
@@ -82,7 +83,10 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
         if (lastUpdatedData) {
           socket.emit('lastUpdated', lastUpdatedData);
         } else {
-          popupMessage('LastUpdated data is missing', 'danger');
+          if(firstConnect){
+            setFirstConnect(false);
+            popupMessage('LastUpdated data is missing', 'danger');
+          }
         }
       };
   
@@ -113,7 +117,7 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
         socket.off('syncLastUpdated', handleSyncLastUpdated);
       };
     }
-  }, [socket, lastUpdatedData]);
+  }, [socket, lastUpdatedData, firstConnect]);
   
   /**
    * @param data 

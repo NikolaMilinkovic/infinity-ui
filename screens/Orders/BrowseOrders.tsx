@@ -8,8 +8,7 @@ import { searchOrders } from '../../util-methods/OrderFilterMethods';
 import Animated from 'react-native-reanimated';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
-import { Colors } from '../../constants/colors';
-import SocketDcRc from '../../util-components/SocketDcRc';
+import Button from '../../util-components/Button';
 
 interface SearchParamsTypes {
   processed: boolean
@@ -60,13 +59,11 @@ function BrowseOrders() {
 
   const editOrderFade = useFadeTransition(editedOrder !== null);
   const overlayView = useFadeTransitionReversed(editedOrder === null, 500, 150);
-  
 
   return (
     <>
       <View style={styles.ordersListContainer}>
         <Animated.View style={[overlayView, styles.overlayView]} />
-        <SocketDcRc/>
         <SearchOrders 
           searchData={searchData} 
           setSearchData={setSearchData} 

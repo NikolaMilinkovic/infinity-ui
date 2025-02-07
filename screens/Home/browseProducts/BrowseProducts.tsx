@@ -6,7 +6,6 @@ import { ProductTypes } from '../../../types/allTsTypes';
 import EditProductComponent from '../../../components/products/edit_product/EditProductComponent';
 import { useFadeTransition, useFadeTransitionReversed } from '../../../hooks/useFadeTransition';
 import useBackClickHandler from '../../../hooks/useBackClickHandler';
-import SocketDcRc from '../../../util-components/SocketDcRc';
 
 function BrowseProducts() {
   const [editedProduct, setEditedProduct] = useState<ProductTypes | null>(null);
@@ -22,8 +21,6 @@ function BrowseProducts() {
     <>
       <View>
         <Animated.View style={[overlayView, styles.overlayView]}/>
-        {/* TEMP */}
-        <SocketDcRc/>
         <DisplayProducts
           setEditItem={setEditedProduct}
         />
