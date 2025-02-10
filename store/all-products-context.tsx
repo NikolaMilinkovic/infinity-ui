@@ -18,6 +18,8 @@ interface AllProductsContextType {
   setAllInactiveProducts: (products: (DressTypes | PurseTypes)[]) => void;
   setAllProducts: (products: (DressTypes | PurseTypes)[]) => void;
   fetchAllProducts: () => Promise<void>;
+  productsBySuppliers?: ProductsBySuppliersTypes;
+  productsByCategory?: ProductsByCategoryTypes;
 }
 
 interface AllProductsProviderType {
@@ -31,12 +33,22 @@ export const AllProductsContext = createContext<AllProductsContextType>({
   setAllInactiveProducts: () => {},
   setAllProducts: () => {},
   fetchAllProducts: async() => {},
+  productsBySuppliers: {},
+  productsByCategory: {},
 })
+interface ProductsBySuppliersTypes {
+  [supplier: string]: (DressTypes | PurseTypes)[]
+}
+interface ProductsByCategoryTypes {
+  [cateogry: string]: (DressTypes | PurseTypes)[]
+}
 
 function AllProductsContextProvider({ children }: AllProductsProviderType){
   const [activeProducts, setActiveProducts] = useState<(DressTypes | PurseTypes)[]>([])
   const [inactiveProducts, setInactiveProducts] = useState<(DressTypes | PurseTypes)[]>([])
   const [allProducts, setAllProducts] = useState<(DressTypes | PurseTypes)[]>([])
+  const [productsBySuppliers, setProductsBySuppliers] = useState<ProductsBySuppliersTypes>();
+  const [productsByCategory, setProductsByCategory] = useState<ProductsByCategoryTypes>();
 
   const authCtx = useContext(AuthContext)
   const token = authCtx.token
@@ -182,9 +194,35 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
 
   // Handle setting ALL PRODUCTS
   useEffect(() => {
-    console.log('> Setting all products: Active + Inactive');
     setAllProducts([...activeProducts, ...inactiveProducts]);
+    setProductsBySuppliers(sortProductsBySupplier([...activeProducts, ...inactiveProducts]));
+    setProductsByCategory(sortProductsByCategory([...activeProducts, ...inactiveProducts]));
   }, [activeProducts, inactiveProducts]);
+
+  function sortProductsBySupplier(products: ProductTypes[]){
+    const groupedBySupplier: Record<string, ProductTypes[]> = {};
+    products.forEach(product => {
+      const supplier = product.supplier || "Other";
+      if (!groupedBySupplier[supplier]) {
+        groupedBySupplier[supplier] = [];
+      }
+      groupedBySupplier[supplier].push(product);
+    });
+
+    return groupedBySupplier;
+  }
+  function sortProductsByCategory(products: ProductTypes[]){
+    const groupedByCategory: Record<string, ProductTypes[]> = {};
+    products.forEach(product => {
+      const category = product.category || "Other";
+      if (!groupedByCategory[category]) {
+        groupedByCategory[category] = [];
+      }
+      groupedByCategory[category].push(product);
+    });
+
+    return groupedByCategory;
+  }
 
   function handleActiveProductUpdated(updatedProduct: ProductTypes){
     setActiveProducts((prevProducts) => 
@@ -314,7 +352,9 @@ function AllProductsContextProvider({ children }: AllProductsProviderType){
     setAllInactiveProducts: setInactiveProducts,
     setAllProducts,
     fetchAllProducts: getProductsData,
-  }), [activeProducts, inactiveProducts, allProducts]);
+    productsBySuppliers: productsBySuppliers ?? {},
+    productsByCategory: productsByCategory ?? {},
+  }), [activeProducts, inactiveProducts, allProducts, productsBySuppliers, productsByCategory]);
 
   return <AllProductsContext.Provider value={value}>{children}</AllProductsContext.Provider>;
 }

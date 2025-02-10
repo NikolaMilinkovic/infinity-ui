@@ -5,7 +5,7 @@ import SearchProducts from './SearchProducts';
 import DisplayProduct from './display_product/DisplayProduct';
 import { AllProductsContext } from '../../store/all-products-context';
 import { serachProducts } from '../../util-methods/ProductFilterMethods';
-import { ImageTypes, ProductTypes, SearchParamsTypes } from '../../types/allTsTypes';
+import { DressTypes, ImageTypes, ProductTypes, PurseTypes, SearchParamsTypes } from '../../types/allTsTypes';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
 import useBatchSelectBackHandler from '../../hooks/useBatchSelectBackHandler';
 import BatchModeControlls from './BatchModeControlls';
@@ -19,6 +19,8 @@ import ImagePreviewModal from '../../util-components/ImagePreviewModal';
 import { fetchWithBodyData } from '../../util-methods/FetchMethods';
 import Constants from 'expo-constants';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
+import ProductListSelector from '../products/ProductListSelector';
+import { AppContext } from '../../store/app-context';
 
 interface DisplayProductsPropTypes {
   setEditItem: (data: ProductTypes | null) => void
@@ -44,11 +46,21 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const [previewImage, setPreviewImage] = useState<string>('');
+  const appCtx = useContext(AppContext);
+  const [settings, setSettings] = useState(appCtx.defaults);
+  useEffect(() => {
+    setSettings(appCtx.defaults);
+  }, [appCtx.defaults]);
   
   function handleImagePreview(image:ImageTypes) {
     setPreviewImage(image);
     showImageModal();
   }
+
+  const [selectedList, setSelectedList] = useState('Svi');
+  useEffect(() => {
+    console.log(selectedList)
+  }, [selectedList])
 
   // =============================[ SEARCH INPUT STUFF ]=============================
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -76,18 +88,32 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
 
   // Memoize the filtered products
   const filteredData = useMemo(() => {
-    console.log('> filtered data calculating..')
-    // console.log('> ACTIVE Search params are> ', searchParams.active)
-    // console.log('> INACTIVE Search params are> ', searchParams.inactive)
-    // const filteredInactive = productsCtx.allInactiveProducts.map((product) => product.name);
-    // betterConsoleLog('> All inactive products are', filteredInactive);
-    // const filteredActive = productsCtx.allActiveProducts.map((product) => product.name);
-    // betterConsoleLog('> All active products are', filteredActive)
+    if(settings?.defaults?.listProductsBy === 'supplier') {
+      if(searchParams.active)
+        if(selectedList === 'Svi')
+          return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
+        return serachProducts(searchData, productsCtx?.productsBySuppliers[selectedList] || [], searchParams); 
+    }
+    if(settings?.defaults?.listProductsBy === 'category') {
+      if(searchParams.active){
+        if(selectedList === 'Svi')
+          return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
+        return serachProducts(searchData, productsCtx?.productsByCategory[selectedList] || [], searchParams); 
+      }
+    }
 
     if(searchParams.active) return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
     if(searchParams.inactive) return serachProducts(searchData, productsCtx.allInactiveProducts, searchParams);
     return [];
-  }, [productsCtx.allActiveProducts, productsCtx.allInactiveProducts, searchData, searchParams]);
+  }, [productsCtx.allActiveProducts, productsCtx.allInactiveProducts, searchData, searchParams, selectedList, productsCtx?.productsBySuppliers, productsCtx?.productsByCategory, settings?.defaults?.listProductsBy]);
+
+  interface ProductsBySuppliersTypes {
+    [supplier: string]: (DressTypes | PurseTypes)[]
+  }
+  function listFilteringBySupplier(selectedList: string, productsBySuppliers: ProductsBySuppliersTypes | undefined): ProductTypes[]{
+    console.log('> listFilteringBySupplier called');
+    return productsBySuppliers?.[selectedList] ?? [];
+  }
 
   // Long press that initializes select mode
   function handleLongPress(itemId: string, stockType: string){
@@ -161,6 +187,9 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
     }
   }
 
+
+
+
   return (
     <View style={styles.container}>
       <ConfirmationModal
@@ -188,6 +217,11 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
         onRemoveBatchPress={handleRemoveBatchProducts}
         handleSortProducts={handleSortProducts}
       />
+      <ProductListSelector
+        products={filteredData}
+        setSelectedList={setSelectedList}
+      />
+
       {filteredData && filteredData.length > 0 && (
         <FlatList
           data={filteredData}
@@ -212,6 +246,9 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
           ListHeaderComponent={() => 
             <Text style={styles.listHeader}>Ukupno Proizvoda: {filteredData.length}</Text>
           }
+          initialNumToRender={10} 
+          maxToRenderPerBatch={15}
+          windowSize={5} 
         />
       )}
     </View>

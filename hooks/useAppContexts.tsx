@@ -7,8 +7,10 @@ import { AllProductsContext } from "../store/all-products-context"
 import { SuppliersContext } from "../store/suppliers-context"
 import { OrderStatisticsContext } from "../store/end-of-day-statistics"
 import { OrdersContext } from "../store/orders-context"
+import { AppContext } from "../store/app-context"
 
 interface UseAppContextsTypes {
+  appContext: any
   orders: any
   colors: any
   categories: any
@@ -22,6 +24,7 @@ interface UseAppContextsTypes {
 export function useAppContexts(): UseAppContextsTypes{
   
   return {
+    appContext: useContext(AppContext),
     orders: useContext(OrdersContext),
     colors: useContext(ColorsContext),
     categories: useContext(CategoriesContext),
@@ -29,6 +32,6 @@ export function useAppContexts(): UseAppContextsTypes{
     dresses: useContext(DressesContext),
     allProducts: useContext(AllProductsContext),
     suppliers: useContext(SuppliersContext),
-    processedOrdersForPeriod: useContext(OrderStatisticsContext)
+    processedOrdersForPeriod: useContext(OrderStatisticsContext),
   }
 }

@@ -26,7 +26,9 @@ function AppContextProvider({ children }: AppContextProviderTypes){
       async function getAppSettings(token: string){
         try{
           const appSettings = await fetchData(token, 'app/settings');
-          setDefaults(appSettings.defaults || null);
+          betterConsoleLog('> APP SETTINGS:', appSettings.settings);
+          setDefaults(appSettings.settings);
+
         } catch(error){
           console.log(error)
         }

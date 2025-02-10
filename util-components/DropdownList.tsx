@@ -53,7 +53,6 @@ const DropdownList = ({
         onSelect(element);
       }
     });
-    betterConsoleLog('> defaultDataObject is:', defaultDataObject);
     setDefaultVal(defaultDataObject || []);
   }, [data, defaultValue]);
   // useEffect(() => {
