@@ -27,6 +27,7 @@ function AddProduct(){
 
   // Other data
   const [allCategories, setAllCategories] = useState<CategoryTypes[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryTypes>();
   const [allColors, setAllColors] = useState<ColorTypes[]>([]);
   const [isMultiDropdownOpen, setIsMultiDropdownOpen] = useState(false);
   const [selectedColors, setSelectedColors] = useState([]);
@@ -68,7 +69,6 @@ function AddProduct(){
 
   // New product data
   const [productName, setProductName] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<CategoryTypes>();
   const [price, setPrice] = useState<number | string>('');
   const [productImage, setProductImage] = useState<ProductImageTypes>();
   const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>([]);

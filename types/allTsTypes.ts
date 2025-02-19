@@ -293,3 +293,20 @@ export interface LastUpdatedDataType {
   processedOrdersForPeriodLastUpdatedAt: Date
   orderLastUpdatedAt: Date
 }
+
+export interface UserContextTypes {
+  _id?: string;
+  username: string;
+  password: string;
+  role: string;
+  permissions: Record<string, any>;
+  settings: {
+    defaults: {
+      courier?: string;
+      listProductsBy?: string;
+    };
+    language: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+}

@@ -56,7 +56,31 @@ function SortUserInformationField({isExpanded, setIsExpanded, onNext, buyerInfo,
   
   // ON NEXT
   function handleOnNext(){
-    if(orderCtx.buyerData?.name && orderCtx.buyerData?.address && orderCtx.buyerData?.phone && orderCtx.profileImage && orderCtx.buyerData?.place){
+    if(
+      orderCtx.buyerData?.name &&
+      orderCtx.buyerData?.name !== '' &&
+      orderCtx.buyerData?.name !== null &&
+      orderCtx.buyerData?.name !== undefined &&
+      
+      orderCtx.buyerData?.address &&
+      orderCtx.buyerData?.address !== '' &&
+      orderCtx.buyerData?.address !== null &&
+      orderCtx.buyerData?.address !== undefined &&
+
+      orderCtx.buyerData?.phone &&
+      orderCtx.buyerData?.phone !== '' &&
+      orderCtx.buyerData?.phone !== null &&
+      orderCtx.buyerData?.phone !== undefined &&
+      
+      orderCtx.profileImage &&
+      orderCtx.profileImage !== null &&
+      orderCtx.profileImage !== undefined &&
+      
+       orderCtx.buyerData?.place &&
+       orderCtx.buyerData?.place !== '' &&
+       orderCtx.buyerData?.place !== null &&
+       orderCtx.buyerData?.place !== undefined
+    ){
       onNext()
     } else {
       if(!orderCtx.buyerData?.name) return popupMessage('Unesite ime / prezime kupca', 'danger');

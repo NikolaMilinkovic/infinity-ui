@@ -157,9 +157,6 @@ function getStyles(isHighlighted:boolean, packed: boolean){
     },
     orderNoteIndicator: {
       position: 'absolute',
-      // bottom: 10,
-      // right: -10,
-      // width: 100,
       right: -60,
       bottom: packed ? 20 : 0,
       backgroundColor: Colors.white,

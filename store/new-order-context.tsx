@@ -94,6 +94,13 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     // Validate all data
     if(productData.length === 0) return popupMessage('Nedostaju podaci o proizvodima', 'danger');
     if(!buyerData) return popupMessage('Nedostaju podaci o kupcu', 'danger');
+    
+    if(!buyerData.address) return popupMessage('Nedostaju podaci o adresi', 'danger');
+    if(!buyerData.name) return popupMessage('Nedostaju podaci o imenu', 'danger');
+    if(!buyerData.phone && !buyerData.phone2) return popupMessage('Nedostaju podaci o broju telefona', 'danger');
+    if(!buyerData.place) return popupMessage('Nedostaju podaci o mestu', 'danger');
+    if(!buyerData.profileImage) return popupMessage('Nedostaje slika kupcevog instagram profila', 'danger');
+
     if(!courierData) return popupMessage('Nedostaju podaci o kuriru', 'danger');
     if(!profileImage) return popupMessage('Nedostaje slika kupčevog profila', 'danger');
     if(!validateProductData()) return popupMessage('Svi proizvodi moraju imati selektovane boje i veličine', 'danger');

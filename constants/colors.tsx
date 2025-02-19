@@ -11,9 +11,6 @@ export const Colors = {
   // Light colors
   primaryLight: '#F0F0F0',
   secondaryLight: '#C5D5D9',
-  // highlight: '#008080',
-  // highlight: '#808000'
-  // highlight: '#D4A5A5'
   highlight: '#C28E8E',
   secondaryHighlight: '#FFE4E4',
 
@@ -27,3 +24,18 @@ export const Colors = {
   highlightBlue: '#6A5ACD',
   successSecondary: '#F0FAF0',
 }
+
+
+// export const getColors = (theme: 'light' | 'dark') => ({
+//   defaultText: theme === 'light' ? '#000000' : '#FFFFFF',
+//   primary: theme === 'light' ? '#F0F0F0' : '#012340',
+//   secondary: theme === 'light' ? '#C5D5D9' : '#024059',
+//   highlight: theme === 'light' ? '#C28E8E' : '#6A5ACD',
+//   error: '#DC143C',
+//   success: '#218838',
+//   warning: '#FFB74D',
+//   info: '#001F54',
+//   white: '#FFFFFF',
+//   highlightBlue: '#6A5ACD',
+//   successSecondary: '#F0FAF0',
+// });

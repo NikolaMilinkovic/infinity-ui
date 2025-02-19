@@ -12,7 +12,6 @@ import { Colors } from '../../../constants/colors';
 import { addNewOrder } from '../../../util-methods/FetchMethods';
 import { AuthContext } from '../../../store/auth-context';
 import { popupMessage } from '../../../util-components/PopupMessage';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
 
 function NewOrder() {
   // Fade in animation

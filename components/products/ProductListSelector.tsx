@@ -1,13 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { StyleSheet, Text, View,TouchableOpacity, ScrollView } from 'react-native'
-import { betterConsoleLog } from '../../util-methods/LogMethods';
-import { AppContext } from '../../store/app-context';
-import IconButton from '../../util-components/IconButton';
 import { Colors } from '../../constants/colors';
-import { PanGestureHandler } from 'react-native-gesture-handler';
 import { SuppliersContext } from '../../store/suppliers-context';
 import { ProductTypes } from '../../types/allTsTypes';
 import { CategoriesContext } from '../../store/categories-context';
+import { UserContext } from '../../store/user-context';
 
 interface ProductListSelectorPropTypes{
   products: ProductTypes[]
@@ -15,26 +12,21 @@ interface ProductListSelectorPropTypes{
 }
 
 function ProductListSelector({ products, setSelectedList }: ProductListSelectorPropTypes) {
-  const appCtx = useContext(AppContext);
-  const [settings, setSettings] = useState(appCtx.defaults);
-
-  useEffect(() => {
-    setSettings(appCtx.defaults);
-  }, [appCtx.defaults]);
+  const userCtx = useContext(UserContext);
 
   return (
     <View>
       {/* SUPPLIER */}
-      {settings?.defaults?.listProductsBy === 'supplier' && (
+      {userCtx?.settings?.defaults?.listProductsBy === 'supplier' && (
         <ListProductsBySupplier products={products} setSelectedList={setSelectedList} />
       )}
 
       {/* CATEGORY */}
-      {settings?.defaults?.listProductsBy === 'category' && (
+      {userCtx?.settings?.defaults?.listProductsBy === 'category' && (
         <ListProductsByCategory products={products} setSelectedList={setSelectedList} />
       )}
     </View>
-  )
+  );
 }
 
 interface ListButtonPropTypes{

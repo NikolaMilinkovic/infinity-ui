@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState, Dispatch, SetStateAction } from "react"
 import { AuthContext } from "./auth-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
@@ -6,14 +6,18 @@ import { SocketContext } from "./socket-context";
 
 interface UserContextTypes {
   permissions: any
+  setPermissions: any
   settings: any
+  setSettings: any
 }
 interface UserContextProviderTypes {
   children: ReactNode;
 }
 export const UserContext = createContext<UserContextTypes>({
-  permissions: [],
-  settings: [],
+  permissions: {},
+  setPermissions: () => {},
+  settings: {},
+  setSettings: () => {},
 })
 
 function UserContextProvider({ children }: UserContextProviderTypes){
@@ -29,6 +33,7 @@ function UserContextProvider({ children }: UserContextProviderTypes){
       async function getUserData(token: string){
         try{
           const userData = await fetchData(token, 'user/data');
+          console.log(userData.settings);
           setPermissions(userData.permissions || null);
           setSettings(userData.settings || null);
         } catch(error){
@@ -42,6 +47,14 @@ function UserContextProvider({ children }: UserContextProviderTypes){
   function handleUpdateUserPermissions(){
 
   }
+
+  useEffect(() => {
+    betterConsoleLog('> Logging defaults from user context', settings?.defaults);
+  }, [settings?.defaults?.listProductsBy]);
+
+  // Saljemo celokupan user settings
+  // Na backendu poredim svaki field i update
+  // Save - Done
   function handleUpdateUserSettings(){
 
   }
@@ -60,7 +73,9 @@ function UserContextProvider({ children }: UserContextProviderTypes){
 
   const value = useMemo(() => ({
     permissions,
+    setPermissions,
     settings,
+    setSettings,
   }), [permissions, settings]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

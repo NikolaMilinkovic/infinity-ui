@@ -21,6 +21,7 @@ import Constants from 'expo-constants';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 import ProductListSelector from '../products/ProductListSelector';
 import { AppContext } from '../../store/app-context';
+import { UserContext } from '../../store/user-context';
 
 interface DisplayProductsPropTypes {
   setEditItem: (data: ProductTypes | null) => void
@@ -47,10 +48,16 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const [previewImage, setPreviewImage] = useState<string>('');
   const appCtx = useContext(AppContext);
+  const userCtx = useContext(UserContext);
   const [settings, setSettings] = useState(appCtx.defaults);
+  const [userSettings, setUserSettings] = useState(userCtx.settings)
   useEffect(() => {
     setSettings(appCtx.defaults);
   }, [appCtx.defaults]);
+  useEffect(() => {
+    console.log(userCtx.settings)
+    setUserSettings(userCtx.settings);
+  }, [userCtx.settings])
   
   function handleImagePreview(image:ImageTypes) {
     setPreviewImage(image);
@@ -88,13 +95,13 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
 
   // Memoize the filtered products
   const filteredData = useMemo(() => {
-    if(settings?.defaults?.listProductsBy === 'supplier') {
+    if(userSettings?.defaults?.listProductsBy === 'supplier') {
       if(searchParams.active)
         if(selectedList === 'Svi')
           return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
         return serachProducts(searchData, productsCtx?.productsBySuppliers[selectedList] || [], searchParams); 
     }
-    if(settings?.defaults?.listProductsBy === 'category') {
+    if(userSettings?.defaults?.listProductsBy === 'category') {
       if(searchParams.active){
         if(selectedList === 'Svi')
           return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
@@ -105,7 +112,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
     if(searchParams.active) return serachProducts(searchData, productsCtx.allActiveProducts, searchParams); 
     if(searchParams.inactive) return serachProducts(searchData, productsCtx.allInactiveProducts, searchParams);
     return [];
-  }, [productsCtx.allActiveProducts, productsCtx.allInactiveProducts, searchData, searchParams, selectedList, productsCtx?.productsBySuppliers, productsCtx?.productsByCategory, settings?.defaults?.listProductsBy]);
+  }, [productsCtx.allActiveProducts, productsCtx.allInactiveProducts, searchData, searchParams, selectedList, productsCtx?.productsBySuppliers, productsCtx?.productsByCategory, userSettings?.defaults?.listProductsBy]);
 
   interface ProductsBySuppliersTypes {
     [supplier: string]: (DressTypes | PurseTypes)[]

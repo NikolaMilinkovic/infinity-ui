@@ -1,0 +1,20 @@
+{
+  "language": "english",
+  "component": {
+    "searchProducts": {
+      "search_input_field": "Search products"
+    }
+  },
+  "screens": {
+    "settings": {
+      "listProductsBy_header": "Products",
+      "listProductsBy_description": "Sort and create product lists based on the selected parameter. These lists are displayed above the product list and help with quicker product overview:",
+      
+      "theme_header": "Color Theme",
+      "theme_description": "Toggle between dark | light theme:",
+
+      "language_header": "Language",
+      "language_description": "Sets the app language:"
+    }
+  },
+}

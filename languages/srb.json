@@ -1,0 +1,20 @@
+{
+  "language": "srpski",
+  "component": {
+    "searchProducts": {
+      "search_input_field": "Pretraži proizvode"
+    }
+  },
+  "screens": {
+    "settings": {
+      "listProductsBy_header": "Proizvodi",
+      "listProductsBy_description": "Sortiraj i napravi liste proizvoda po izabranom parametru, ove liste se nalaze iznad liste proizvoda i služe za njihov brži pregled:",
+
+      "theme_header": "Tema",
+      "theme_description": "Izbor izmedju tamne | svetle teme:",
+
+      "language_header": "Jezik",
+      "language_description": "Podešavanje jezika aplikacije:"
+    }
+  }
+}

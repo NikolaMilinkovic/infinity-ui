@@ -34,7 +34,6 @@ export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string
       return false;
     }
     const parsedResponse = await response.json();
-    betterConsoleLog('> Logging parsed data', parsedResponse.data);
     orderCtx.setBuyerData({
       name: parsedResponse.data.name || '',
       address: parsedResponse.data.address || '',

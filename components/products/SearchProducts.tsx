@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef, useState, useMemo } from 'react'
-import { View, StyleSheet, Animated, Pressable, Text, TouchableWithoutFeedback, ScrollView  } from 'react-native'
+import React, { useContext, useEffect, useState, useMemo } from 'react'
+import { View, StyleSheet, Animated, Text  } from 'react-native'
 import InputField from '../../util-components/InputField'
 import { Colors } from '../../constants/colors';
 import ExpandButton from '../../util-components/ExpandButton';
@@ -12,11 +12,11 @@ import DropdownList from '../../util-components/DropdownList';
 import { CategoriesContext } from '../../store/categories-context';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
 import { useExpandAnimation } from '../../hooks/useExpand';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
 import { Dimensions } from 'react-native';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { SuppliersContext } from '../../store/suppliers-context';
 import { SupplierTypes } from '../../types/allTsTypes';
+import useTextForComponent from '../../hooks/useTextForComponent';
 
 interface SearchProductsPropTypes {
   searchData: string
@@ -31,6 +31,8 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 132, 180);
   const toggleFade = useToggleFadeAnimation(isExpanded, 180);
   const styles = getStyles(isExpanded);
+  const text = useTextForComponent('searchProducts');
+
   function handleToggleExpand(){
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
   }
@@ -180,7 +182,7 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
       {/* INPUT CONTAINER */}
       <View style={styles.inputContainer}>
         <InputField
-          label='Pretraži proizvode'
+          label={text.search_input_field}
           isSecure={false}
           inputText={searchData}
           setInputText={setSearchData}

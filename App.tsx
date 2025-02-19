@@ -13,8 +13,9 @@ import AuthenticatedStack from './navigation/AuthenticatedStack';
 import { LogBox } from 'react-native';
 import { betterConsoleLog } from './util-methods/LogMethods';
 
+// Suppresses the VirtualizedList nesting warning
 LogBox.ignoreLogs([
-  'VirtualizedLists should never be nested inside plain ScrollViews', // Suppress the VirtualizedList nesting warning
+  'VirtualizedLists should never be nested inside plain ScrollViews', 
 ]);
 
 /**
