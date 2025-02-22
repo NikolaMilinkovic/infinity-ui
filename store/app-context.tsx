@@ -3,19 +3,28 @@ import { AuthContext } from "./auth-context";
 import { fetchData } from "../util-methods/FetchMethods";
 import { betterConsoleLog } from "../util-methods/LogMethods";
 import { SocketContext } from "./socket-context";
+import Constants from 'expo-constants';
+
+
 
 interface AppContextTypes {
   defaults: any
+  version: string
+  buildLink: string
 }
 interface AppContextProviderTypes {
   children: ReactNode;
 }
 export const AppContext = createContext<AppContextTypes>({
-  defaults: {}
+  defaults: {},
+  version: '',
+  buildLink: '',
 })
 
 function AppContextProvider({ children }: AppContextProviderTypes){
   const [defaults, setDefaults] = useState({});
+  const [version, setVersion] = useState(Constants?.expoConfig?.version);
+  const [buildLink, setBuildLink] = useState('');
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
@@ -25,10 +34,12 @@ function AppContextProvider({ children }: AppContextProviderTypes){
     if(token){
       async function getAppSettings(token: string){
         try{
-          const appSettings = await fetchData(token, 'app/settings');
-          betterConsoleLog('> APP SETTINGS:', appSettings.settings);
-          setDefaults(appSettings.settings);
-
+          const response = await fetchData(token, 'app/settings');
+          console.log(response);
+          setDefaults(response.settings);
+          setVersion(response?.version || '');
+          console.log(`> Fetched version is: ${response?.version}`);
+          setBuildLink(response?.buildLink || '');
         } catch(error){
           console.log(error)
         }
@@ -53,7 +64,9 @@ function AppContextProvider({ children }: AppContextProviderTypes){
 
   const value = useMemo(() => ({
     defaults,
-  }), [defaults]);
+    version,
+    buildLink,
+  }), [defaults, version, buildLink]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

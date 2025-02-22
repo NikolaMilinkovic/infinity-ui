@@ -89,8 +89,6 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   // Validates all inputs | Creates a new form, prepares all data and returns the form
   // Used for sending the data back to server
   function createOrderHandler(){
-    console.log('> Logging order notes:')
-    console.log(orderNotes);
     // Validate all data
     if(productData.length === 0) return popupMessage('Nedostaju podaci o proizvodima', 'danger');
     if(!buyerData) return popupMessage('Nedostaju podaci o kupcu', 'danger');
@@ -99,7 +97,6 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     if(!buyerData.name) return popupMessage('Nedostaju podaci o imenu', 'danger');
     if(!buyerData.phone && !buyerData.phone2) return popupMessage('Nedostaju podaci o broju telefona', 'danger');
     if(!buyerData.place) return popupMessage('Nedostaju podaci o mestu', 'danger');
-    if(!buyerData.profileImage) return popupMessage('Nedostaje slika kupcevog instagram profila', 'danger');
 
     if(!courierData) return popupMessage('Nedostaju podaci o kuriru', 'danger');
     if(!profileImage) return popupMessage('Nedostaje slika kupčevog profila', 'danger');
@@ -141,8 +138,8 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
       name: profileImage.fileName,
     } as any);
 
-    console.log('=====================================================================');
-    betterConsoleLog('> Logging order', order);
+    // console.log('=====================================================================');
+    // betterConsoleLog('> Logging order', order);
 
     // const orderData = {
     //   buyerData: buyerData,

@@ -12,6 +12,7 @@ import { Colors } from '../../../constants/colors';
 import { addNewOrder } from '../../../util-methods/FetchMethods';
 import { AuthContext } from '../../../store/auth-context';
 import { popupMessage } from '../../../util-components/PopupMessage';
+import { betterConsoleLog } from '../../../util-methods/LogMethods';
 
 function NewOrder() {
   // Fade in animation
@@ -99,10 +100,12 @@ function NewOrder() {
     if(isAddingOrder) return popupMessage('Dodavanje porudzbine u toku, sačekajte.', 'info');
     try{
       // get order form with all the data from new-order-context
-      const order = orderCtx.createOrderHandler()
-      // betterConsoleLog('Logging out order form', order)
-      if(order === undefined) return popupMessage('Order je undefined iz nekog razloga.','info');
-  
+      const order = orderCtx.createOrderHandler();
+
+      if(!order) return;
+      if(order === undefined) return;
+      if(order === null) return;
+
       // Send the data via fetch
       if(!token) return popupMessage('Autentifikacioni token ne postoji!', 'danger');
       setIsAddingOrder(true);

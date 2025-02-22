@@ -4,7 +4,16 @@ import { Animated, Modal, View, Text, StyleSheet, Image, TouchableWithoutFeedbac
 import { Colors } from '../constants/colors';
 import Button from './Button';
 
-function ConfirmationModal({ isVisible, onConfirm, onCancel, message }) {
+interface ConfirmModalTypes {
+  isVisible: boolean
+  onConfirm: ()=>void
+  onConfirmBtnText?: string
+  onCancel: ()=>void
+  onCancelBtnText?: string
+  message: string
+}
+
+function ConfirmationModal({ isVisible, onConfirm, onConfirmBtnText = 'Nastavi', onCancel, onCancelBtnText = 'Odustani', message }: ConfirmModalTypes) {
   return (
       <Modal
         animationType="slide"
@@ -31,14 +40,14 @@ function ConfirmationModal({ isVisible, onConfirm, onCancel, message }) {
                     backColor={Colors.primaryDark}
                     textColor={Colors.white}
                     onPress={onConfirm}
-                  >Nastavi</Button>
+                  >{onConfirmBtnText}</Button>
                   <Button
                     containerStyles={styles.button}
                     textStyles={styles.buttonText}
                     backColor={Colors.primaryDark}
                     textColor={Colors.white}
                     onPress={onCancel}
-                  >Odustani</Button>
+                  >{onCancelBtnText}</Button>
                 </View>
               </View>
           </TouchableWithoutFeedback>
@@ -99,7 +108,7 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: 'gray',
-    padding: 10,
+    padding: 5,
     borderRadius: 5,
   },
   cancelButtonText: {

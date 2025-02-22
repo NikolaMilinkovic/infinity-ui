@@ -163,7 +163,7 @@ export interface NewOrderContextTypes {
 
   profileImage: ProductImageTypes | null
   setProfileImage: (image:string | null) => void;
-  createOrderHandler: () => void;
+  createOrderHandler: () => OrderTypes;
 
   customPrice: string | number
   setCustomPrice: (price: string | number) => void

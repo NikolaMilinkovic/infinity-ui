@@ -1,19 +1,25 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import Button from '../../util-components/Button'
-import { handleFetchingWithBodyData } from '../../util-methods/FetchMethods'
-import useAuthToken from '../../hooks/useAuthToken'
-import DropdownList from '../../util-components/DropdownList'
-import { UserContext } from '../../store/user-context'
-import { Colors } from '../../constants/colors'
-import useTextForActiveLanguage from '../../hooks/useTextForActiveLanguage'
-import { CouriersContext } from '../../store/couriers-context'
+import React, { useContext, useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import Button from '../../util-components/Button';
+import { handleFetchingWithBodyData } from '../../util-methods/FetchMethods';
+import useAuthToken from '../../hooks/useAuthToken';
+import DropdownList from '../../util-components/DropdownList';
+import { UserContext } from '../../store/user-context';
+import { Colors } from '../../constants/colors';
+import useTextForActiveLanguage from '../../hooks/useTextForActiveLanguage';
+import { CouriersContext } from '../../store/couriers-context';
+import { AppContext } from '../../store/app-context';
+import { popupMessage } from '../../util-components/PopupMessage';
+import ListProductsByDropdown from '../../components/settings/ListProductsByDropdown';
+import CheckForUpdates from '../../components/settings/CheckForUpdates';
+import CouriersSettings from '../../components/settings/CouriersSettings';
 
 
 function Settings() {
   const authToken = useAuthToken();
   const userCtx = useContext(UserContext);
   const text = useTextForActiveLanguage('settings');
+  const appCtx = useContext(AppContext);
 
   /**
    * @param field Attribute that we are updating
@@ -41,17 +47,40 @@ function Settings() {
    */
   async function saveAndUpdateUserSettings(){
     if(!authToken) return;
-    const reponse = await handleFetchingWithBodyData(userCtx.settings, authToken,'user/update-user-settings', 'POST');
+    const response = await handleFetchingWithBodyData(userCtx.settings, authToken,'user/update-user-settings', 'POST');
+    if(!response) return;
+    if(response.status === 200){
+      const parsedResponse = await response.json();
+      popupMessage(parsedResponse.message, 'success');
+    } else {
+      popupMessage('Došlo je do problema prilikom ažuriranja podešavanja', 'danger');
+    }
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
 
       {/* LIST PRODUCTS BY */}
       <Text style={styles.h1}>{text.listProductsBy_header}</Text>
       <View style={styles.sectionOutline}>
         <ListProductsByDropdown
           updateDefault={updateDefault}
+        />
+      </View>
+
+      {/* DEFAULT COURIER */}
+      <Text style={styles.h1}>Kuriri</Text>
+      <View style={styles.sectionOutline}>
+        <CouriersSettings
+          updateDefault={updateDefault}
+        />
+      </View>
+
+      {/* UPDATES */}
+      <Text style={styles.h1}>Ažuriranje | Updates:</Text>
+      <View style={styles.sectionOutline}>
+        <CheckForUpdates
+          appCtx={appCtx}
         />
       </View>
 
@@ -82,7 +111,7 @@ function Settings() {
 
       {/* SAVE BTN */}
       <Button
-        containerStyles={{ marginTop: 10 }}
+        containerStyles={{ marginTop: 10, marginBottom: 20, }}
         onPress={saveAndUpdateUserSettings}
         backColor={Colors.highlight}
         textColor={Colors.white}
@@ -90,7 +119,7 @@ function Settings() {
         Sačuvaj
       </Button>
 
-    </View>
+    </ScrollView>
   )
 }
 
@@ -117,52 +146,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   }
 });
-
-function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: string, value: any) => void }){
-  const userCtx = useContext(UserContext);
-  const [firstRender, setFirstRender] = useState(true);
-  const text = useTextForActiveLanguage('settings');
-  interface DrpodownTypes{
-    _id: number
-    name: string
-    value: string
-  }
-  const [listSelectorData] = useState([
-    {_id: 0, name: 'Dobavljač', value: 'supplier'},
-    {_id: 1, name: 'Kategorija', value: 'category'},
-    {_id: 2, name: 'Samo jedna lista', value: 'one_list'}
-  ]);
-  function getDefaultSelectionForListProductsBy(){
-    switch(userCtx?.settings?.defaults?.listProductsBy){
-      case 'supplier':
-        return 'Dobavljač'
-      case 'category':
-        return 'Kategorija'
-      case 'one_list':
-        return 'Samo jedna lista'
-    }
-  }
-  async function updateSetting(selected: DrpodownTypes){
-    if(firstRender){
-      setFirstRender(false);
-      return;
-    };
-    updateDefault('listProductsBy', selected.value);
-  }
-  
-  return(
-    <>
-      {/* <Text style={styles.text}>Sortiraj i napravi liste proizvoda po izabranom parametru, ove liste se nalaze iznad liste proizvoda i služe za njihov brži pregled:</Text> */}
-      <Text style={styles.text}>{text.listProductsBy_description}</Text>
-      <DropdownList
-        data={listSelectorData}
-        defaultValue={getDefaultSelectionForListProductsBy()}
-        onSelect={updateSetting}
-        buttonContainerStyles={{marginTop: 10,}}
-      />
-    </>
-  )
-}
 
 function ThemeSelector({ updateDefault }: { updateDefault: (field: string, value: any) => void }){
   const userCtx = useContext(UserContext);

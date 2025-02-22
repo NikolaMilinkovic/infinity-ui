@@ -9,6 +9,7 @@ import { CourierTypes } from '../../types/allTsTypes';
 import { betterConsoleLog } from '../../util-methods/LogMethods';
 import Button from '../../util-components/Button';
 import { useExpandAnimation } from '../../hooks/useExpand';
+import { UserContext } from '../../store/user-context';
 
 interface PropTypes {
   isExpanded: boolean
@@ -23,6 +24,7 @@ interface DropdownTypes {
 }
 
 function CourierSelector({ isExpanded, setIsExpanded, onNext, defaultValueByMatch='Bex' }: PropTypes) {
+  const userCtx = useContext(UserContext);
   const couriersCtx = useContext(CouriersContext);
   const orderCtx = useContext(NewOrderContext);
   const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([]);
@@ -51,8 +53,7 @@ function CourierSelector({ isExpanded, setIsExpanded, onNext, defaultValueByMatc
           onSelect={orderCtx.setCourierData}
           isDefaultValueOn={true}
           placeholder='Izaberite kurira za dostavu'
-          // defaultValueByIndex={0}
-          defaultValue={defaultValueByMatch}
+          defaultValue={userCtx?.settings?.defaults?.courier || defaultValueByMatch}
         />
         {/* ON NEXT BUTTON */}
         <Button

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Modal, StyleSheet, View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import DisplayProducts from '../../../components/products/DisplayProducts';
@@ -6,6 +6,7 @@ import { ProductTypes } from '../../../types/allTsTypes';
 import EditProductComponent from '../../../components/products/edit_product/EditProductComponent';
 import { useFadeTransition, useFadeTransitionReversed } from '../../../hooks/useFadeTransition';
 import useBackClickHandler from '../../../hooks/useBackClickHandler';
+import AppUpadteModal from '../../../util-components/AppUpadteModal';
 
 function BrowseProducts() {
   const [editedProduct, setEditedProduct] = useState<ProductTypes | null>(null);
@@ -15,11 +16,12 @@ function BrowseProducts() {
   useBackClickHandler(!!editedProduct, handleRemoveEditedProduct);
   function handleRemoveEditedProduct(){
     setEditedProduct(null);
-  }
+  }  
   
   return (
     <>
       <View>
+        <AppUpadteModal/>
         <Animated.View style={[overlayView, styles.overlayView]}/>
         <DisplayProducts
           setEditItem={setEditedProduct}
