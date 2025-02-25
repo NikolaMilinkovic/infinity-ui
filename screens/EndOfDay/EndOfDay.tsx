@@ -32,7 +32,7 @@ function EndOfDay() {
         const data = {
           courier: selectedCourier?.name,
           fileData: excellFile?.fileData,
-          fileName: excellFile?.filename
+          fileName: excellFile?.fileName
         }
         const response = await fetchWithBodyData(token, 'orders/parse-orders-for-latest-period', data, 'POST');
   

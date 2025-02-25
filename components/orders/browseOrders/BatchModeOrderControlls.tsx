@@ -9,8 +9,11 @@ import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation'
 interface PropTypes {
   active: boolean
   onRemoveBatchPress: () => void
+  onExcellExportPress: () => void 
+  onSelectAllOrders: () => void
+  isAllSelected: boolean
 }
-function BatchModeOrderControlls({ active, onRemoveBatchPress }:PropTypes) {
+function BatchModeOrderControlls({ active, onRemoveBatchPress, onExcellExportPress, onSelectAllOrders, isAllSelected }:PropTypes) {
   useEffect(() => {
     setIsExpanded(active);
   }, [active])
@@ -18,8 +21,6 @@ function BatchModeOrderControlls({ active, onRemoveBatchPress }:PropTypes) {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleFade = useToggleFadeAnimation(isExpanded, 100);
   const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 0, 60, 100);
-
-
 
   return (
     <>
@@ -31,9 +32,45 @@ function BatchModeOrderControlls({ active, onRemoveBatchPress }:PropTypes) {
             onPress={onRemoveBatchPress}
             key={`key-remove-batch-button`}
             icon='delete'
-            style={styles.removeBatchItemsButton} 
+            style={[styles.generalButtonStyle, styles.removeBatchItemsButton]} 
             pressedStyles={styles.removeBatchItemsButtonPressed}
           />
+          <IconButton
+            size={22}
+            color={Colors.secondaryDark}
+            onPress={onExcellExportPress}
+            key={`key-excell-export-batch-button`}
+            icon='file-export'
+            style={[styles.generalButtonStyle, styles.exportExcellButton]} 
+            pressedStyles={styles.removeBatchItemsButtonPressed}
+            iconsLibrary='FontAwesome6'
+            text='Excell'
+          />
+          {isAllSelected ? (
+            <IconButton
+              size={22}
+              color={Colors.secondaryDark}
+              onPress={onSelectAllOrders}
+              key={`key-select-all-orders-button`}
+              icon='close'
+              style={[styles.generalButtonStyle, styles.highlightAll]} 
+              pressedStyles={styles.removeBatchItemsButtonPressed}
+              iconsLibrary='MaterialIcons'
+              text='Odštikliraj'
+            />
+          ) : (
+            <IconButton
+              size={22}
+              color={Colors.secondaryDark}
+              onPress={onSelectAllOrders}
+              key={`key-select-all-orders-button`}
+              icon='done-all'
+              style={[styles.generalButtonStyle, styles.highlightAll]} 
+              pressedStyles={styles.removeBatchItemsButtonPressed}
+              iconsLibrary='MaterialIcons'
+              text='Oznaci sve'
+            />
+          )}
         </Animated.View>
       )}
     </>
@@ -44,19 +81,31 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
     backgroundColor: Colors.primaryLight,
+    flexDirection: 'row-reverse',
   },
   removeBatchItemsButton: {
-    margin: 10,
+    width: 50,
+  },
+  exportExcellButton: {
+    gap: 10,
+    width: 100,
+  },
+  highlightAll: {
+    width: 120,
+    gap: 10,
+  },  
+  generalButtonStyle: {
+    marginVertical: 10,
+    marginHorizontal: 5,
     borderWidth: 0.5,
     borderColor: Colors.primaryDark,
     backgroundColor: Colors.white,
     borderRadius: 4,
     elevation: 2,
-    width: 50,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 'auto'
+    flexDirection: 'row',
   },
   removeBatchItemsButtonPressed: {
     opacity: 0.7,

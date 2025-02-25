@@ -264,3 +264,27 @@ export async function downloadAndShareFileViaLink(name:string, link:string) {
     console.error("Error sharing file:", error);
   }
 }
+
+/**
+ * Creates the File and opens sharing on mobile device
+ * @param name String representation of file name
+ * @param fileData Base64 encoded file data
+ */
+export async function downloadAndShareFile(name: string, fileData: string) {
+  try {
+    const fileName = name || "default.xlsx";
+    const targetPath = `${FileSystem.documentDirectory}${fileName}`;
+
+    // Write the Base64 data as a file
+    await FileSystem.writeAsStringAsync(targetPath, fileData, { encoding: FileSystem.EncodingType.Base64 });
+
+    // Open the share dialog
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(targetPath);
+    } else {
+      console.log("Sharing not supported on this platform.");
+    }
+  } catch (error) {
+    console.error("Error sharing file:", error);
+  }
+}

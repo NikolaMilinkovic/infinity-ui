@@ -40,11 +40,11 @@ const adjustCellsWidth = (ws: XLSX.WorkSheet): void => {
  * @param orders - OrderTypes[] - Array of orders
  * @returns - Object that contains
  * {
- *   "filename": string,
+ *   "fileName": string,
  *   "fileData": base64
  * }
  */
-export const generateExcellForOrders = (orders: OrderTypes[], courier: string) => {
+export const generateExcellForOrders = (orders: OrderTypes[], courier?: string) => {
   betterConsoleLog('> Logging orders:', orders);
   const filteredByCreationTime = sortOrdersByDate(orders);
   let allOrdersData = [];
@@ -99,11 +99,23 @@ export const generateExcellForOrders = (orders: OrderTypes[], courier: string) =
   ]);
 
   adjustCellsWidth(ws);
-  XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate} | Kurir-${courier}`, true);
+  if(courier){
+    XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate} | Kurir-${courier}`, true);
+  } else {
+    XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate}`, true);
+  }
   const base64 = XLSX.write(wb, { type: 'base64' });
-  return {
-    "filename": `porudzbine-za-${courier}-${currentDate}.xlsx`,
-    "fileData": base64
+
+  if(courier){
+    return {
+      "fileName": `porudzbine-za-${courier}-${currentDate}.xlsx`,
+      "fileData": base64
+    }
+  } else {
+    return {
+      "fileName": `porudzbine-za-datum-${currentDate}.xlsx`,
+      "fileData": base64
+    }
   }
   // const filename = FileSystem.documentDirectory + `porudžbine-za-${currentDate}.xlsx`;
   // FileSystem.writeAsStringAsync(filename, base64, {

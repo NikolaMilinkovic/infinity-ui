@@ -6,11 +6,12 @@ import { OrderTypes } from '../../../types/allTsTypes';
 import { betterConsoleLog } from '../../../util-methods/LogMethods';
 import BatchModeOrderControlls from './BatchModeOrderControlls';
 import useBatchSelectBackHandler from '../../../hooks/useBatchSelectBackHandler';
-import { handleFetchingWithBodyData } from '../../../util-methods/FetchMethods';
+import { downloadAndShareFile, downloadAndShareFileViaLink, handleFetchingWithBodyData } from '../../../util-methods/FetchMethods';
 import { AuthContext } from '../../../store/auth-context';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import ConfirmationModal from '../../../util-components/ConfirmationModal';
 import useConfirmationModal from '../../../hooks/useConfirmationMondal';
+import { generateExcellForOrders } from '../../../util-methods/Excell';
 
 interface RenderPropType {
   item: OrderTypes
@@ -21,12 +22,10 @@ interface PropTypes {
   isDatePicked: boolean
   pickedDate: string
 }
-interface SelectedOrdersTypes {
-  _id: string
-}
+
 function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: PropTypes) {
   const [batchMode, setBatchMode] = useState(false);
-  const [selectedOrders, setSelectedOrders] = useState<SelectedOrdersTypes[]>([]);
+  const [selectedOrders, setSelectedOrders] = useState<OrderTypes[]>([]);
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const authCtx = useContext(AuthContext);
   const styles = getStyles(batchMode);
@@ -36,31 +35,38 @@ function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: Prop
     setSelectedOrders([]);
   }
   useBatchSelectBackHandler(batchMode, resetBatch);
-
   const [longPressActivated, setLongPressActivated] = useState(false);
-  function handleLongPress(orderId: string){
+
+  function handleLongPress(order: OrderTypes){
     if(batchMode) return;
     setLongPressActivated(true);
     setTimeout(() => setLongPressActivated(false), 500); // Reset flag after 500ms
-    if(selectedOrders.length === 0) setSelectedOrders([{_id: orderId}])
+    if(selectedOrders.length === 0) setSelectedOrders([order]);
     setBatchMode(true);
   }
   // Press handler after select mode is initialized
-  function handlePress(orderId: string){
+  function handlePress(order: OrderTypes){
     if(!batchMode) return;
     if (longPressActivated) return;
     if(selectedOrders.length === 0) return;
-    const isIdSelected = selectedOrders?.some((presentItem) => presentItem._id === orderId)
+    const isIdSelected = selectedOrders?.some((presentItem) => presentItem._id === order._id);
     if(isIdSelected){
       if(selectedOrders.length === 1) setBatchMode(false);
-      setSelectedOrders(selectedOrders.filter((order) => order._id !== orderId));
+      if(selectedOrders.length !== data.length - 1) setIsAllSelected(false);
+      setSelectedOrders(selectedOrders.filter((item) => item._id !== order._id));
     } else {
-      setSelectedOrders((prev) => [...prev, {_id: orderId}]);
+      setSelectedOrders((prev) => [...prev, order]);
+      if(selectedOrders.length === (data.length - 1)){
+        setIsAllSelected(true);
+      }
     }
   }
 
+
+  // Removes all selected orders
   async function removeBatchOrdersHandler(){
     showModal(async () => {
+      if(!token) return;
       let removeData = [];
       for(const order of selectedOrders) removeData.push(order._id);
       const response = await handleFetchingWithBodyData(removeData, token, 'orders/remove-orders-batch', 'DELETE');
@@ -80,6 +86,42 @@ function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: Prop
       resetBatch();
     });
   }
+  
+  // Selects all currently displayed orders
+  const [isAllSelected, setIsAllSelected] = useState(false);
+  function selectAllOrdarsHandler(){
+    if(selectedOrders.length === data.length){
+      setIsAllSelected(false);
+      return resetBatch();
+    }
+    setSelectedOrders(data);
+    setIsAllSelected(true);
+  }
+
+  const [isExcellModalVisible, setIsExcellModalVisible] = useState(false);
+  const [excell, setExcell] = useState({fileName: '', fileData: ''});
+  function exportExcellDocumentHandler(){
+    let excell = generateExcellForOrders(selectedOrders);
+    betterConsoleLog('> Logging excell: ', excell);
+    setExcell(excell);
+    setIsExcellModalVisible(true);
+    console.log('> exportExcellDocumentHandler called');
+  }
+  async function shareExcell(){
+    if(!excell) return;
+    try {
+      await downloadAndShareFile(excell.fileName, excell.fileData);
+    } catch (error) {
+      console.error('Error sharing file:', error);
+    }
+  }
+  function closeExcellModal(){
+    setIsExcellModalVisible(false);
+  }
+
+  useEffect(() => {
+    betterConsoleLog('> Logging selected orders: ', selectedOrders.length);
+  }, [selectedOrders]);
 
   return (
     <View>
@@ -89,10 +131,21 @@ function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: Prop
         onCancel={hideModal}
         message="Da li sigurno želiš da obrišeš selektovane porudžbine?"
       />
+      <ConfirmationModal
+        isVisible={isExcellModalVisible}
+        onConfirm={shareExcell}
+        onCancel={closeExcellModal}
+        message={`Datoteka uspešno napravljena\nProsledi excell?`}
+        onConfirmBtnText='Prosledi'
+        onCancelBtnText='Odustani'
+      />
       {batchMode && (
         <BatchModeOrderControlls
           active={batchMode}
           onRemoveBatchPress={removeBatchOrdersHandler}
+          onSelectAllOrders={selectAllOrdarsHandler}
+          onExcellExportPress={exportExcellDocumentHandler}
+          isAllSelected={isAllSelected}
         />
       )}
       <FlatList 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Animated, Image, Pressable, Text, TouchableOpacity, View } from 'react-native'
 import { ImageTypes, OrderTypes } from '../../../types/allTsTypes';
 import { StyleSheet } from 'react-native';
@@ -18,9 +18,9 @@ interface PropTypes {
   setEditedOrder: (order: OrderTypes | null) => void
   highlightedItems: SelectedOrdersTypes[]
   batchMode: boolean
-  onRemoveHighlight: (orderId: string) => void
-  onPress: (orderId: string) => void
-  onLongPress: (orderId: string) => void
+  onRemoveHighlight: (order: OrderTypes) => void
+  onPress: (order: OrderTypes) => void
+  onLongPress: (order: OrderTypes) => void
 }
 
 function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemoveHighlight, onPress, onLongPress }: PropTypes) {
@@ -42,8 +42,8 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
     }
   }, [highlightedItems, order])
 
-  function handleOnPress(orderId:string){
-    onPress(orderId);
+  function handleOnPress(order: OrderTypes){
+    onPress(order);
     if(batchMode) {
 
     } else {
@@ -59,17 +59,34 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
     setEditedOrder(order);
   }
 
+  // 0 = Not Highlighted, 1 = Highlighted
+  const backgroundColor = useRef(new Animated.Value(0)).current; 
+
+   // 1 = Highlighted, 0 = Default
+  useEffect(() => {
+    Animated.timing(backgroundColor, {
+      toValue: isHighlighted ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  }, [isHighlighted]);
+
+  const interpolatedBackgroundColor = backgroundColor.interpolate({
+    inputRange: [0, 1],
+    outputRange: [Colors.white, '#A3B9CC'], // White → Blue transition
+  });
+
   if(!order) return <></>;
   return (
     <Pressable 
       delayLongPress={100} 
-      onPress={() => handleOnPress(order._id)}
-      onLongPress={() => onLongPress(order._id)}
+      onPress={() => handleOnPress(order)}
+      onLongPress={() => onLongPress(order)}
     >
-      {isHighlighted && (
+      {/* {isHighlighted && (
         <View style={styles.itemHighlightedOverlay}/>
-      )}
-      <Animated.View style={[styles.container, { height: expandHeight }]}>
+      )} */}
+      <Animated.View style={[styles.container, { height: expandHeight, backgroundColor: interpolatedBackgroundColor }]}>
         <Text style={styles.timestamp}>{getFormattedDate(order.createdAt)}</Text>
 
 
@@ -101,10 +118,10 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
                   <IconButton
                     size={26}
                     color={Colors.secondaryDark}
-                    onPress={() => onRemoveHighlight(order._id)}
+                    onPress={() => onRemoveHighlight(order)}
                     key={`key-${order._id}-highlight-button`}
                     icon='check'
-                    style={styles.editButtonContainer} 
+                    style={[styles.editButtonContainer, {backgroundColor: '#9FB7C6'}]} 
                     pressedStyles={styles.buttonContainerPressed}
                   />
                 )}
@@ -159,7 +176,7 @@ function getStyles(isHighlighted:boolean, packed: boolean){
       position: 'absolute',
       right: -60,
       bottom: packed ? 20 : 0,
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       color: Colors.error,
       fontWeight: 'bold',
     },
