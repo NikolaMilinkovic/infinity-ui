@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { View, Text, Image, StyleSheet, Pressable } from 'react-native'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { View, Text, Image, StyleSheet, Pressable, Animated } from 'react-native'
 import { Colors } from '../../../constants/colors'
 import ExpandButton from '../../../util-components/ExpandButton';
 import DisplayDressStock from '../unique_product_components/display_stock/DisplayDressStock';
@@ -122,16 +122,33 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
   //   }
   // }
 
+    // 0 = Not Highlighted, 1 = Highlighted
+    const backgroundColor = useRef(new Animated.Value(0)).current; 
+  
+     // 1 = Highlighted, 0 = Default
+    useEffect(() => {
+      Animated.timing(backgroundColor, {
+        toValue: isHighlighted ? 1 : 0,
+        duration: 120,
+        useNativeDriver: false,
+      }).start();
+    }, [isHighlighted]);
+  
+    const interpolatedBackgroundColor = backgroundColor.interpolate({
+      inputRange: [0, 1],
+      outputRange: [Colors.white, '#A3B9CC'], // White → Blue transition
+    });
+
   return (
-    <View
+    <Animated.View
       key={item._id} 
-      style={styles.container} 
+      style={[styles.container, {backgroundColor: interpolatedBackgroundColor}]} 
       // onPress={toggleExpand}
       // delayLongPress={100}
     >
-      {isHighlighted && (
+      {/* {isHighlighted && (
         <View style={styles.itemHighlightedOverlay}/>
-      )}
+      )} */}
 
       {/* IMAGE AND INFORMATIONS */}
       <View style={styles.infoContainer}>
@@ -176,7 +193,7 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
                 onPress={() => onRemoveHighlight(item._id)}
                 key={`key-${item._id}-add-button`}
                 icon='check'
-                style={styles.addButtonContainer} 
+                style={[styles.addButtonContainer, {backgroundColor: '#9FB7C6'}]} 
                 pressedStyles={styles.buttonContainerPressed}
               />
             )}
@@ -238,7 +255,7 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
           <Text style={styles.descriptionText}>{item.description}</Text>
         </View>
       )}
-    </View>
+    </Animated.View>
   )
 }
 
@@ -314,7 +331,7 @@ function getStyles(onStock:boolean, isHighlighted:boolean){
       bottom: -10,
       right: 0,
       marginLeft: 'auto',
-      backgroundColor: onStock ? Colors.white : Colors.secondaryHighlight,
+      backgroundColor: 'transparent',
       borderColor: onStock ? Colors.success : Colors.error,
       borderWidth: 0,
       width: '100%',

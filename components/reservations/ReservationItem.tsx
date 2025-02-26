@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Animated, Image, Pressable, Text, View } from 'react-native'
 import { ImageTypes, OrderTypes } from '../../types/allTsTypes';
 import { StyleSheet } from 'react-native';
@@ -60,6 +60,23 @@ function ReservationItem({ order, setEditedOrder, highlightedItems, batchMode, o
     setEditedOrder(order);
   }
 
+    // 0 = Not Highlighted, 1 = Highlighted
+    const backgroundColor = useRef(new Animated.Value(0)).current; 
+  
+     // 1 = Highlighted, 0 = Default
+    useEffect(() => {
+      Animated.timing(backgroundColor, {
+        toValue: isHighlighted ? 1 : 0,
+        duration: 120,
+        useNativeDriver: false,
+      }).start();
+    }, [isHighlighted]);
+  
+    const interpolatedBackgroundColor = backgroundColor.interpolate({
+      inputRange: [0, 1],
+      outputRange: [Colors.white, '#A3B9CC'], // White → Blue transition
+    });
+
   if(!order) return <></>;
   return (
     <Pressable 
@@ -67,10 +84,10 @@ function ReservationItem({ order, setEditedOrder, highlightedItems, batchMode, o
       onPress={() => handleOnPress(order._id)}
       onLongPress={() => onLongPress(order._id)}
     >
-      {isHighlighted && (
+      {/* {isHighlighted && (
         <View style={styles.itemHighlightedOverlay}/>
-      )}
-      <Animated.View style={[styles.container, { height: expandHeight }]}>
+      )} */}
+      <Animated.View style={[styles.container, { height: expandHeight, backgroundColor: interpolatedBackgroundColor }]}>
         <Text style={styles.timestamp}>{getFormattedDate(order.createdAt)}</Text>
 
 
@@ -110,7 +127,7 @@ function ReservationItem({ order, setEditedOrder, highlightedItems, batchMode, o
                     onPress={() => onRemoveHighlight(order._id)}
                     key={`key-${order._id}-highlight-button`}
                     icon='check'
-                    style={styles.editButtonContainer} 
+                    style={[styles.editButtonContainer, {backgroundColor: '#9FB7C6'}]} 
                     pressedStyles={styles.buttonContainerPressed}
                   />
                 )}
@@ -162,7 +179,6 @@ function getStyles(isHighlighted:boolean){
       position: 'absolute',
       right: -60,
       bottom: 0,
-      backgroundColor: Colors.white,
       color: Colors.error,
       fontWeight: 'bold',
     },

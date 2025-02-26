@@ -66,7 +66,7 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
   useEffect(() => {
     Animated.timing(backgroundColor, {
       toValue: isHighlighted ? 1 : 0,
-      duration: 200,
+      duration: 120,
       useNativeDriver: false,
     }).start();
   }, [isHighlighted]);
