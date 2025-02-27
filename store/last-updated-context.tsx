@@ -85,6 +85,7 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
         } else {
           if(firstConnect){
             setFirstConnect(false);
+          } else {
             popupMessage('LastUpdated data is missing', 'danger');
           }
         }

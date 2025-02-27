@@ -27,7 +27,7 @@ function CheckForUpdates({ appCtx }: any){
           <Text style={styles.text}>Trenutna verzija: {currentVersion}</Text>
         </View>
       )}
-      {currentVersion !== remoteVersion && (
+      {remoteVersion && currentVersion !== remoteVersion && (
         <View>
           <Text style={styles.text}>Postoji nova verzija aplikacije!</Text>
           <Text style={styles.text}>Trenutna verzija: {currentVersion}</Text>
@@ -38,6 +38,12 @@ function CheckForUpdates({ appCtx }: any){
           >
             Ažuriraj aplikaciju
           </Button>
+        </View>
+      )}
+      {!remoteVersion && (
+        <View>
+          <Text style={styles.text}>Došlo je do problema prilikom preuzivanja informacija o najnovijoj verziji.</Text>
+          <Text style={styles.text}>Trenutna verzija: {currentVersion}</Text>
         </View>
       )}
     </View>
