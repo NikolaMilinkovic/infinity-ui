@@ -3,7 +3,7 @@
     "name": "Infinity Boutique App",
     "slug": "infinity-boutique-app",
     "backgroundColor": "#ffffff",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

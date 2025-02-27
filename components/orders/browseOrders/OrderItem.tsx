@@ -9,6 +9,7 @@ import useImagePreviewModal from '../../../hooks/useImagePreviewModal';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import DisplayOrderProduct from './DisplayOrderProduct';
 import IconButton from '../../../util-components/IconButton';
+import { useHighlightAnimation } from '../../../hooks/useHighlightAnimation';
 
 interface SelectedOrdersTypes {
   _id: string
@@ -59,21 +60,10 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
     setEditedOrder(order);
   }
 
-  // 0 = Not Highlighted, 1 = Highlighted
-  const backgroundColor = useRef(new Animated.Value(0)).current; 
-
-   // 1 = Highlighted, 0 = Default
-  useEffect(() => {
-    Animated.timing(backgroundColor, {
-      toValue: isHighlighted ? 1 : 0,
-      duration: 120,
-      useNativeDriver: false,
-    }).start();
-  }, [isHighlighted]);
-
-  const interpolatedBackgroundColor = backgroundColor.interpolate({
-    inputRange: [0, 1],
-    outputRange: [Colors.white, '#A3B9CC'], // White → Blue transition
+  const backgroundColor = useHighlightAnimation({
+    isHighlighted,
+    duration: 120,
+    highlightColor: '#A3B9CC'
   });
 
   if(!order) return <></>;
@@ -86,7 +76,7 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
       {/* {isHighlighted && (
         <View style={styles.itemHighlightedOverlay}/>
       )} */}
-      <Animated.View style={[styles.container, { height: expandHeight, backgroundColor: interpolatedBackgroundColor }]}>
+      <Animated.View style={[styles.container, { height: expandHeight, backgroundColor: backgroundColor }]}>
         <Text style={styles.timestamp}>{getFormattedDate(order.createdAt)}</Text>
 
 

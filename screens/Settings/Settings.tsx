@@ -6,6 +6,7 @@ import useAuthToken from '../../hooks/useAuthToken';
 import DropdownList from '../../util-components/DropdownList';
 import { UserContext } from '../../store/user-context';
 import { Colors } from '../../constants/colors';
+import { useGetAppColors } from '../../constants/useGetAppColors';
 import useTextForActiveLanguage from '../../hooks/useTextForActiveLanguage';
 import { CouriersContext } from '../../store/couriers-context';
 import { AppContext } from '../../store/app-context';
@@ -13,6 +14,7 @@ import { popupMessage } from '../../util-components/PopupMessage';
 import ListProductsByDropdown from '../../components/settings/ListProductsByDropdown';
 import CheckForUpdates from '../../components/settings/CheckForUpdates';
 import CouriersSettings from '../../components/settings/CouriersSettings';
+import { AppColors } from '../../types/allTsTypes';
 
 
 function Settings() {
@@ -20,6 +22,7 @@ function Settings() {
   const userCtx = useContext(UserContext);
   const text = useTextForActiveLanguage('settings');
   const appCtx = useContext(AppContext);
+  const styles = getColors(useGetAppColors());
 
   /**
    * @param field Attribute that we are updating
@@ -123,34 +126,40 @@ function Settings() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-  },
-  h1: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    marginTop: 16,
-  },
-  h2: {
-
-  },
-  text: {
-    fontSize: 16,
-  },
-  sectionOutline: {
-    padding: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    borderRadius: 10,
-  }
-});
+function getColors(Colors: AppColors){
+  return StyleSheet.create({
+    container: {
+      padding: 10,
+      backgroundColor: Colors.primaryLight
+    },
+    h1: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 8,
+      marginTop: 16,
+      color: Colors.defaultText
+    },
+    h2: {
+      color: Colors.defaultText
+    },
+    text: {
+      fontSize: 16,
+      color: Colors.defaultText
+    },
+    sectionOutline: {
+      padding: 10,
+      borderWidth: 0.5,
+      borderColor: Colors.primaryDark,
+      borderRadius: 10,
+    }
+  });
+}
 
 function ThemeSelector({ updateDefault }: { updateDefault: (field: string, value: any) => void }){
   const userCtx = useContext(UserContext);
   const [firstRender, setFirstRender] = useState(true);
   const text = useTextForActiveLanguage('settings');
+  const styles = getColors(useGetAppColors());
   interface DrpodownTypes{
     _id: number
     name: string
@@ -193,6 +202,7 @@ function LanguageSelector({ updateUserSetting }: { updateUserSetting: (field: st
   const userCtx = useContext(UserContext);
   const [firstRender, setFirstRender] = useState(true);
   const text = useTextForActiveLanguage('settings');
+  const styles = getColors(useGetAppColors());
   interface DrpodownTypes{
     _id: number
     name: string
@@ -234,7 +244,7 @@ function LanguageSelector({ updateUserSetting }: { updateUserSetting: (field: st
 function DefaultCourier({ updateDefault }: { updateDefault: (field: string, value: any) => void }){
   const userCtx = useContext(UserContext);
   const courierCtx = useContext(CouriersContext);
-  
+  const styles = getColors(useGetAppColors());
   const [firstRender, setFirstRender] = useState(true);
   interface DrpodownTypes{
     _id: number

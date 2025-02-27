@@ -21,9 +21,11 @@ interface PropTypes {
   setEditedOrder: (order: OrderTypes | null) => void
   isDatePicked: boolean
   pickedDate: string
+  isDateForPeriodPicked: boolean
+  pickedDateForPeriod: string
 }
 
-function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: PropTypes) {
+function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate, isDateForPeriodPicked, pickedDateForPeriod }: PropTypes) {
   const [batchMode, setBatchMode] = useState(false);
   const [selectedOrders, setSelectedOrders] = useState<OrderTypes[]>([]);
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
@@ -119,9 +121,17 @@ function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: Prop
     setIsExcellModalVisible(false);
   }
 
-  useEffect(() => {
-    betterConsoleLog('> Logging selected orders: ', selectedOrders.length);
-  }, [selectedOrders]);
+  function getTotalOrdersCount(){
+    if(isDatePicked) return(
+      <Text style={styles.listHeader}>Ukupno Porudžbina za {pickedDate}: {data.length}</Text>
+    ) 
+    if(isDateForPeriodPicked) return(
+      <Text style={styles.listHeader}>Ukupno Porudžbina od {pickedDateForPeriod}: {data.length}</Text>
+    ) 
+    return(
+      <Text style={styles.listHeader}>Ukupno Porudžbina za {pickedDate}: {data.length}</Text>
+    ) 
+  }
 
   return (
     <View>
@@ -169,19 +179,14 @@ function OrderItemsList({ data, setEditedOrder, isDatePicked, pickedDate }: Prop
         }
         style={styles.list}
         contentContainerStyle={styles.listContainer}
-        ListHeaderComponent={() => {
-            return isDatePicked ? (
-              <Text style={styles.listHeader}>Ukupno Porudžbina za {pickedDate}: {data.length}</Text>
-            ):(
-              <Text style={styles.listHeader}>Ukupno Porudžbina: {data.length}</Text>
-            )
-          }
-        }
+        ListHeaderComponent={() => getTotalOrdersCount()}
         initialNumToRender={10}
       />
     </View>
   )
 }
+
+
 
 function getStyles(batchMode: boolean){
   return StyleSheet.create({

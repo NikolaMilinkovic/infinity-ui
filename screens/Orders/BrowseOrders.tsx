@@ -25,7 +25,9 @@ function BrowseOrders() {
   const [searchData, setSearchData] = useState('');
   const [editedOrder, setEditedOrder] = useState(null);
   const [isDatePicked, setIsDatePicked] = useState(false);
+  const [isDateForPeriodPicked, setIsDateForPeriodPicked] = useState(false);
   const [pickedDate, setPickedDate] = useState('');
+  const [pickedDateForPeriod, setPickedDateForPeriod] = useState('');
   useBackClickHandler(!!editedOrder, removeEditedOrder);
   function removeEditedOrder(){
     console.log('> removeEditedOrder called')
@@ -52,6 +54,7 @@ function BrowseOrders() {
 
   const filteredData = useMemo(() => {
     if(isDatePicked) return searchOrders(searchData, ordersCtx.customOrderSet, searchParams);
+    if(isDateForPeriodPicked) return searchOrders(searchData, ordersCtx.customOrderSet, searchParams);
     if(searchParams.processed) return searchOrders(searchData, ordersCtx.processedOrders, searchParams);
     if(searchParams.unprocessed) return searchOrders(searchData, ordersCtx.unprocessedOrders, searchParams);
     return [];
@@ -71,12 +74,17 @@ function BrowseOrders() {
           isDatePicked={isDatePicked}
           setIsDatePicked={setIsDatePicked}
           setPickedDate={setPickedDate}
+          isDateForPeriodPicked={isDateForPeriodPicked}
+          setIsDateForPeriodPicked={setIsDateForPeriodPicked}
+          setPickedDateForPeriod={setPickedDateForPeriod}
         />
-        <OrderItemsList 
+        <OrderItemsList
           data={filteredData} 
           setEditedOrder={setEditedOrder} 
           isDatePicked={isDatePicked} 
           pickedDate={pickedDate} 
+          pickedDateForPeriod={pickedDateForPeriod}
+          isDateForPeriodPicked={isDateForPeriodPicked}
         />
       </View>
       <Modal

@@ -25,8 +25,11 @@ interface PropTypes {
   isDatePicked: boolean
   setIsDatePicked: (isDatePicked: boolean) => void
   setPickedDate: (date:string) => void
+  isDateForPeriodPicked: boolean
+  setIsDateForPeriodPicked: (isDatePicked: boolean) => void
+  setPickedDateForPeriod: (date:string) => void
 }
-function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePicked, setIsDatePicked, setPickedDate }: PropTypes) {
+function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePicked, setIsDatePicked, setPickedDate, isDateForPeriodPicked, setIsDateForPeriodPicked, setPickedDateForPeriod }: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(false);
   const screenHeight = Dimensions.get('window').height;
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 172, 180);
@@ -198,8 +201,12 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
       if(e.type === "set"){
         setDate(selectedDate);
         setIsDatePicked(true);
-        await handleFetchOrdersByDate(selectedDate, token);
+        // Handle resetting other date picker
+        setIsDateForPeriodPicked(false);
+        setPickedDateForPeriod('');
         handleSetPickedDate(selectedDate);
+        await handleFetchOrdersByDate(selectedDate, token);
+
       }
 
       setShowDatePicker(false);
@@ -285,6 +292,13 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
             )}
           </View>
 
+          <DatePickerFromDateToNow
+            isDatePicked={isDateForPeriodPicked}
+            setIsDatePicked={setIsDateForPeriodPicked}
+            setPickedDate={setPickedDateForPeriod}
+            resetOtherDatePickers={handleDateReset}
+          />
+
           {/* Ascending | Descending */}
           <View style={styles.radioGroupContainer}>
             <Text style={styles.filtersH2absolute}>Redosled</Text>
@@ -330,7 +344,7 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
           </View>
 
           {/* CLOSE BUTTON */}
-          <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
+          {/* <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
             <Button
               onPress={() => setIsExpanded(!isExpanded)}
               backColor={Colors.highlight}
@@ -339,9 +353,112 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
             >
               Zatvori
             </Button>
-          </Animated.View>
+          </Animated.View> */}
       </Animated.ScrollView>
     </View>
+  )
+}
+
+
+interface DatePickerFromDateToNowTypes{
+  isDatePicked: boolean
+  setIsDatePicked: (isPicked:boolean) => void
+  setPickedDate: (date:string) => void
+  resetOtherDatePickers: () => void
+}
+/**
+ * Handles component for fetching orders from certain date until the current moment
+ */
+function DatePickerFromDateToNow({ isDatePicked, setIsDatePicked, setPickedDate, resetOtherDatePickers }:DatePickerFromDateToNowTypes){
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState( new Date() );
+  const ordersCtx = useContext(OrdersContext);
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+
+  async function handleFetchOrdersFromDateToNow(date: Date, token: any){
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0));
+    const formattedDate = utcDate.toISOString().split('T')[0]; // Gets 'YYYY-MM-DD' format 
+    setShowDatePicker(false);
+
+    const response = await fetchData(token, `orders/fetch-for-period-from-date/${formattedDate}`);
+    if(response === false) popupMessage('Došlo je do problema prilikom preuzimanja podataka o porudžbinama', 'danger');
+
+    betterConsoleLog('> Logging response', response);
+    popupMessage(response.message, 'success');
+    ordersCtx.setCustomOrderSet(response.orders)
+    return;
+  }
+  function handleSetPickedDate(date: Date){
+    const formattedDate = date.toISOString().split('T')[0].split('-').reverse().join('/');
+    setPickedDate(formattedDate);
+  }
+  function handleOpenDatePicker(){
+    setShowDatePicker(true);
+  }
+  const handleDatePick = async (e:NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
+    if(e.type === "set"){
+      setIsDatePicked(true);
+      resetOtherDatePickers();
+      handleSetPickedDate(selectedDate);
+      setDate(selectedDate);
+
+      await handleFetchOrdersFromDateToNow(selectedDate, token);
+    }
+
+    setShowDatePicker(false);
+  }
+  const handleDateReset = () => {
+    setDate(new Date());
+    setIsDatePicked(false);
+    setShowDatePicker(false);
+    setPickedDate('');
+    ordersCtx.setCustomOrderSet([]);
+  }
+
+  function formatDateHandler(date: Date){
+    return date.toLocaleDateString(
+      'en-GB', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }
+    )
+  }
+  return(
+  <View style={styles.radioGroupContainer}>
+  <Text style={styles.filtersH2absolute}>Pretrazi porudžbine od datuma pa do sada</Text>
+    <View style={styles.dateButtonsContainer}>
+      <Button
+        containerStyles={styles.dateButton}
+        onPress={handleOpenDatePicker}
+      >
+        Izaberi datum
+      </Button>
+      <Button
+        containerStyles={styles.dateButton}
+        onPress={handleDateReset}
+      >
+        Resetuj izbor
+      </Button>
+    </View>
+
+    {showDatePicker && (
+      <DateTimePicker
+        value={date}
+        mode='date'
+        is24Hour={true}
+        onChange={handleDatePick}
+        onTouchCancel={handleDateReset}
+      />
+    )}
+    {date && isDatePicked && (
+      <View style={styles.dateDisplayContainer}>
+        <Text style={styles.dateLabel}>Izabrani datum:</Text>
+        <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+      </View>
+    )}
+  </View>
   )
 }
 

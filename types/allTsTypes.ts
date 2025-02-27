@@ -310,3 +310,30 @@ export interface UserContextTypes {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface AppColors {
+  // Text colors
+  defaultText: string;
+  whiteText: string;
+  
+  // Dark colors
+  primaryDark: string;
+  secondaryDark: string;
+  
+  // Light colors
+  primaryLight: string;
+  secondaryLight: string;
+  highlight: string;
+  secondaryHighlight: string;
+  
+  // Status colors
+  error: string;
+  success: string;
+  warning: string;
+  info: string;
+  
+  // Misc colors
+  white: string;
+  highlightBlue: string;
+  successSecondary: string;
+}

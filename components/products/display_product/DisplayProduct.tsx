@@ -9,6 +9,7 @@ import { popupMessage } from '../../../util-components/PopupMessage';
 import { NewOrderContext } from '../../../store/new-order-context';
 import IconButton from '../../../util-components/IconButton';
 import useCheckStockAvailability from '../../../hooks/useCheckStockAvailability';
+import { useHighlightAnimation } from '../../../hooks/useHighlightAnimation';
 
 type ProductType = DressTypes | PurseTypes;
 interface HighlightedItemsProps {
@@ -122,27 +123,16 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
   //   }
   // }
 
-    // 0 = Not Highlighted, 1 = Highlighted
-    const backgroundColor = useRef(new Animated.Value(0)).current; 
-  
-     // 1 = Highlighted, 0 = Default
-    useEffect(() => {
-      Animated.timing(backgroundColor, {
-        toValue: isHighlighted ? 1 : 0,
-        duration: 120,
-        useNativeDriver: false,
-      }).start();
-    }, [isHighlighted]);
-  
-    const interpolatedBackgroundColor = backgroundColor.interpolate({
-      inputRange: [0, 1],
-      outputRange: [Colors.white, '#A3B9CC'], // White → Blue transition
-    });
+  const backgroundColor = useHighlightAnimation({
+    isHighlighted,
+    duration: 120,
+    highlightColor: '#A3B9CC'
+  });
 
   return (
     <Animated.View
       key={item._id} 
-      style={[styles.container, {backgroundColor: interpolatedBackgroundColor}]} 
+      style={[styles.container, {backgroundColor: backgroundColor}]} 
       // onPress={toggleExpand}
       // delayLongPress={100}
     >

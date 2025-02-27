@@ -25,7 +25,6 @@ export const Colors = {
   successSecondary: '#F0FAF0',
 }
 
-
 // export const getColors = (theme: 'light' | 'dark') => ({
 //   defaultText: theme === 'light' ? '#000000' : '#FFFFFF',
 //   primary: theme === 'light' ? '#F0F0F0' : '#012340',
