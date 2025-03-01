@@ -1,6 +1,7 @@
 import React from 'react'
-import { Pressable, Text, StyleSheet } from 'react-native'
+import { Pressable, Text, StyleSheet, Animated } from 'react-native'
 import { MaterialIcons, FontAwesome6 } from '@expo/vector-icons';
+import { Colors } from '../constants/colors';
 type MaterialIconNames = keyof typeof MaterialIcons.glyphMap;
 type FontAwesomeIconNames = keyof typeof FontAwesome6.glyphMap;
 
@@ -16,6 +17,7 @@ interface IconButtonProps {
   pressedStyles?: object
   iconsLibrary?: 'MaterialIcons' | 'FontAwesome6';
 }
+
 // file-export
 function IconButton({ icon, color, onPress, text, style, textStyle, iconStyle, size, pressedStyles, iconsLibrary = 'MaterialIcons' }: IconButtonProps) {
   return (
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   }
 })
 

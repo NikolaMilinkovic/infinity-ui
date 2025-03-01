@@ -76,10 +76,8 @@ function OrderItem({ order, setEditedOrder, highlightedItems, batchMode, onRemov
       {/* {isHighlighted && (
         <View style={styles.itemHighlightedOverlay}/>
       )} */}
-      <Animated.View style={[styles.container, { height: expandHeight, backgroundColor: backgroundColor }]}>
+      <Animated.View style={[styles.container, { height: expandHeight, backgroundColor }]}>
         <Text style={styles.timestamp}>{getFormattedDate(order.createdAt)}</Text>
-
-
         <View style={styles.infoContainer}>
           {previewImage && (
             <ImagePreviewModal

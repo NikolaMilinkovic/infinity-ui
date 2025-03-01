@@ -22,7 +22,7 @@ function Settings() {
   const userCtx = useContext(UserContext);
   const text = useTextForActiveLanguage('settings');
   const appCtx = useContext(AppContext);
-  const styles = getColors(useGetAppColors());
+  const styles = getStyles(useGetAppColors());
 
   /**
    * @param field Attribute that we are updating
@@ -97,12 +97,12 @@ function Settings() {
 
 
       {/* THEME SELECTOR */}
-      {/* <Text style={styles.h1}>{text.theme_header}</Text>
+      <Text style={styles.h1}>{text.theme_header}</Text>
       <View style={styles.sectionOutline}>
         <ThemeSelector
           updateDefault={updateDefault}
         />
-      </View> */}
+      </View>
 
       {/* LANGUAGE SELECTOR */}
       {/* <Text style={styles.h1}>{text.language_header}</Text>
@@ -114,10 +114,9 @@ function Settings() {
 
       {/* SAVE BTN */}
       <Button
-        containerStyles={{ marginTop: 10, marginBottom: 20, }}
+        containerStyles={styles.saveButton}
         onPress={saveAndUpdateUserSettings}
-        backColor={Colors.highlight}
-        textColor={Colors.white}
+        textStyles={styles.saveButtonText}
       >
         Sačuvaj
       </Button>
@@ -126,7 +125,7 @@ function Settings() {
   )
 }
 
-function getColors(Colors: AppColors){
+function getStyles(Colors: AppColors){
   return StyleSheet.create({
     container: {
       padding: 10,
@@ -149,8 +148,27 @@ function getColors(Colors: AppColors){
     sectionOutline: {
       padding: 10,
       borderWidth: 0.5,
-      borderColor: Colors.primaryDark,
+      borderColor: Colors.borders,
       borderRadius: 10,
+    },
+    dropdown: {
+      backgroundColor: Colors.buttonBackground,
+      marginTop: 10,
+      elevation: 2,
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+    },
+    dropdownText: {
+      color: Colors.defaultText
+    },
+    saveButton: {
+      backgroundColor: Colors.highlight,
+      marginTop: 10, 
+      marginBottom: 20,
+    },
+    saveButtonText: {
+      color: Colors.white
     }
   });
 }
@@ -159,7 +177,7 @@ function ThemeSelector({ updateDefault }: { updateDefault: (field: string, value
   const userCtx = useContext(UserContext);
   const [firstRender, setFirstRender] = useState(true);
   const text = useTextForActiveLanguage('settings');
-  const styles = getColors(useGetAppColors());
+  const styles = getStyles(useGetAppColors());
   interface DrpodownTypes{
     _id: number
     name: string
@@ -192,7 +210,8 @@ function ThemeSelector({ updateDefault }: { updateDefault: (field: string, value
         data={listSelectorData}
         defaultValue={getDefaultValue()}
         onSelect={updateSetting}
-        buttonContainerStyles={{marginTop: 10,}}
+        buttonContainerStyles={styles.dropdown}
+        buttonTextStyles={styles.dropdownText}
       />
     </>
   )
@@ -202,7 +221,7 @@ function LanguageSelector({ updateUserSetting }: { updateUserSetting: (field: st
   const userCtx = useContext(UserContext);
   const [firstRender, setFirstRender] = useState(true);
   const text = useTextForActiveLanguage('settings');
-  const styles = getColors(useGetAppColors());
+  const styles = getStyles(useGetAppColors());
   interface DrpodownTypes{
     _id: number
     name: string
@@ -244,7 +263,7 @@ function LanguageSelector({ updateUserSetting }: { updateUserSetting: (field: st
 function DefaultCourier({ updateDefault }: { updateDefault: (field: string, value: any) => void }){
   const userCtx = useContext(UserContext);
   const courierCtx = useContext(CouriersContext);
-  const styles = getColors(useGetAppColors());
+  const styles = getStyles(useGetAppColors());
   const [firstRender, setFirstRender] = useState(true);
   interface DrpodownTypes{
     _id: number

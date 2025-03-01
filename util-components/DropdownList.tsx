@@ -18,6 +18,7 @@ interface DropdownPropTypes{
   reference?: any
   buttonContainerStyles?: any
   defaultValueByIndex?: number
+  buttonTextStyles?: any
 }
 
 const DropdownList = ({ 
@@ -29,6 +30,7 @@ const DropdownList = ({
   reference,
   buttonContainerStyles,
   defaultValueByIndex,
+  buttonTextStyles,
  }: DropdownPropTypes) => {
   
   const [dropdownData, setDropdownData] = useState<any[]>([]);
@@ -76,7 +78,7 @@ const DropdownList = ({
         renderButton={(selectedItem, isOpen) => {
           return (
             <View style={[styles.dropdownButtonStyle, buttonContainerStyles]}>
-              <Text style={styles.dropdownButtonTxtStyle}>{selectedItem?.name || selectedItem?.value || placeholder || 'No placeholder value provided'}</Text>
+              <Text style={[styles.dropdownButtonTxtStyle, buttonTextStyles]}>{selectedItem?.name || selectedItem?.value || placeholder || 'No placeholder value provided'}</Text>
               <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} style={styles.dropdown1ButtonArrowStyle} size={18}/>
             </View>
           );

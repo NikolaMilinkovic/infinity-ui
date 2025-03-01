@@ -132,7 +132,7 @@ function DisplayProduct({ item, setEditItem, highlightedItems, batchMode, onRemo
   return (
     <Animated.View
       key={item._id} 
-      style={[styles.container, {backgroundColor: backgroundColor}]} 
+      style={[styles.container, {backgroundColor: onStock ? backgroundColor : Colors.secondaryHighlight}]} 
       // onPress={toggleExpand}
       // delayLongPress={100}
     >
@@ -273,7 +273,6 @@ function getStyles(onStock:boolean, isHighlighted:boolean){
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      backgroundColor: (onStock ? Colors.white : Colors.secondaryHighlight),
       marginBottom: 4,
       elevation: 2,
       position: 'relative',

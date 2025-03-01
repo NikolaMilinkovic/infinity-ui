@@ -3,6 +3,8 @@ import { Linking, StyleSheet, Text, View } from 'react-native';
 import Button from "../../util-components/Button";
 import { Colors } from "../../constants/colors";
 import Constants from 'expo-constants';
+import { AppColors } from "../../types/allTsTypes";
+import { useGetAppColors } from "../../constants/useGetAppColors";
 
 // Handles updates from Settings screen > Opens the remote link where user
 // can download the new version of the app
@@ -10,6 +12,8 @@ function CheckForUpdates({ appCtx }: any){
   const [currentVersion] = useState(Constants?.expoConfig?.version);
   const [buildLink, setBuildLink] = useState(appCtx.buildLink)
   const [remoteVersion, setRemoteVersion] = useState('');
+  const styles = getStyles(useGetAppColors());
+  
   useEffect(() => {
     setRemoteVersion(appCtx?.version);
     setBuildLink(appCtx.buildLink);
@@ -50,10 +54,20 @@ function CheckForUpdates({ appCtx }: any){
   )
 }
 
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 16,
-  },
-});
+
+function getStyles(Colors: AppColors){
+  return StyleSheet.create({
+    text: {
+      fontSize: 16,
+      color: Colors.defaultText
+    },
+    button: {
+      backgroundColor: Colors.buttonBackground,
+    },
+    buttonText: {
+      color: Colors.defaultText
+    }
+  });
+}
 
 export default CheckForUpdates;

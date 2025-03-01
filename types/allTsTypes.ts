@@ -336,4 +336,7 @@ export interface AppColors {
   white: string;
   highlightBlue: string;
   successSecondary: string;
+
+  buttonBackground: string;
+  borders: string;
 }

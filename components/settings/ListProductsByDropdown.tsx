@@ -3,8 +3,11 @@ import useTextForActiveLanguage from "../../hooks/useTextForActiveLanguage";
 import DropdownList from "../../util-components/DropdownList";
 import { StyleSheet, Text } from "react-native";
 import { UserContext } from "../../store/user-context";
+import { AppColors } from "../../types/allTsTypes";
+import { useGetAppColors } from "../../constants/useGetAppColors";
 
 function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: string, value: any) => void}){
+  const styles = getStyles(useGetAppColors());
   const userCtx= useContext(UserContext);
   const [firstRender, setFirstRender] = useState(true);
   const text = useTextForActiveLanguage('settings');
@@ -43,16 +46,34 @@ function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: stri
         data={listSelectorData}
         defaultValue={getDefaultSelectionForListProductsBy()}
         onSelect={updateSetting}
-        buttonContainerStyles={{marginTop: 10,}}
+        buttonContainerStyles={styles.dropdown}
+        buttonTextStyles={styles.dropdownText}
       />
     </>
   )
 }
 
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 16,
-  },
-});
+function getStyles(Colors: AppColors){
+  return StyleSheet.create({
+    text: {
+      fontSize: 16,
+      color: Colors.defaultText,
+    },
+    h2: {
+  
+    },
+    dropdown: {
+      backgroundColor: Colors.buttonBackground,
+      marginTop: 10,
+      elevation: 2,
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+    },
+    dropdownText: {
+      color: Colors.defaultText
+    }
+  });
+}
 
 export default ListProductsByDropdown;

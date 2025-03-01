@@ -28,48 +28,62 @@ export function useGetAppColors(): AppColors{
     white: '#FFFFFF',
     highlightBlue: '#6A5ACD',
     successSecondary: '#F0FAF0',
+
+    // components
+    buttonBackground: '#FFFFFF',
+    borders: '#012340',
   }
   const dark = {
+    // Slightly yellow white '#F8F1E5'
     // Text colors
-    defaultText: '#F0F0F0',  // Light text for dark background
-    whiteText: '#F0F0F0',    // Keeping this consistent since it's already light
+    defaultText: '#FFFFFF', 
+    whiteText: '#FFFFFF',
     
-    // Dark colors (now become light in dark theme)
-    primaryDark: '#A3C1D9',  // Lighter blue shade
-    secondaryDark: '#6AADCB', // Mid-tone blue for contrast
+    // Dark colors
+    primaryDark: '#181C14',
+    secondaryDark: '#6AADCB',
     
-    // Light colors (now become dark in dark theme)
-    primaryLight: '#121212',  // Very dark gray for main background
-    secondaryLight: '#1E2A2D', // Dark blue-gray for secondary background
-    highlight: '#D9A3A3',     // Slightly lighter version of your highlight
-    secondaryHighlight: '#3D2626', // Darker red tone
+    // Light colors
+    primaryLight: '#3C3D37',
+    secondaryLight: '#1E2A2D',
+    highlight: '#697565',
+    secondaryHighlight: '#3D2626',
     
-    // Status colors - slightly adjusted for dark theme visibility
-    error: '#FF4D5E',         // Brighter red for visibility
-    success: '#4CAF50',       // Brighter green
-    warning: '#FFC966',       // Slightly brighter orange
-    info: '#5B8CD9',          // Lighter blue for info
+    // Status colors
+    error: '#FF4D5E',
+    success: '#4CAF50',
+    warning: '#FFC966',
+    info: '#5B8CD9',
     
-    white: '#121212',         // This becomes your "black" equivalent
-    highlightBlue: '#8A7BFF', // Slightly brighter purple
-    successSecondary: '#1C2E1C' // Dark green background
+    white: '#FFFFFF',
+    highlightBlue: '#8A7BFF',
+    successSecondary: '#1C2E1C',
+
+    // components
+    buttonBackground: '#697565',
+    borders: '#BDBDBD',
   }
 
-  const userCtx = useContext(UserContext);
+  let userCtx = {settings:{defaults:{theme: 'light'}}};
+  if(UserContext){
+    userCtx = useContext(UserContext);
+  }
   const [styles, setStyles] = useState(light);
   useEffect(() => {
-    switch(userCtx.settings.defaults.theme){
-      case 'light':
-        setStyles(light);
-      break;
-      case 'dark':
-        setStyles(dark);
-      break;
-      default:
-        setStyles(light);
-      break;
+    if(userCtx?.settings?.defaults?.theme){
+      switch(userCtx?.settings?.defaults?.theme){
+        case 'light':
+          setStyles(light);
+        break;
+        case 'dark':
+          setStyles(dark);
+        break;
+        default:
+          setStyles(light);
+        break;
+      }
     }
-  }, [userCtx.settings.defaults.theme]);
+  }, [userCtx?.settings?.defaults?.theme]);
 
   return styles;
 }
