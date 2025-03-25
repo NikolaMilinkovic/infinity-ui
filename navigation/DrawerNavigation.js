@@ -1,10 +1,12 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Colors } from '../constants/colors';
-import { useContext } from 'react';
+// import { Colors } from '../constants/colors';
+import { useContext, useEffect, useState } from 'react';
 import NavigationButton from '../util-components/NavigationButton';
 import { AuthContext } from '../store/auth-context';
+import { useGetAppColors } from '../constants/useGetAppColors';
+import { UserContext } from '../store/user-context';
 
 const Drawer = createDrawerNavigator();
 
@@ -13,97 +15,136 @@ const Drawer = createDrawerNavigator();
  * Buttons inside the drawer navigation, handles displaying the screens
  */
 export function CustomDrawerContent(props) {
+  const [isActive, setIsActive] = useState('Home');
   const authCtx = useContext(AuthContext);
   const navigation = useNavigation();
+  const Colors = useGetAppColors();
+  const userCtx = useContext(UserContext);
 
   function navigatePages(pageName){
     navigation.navigate(pageName)
   }
+  function setActiveAndNavigate(pageName){
+    setIsActive(pageName);
+    navigatePages(pageName);
+  }
+  function handleActiveColorChange(pageName){
+    return isActive === pageName ? Colors.selectedNavText : Colors.navTextNormal;
+  }
+  function handleBackgroundChange(pageName){
+    return isActive === pageName ? Colors.selectedNavBackground : 'transparent';
+  }
+
+  useEffect(() => {
+    console.log(`> Active page is: ${isActive}`);
+  }, [isActive]);
 
   return (
-    <View style={{ flex: 1, paddingBottom: 60, paddingTop: 60 , paddingRight:60}}>
+    <View style={{ flex: 1, paddingBottom: 60, paddingTop: 60 , paddingRight: 10}}>
       <NavigationButton 
+        backgroundColor={handleBackgroundChange('Home')}
         icon="playlist-plus" 
-        onPress={() => navigatePages('Home')} 
+        onPress={() => setActiveAndNavigate('Home')} 
         size={18} 
-        color={Colors.secondaryDark}
+        color={handleActiveColorChange('Home')}
         text={'Lista Artikla'}
         type='MaterialCommunityIcons'
       />
 
       {/* ORDERS MANAGER */}
       <NavigationButton 
+        backgroundColor={handleBackgroundChange('Orders')}
         icon="filetext1" 
-        onPress={() => navigatePages('Orders')} 
+        onPress={() => setActiveAndNavigate('Orders')} 
         size={18} 
-        color={Colors.secondaryDark}
+        color={handleActiveColorChange('Orders')}
         text='Porudžbine | Rezervacije'
       />
       {/* <NavigationButton 
+        backgroundColor={handleBackgroundChange('Profile')}
         icon="user" 
-        onPress={() => navigatePages('Profile')} 
+        onPress={() => setActiveAndNavigate('Profile')} 
         size={18} 
-        color={Colors.secondaryDark}
+        color={handleActiveColorChange('Profile')}
         text='Profil'
       /> */}
 
 
       {/* COLORS | CATEGORIES */}
       <NavigationButton 
+        backgroundColor={handleBackgroundChange('ColorsCategoriesTabs')}
         icon="color-palette-outline" 
-        onPress={() => navigatePages('ColorsCategoriesTabs')} 
+        onPress={() => setActiveAndNavigate('ColorsCategoriesTabs')} 
         size={18} 
-        color={Colors.secondaryDark}
+        color={handleActiveColorChange('ColorsCategoriesTabs')}
         text='Boje, Kategorije i Dobabljači'
         type='Ionicons'
       />
 
       {/* COURIERS */}
       <NavigationButton 
+        backgroundColor={handleBackgroundChange('CouriersTabs')}
         icon="truck-delivery-outline" 
-        onPress={() => navigatePages('CouriersTabs')} 
+        onPress={() => setActiveAndNavigate('CouriersTabs')} 
         size={18} 
-        color={Colors.secondaryDark}
+        color={handleActiveColorChange('CouriersTabs')}
         text='Kuriri'
         type='MaterialCommunityIcons'
       />
 
       {/* PRODUCTS MANAGER */}
       <NavigationButton 
+        backgroundColor={handleBackgroundChange('ProductsManager')}
         icon="profile" 
-        onPress={() => navigatePages('ProductsManager')} 
+        onPress={() => setActiveAndNavigate('ProductsManager')} 
         size={18} 
-        color={Colors.secondaryDark}
+        color={handleActiveColorChange('ProductsManager')}
         text='Dodaj Artikal'
       />
 
       {/* USERS MANAGER */}
       <NavigationButton 
+        backgroundColor={handleBackgroundChange('UserManager')}
         icon="addusergroup" 
-        onPress={() => navigatePages('UserManager')} 
+        onPress={() => setActiveAndNavigate('UserManager')} 
         size={18} 
-        color={Colors.secondaryDark}
+        color={handleActiveColorChange('UserManager')}
         text='Upravljanje Korisnicima'
       />
 
       {/* SETTINGS */}
       <NavigationButton 
+        backgroundColor={handleBackgroundChange('Settings')}
         icon="setting" 
-        onPress={() => navigatePages('Settings')} 
+        onPress={() => setActiveAndNavigate('Settings')} 
         size={18} 
-        color={Colors.secondaryDark}
+        color={handleActiveColorChange('Settings')}
         text='Podešavanja'
       />
 
       {/* END OF DAY */}
       <NavigationButton 
+        backgroundColor={handleBackgroundChange('EndOfDayTabs')}
         icon="file-excel" 
-        onPress={() => navigatePages('EndOfDayTabs')} 
+        onPress={() => setActiveAndNavigate('EndOfDayTabs')} 
         size={18} 
-        color={Colors.secondaryDark}
+        color={handleActiveColorChange('EndOfDayTabs')}
         text='Završi dan'
         type='MaterialCommunityIcons'
       />
+
+      {/* ADMIN DASHBOARD */}
+      {userCtx.userRole === 'admin' && (
+        <NavigationButton 
+          backgroundColor={handleBackgroundChange('AdminDashboardTabs')}
+          icon="equalizer" 
+          onPress={() => setActiveAndNavigate('AdminDashboardTabs')}
+          size={18} 
+          color={handleActiveColorChange('AdminDashboardTabs')}
+          text='Admin Dashboard'
+          type='MaterialCommunityIcons'
+        />
+      )}
 
       {/* Bottom Buttons */}
       <View style={{

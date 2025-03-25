@@ -9,6 +9,8 @@ interface UserContextTypes {
   setPermissions: any
   settings: any
   setSettings: any
+  userRole: string | null;
+  getUserRole: () => string;
 }
 interface UserContextProviderTypes {
   children: ReactNode;
@@ -18,24 +20,32 @@ export const UserContext = createContext<UserContextTypes>({
   setPermissions: () => {},
   settings: {},
   setSettings: () => {},
+  userRole: '',
+  getUserRole: () => '',
 })
 
 function UserContextProvider({ children }: UserContextProviderTypes){
   const [permissions, setPermissions] = useState(null);
   const [settings, setSettings] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
+
+  function getUserRole(){
+    return userRole;
+  }
 
   useEffect(() => {
     if(token){
       async function getUserData(token: string){
         try{
           const userData = await fetchData(token, 'user/data');
-          console.log(userData.settings);
+          console.log(userData);
           setPermissions(userData.permissions || null);
           setSettings(userData.settings || null);
+          setUserRole(userData.role || null);
         } catch(error){
           console.log(error)
         }
@@ -47,17 +57,13 @@ function UserContextProvider({ children }: UserContextProviderTypes){
   function handleUpdateUserPermissions(){
 
   }
+  function handleUpdateUserSettings(){
+
+  }
 
   useEffect(() => {
     betterConsoleLog('> Logging defaults from user context', settings?.defaults);
   }, [settings?.defaults?.listProductsBy]);
-
-  // Saljemo celokupan user settings
-  // Na backendu poredim svaki field i update
-  // Save - Done
-  function handleUpdateUserSettings(){
-
-  }
 
   useEffect(() => {
     if(socket) {
@@ -76,7 +82,9 @@ function UserContextProvider({ children }: UserContextProviderTypes){
     setPermissions,
     settings,
     setSettings,
-  }), [permissions, settings]);
+    userRole,
+    getUserRole,
+  }), [permissions, settings, userRole]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }

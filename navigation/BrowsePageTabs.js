@@ -4,10 +4,12 @@ import AddItem from '../screens/ProductsManager/AddProduct/AddItem';
 import NewOrder from '../screens/Home/newOrder/NewOrder';
 import { Colors } from '../constants/colors';
 import { Dimensions } from 'react-native';
+import { useGetAppColors } from '../constants/useGetAppColors';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function BrowsePageTabs(){
+  const Colors = useGetAppColors();
   /**
    * Main TAB navigation | The sliding windows
    */
@@ -19,10 +21,10 @@ export default function BrowsePageTabs(){
       screenOptions={{  
         tabBarLabelStyle: { 
           fontSize: 11,
-          color: Colors.secondaryDark
+          color: Colors.primaryDark
         },
         tabBarStyle: { 
-          backgroundColor: Colors.secondaryLight,
+          backgroundColor: Colors.tabsBackground,
           
         },
         tabBarIndicatorStyle: {

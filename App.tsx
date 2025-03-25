@@ -4,7 +4,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { AuthContext } from './store/auth-context';
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import ContextProvider from './store/ContextProvider';
 import { PopupMessagesComponent } from './util-components/PopupMessage';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
@@ -12,28 +12,27 @@ import AuthStack from './navigation/AuthStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
 import { LogBox } from 'react-native';
 import { betterConsoleLog } from './util-methods/LogMethods';
+import { usePushNotifications } from './hooks/usePushNotifications';
 
 // Suppresses the VirtualizedList nesting warning
-LogBox.ignoreLogs([
-  'VirtualizedLists should never be nested inside plain ScrollViews', 
-]);
+LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
 
 /**
  * Handles different Navigation Stack based on isAuthenticated flag in the context
  * Itterates between AuthStack & AuthenticatedStack
  */
-function Navigation(){
+function Navigation() {
   const authCtx = useContext(AuthContext);
   betterConsoleLog('> Logging is Authenticated', authCtx.isAuthenticated);
 
   return (
-      <NavigationContainer>
-        {!authCtx.isAuthenticated && <AuthStack/>}
-        {authCtx.isAuthenticated && <AuthenticatedStack/>}
-      </NavigationContainer>
-  )
+    <NavigationContainer>
+      {!authCtx.isAuthenticated && <AuthStack />}
+      {authCtx.isAuthenticated && <AuthenticatedStack />}
+    </NavigationContainer>
+  );
 }
-function Root(){
+function Root() {
   /**
    * Makes the native splash screen remain visible until hideAsync is called.
    */
@@ -47,13 +46,13 @@ function Root(){
    * No token => Logout user
    */
   useEffect(() => {
-    async function getToken(){
+    async function getToken() {
       const token = await AsyncStorage.getItem('token');
-      if(token){
+      if (token) {
         authCtx.authenticate(token);
         // if(authCtx.verifyToken(token)){
         // } else {
-          // authCtx.logout();
+        // authCtx.logout();
         // }
       } else {
         authCtx.logout();
@@ -63,13 +62,13 @@ function Root(){
     }
 
     getToken();
-  }, [authCtx])
+  }, [authCtx]);
 
   /**
    * Hide spash screen on app load
    */
-  const onLayoutRootView = useCallback(async() => {
-    if(!isCheckingToken){
+  const onLayoutRootView = useCallback(async () => {
+    if (!isCheckingToken) {
       // This tells the splash screen to hide immediately! If we call this after
       // `setAppIsReady`, then we may see a blank screen while the app is
       // loading its initial state and rendering its first pixels. So instead,
@@ -81,23 +80,28 @@ function Root(){
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <PopupMessagesComponent/>
+      <PopupMessagesComponent />
       <Navigation />
     </View>
-  )
+  );
 }
 
 export default function App() {
+  const { expoPushToken, notification } = usePushNotifications();
+  const data = JSON.stringify(notification, undefined, 2);
   const networkStatus = useNetworkStatus();
 
   return (
     <>
+      <Text></Text>
+      <Text></Text>
+      <Text></Text>
+      <Text>Token: {expoPushToken?.data ?? ''}</Text>
+      <Text>Data: {data}</Text>
       <StatusBar style="light" />
       <ContextProvider>
-          <Root/>
+        <Root />
       </ContextProvider>
     </>
   );
 }
-
-

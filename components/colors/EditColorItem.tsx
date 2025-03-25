@@ -5,8 +5,9 @@ import Button from '../../util-components/Button'
 import IconButton from '../../util-components/IconButton'
 import { AuthContext } from '../../store/auth-context'
 import { popupMessage } from '../../util-components/PopupMessage'
-import { ColorTypes } from '../../types/allTsTypes'
+import { AppColors, ColorTypes } from '../../types/allTsTypes'
 import Constants from 'expo-constants';
+import { useGetAppColors } from '../../constants/useGetAppColors'
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function EditColorItem({ data }: { data: ColorTypes }) {
@@ -21,6 +22,8 @@ function EditColorItem({ data }: { data: ColorTypes }) {
   const [success, setSucces] = useState('');
   const [error, setError] = useState('');
   const [display, setDisplay] = useState(true);
+  const Colors = useGetAppColors();
+  const styles = getStyles(Colors);
 
   // Resets Error & Success 
   function resetNotifications(){
@@ -138,14 +141,14 @@ function EditColorItem({ data }: { data: ColorTypes }) {
           <View style={styles.buttons}>
             <Button 
               onPress={showEditColorHandler}
-              textColor={Colors.primaryLight}
-              backColor={Colors.error}
+              textColor={Colors.whiteText}
+              backColor={Colors.deleteButton}
             >Otkazi</Button>
             <Button 
               onPress={updateColorHandler}
-              textColor={Colors.primaryLight}
+              textColor={Colors.whiteText}
               backColor={Colors.primaryDark}
-            >Sacuvaj</Button>
+            >Sačuvaj</Button>
           </View>
           {error && (
             <Text style={styles.error}>{error}</Text>
@@ -160,7 +163,7 @@ function EditColorItem({ data }: { data: ColorTypes }) {
           <IconButton
             icon='delete'
             onPress={removeColorHandler}
-            color={Colors.error}
+            color={Colors.deleteButton}
             style={styles.deleteIcon}
             size={26}
           />
@@ -170,57 +173,60 @@ function EditColorItem({ data }: { data: ColorTypes }) {
   )
 }
 
-const styles = StyleSheet.create({
-  colorItem: {
-    padding: 14,
-    paddingHorizontal: 25,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    backgroundColor: 'white',
-    marginBottom: 1,
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center'
-  },
-  deleteIcon: {
-    marginLeft: 'auto',
-    paddingHorizontal: 8,
-  },
-  displayColor: {
-    flexDirection: 'row',
-    flex: 1,
-    alignItems: 'center',
-  },
-  colorText: {
-    fontSize: 16,
-  },
-  mainInputsContainer: {
-    width: '100%',
-    flexDirection: 'column',
-  },
-  input: {
-    borderBottomColor: Colors.primaryDark,
-    borderBottomWidth: 1,
-    flex: 1,
-    marginBottom: 10, 
-    fontSize: 16,
-  },
-  buttons: {
-    flexDirection: 'row',
-    maxWidth: '50%',
-    justifyContent: 'space-between',
-    gap: 10,
-  },
-  error: {
-    marginTop: 8,
-    color: Colors.error,
-    textAlign: 'center',
-  },
-  success: {
-    marginTop: 8,
-    color: Colors.success,
-    textAlign: 'center'
-  }
-})
+function getStyles(Colors: AppColors){
+  return StyleSheet.create({
+    colorItem: {
+      padding: 14,
+      paddingHorizontal: 25,
+      borderBottomWidth: 1,
+      borderBottomColor: '#cccccc',
+      backgroundColor: Colors.buttonBackground,
+      marginBottom: 1,
+      flexDirection: 'row',
+      gap: 20,
+      alignItems: 'center'
+    },
+    deleteIcon: {
+      marginLeft: 'auto',
+      paddingHorizontal: 8,
+    },
+    displayColor: {
+      flexDirection: 'row',
+      flex: 1,
+      alignItems: 'center',
+    },
+    colorText: {
+      fontSize: 16,
+      color: Colors.defaultText,
+    },
+    mainInputsContainer: {
+      width: '100%',
+      flexDirection: 'column',
+    },
+    input: {
+      borderBottomColor: Colors.primaryDark,
+      borderBottomWidth: 1,
+      flex: 1,
+      marginBottom: 10, 
+      fontSize: 16,
+    },
+    buttons: {
+      flexDirection: 'row',
+      maxWidth: '50%',
+      justifyContent: 'space-between',
+      gap: 10,
+    },
+    error: {
+      marginTop: 8,
+      color: Colors.error,
+      textAlign: 'center',
+    },
+    success: {
+      marginTop: 8,
+      color: Colors.success,
+      textAlign: 'center'
+    }
+  });
+}
 
 export default EditColorItem

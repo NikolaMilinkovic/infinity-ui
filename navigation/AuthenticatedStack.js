@@ -1,7 +1,7 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { View, Image, Pressable, StyleSheet } from 'react-native';
 import { CustomDrawerContent } from './DrawerNavigation';
-import { Colors } from '../constants/colors';
+// import { Colors } from '../constants/colors';
 import { useNavigation } from '@react-navigation/native';
 import UserManager from '../screens/UserManager/UserManager';
 import Settings from '../screens/Settings/Settings';
@@ -21,6 +21,7 @@ import { useAuthContext } from '../hooks/useAuthContext';
 import { betterConsoleLog } from '../util-methods/LogMethods';
 import { AppColors } from '../types/allTsTypes';
 import { useGetAppColors } from '../constants/useGetAppColors';
+import AdminDashboardTabs from './AdminDashboardTabs';
 
 
 const Drawer = createDrawerNavigator();
@@ -28,7 +29,7 @@ const Drawer = createDrawerNavigator();
 export default function AuthenticatedStack() {
   const navigation = useNavigation();
   const authCtx = useAuthContext();
-  const TestColors = useGetAppColors();
+  const Colors = useGetAppColors();
   useEffect(() => {
     betterConsoleLog('> Logging auth ctx', authCtx);
     initializeAuthContext(authCtx);
@@ -61,9 +62,7 @@ export default function AuthenticatedStack() {
       width: '80%',
     },
     headerStyle: {
-      // backgroundColor: Colors.primaryDark,
-      backgroundColor: TestColors.primaryDark,
-      // backgroundColor: '#181C14',
+      backgroundColor: Colors.primaryDark,
     },
     drawerActiveTintColor: Colors.defaultText,
     drawerInactiveTintColor: Colors.defaultText
@@ -117,6 +116,12 @@ export default function AuthenticatedStack() {
           )}
         </Drawer.Screen>
 
+      {/* ADMIN DASHBOARD */}
+      {/* {authCtx.} */}
+      <Drawer.Screen 
+        name="AdminDashboardTabs" 
+        component={AdminDashboardTabs} 
+      />
 
       {/* USERMANAGER */}
       <Drawer.Screen 

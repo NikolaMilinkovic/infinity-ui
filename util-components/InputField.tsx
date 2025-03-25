@@ -6,8 +6,8 @@ import { Colors } from '../constants/colors';
 interface InputFieldProps {
   label?: string | null;
   isSecure?: boolean;
-  inputText: string | number | undefined;
-  setInputText: (text: string | number | undefined) => void;
+  inputText: any;
+  setInputText: (text: any) => void;
   capitalize?: 'sentences' | 'none' | 'words' | 'characters';
   background?: string;
   color?: string;

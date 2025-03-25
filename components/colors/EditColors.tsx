@@ -3,12 +3,15 @@ import { ColorsContext } from '../../store/colors-context';
 import { View, StyleSheet, Text, FlatList } from 'react-native'
 import EditColorItem from './EditColorItem';
 import { Colors } from '../../constants/colors';
-import { ColorType } from '../../types/allTsTypes';
+import { AppColors, ColorType } from '../../types/allTsTypes';
+import { useGetAppColors } from '../../constants/useGetAppColors';
 
 function EditColors() {
   const colorsCtx = useContext(ColorsContext);  
   const [colors, setColors] = useState<ColorType[]>([]);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
+  const Colors = useGetAppColors();
+  const styles = getStyles(Colors);
 
   useEffect(() => {
     const fetchColors = async () => {
@@ -64,24 +67,27 @@ function EditColors() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: Colors.primaryLight,
-  },
-  list: {
-    flex: 1,
-  },
-  listContent: {
-    paddingBottom: 20,
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    padding: 10,
-    backgroundColor: 'white',
-  }
-})
+function getStyles(Colors: AppColors){
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: Colors.primaryLight,
+    },
+    list: {
+      flex: 1,
+    },
+    listContent: {
+      paddingBottom: 20,
+    },
+    header: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      padding: 10,
+      backgroundColor: Colors.buttonBackground,
+      color: Colors.defaultText
+    }
+  });
+}
 
 export default EditColors

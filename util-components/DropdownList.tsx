@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Colors } from '../constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { betterConsoleLog } from '../util-methods/LogMethods';
+import { AppColors } from '../types/allTsTypes';
+import { useGetAppColors } from '../constants/useGetAppColors';
 
 // GitHub Repo & Documentation | Examples
 // https://github.com/AdelRedaa97/react-native-select-dropdown/tree/master
@@ -33,8 +34,10 @@ const DropdownList = ({
   buttonTextStyles,
  }: DropdownPropTypes) => {
   
+  const styles = getStyles(useGetAppColors());
   const [dropdownData, setDropdownData] = useState<any[]>([]);
   const [defaultVal, setDefaultVal] = useState(['']);
+  const Colors = useGetAppColors();
   useEffect(() => {
     setDropdownData(data || []);
 
@@ -68,6 +71,7 @@ const DropdownList = ({
         data={dropdownData}
         defaultValueByIndex={defaultValueByIndex} // use default value by index or default value
         defaultValue={defaultVal} // use default value by index or default value
+        dropdownOverlayColor={"rgba(0, 0, 0, 0.8)"}
         
         // WHEN SELECTED
         onSelect={(selectedItem, index) => {
@@ -90,7 +94,7 @@ const DropdownList = ({
             <View
               style={{
                 ...styles.dropdownItemStyle,
-                ...(isSelected && {backgroundColor: Colors.secondaryHighlight, color: Colors.highlight}),
+                ...(isSelected && {backgroundColor: Colors.dropdownSelectedBackground, color: Colors.highlight}),
               }}>
                 {/* <Text>{index + 1}</Text> */}
               <Text style={styles.dropdownItemTxtStyle}>{item?.name || item?.value || 'ERROR'}</Text>
@@ -100,11 +104,11 @@ const DropdownList = ({
         dropdownStyle={styles.dropdownMenuStyle}
         search
         searchInputStyle={styles.dropdownSearchInputStyle}
-        searchInputTxtColor={Colors.primaryLight}
+        searchInputTxtColor={Colors.whiteText}
         searchPlaceHolder={'Pretraži'}
-        searchPlaceHolderColor={Colors.secondaryLight}
+        searchPlaceHolderColor={Colors.whiteText}
         renderSearchInputLeftIcon={() => {
-          return <FontAwesome name={'search'} color={Colors.secondaryLight} size={18} />;
+          return <FontAwesome name={'search'} color={Colors.whiteText} size={18} />;
         }}
       />
     );
@@ -113,61 +117,62 @@ const DropdownList = ({
 
 export default DropdownList;
 
-const styles = StyleSheet.create({
-  dropdownButtonStyle: {
-    height: 50,
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 22,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    marginTop: 0,
-  },
-  dropdownButtonTxtStyle: {
-    flex: 1,
-    fontSize: 16,
-    color: Colors.primaryDark,
-  },
-  dropdownMenuStyle: {
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    maxHeight: 250,
-  },
-  dropdownSearchInputStyle: {
-    backgroundColor: Colors.secondaryDark,
-    borderRadius: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.secondaryLight,
-  },
-  dropdownItemStyle: {
-    width: '100%',
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.secondaryLight,
-  },
-  dropdownItemTxtStyle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.primaryDark,
-    textAlign: 'center',
-  },
-  dropdownItemIconStyle: {
-    fontSize: 28,
-    marginRight: 8,
-  },
-  dropdown1ButtonArrowStyle: {
-    alignSelf: 'center',
-    justifyContent: 'center',
-    color: Colors.primaryDark,
-    height: 20,
-    width: 20,
-  }
-});
+function getStyles(Colors: AppColors){
+  return StyleSheet.create({
+    dropdownButtonStyle: {
+      height: 50,
+      borderRadius: 4,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 22,
+      borderWidth: 0.5,
+      borderColor: Colors.primaryDark,
+      marginTop: 0,
+    },
+    dropdownButtonTxtStyle: {
+      flex: 1,
+      fontSize: 16,
+      color: Colors.primaryDark,
+    },
+    dropdownMenuStyle: {
+      backgroundColor: Colors.primaryLight,
+      borderRadius: 4,
+      maxHeight: 250,
+    },
+    dropdownSearchInputStyle: {
+      backgroundColor: Colors.primaryDark,
+      borderRadius: 4,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.borders,
+    },
+    dropdownItemStyle: {
+      width: '100%',
+      flexDirection: 'row',
+      paddingHorizontal: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.secondaryLight,
+    },
+    dropdownItemTxtStyle: {
+      flex: 1,
+      fontSize: 18,
+      fontWeight: '400',
+      color: Colors.defaultText,
+      textAlign: 'center',
+    },
+    dropdownItemIconStyle: {
+      fontSize: 28,
+      marginRight: 8,
+    },
+    dropdown1ButtonArrowStyle: {
+      alignSelf: 'center',
+      justifyContent: 'center',
+      color: Colors.defaultText,
+      height: 20,
+      width: 20,
+    }
+  });
+}

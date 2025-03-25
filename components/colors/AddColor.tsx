@@ -3,15 +3,18 @@ import { View, StyleSheet, Text } from 'react-native';
 import { AuthContext } from '../../store/auth-context';
 import InputField from '../../util-components/InputField';
 import Button from '../../util-components/Button';
-import { Colors } from '../../constants/colors';
 import { popupMessage } from '../../util-components/PopupMessage';
 import Constants from 'expo-constants';
+import { useGetAppColors } from '../../constants/useGetAppColors';
+import { AppColors } from '../../types/allTsTypes';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function AddColor() {
   const authCtx = useContext(AuthContext);
   const [inputText, setInputText] = useState<string>('')
   const [error, setError] = useState<string>('')
+  const Colors = useGetAppColors();
+  const styles = getStyles(useGetAppColors());
   
   function resetInputAndError(){
     setInputText('');
@@ -75,8 +78,8 @@ function AddColor() {
             inputText={inputText}
             setInputText={setInputText}
             background={Colors.primaryLight}
-            color={Colors.primaryDark}
-            activeColor={Colors.secondaryDark}
+            color={Colors.defaultText}
+            activeColor={Colors.highlight}
             labelBorders={false}
           />
         </View>
@@ -97,35 +100,37 @@ function AddColor() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderColor: Colors.primaryDark,
-    borderWidth: 0.5,
-    paddingVertical: 16,
-    backgroundColor: Colors.primaryLight
-  },
-  controllsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    gap: 16,
-    paddingHorizontal: 16,
-  },
-  inputContainer: {
-    flex: 0.6
-  },
-  buttonContainer: {
-    flex: 0.4,
-  },
-  error: {
-    color: Colors.error,
-    marginTop: 10,
-  },
-  success: {
-    color: Colors.success,
-    marginTop: 10,
-  }
-})
+function getStyles(Colors: AppColors){
+  return StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      borderColor: Colors.primaryDark,
+      borderWidth: 0.5,
+      paddingVertical: 16,
+      backgroundColor: Colors.primaryLight
+    },
+    controllsContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '100%',
+      gap: 16,
+      paddingHorizontal: 16,
+    },
+    inputContainer: {
+      flex: 0.6
+    },
+    buttonContainer: {
+      flex: 0.4,
+    },
+    error: {
+      color: Colors.error,
+      marginTop: 10,
+    },
+    success: {
+      color: Colors.success,
+      marginTop: 10,
+    }
+  });
+}
 
 export default AddColor

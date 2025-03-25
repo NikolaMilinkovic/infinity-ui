@@ -3,7 +3,7 @@
     "name": "Infinity Boutique App",
     "slug": "infinity-boutique-app",
     "backgroundColor": "#ffffff",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +24,8 @@
     "ios": {
       "supportsTablet": true,
       "backgroundColor": "#ffffff",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.0.0",
+      "bundleIdentifier": "com.infinity.infinityboutiqueapp"
     },
     "android": {
       "backgroundColor": "#ffffff",

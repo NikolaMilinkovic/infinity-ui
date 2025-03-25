@@ -339,4 +339,13 @@ export interface AppColors {
 
   buttonBackground: string;
   borders: string;
+  navText: string;
+
+  deleteButton: string;
+
+  // dropdown
+  dropdownSelectedBackground: string;
+
+  // nav
+  tabsBackground: string;
 }

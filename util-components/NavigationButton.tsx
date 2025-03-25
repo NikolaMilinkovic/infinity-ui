@@ -7,11 +7,12 @@ interface ButtonChildrenTypes {
   onPress: () => void
   icon: string | undefined
   color: string | undefined
+  backgroundColor?: any
   size: number | undefined
   text: string | undefined
   type: 'Ant' | 'Ionicons' | 'MaterialIcons' | 'MaterialCommunityIcons'
 }
-const NavigationButton: React.FC<ButtonChildrenTypes> = ({ onPress, icon, color, size=20, text, type='Ant' }) => {
+const NavigationButton: React.FC<ButtonChildrenTypes> = ({ onPress, icon, color, size=20, text, type='Ant', backgroundColor }) => {
   const styles = getStyles(size, color);
   let Icon:any;
 
@@ -32,7 +33,7 @@ const NavigationButton: React.FC<ButtonChildrenTypes> = ({ onPress, icon, color,
   return (
     <Pressable 
       onPress={onPress} 
-      style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.pressable, {backgroundColor: backgroundColor}, pressed && styles.pressed]}
       android_ripple={{ color: Colors.secondaryLight }}  
     >
       <View style={styles.container}>
@@ -48,7 +49,9 @@ function getStyles(size:number|undefined, color:string|undefined){
     StyleSheet.create({
       pressable: {
         padding: 10,
-        paddingLeft: 36
+        paddingLeft: 36,
+        borderTopRightRadius: 8,
+        borderBottomRightRadius: 8,
       },
       pressed: {
         opacity: Platform.OS === 'ios' ? 0.7 : 1,
@@ -57,7 +60,7 @@ function getStyles(size:number|undefined, color:string|undefined){
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        gap: 20
+        gap: 20,
       },
       text: {
         fontSize: size,

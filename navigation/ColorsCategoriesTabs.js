@@ -1,12 +1,13 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { Colors } from '../constants/colors';
 import ColorsManager from '../screens/ColorsManager/ColorsManager';
 import CategoriesManager from '../screens/CategoriesManager/CategoriesManager';
 import SuppliersManager from '../screens/SuppliersManager/SuppliersManager';
+import { useGetAppColors } from '../constants/useGetAppColors';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function ColorsCategoriesTabs(){
+  const Colors = useGetAppColors();
 
   /**
    * BOJE, KATEGORIJE i DOBAVLJAČI tabovi
@@ -15,10 +16,10 @@ export default function ColorsCategoriesTabs(){
     <Tab.Navigator screenOptions={{
       tabBarLabelStyle: { 
         fontSize: 11,
-        color: Colors.secondaryDark
+        color: Colors.primaryDark
       },
       tabBarStyle: { 
-        backgroundColor: Colors.secondaryLight,
+        backgroundColor: Colors.tabsBackground,
         
       },
       tabBarIndicatorStyle: {

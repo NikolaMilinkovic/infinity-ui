@@ -32,6 +32,16 @@ export function useGetAppColors(): AppColors{
     // components
     buttonBackground: '#FFFFFF',
     borders: '#012340',
+    navTextNormal: '#012340',
+    selectedNavText: '#FFFFFF',
+    selectedNavBackground: '#012340',
+    deleteButton: '#FF4D5E',
+
+    // dropdown
+    dropdownSelectedBackground: '#FFE4E4',
+
+    // nav
+    tabsBackground: '#C5D5D9'
   }
   const dark = {
     // Slightly yellow white '#F8F1E5'
@@ -62,6 +72,16 @@ export function useGetAppColors(): AppColors{
     // components
     buttonBackground: '#697565',
     borders: '#BDBDBD',
+    navTextNormal: '#FFFFFF',
+    selectedNavText: '#FFFFFF',
+    selectedNavBackground: '#697565',
+    deleteButton: '#C28E8E',
+
+    // dropdown
+    dropdownSelectedBackground: '#697565',
+
+    // nav
+    tabsBackground: '#C5D5D9'
   }
 
   let userCtx = {settings:{defaults:{theme: 'light'}}};
