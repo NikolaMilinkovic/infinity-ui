@@ -91,13 +91,12 @@ export default function App() {
   const data = JSON.stringify(notification, undefined, 2);
   const networkStatus = useNetworkStatus();
 
+  useEffect(() => {
+    console.log(`> PUSH TOKEN: ${expoPushToken?.data}`);
+    console.log(`> DATA: ${data}`);
+  }, [expoPushToken?.data, data]);
   return (
     <>
-      <Text></Text>
-      <Text></Text>
-      <Text></Text>
-      <Text>Token: {expoPushToken?.data ?? ''}</Text>
-      <Text>Data: {data}</Text>
       <StatusBar style="light" />
       <ContextProvider>
         <Root />
