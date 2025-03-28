@@ -1,5 +1,5 @@
-import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 import { useEffect } from 'react';
+import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 export const useFadeTransition = (isVisible: boolean, duration = 500) => {
   const opacity = useSharedValue(0);
@@ -23,11 +23,11 @@ export const useFadeTransitionReversed = (isVisible: boolean, duration = 500, de
   useEffect(() => {
     const timeout = setTimeout(() => {
       opacity.value = withTiming(isVisible ? 0 : 1, { duration });
-    }, delay)
+    }, delay);
 
     return () => {
       clearTimeout(timeout);
-    }
+    };
   }, [isVisible, duration]);
 
   const animatedStyle = useAnimatedStyle(() => {

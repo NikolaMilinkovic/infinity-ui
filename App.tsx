@@ -88,13 +88,13 @@ function Root() {
 
 export default function App() {
   const { expoPushToken, notification } = usePushNotifications();
-  const data = JSON.stringify(notification, undefined, 2);
   const networkStatus = useNetworkStatus();
 
-  useEffect(() => {
-    console.log(`> PUSH TOKEN: ${expoPushToken?.data}`);
-    console.log(`> DATA: ${data}`);
-  }, [expoPushToken?.data, data]);
+  // const data = JSON.stringify(notification, undefined, 2);
+  // useEffect(() => {
+  //   console.log(`> PUSH TOKEN: ${expoPushToken?.data}`);
+  //   console.log(`> DATA: ${data}`);
+  // }, [expoPushToken?.data, data]);
   return (
     <>
       <StatusBar style="light" />
