@@ -33,8 +33,7 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# android
-/android
-
 .vscode/
 /.vscode
+
+app.config.js

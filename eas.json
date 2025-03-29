@@ -17,7 +17,9 @@
       },
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_BACKEND_URI": "https://infinity-server-b8ecd56d9909.herokuapp.com"
+        "EXPO_PUBLIC_BACKEND_URI": "https://infinity-server-b8ecd56d9909.herokuapp.com",
+        "GOOGLE_SERVICES_FILE": "./android/app/google-services.json",
+        "EAS_PROJECT_ID": "426b99c7-d15c-4c36-bce4-daf8890090a4"
       }
     },
     "production": {
@@ -29,7 +31,9 @@
       },
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_BACKEND_URI": "https://infinity-server-b8ecd56d9909.herokuapp.com"
+        "EXPO_PUBLIC_BACKEND_URI": "https://infinity-server-b8ecd56d9909.herokuapp.com",
+        "GOOGLE_SERVICES_FILE": "./android/app/google-services.json",
+        "EAS_PROJECT_ID": "426b99c7-d15c-4c36-bce4-daf8890090a4"
       }
     }
   },

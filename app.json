@@ -3,7 +3,7 @@
     "name": "Infinity Boutique App",
     "slug": "infinity-boutique-app",
     "backgroundColor": "#ffffff",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -53,7 +53,8 @@
     "extra": {
       "eas": {
         "projectId": "426b99c7-d15c-4c36-bce4-daf8890090a4"
-      }
+      },
+      "EXPO_PUBLIC_BACKEND_URI": "https://infinity-server-b8ecd56d9909.herokuapp.com"
     }
   }
 }
