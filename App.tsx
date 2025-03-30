@@ -1,18 +1,16 @@
-import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { AuthContext } from './store/auth-context';
-import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, View } from 'react-native';
-import ContextProvider from './store/ContextProvider';
-import { PopupMessagesComponent } from './util-components/PopupMessage';
+import { NavigationContainer } from '@react-navigation/native';
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { LogBox, View } from 'react-native';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import AuthStack from './navigation/AuthStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
-import { LogBox } from 'react-native';
+import ContextProvider from './store/ContextProvider';
+import { AuthContext } from './store/auth-context';
+import { PopupMessagesComponent } from './util-components/PopupMessage';
 import { betterConsoleLog } from './util-methods/LogMethods';
-import { usePushNotifications } from './hooks/usePushNotifications';
 
 // Suppresses the VirtualizedList nesting warning
 LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
@@ -87,7 +85,7 @@ function Root() {
 }
 
 export default function App() {
-  const { expoPushToken, notification } = usePushNotifications();
+  // const { expoPushToken, notification } = usePushNotifications();
   const networkStatus = useNetworkStatus();
 
   // const data = JSON.stringify(notification, undefined, 2);

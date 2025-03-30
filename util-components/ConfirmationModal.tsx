@@ -1,55 +1,62 @@
 // ConfirmationModal.js
 import React from 'react';
-import { Animated, Modal, View, Text, StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
+import { Animated, Image, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { Colors } from '../constants/colors';
 import Button from './Button';
 
 interface ConfirmModalTypes {
-  isVisible: boolean
-  onConfirm: ()=>void
-  onConfirmBtnText?: string
-  onCancel: ()=>void
-  onCancelBtnText?: string
-  message: string
+  isVisible: boolean;
+  onConfirm: () => void;
+  onConfirmBtnText?: string;
+  onCancel: () => void;
+  onCancelBtnText?: string;
+  message: string;
 }
 
-function ConfirmationModal({ isVisible, onConfirm, onConfirmBtnText = 'Nastavi', onCancel, onCancelBtnText = 'Odustani', message }: ConfirmModalTypes) {
+function ConfirmationModal({
+  isVisible,
+  onConfirm,
+  onConfirmBtnText = 'Nastavi',
+  onCancel,
+  onCancelBtnText = 'Odustani',
+  message,
+}: ConfirmModalTypes) {
   return (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isVisible}
-        onRequestClose={onCancel}
-      >
+    <Modal animationType="slide" transparent={true} visible={isVisible} onRequestClose={onCancel}>
       <TouchableWithoutFeedback onPress={onCancel}>
         <Animated.View style={styles.modalContainer}>
           <TouchableWithoutFeedback onPress={() => {}}>
-              <View style={styles.modalContent}>
+            <View style={styles.modalContent}>
+              {/* IMAGE */}
+              <Image source={require('../assets/infinity.png')} resizeMode="contain" style={styles.image} />
 
-                {/* IMAGE */}
-                <Image source={require('../assets/infinity.png')} resizeMode="contain" style={styles.image} />
+              {/* TEXT */}
+              <Text style={styles.modalText}>
+                {message || 'Da li sigurno želiš da nastaviš dalje sa ovom akcijom?'}
+              </Text>
 
-                {/* TEXT */}
-                <Text style={styles.modalText}>{message || 'Da li sigurno želiš da nastaviš dalje sa ovom akcijom?'}</Text>
-
-                {/* BUTTONS */}
-                <View style={styles.buttonContainer}>
-                  <Button
-                    containerStyles={styles.button}
-                    textStyles={styles.buttonText}
-                    backColor={Colors.primaryDark}
-                    textColor={Colors.white}
-                    onPress={onConfirm}
-                  >{onConfirmBtnText}</Button>
-                  <Button
-                    containerStyles={styles.button}
-                    textStyles={styles.buttonText}
-                    backColor={Colors.primaryDark}
-                    textColor={Colors.white}
-                    onPress={onCancel}
-                  >{onCancelBtnText}</Button>
-                </View>
+              {/* BUTTONS */}
+              <View style={styles.buttonContainer}>
+                <Button
+                  containerStyles={styles.button}
+                  textStyles={styles.buttonText}
+                  backColor={Colors.primaryDark}
+                  textColor={Colors.white}
+                  onPress={onCancel}
+                >
+                  {onCancelBtnText}
+                </Button>
+                <Button
+                  containerStyles={styles.button}
+                  textStyles={styles.buttonText}
+                  backColor={Colors.primaryDark}
+                  textColor={Colors.white}
+                  onPress={onConfirm}
+                >
+                  {onConfirmBtnText}
+                </Button>
               </View>
+            </View>
           </TouchableWithoutFeedback>
         </Animated.View>
       </TouchableWithoutFeedback>
@@ -70,7 +77,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 999
+    zIndex: 999,
   },
   modalContent: {
     width: 300,
@@ -83,7 +90,7 @@ const styles = StyleSheet.create({
     height: 80,
     borderBottomColor: Colors.primaryDark,
     borderBottomWidth: 0.5,
-    marginBottom: 10
+    marginBottom: 10,
   },
   modalText: {
     fontSize: 16,
@@ -100,7 +107,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 2,
-    height: 40
+    height: 40,
   },
   buttonText: {
     fontSize: 14,

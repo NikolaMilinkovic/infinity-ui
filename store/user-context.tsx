@@ -35,7 +35,7 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
-  const { expoPushToken, notification } = usePushNotifications();
+  const { expoPushToken } = usePushNotifications();
 
   function getUserRole() {
     return userRole;

@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
+import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 export interface PushNotificationState {
-  notification?: Notifications.Notification;
-  expoPushToken?: Notifications.ExpoPushToken;
+  notification?: Notifications.Notification | null;
+  expoPushToken?: Notifications.ExpoPushToken | null;
 }
 
 export const usePushNotifications = (): PushNotificationState => {
@@ -18,17 +18,17 @@ export const usePushNotifications = (): PushNotificationState => {
     }),
   });
 
-  const [expoPushToken, setExpoPushToken] = useState<Notifications.ExpoPushToken | undefined>();
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>();
+  const [expoPushToken, setExpoPushToken] = useState<Notifications.ExpoPushToken | null>(null);
+  const [notification, setNotification] = useState<Notifications.Notification | null>(null);
 
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
+  const notificationListener = useRef<Notifications.Subscription | null>(null);
+  const responseListener = useRef<Notifications.Subscription | null>(null);
 
   /**
    *  Handles registering for push notifications, request permission
-   *  @returns
+   *  @returns {Notifications.ExpoPushToken | null}
    */
-  async function registerForPushNotificationsAsync() {
+  async function registerForPushNotificationsAsync(): Promise<Notifications.ExpoPushToken | null> {
     let token;
     if (Device.isDevice) {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -43,6 +43,7 @@ export const usePushNotifications = (): PushNotificationState => {
       // Alert user | Stavi nasu notifikaciju
       if (finalStatus !== 'granted') {
         alert('> Failed to get push token');
+        return null;
       }
 
       token = await Notifications.getExpoPushTokenAsync({
@@ -61,6 +62,7 @@ export const usePushNotifications = (): PushNotificationState => {
       return token;
     } else {
       console.log('> Error: Please use a physical device to register for push notifications.');
+      return null;
     }
   }
 
@@ -68,6 +70,7 @@ export const usePushNotifications = (): PushNotificationState => {
     async function register() {
       const token = await registerForPushNotificationsAsync();
       setExpoPushToken(token);
+
       notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
         setNotification(notification);
       });
@@ -85,7 +88,7 @@ export const usePushNotifications = (): PushNotificationState => {
   }, []);
 
   return {
-    expoPushToken,
-    notification,
+    expoPushToken: expoPushToken ?? null,
+    notification: notification ?? null,
   };
 };

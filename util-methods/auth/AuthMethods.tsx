@@ -1,6 +1,5 @@
 import Constants from 'expo-constants';
 import { Alert } from 'react-native';
-import { usePushNotifications } from '../../hooks/usePushNotifications';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { handleFetchingWithBodyData } from '../FetchMethods';
 import { betterConsoleLog } from '../LogMethods';
@@ -11,6 +10,7 @@ const backendURI = Constants.expoConfig?.extra?.backendURI;
 interface LoginUserTypes {
   username: string;
   password: string;
+  expoPushToken: string | null;
 }
 interface LoginResponse {
   token?: string;
@@ -26,6 +26,7 @@ interface AuthStatus {
  * Sends a login request to the backend server and returns the authenticated status
  * @param {String} username
  * @param {String} password
+ * @param {String} expoPushToken
  * @returns {Object}
  * {
  *    isAuthenticated: boolean
@@ -33,7 +34,7 @@ interface AuthStatus {
  *    token: string
  * }
  */
-export async function loginUser({ username, password }: LoginUserTypes): Promise<AuthStatus> {
+export async function loginUser({ username, password, expoPushToken }: LoginUserTypes): Promise<AuthStatus> {
   try {
     const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/login`, {
       method: 'POST',
@@ -45,8 +46,6 @@ export async function loginUser({ username, password }: LoginUserTypes): Promise
         password,
       }),
     });
-
-    console.log('> Fetching complete..');
 
     // Parsing server response
     const parsedResponse: LoginResponse = await response.json();
@@ -69,7 +68,6 @@ export async function loginUser({ username, password }: LoginUserTypes): Promise
       };
 
       // Update expo push token in the DB if its not present
-      const { expoPushToken } = usePushNotifications();
       if (parsedResponse.token && expoPushToken?.data)
         await updateUserExpoPushToken(parsedResponse.token, expoPushToken?.data);
 
@@ -113,23 +111,3 @@ export async function updateUserExpoPushToken(token: string, expoPushToken: stri
     popupMessage('Došlo je do problema prilikom ažuriranja expo push tokena', 'danger');
   }
 }
-
-// export async function verifyUser(username: string, password: string, token: string){
-//   try{
-//     const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/verify-user`, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type' : 'application/json',
-//       },
-//       body: JSON.stringify({
-//         token,
-//         username,
-//         password,
-//       })
-//     });
-
-//     return false;
-//   } catch(error){
-//     console.error(`[ERROR] Failed to verify user: ` + error)
-//   }
-// }

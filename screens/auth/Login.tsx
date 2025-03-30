@@ -1,34 +1,36 @@
-import React, { useEffect, useState, useContext, useRef } from 'react'
-import InputField from '../../util-components/InputField'
-import { View, StyleSheet, Text, Image, Animated } from 'react-native'
-import Button from '../../util-components/Button'
-import { AuthContext } from '../../store/auth-context';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Animated, Image, StyleSheet, Text, View } from 'react-native';
 import LoadingOverlay from '../../components/loading/LoadingOverlay';
-import { loginUser } from '../../util-methods/auth/AuthMethods';
 import { Colors } from '../../constants/colors';
+import { usePushNotifications } from '../../hooks/usePushNotifications';
+import { AuthContext } from '../../store/auth-context';
+import Button from '../../util-components/Button';
+import InputField from '../../util-components/InputField';
+import { loginUser } from '../../util-methods/auth/AuthMethods';
 
 function Login() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
+  const { expoPushToken } = usePushNotifications();
   const authCtx = useContext(AuthContext);
   useEffect(() => {
-    if(username && password) setErrorMessage('');
-  }, [username, password])
+    if (username && password) setErrorMessage('');
+  }, [username, password]);
 
-    // Fade in animation
-    const fadeIn = useRef(new Animated.Value(0)).current;
-    useEffect(() => {
-      Animated.timing(fadeIn, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true
-      }).start();
-    }, []);
+  // Fade in animation
+  const fadeIn = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(fadeIn, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   // INTERFACES
-  interface LoginResultType{
+  interface LoginResultType {
     isAuthenticated: boolean;
     message: string;
     token: string;
@@ -37,83 +39,84 @@ function Login() {
   /**
    * Sends username & password to the server for authentication
    * Receives token from the server and calls auth-context > authenticate(token) method
-   * @param {String} username 
-   * @param {String} password 
+   * @param {String} username
+   * @param {String} password
+   * @param {String | null} expoPushToken
    * @returns {Promise<void>}
    */
-  async function loginUserHandler(username: string, password: string): Promise<void>{
-    if(!username || !password) {
+  async function loginUserHandler(
+    username: string,
+    password: string,
+    expoPushToken: string | null = null
+  ): Promise<void> {
+    if (!username || !password) {
       setErrorMessage('Invalid input, please provide a valid username & password.');
       return;
     }
     setIsAuthenticating(true);
 
-    try{
-      const result: LoginResultType = await loginUser({username, password});
+    try {
+      const result: LoginResultType = await loginUser({ username, password, expoPushToken });
 
-      if(result.isAuthenticated === false) failAuthHandler(result);
-      if(result.token === '') failAuthHandler(result);
+      if (result.isAuthenticated === false) failAuthHandler(result);
+      if (result.token === '') failAuthHandler(result);
 
       authCtx.authenticate(result.token);
-
-    } catch(err){
+    } catch (err) {
       setErrorMessage(`Issue logging in user: ${err}`);
       setIsAuthenticating(false);
     }
   }
 
-
-  
   /**
    * Handles updating the screen upon Authentication error
-   * @param {LoginResultType} result 
+   * @param {LoginResultType} result
    * @returns {void}
    */
-  function failAuthHandler(result: LoginResultType): void{
+  function failAuthHandler(result: LoginResultType): void {
     setErrorMessage(result.message || 'Authentication failed..');
     setIsAuthenticating(false);
     return;
   }
 
-  if(isAuthenticating){
-    return <LoadingOverlay message="Logging in.."/>
+  if (isAuthenticating) {
+    return <LoadingOverlay message="Logging in.." />;
   }
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeIn }]}>
-        <Image 
-          source={require('../../assets/infinity.png')}
-          style={styles.image}
-        />
+      <Image source={require('../../assets/infinity.png')} style={styles.image} />
       <View style={styles.inputsContainer}>
         <View style={styles.inputWrapper}>
           <InputField
-            label='Username'
+            label="Username"
             inputText={username}
             setInputText={setUsername}
-            capitalize='none'
+            capitalize="none"
             labelBorders={false}
           />
         </View>
         <View style={styles.inputWrapper}>
           <InputField
-            label='Password'
+            label="Password"
             isSecure={true}
             inputText={password}
             setInputText={setPassword}
-            capitalize='none'
+            capitalize="none"
             labelBorders={false}
           />
         </View>
         <Text style={styles.errorMessage}>{errorMessage}</Text>
       </View>
-      <Button 
-        onPress={() => loginUserHandler(username, password)}
+      <Button
+        onPress={() => loginUserHandler(username, password, expoPushToken?.data ?? '')}
         textColor={Colors.whiteText}
         backColor={Colors.primaryDark}
-      >Login</Button>
+      >
+        Login
+      </Button>
     </Animated.View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -132,18 +135,18 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     marginTop: 16,
-    width: '100%'
+    width: '100%',
   },
   errorMessage: {
     color: Colors.error,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   image: {
     maxHeight: 140,
-    aspectRatio: 16/9,
+    aspectRatio: 16 / 9,
     resizeMode: 'contain',
-    marginBottom: 24
-  }
-})
+    marginBottom: 24,
+  },
+});
 
-export default Login
+export default Login;
