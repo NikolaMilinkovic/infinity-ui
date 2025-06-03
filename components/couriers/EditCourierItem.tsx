@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native'
-import { Colors } from '../../constants/colors'
-import Button from '../../util-components/Button'
-import IconButton from '../../util-components/IconButton'
-import { AuthContext } from '../../store/auth-context'
-import { popupMessage } from '../../util-components/PopupMessage'
-import { CourierTypes } from '../../types/allTsTypes'
 import Constants from 'expo-constants';
+import React, { useContext, useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Colors } from '../../constants/colors';
+import { AuthContext } from '../../store/auth-context';
+import { CourierTypes } from '../../types/allTsTypes';
+import Button from '../../util-components/Button';
+import IconButton from '../../util-components/IconButton';
+import { popupMessage } from '../../util-components/PopupMessage';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function EditCourierItem({ data }: { data: CourierTypes }) {
@@ -15,7 +15,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
     name: '',
     deliveryPrice: 0,
   });
-  const [newName, setNewName] = useState('')
+  const [newName, setNewName] = useState('');
   const [deliveryPrice, setDeliveryPrice] = useState<number>();
   const [showEdit, setShowEdit] = useState<Boolean>(false);
   const authCtx = useContext(AuthContext);
@@ -23,24 +23,24 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
   const [error, setError] = useState('');
   const [display, setDisplay] = useState(true);
 
-  // Resets Error & Success 
-  function resetNotifications(){
+  // Resets Error & Success
+  function resetNotifications() {
     setSucces('');
     setError('');
   }
 
   // Toggler
-  function showEditCourierHandler(){
-    setNewName(data.name)
-    setDeliveryPrice(data.deliveryPrice)
+  function showEditCourierHandler() {
+    setNewName(data.name);
+    setDeliveryPrice(data.deliveryPrice);
     setShowEdit(!showEdit);
   }
 
   // On input text change
   function handleNameChange(newName: string) {
-    setNewName(newName)
+    setNewName(newName);
   }
-  function handlePriceChange(newPrice: string){
+  function handlePriceChange(newPrice: string) {
     const price = newPrice.replace(/[^0-9.]/g, '');
     setDeliveryPrice(Number(price));
   }
@@ -48,25 +48,24 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
   // Set default data to read from
   useEffect(() => {
     setCourierData(data);
-    setNewName(data.name)
-    setDeliveryPrice(data.deliveryPrice)
-    console.log('Delivery price is:', data.deliveryPrice)
-  }, [data])
+    setNewName(data.name);
+    setDeliveryPrice(data.deliveryPrice);
+  }, [data]);
 
   // Updates the current color name in the database
-  async function updateCourierHandler(){
-    try{
+  async function updateCourierHandler() {
+    try {
       resetNotifications();
-      if(newName.trim() === data.name && deliveryPrice === data.deliveryPrice){
+      if (newName.trim() === data.name && deliveryPrice === data.deliveryPrice) {
         setShowEdit(false);
         return;
       }
-      if(newName.trim() === ''){
+      if (newName.trim() === '') {
         setError('Kurir mora imati ime!');
         popupMessage('Kurir mora imati ime', 'danger');
         return;
       }
-      if(!deliveryPrice){
+      if (!deliveryPrice) {
         setError('Kurir mora imati cenu dostave!');
         popupMessage('Kurir mora cenu dostave', 'danger');
         return;
@@ -74,15 +73,15 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/couriers/${courierData._id}`, {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${authCtx.token}`,
+          Authorization: `Bearer ${authCtx.token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           id: courierData._id,
           name: newName,
-          deliveryPrice: deliveryPrice
-        })
-      })
+          deliveryPrice: deliveryPrice,
+        }),
+      });
 
       if (!response.ok) {
         const parsedResponse = await response.json();
@@ -94,22 +93,22 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
       setSucces(parsedResponse.message);
       popupMessage(parsedResponse.message, 'success');
       setShowEdit(false);
-    } catch(error){
+    } catch (error) {
       console.error('Error updating the courier:', error);
     }
   }
 
   // Deletes the color from the database
-  async function removeCourierHandler(){
+  async function removeCourierHandler() {
     setDisplay(false);
-    try{
+    try {
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/couriers/${courierData._id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${authCtx.token}`,
+          Authorization: `Bearer ${authCtx.token}`,
           'Content-Type': 'application/json',
         },
-      })
+      });
 
       if (!response.ok) {
         const parsedResponse = await response.json();
@@ -120,59 +119,41 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
       }
 
       popupMessage(`Kurir je uspešno obrisan`, 'success');
-    } catch(error){
+    } catch (error) {
       console.error('Error deleting courier:', error);
     }
   }
 
-  if(display === false){
+  if (display === false) {
     return;
   }
 
-  if(courierData === null){
-    return (
-      <></>
-    )
+  if (courierData === null) {
+    return <></>;
   }
 
   return (
-    <Pressable 
-      style={styles.courierItem}
-      onPress={showEditCourierHandler}
-    >
+    <Pressable style={styles.courierItem} onPress={showEditCourierHandler}>
       {showEdit ? (
         <View style={styles.mainInputsContainer}>
-          <TextInput 
+          <TextInput style={styles.input} placeholder="Ime kurira" value={newName} onChangeText={handleNameChange} />
+          <TextInput
             style={styles.input}
-            placeholder='Ime kurira'
-            value={newName}
-            onChangeText={handleNameChange}
-          />
-          <TextInput 
-            style={styles.input}
-            placeholder='Cena dostave po paketu'
+            placeholder="Cena dostave po paketu"
             value={deliveryPrice?.toString() || ''}
             onChangeText={handlePriceChange}
-            keyboardType='numeric'
+            keyboardType="numeric"
           />
           <View style={styles.buttons}>
-            <Button 
-              onPress={showEditCourierHandler}
-              textColor={Colors.primaryLight}
-              backColor={Colors.error}
-            >Otkazi</Button>
-            <Button 
-              onPress={updateCourierHandler}
-              textColor={Colors.primaryLight}
-              backColor={Colors.primaryDark}
-            >Sacuvaj</Button>
+            <Button onPress={showEditCourierHandler} textColor={Colors.primaryLight} backColor={Colors.error}>
+              Otkazi
+            </Button>
+            <Button onPress={updateCourierHandler} textColor={Colors.primaryLight} backColor={Colors.primaryDark}>
+              Sacuvaj
+            </Button>
           </View>
-          {error && (
-            <Text style={styles.error}>{error}</Text>
-          )}
-          {success && (
-            <Text style={styles.success}>{success}</Text>
-          )}
+          {error && <Text style={styles.error}>{error}</Text>}
+          {success && <Text style={styles.success}>{success}</Text>}
         </View>
       ) : (
         <View style={styles.displayCourier}>
@@ -181,7 +162,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
             <Text style={styles.price}>Cena dostave: {courierData.deliveryPrice} RSD</Text>
           </View>
           <IconButton
-            icon='delete'
+            icon="delete"
             onPress={removeCourierHandler}
             color={Colors.error}
             style={styles.deleteIcon}
@@ -190,7 +171,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
         </View>
       )}
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -203,7 +184,7 @@ const styles = StyleSheet.create({
     marginBottom: 1,
     flexDirection: 'row',
     gap: 20,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   deleteIcon: {
     marginLeft: 'auto',
@@ -214,9 +195,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  previewData: {
-
-  },
+  previewData: {},
   text: {
     fontWeight: 'bold',
     fontSize: 16,
@@ -232,7 +211,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.primaryDark,
     borderBottomWidth: 1,
     flex: 1,
-    marginBottom: 10, 
+    marginBottom: 10,
     fontSize: 16,
   },
   buttons: {
@@ -249,8 +228,8 @@ const styles = StyleSheet.create({
   success: {
     marginTop: 8,
     color: Colors.success,
-    textAlign: 'center'
-  }
-})
+    textAlign: 'center',
+  },
+});
 
-export default EditCourierItem
+export default EditCourierItem;

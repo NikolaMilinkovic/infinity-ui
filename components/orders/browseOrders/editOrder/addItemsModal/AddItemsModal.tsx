@@ -1,38 +1,36 @@
-import { useEffect, useState } from "react";
-import { Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
-import DisplayProductsListModalComponent from "./modalComponents/ProductsListModalComponent";
-import Button from "../../../../../util-components/Button";
-import { Colors } from "../../../../../constants/colors";
-import NewArticleTabs from "../../../../../navigation/NewArticleTabs";
-import { NavigationContainer } from "@react-navigation/native";
-import { betterConsoleLog } from "../../../../../util-methods/LogMethods";
-import { popupMessage } from "../../../../../util-components/PopupMessage";
-import { OrderProductTypes } from "../../../../../types/allTsTypes";
+import { NavigationContainer } from '@react-navigation/native';
+import { useState } from 'react';
+import { Modal, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Colors } from '../../../../../constants/colors';
+import NewArticleTabs from '../../../../../navigation/NewArticleTabs';
+import { OrderProductTypes } from '../../../../../types/allTsTypes';
+import Button from '../../../../../util-components/Button';
+import { popupMessage } from '../../../../../util-components/PopupMessage';
 
 interface AddItemsModalPropTypes {
-  isVisible: boolean
-  setIsVisible: (visible: boolean) => void
-  setProducts: (data: OrderProductTypes[]) => void
+  isVisible: boolean;
+  setIsVisible: (visible: boolean) => void;
+  setProducts: (data: OrderProductTypes[]) => void;
 }
-export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: AddItemsModalPropTypes){
+export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: AddItemsModalPropTypes) {
   const [newProducts, setNewProducts] = useState<OrderProductTypes[]>([]);
 
-  function handleCancel(){
+  function handleCancel() {
     setIsVisible(false);
   }
 
-  function validateNewItemsData(){
-    const isValid = newProducts.every(product => {
-      const hasSelectedColor = product.selectedColor !== undefined && product.selectedColor !== "";
-      const hasSelectedSize = product.selectedSize !== undefined ? product.selectedSize !== "" : true;
-    
+  function validateNewItemsData() {
+    const isValid = newProducts.every((product) => {
+      const hasSelectedColor = product.selectedColor !== undefined && product.selectedColor !== '';
+      const hasSelectedSize = product.selectedSize !== undefined ? product.selectedSize !== '' : true;
+
       return hasSelectedColor && hasSelectedSize;
     });
     return isValid;
   }
 
-  function handleSaveItems(){
-    if(!validateNewItemsData()) return popupMessage('Niste izabrali boje | veličine za sve proizvode', 'danger');
+  function handleSaveItems() {
+    if (!validateNewItemsData()) return popupMessage('Niste izabrali boje | veličine za sve proizvode', 'danger');
 
     setNewProducts((prevProducts) => {
       const updatedProducts = prevProducts.map((product) => ({
@@ -47,9 +45,9 @@ export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: 
     setIsVisible(false);
   }
 
-  return(
+  return (
     <Modal
-      animationType='slide'
+      animationType="slide"
       visible={isVisible}
       transparent={true}
       onRequestClose={() => {
@@ -62,28 +60,25 @@ export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: 
             <View style={modalStyles.modal}>
               <View style={modalStyles.contentContainer}>
                 <NavigationContainer independent={true}>
-                  <NewArticleTabs
-                    setNewProducts={setNewProducts}
-                    newProducts={newProducts}
-                  />
+                  <NewArticleTabs setNewProducts={setNewProducts} newProducts={newProducts} />
                 </NavigationContainer>
-                  <View style={modalStyles.buttonsContainer}>
-                    <Button
-                      containerStyles={modalStyles.button}
-                      backColor={Colors.error}
-                      textColor={Colors.white}
-                      onPress={handleCancel}
-                    >
-                      Odustani
-                    </Button>
-                    <Button
-                      containerStyles={modalStyles.button}
-                      backColor={Colors.secondaryDark}
-                      textColor={Colors.white}
-                      onPress={handleSaveItems}
-                    >
-                      Sačuvaj
-                    </Button>
+                <View style={modalStyles.buttonsContainer}>
+                  <Button
+                    containerStyles={modalStyles.button}
+                    backColor={Colors.error}
+                    textColor={Colors.white}
+                    onPress={handleCancel}
+                  >
+                    Odustani
+                  </Button>
+                  <Button
+                    containerStyles={modalStyles.button}
+                    backColor={Colors.secondaryDark}
+                    textColor={Colors.white}
+                    onPress={handleSaveItems}
+                  >
+                    Sačuvaj
+                  </Button>
                 </View>
               </View>
             </View>
@@ -91,7 +86,7 @@ export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: 
         </View>
       </TouchableWithoutFeedback>
     </Modal>
-  )
+  );
 }
 const modalStyles = StyleSheet.create({
   modalContainer: {
@@ -112,7 +107,7 @@ const modalStyles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   contentContainer: {
     width: '100%',
@@ -136,4 +131,4 @@ const modalStyles = StyleSheet.create({
   button: {
     flex: 2,
   },
-})
+});

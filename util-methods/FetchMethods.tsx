@@ -261,7 +261,7 @@ export async function downloadAndShareFileViaLink(name: string, link: string) {
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(targetPath);
     } else {
-      console.log('Sharing not supported on this platform.');
+      console.error('Sharing not supported on this platform.');
     }
   } catch (error) {
     console.error('Error sharing file:', error);
@@ -285,7 +285,7 @@ export async function downloadAndShareFile(name: string, fileData: string) {
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(targetPath);
     } else {
-      console.log('Sharing not supported on this platform.');
+      console.error('Sharing not supported on this platform.');
     }
   } catch (error) {
     console.error('Error sharing file:', error);

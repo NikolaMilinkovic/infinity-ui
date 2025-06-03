@@ -1,24 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { StyleSheet, Text, View, Animated, Pressable } from 'react-native'
-import { OrdersContext } from '../../../store/orders-context';
-import Button from '../../../util-components/Button';
-import DropdownList from '../../../util-components/DropdownList';
+import React, { useContext, useEffect, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Colors } from '../../../constants/colors';
+import { useExpandAnimation } from '../../../hooks/useExpand';
+import { AuthContext } from '../../../store/auth-context';
 import { CouriersContext } from '../../../store/couriers-context';
 import { CategoryTypes, OrderTypes } from '../../../types/allTsTypes';
-import { Colors } from '../../../constants/colors';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useExpandAnimation } from '../../../hooks/useExpand';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
-import { fetchWithBodyData } from '../../../util-methods/FetchMethods';
-import { AuthContext } from '../../../store/auth-context';
+import Button from '../../../util-components/Button';
+import DropdownList from '../../../util-components/DropdownList';
 import { popupMessage } from '../../../util-components/PopupMessage';
+import { fetchWithBodyData } from '../../../util-methods/FetchMethods';
 
 interface PackOrdersControllsPropTypes {
-  selectedCourier: CategoryTypes | null
-  setSelectedCourier: (courier: CategoryTypes | null) => void
-  orders: OrderTypes[]
+  selectedCourier: CategoryTypes | null;
+  setSelectedCourier: (courier: CategoryTypes | null) => void;
+  orders: OrderTypes[];
 }
-function PackOrdersControlls({selectedCourier, setSelectedCourier, orders }: PackOrdersControllsPropTypes) {
+function PackOrdersControlls({ selectedCourier, setSelectedCourier, orders }: PackOrdersControllsPropTypes) {
   const [packedCounter, setPackedCounter] = useState(0);
   const [toBePackedCounter, setToBePackedCounter] = useState(0);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -26,12 +24,10 @@ function PackOrdersControlls({selectedCourier, setSelectedCourier, orders }: Pac
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
 
-  async function finishPackingHandler(){
-    const packedIds = orders
-      .filter((order) => order.packedIndicator === true)
-      .map((order) => order._id );
+  async function finishPackingHandler() {
+    const packedIds = orders.filter((order) => order.packedIndicator === true).map((order) => order._id);
     const response = await fetchWithBodyData(token, 'orders/pack-orders', { packedIds }, 'POST');
-    if(response.status === 200){
+    if (response.status === 200) {
       const data = await response?.json();
       return popupMessage(data.message, 'success');
     } else {
@@ -39,18 +35,18 @@ function PackOrdersControlls({selectedCourier, setSelectedCourier, orders }: Pac
       return popupMessage(data.message, 'danger');
     }
   }
-  
+
   useEffect(() => {
     const { isPacked, toBePacked } = orders.reduce(
       (acc, order) => {
-        if(order.packedIndicator && order.packed === false){
+        if (order.packedIndicator && order.packed === false) {
           acc.isPacked += 1;
         } else {
-          if(order.packed === false) acc.toBePacked += 1;
+          if (order.packed === false) acc.toBePacked += 1;
         }
         return acc;
       },
-      {isPacked: 0, toBePacked: 0}
+      { isPacked: 0, toBePacked: 0 }
     );
 
     setPackedCounter(isPacked);
@@ -60,26 +56,30 @@ function PackOrdersControlls({selectedCourier, setSelectedCourier, orders }: Pac
   // CATEGORY FILTER
   const couriersCtx = useContext(CouriersContext);
   useEffect(() => {
-    betterConsoleLog('> Selected courier is: ', selectedCourier);
     if (selectedCourier && selectedCourier?.name === 'Resetuj izbor') {
-      resetDropdown()
-      return; 
+      resetDropdown();
+      return;
     }
   }, [selectedCourier]);
 
   // Category Dropdown Reset
   const [resetKey, setResetKey] = useState(0);
-  function resetDropdown(){
-    setResetKey(prevKey => prevKey + 1);
+  function resetDropdown() {
+    setResetKey((prevKey) => prevKey + 1);
     setSelectedCourier(null);
-  };
+  }
 
   return (
     <Animated.View style={[styles.container, { height: height }]}>
       <Pressable style={styles.counterContainer} onPress={() => setIsExpanded(true)}>
         <Text style={styles.counterText}>Spakovano: {packedCounter}</Text>
         {!isExpanded && (
-          <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.primaryDark}/>
+          <Icon
+            name={isExpanded ? 'chevron-up' : 'chevron-down'}
+            style={styles.iconStyle}
+            size={26}
+            color={Colors.primaryDark}
+          />
         )}
         <Text style={styles.counterText}>Za pakovanje: {toBePackedCounter}</Text>
       </Pressable>
@@ -89,9 +89,9 @@ function PackOrdersControlls({selectedCourier, setSelectedCourier, orders }: Pac
             <DropdownList
               buttonContainerStyles={styles.button}
               key={resetKey}
-              data={[{_id: '', name: 'Resetuj izbor'}, ...couriersCtx.couriers]}
+              data={[{ _id: '', name: 'Resetuj izbor' }, ...couriersCtx.couriers]}
               onSelect={setSelectedCourier}
-              placeholder='Izaberite kurira'
+              placeholder="Izaberite kurira"
               isDefaultValueOn={false}
             />
             <Button
@@ -102,17 +102,19 @@ function PackOrdersControlls({selectedCourier, setSelectedCourier, orders }: Pac
             >
               Završi pakovanje
             </Button>
-            <Button
-              onPress={() => setIsExpanded(() => !isExpanded)}
-              containerStyles={styles.chevronButton}
-            >
-              <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.primaryDark}/>
+            <Button onPress={() => setIsExpanded(() => !isExpanded)} containerStyles={styles.chevronButton}>
+              <Icon
+                name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                style={styles.iconStyle}
+                size={26}
+                color={Colors.primaryDark}
+              />
             </Button>
           </>
         )}
       </View>
     </Animated.View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -147,9 +149,7 @@ const styles = StyleSheet.create({
     elevation: 0,
     height: 40,
   },
-  iconStyle: {
+  iconStyle: {},
+});
 
-  }
-})
-
-export default PackOrdersControlls
+export default PackOrdersControlls;

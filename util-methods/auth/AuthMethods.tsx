@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import { Alert } from 'react-native';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { handleFetchingWithBodyData } from '../FetchMethods';
-import { betterConsoleLog } from '../LogMethods';
+import { betterErrorLog } from '../LogMethods';
 
 const BACKEND_URI = process.env.EXPO_PUBLIC_BACKEND_URI;
 const backendURI = Constants.expoConfig?.extra?.backendURI;
@@ -10,7 +10,7 @@ const backendURI = Constants.expoConfig?.extra?.backendURI;
 interface LoginUserTypes {
   username: string;
   password: string;
-  expoPushToken: string | null;
+  expoPushToken: string;
 }
 interface LoginResponse {
   token?: string;
@@ -34,7 +34,7 @@ interface AuthStatus {
  *    token: string
  * }
  */
-export async function loginUser({ username, password, expoPushToken }: LoginUserTypes): Promise<AuthStatus> {
+export async function loginUser({ username, password, expoPushToken = '' }: LoginUserTypes): Promise<AuthStatus> {
   try {
     const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/login`, {
       method: 'POST',
@@ -68,8 +68,7 @@ export async function loginUser({ username, password, expoPushToken }: LoginUser
       };
 
       // Update expo push token in the DB if its not present
-      if (parsedResponse.token && expoPushToken?.data)
-        await updateUserExpoPushToken(parsedResponse.token, expoPushToken?.data);
+      if (parsedResponse.token && expoPushToken) await updateUserExpoPushToken(parsedResponse.token, expoPushToken);
 
       return authStatus;
     }
@@ -95,6 +94,7 @@ export async function loginUser({ username, password, expoPushToken }: LoginUser
  */
 export async function updateUserExpoPushToken(token: string, expoPushToken: string) {
   try {
+    if (!expoPushToken) return;
     const jsonToken = JSON.stringify(expoPushToken);
     const response = await handleFetchingWithBodyData(
       { expoPushToken: jsonToken },
@@ -107,7 +107,7 @@ export async function updateUserExpoPushToken(token: string, expoPushToken: stri
       popupMessage(parsedResponse.message, 'danger');
     }
   } catch (error) {
-    betterConsoleLog('> Došlo je do errora prilikom ažuriranja expo push tokena', error);
+    betterErrorLog('> Došlo je do errora prilikom ažuriranja expo push tokena', error);
     popupMessage('Došlo je do problema prilikom ažuriranja expo push tokena', 'danger');
   }
 }

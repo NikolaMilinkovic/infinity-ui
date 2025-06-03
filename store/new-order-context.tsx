@@ -1,8 +1,17 @@
-import { createContext, useState, ReactNode, useMemo, useEffect } from "react";
-import { betterConsoleLog } from "../util-methods/LogMethods";
-import { NewOrderContextTypes, BuyerTypes, ProductTypes, OrderProductTypes, CourierTypes, ProductImageTypes, DressColorTypes, PurseColorTypes, ColorSizeTypes } from "../types/allTsTypes";
-import { popupMessage } from "../util-components/PopupMessage";
-import { getMimeType } from "../util-methods/ImageMethods";
+import { createContext, ReactNode, useMemo, useState } from 'react';
+import {
+  BuyerTypes,
+  ColorSizeTypes,
+  CourierTypes,
+  DressColorTypes,
+  NewOrderContextTypes,
+  OrderProductTypes,
+  ProductImageTypes,
+  ProductTypes,
+  PurseColorTypes,
+} from '../types/allTsTypes';
+import { popupMessage } from '../util-components/PopupMessage';
+import { getMimeType } from '../util-methods/ImageMethods';
 interface ContextChildrenTypes {
   children: ReactNode;
 }
@@ -56,9 +65,9 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
   setReservationDate: () => {},
   // description: '',
   // setDescription: () => {},
-})
+});
 
-function NewOrderContextProvider({ children }: ContextChildrenTypes){
+function NewOrderContextProvider({ children }: ContextChildrenTypes) {
   const [productReferences, setProductReferences] = useState<ProductTypes[]>([]);
   const [buyerData, setBuyerData] = useState<BuyerTypes | null>(null);
   const [productData, setProductData] = useState<OrderProductTypes[]>([]);
@@ -67,20 +76,20 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   const [profileImage, setProfileImage] = useState<ProductImageTypes | null>(null);
   const [customPrice, setCustomPrice] = useState<string | number>('');
   const [orderValue, setOrderValue] = useState('');
-  const [weight, setWeight] = useState('0.5');
+  const [weight, setWeight] = useState('1');
   const [internalRemark, setInternalRemark] = useState('');
   const [deliveryRemark, setDeliveryRemark] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
-  const [reservationDate, setReservationDate] = useState<Date>( new Date() );
+  const [reservationDate, setReservationDate] = useState<Date>(new Date());
   // const [description, setDescription] = useState('');
 
   // Check to see if all products have selectedColor & selectedSize where applicable
-  function validateProductData(){
-    const isValid = productData.every(product => {
+  function validateProductData() {
+    const isValid = productData.every((product) => {
       // product.itemReference = product.itemReference._id;
-      const hasSelectedColor = product.selectedColor !== undefined && product.selectedColor !== "";
-      const hasSelectedSize = product.selectedSize !== undefined ? product.selectedSize !== "" : true; // Consider true if selectedSize is missing
-    
+      const hasSelectedColor = product.selectedColor !== undefined && product.selectedColor !== '';
+      const hasSelectedSize = product.selectedSize !== undefined ? product.selectedSize !== '' : true; // Consider true if selectedSize is missing
+
       return hasSelectedColor && hasSelectedSize;
     });
     return isValid;
@@ -88,22 +97,21 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
 
   // Validates all inputs | Creates a new form, prepares all data and returns the form
   // Used for sending the data back to server
-  function createOrderHandler(){
+  function createOrderHandler() {
     // Validate all data
-    if(productData.length === 0) return popupMessage('Nedostaju podaci o proizvodima', 'danger');
-    if(!buyerData) return popupMessage('Nedostaju podaci o kupcu', 'danger');
-    
-    if(!buyerData.address) return popupMessage('Nedostaju podaci o adresi', 'danger');
-    if(!buyerData.name) return popupMessage('Nedostaju podaci o imenu', 'danger');
-    if(!buyerData.phone && !buyerData.phone2) return popupMessage('Nedostaju podaci o broju telefona', 'danger');
-    if(!buyerData.place) return popupMessage('Nedostaju podaci o mestu', 'danger');
+    if (productData.length === 0) return popupMessage('Nedostaju podaci o proizvodima', 'danger');
+    if (!buyerData) return popupMessage('Nedostaju podaci o kupcu', 'danger');
 
-    if(!courierData) return popupMessage('Nedostaju podaci o kuriru', 'danger');
-    if(!profileImage) return popupMessage('Nedostaje slika kupčevog profila', 'danger');
-    if(!validateProductData()) return popupMessage('Svi proizvodi moraju imati selektovane boje i veličine', 'danger');
-    if(internalRemark === null) setInternalRemark('');
-    if(deliveryRemark === null) setInternalRemark('');
+    if (!buyerData.address) return popupMessage('Nedostaju podaci o adresi', 'danger');
+    if (!buyerData.name) return popupMessage('Nedostaju podaci o imenu', 'danger');
+    if (!buyerData.phone && !buyerData.phone2) return popupMessage('Nedostaju podaci o broju telefona', 'danger');
+    if (!buyerData.place) return popupMessage('Nedostaju podaci o mestu', 'danger');
 
+    if (!courierData) return popupMessage('Nedostaju podaci o kuriru', 'danger');
+    if (!profileImage) return popupMessage('Nedostaje slika kupčevog profila', 'danger');
+    if (!validateProductData()) return popupMessage('Svi proizvodi moraju imati selektovane boje i veličine', 'danger');
+    if (internalRemark === null) setInternalRemark('');
+    if (deliveryRemark === null) setInternalRemark('');
 
     // Reshape data
     const price = calculatePriceHandler();
@@ -111,8 +119,8 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
 
     const courier = {
       name: courierData.name,
-      deliveryPrice: courierData.deliveryPrice
-    }
+      deliveryPrice: courierData.deliveryPrice,
+    };
 
     // Create form data
     const order = new FormData();
@@ -121,7 +129,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
     if (price.productsPrice !== undefined) order.append('productsPrice', price.productsPrice.toString());
     if (price.totalPrice !== undefined) order.append('totalPrice', price.totalPrice.toString());
     order.append('reservation', isReservation.toString());
-    if(isReservation === true) order.append('reservationDate', reservationDate.toISOString());
+    if (isReservation === true) order.append('reservationDate', reservationDate.toISOString());
     order.append('packedIndicator', 'false');
     order.append('packed', 'false');
     order.append('processed', 'false');
@@ -138,37 +146,20 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
       name: profileImage.fileName,
     } as any);
 
-    // console.log('=====================================================================');
-    // betterConsoleLog('> Logging order', order);
-
-    // const orderData = {
-    //   buyerData: buyerData,
-    //   productData: productData,
-    //   productsPrice: price.productsPrice.toString(),
-    //   totalPrice: price.totalPrice.toString(),
-    //   reservation: isReservation.toString(),
-    //   packed: 'false',
-    //   processed: 'false',
-    //   courier: courier,
-    //   uri: profileImage.uri,
-    //   type: getMimeType(profileImage.mimeType, profileImage.uri),
-    //   name: profileImage.fileName,
-    // }
-
-
     return order;
   }
 
-  function calculatePriceHandler(){
-    if(productData.length > 0 && courierData?.deliveryPrice){
-      const productsPrice = productData.map((item) => item.itemReference.price)
-      .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-  
+  function calculatePriceHandler() {
+    if (productData.length > 0 && courierData?.deliveryPrice) {
+      const productsPrice = productData
+        .map((item) => item.itemReference.price)
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
       const deliveryPrice = courierData.deliveryPrice;
-  
+
       let totalPrice;
-      if(customPrice){
-        totalPrice = customPrice
+      if (customPrice) {
+        totalPrice = customPrice;
       } else {
         totalPrice = productsPrice + deliveryPrice;
       }
@@ -177,62 +168,43 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
         productsPrice: productsPrice,
         deliveryPrice: deliveryPrice,
         totalPrice: totalPrice,
-      }
+      };
     }
   }
-
-  // useEffect(() => {
-  //   betterConsoleLog('> Courier data,',courierData);
-  // },[courierData])
-  // useEffect(() => {
-  //   betterConsoleLog('> Logging product references: ', productReferences.length);
-  // }, [productReferences])
-  // useEffect(() => {
-  //   betterConsoleLog('> Loggin buyer data: ', buyerData);
-  // }, [buyerData])
-  // useEffect(() => {
-  //   betterConsoleLog('> Loggin product data: ', productData);
-  // }, [productData])
-  // useEffect(() => {
-  //   console.log('> Is Reservation:', isReservation);
-  // }, [isReservation])
-  // useEffect(() => {
-  //   console.log('> Profile image is:', profileImage);
-  // }, [profileImage])
 
   // PRODUCT REFERENCE => References of selected items
   const setProductReferencesHandler = (productsArr: ProductTypes[]) => {
     setProductReferences(productsArr);
-  }
+  };
   const addProductReferenceHandler = (product: ProductTypes) => {
     setProductReferences((prev) => [...prev, product]);
-  }
+  };
   const removeProductReferenceByIndexHandler = (index: number) => {
     setProductReferences((prev) => prev.filter((_, i) => i !== index));
   };
   const getProductReferencesDataHandler = () => {
     return productReferences;
-  }
+  };
 
   // PRODUCTS
   const setProductsDataHandler = (productsArr: OrderProductTypes[]) => {
     setProductData(productsArr);
-  }
+  };
   const addProductHandler = (product: OrderProductTypes) => {
     setProductData((prev) => [...prev, product]);
-  }
+  };
   const removeProductByIndexHandler = (index: number) => {
     setProductData((prev) => prev.filter((_, i) => i !== index));
   };
   const getProductsDataHandler = () => {
     return productData;
-  }
-  const updateProductColorByIndexHandler = (index: number, selectedColorObj: (DressColorTypes | PurseColorTypes)) => {
+  };
+  const updateProductColorByIndexHandler = (index: number, selectedColorObj: DressColorTypes | PurseColorTypes) => {
     setProductData((prev) => {
       const updatedProducts = [...prev]; // Clone the array
       if (updatedProducts[index]) {
         updatedProducts[index] = {
-          ...updatedProducts[index],  // Keep other product fields
+          ...updatedProducts[index], // Keep other product fields
           selectedColor: selectedColorObj.color,
           selectedColorId: selectedColorObj._id,
         };
@@ -245,7 +217,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
       const updatedProducts = [...prev]; // Clone the array
       if (updatedProducts[index]) {
         updatedProducts[index] = {
-          ...updatedProducts[index],  // Keep other product fields
+          ...updatedProducts[index], // Keep other product fields
           selectedSize: selectedSizeObj.size,
           selectedSizeId: selectedSizeObj._id,
         };
@@ -255,12 +227,12 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
   };
 
   // BUYER
-  const setBuyerDataHandler = (data:BuyerTypes) => {
+  const setBuyerDataHandler = (data: BuyerTypes) => {
     setBuyerData(data);
-  }
+  };
   const getBuyerDataHandler = () => {
     return buyerData;
-  }
+  };
 
   const resetOrderDataHandler = () => {
     setProductReferences([]);
@@ -275,75 +247,92 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes){
       profileImage: {
         uri: '',
         imageName: '',
-      }
+      },
     });
     setIsReservation(false);
     setProfileImage(null);
     setDeliveryRemark('');
     setInternalRemark('');
     setOrderNotes('');
-  }
+  };
 
   // COURIER
-  function setCourierDataHandler(courierData:CourierTypes){
-    setCourierData(courierData)
+  function setCourierDataHandler(courierData: CourierTypes) {
+    setCourierData(courierData);
   }
-  function getCourierDataHandler(){
+  function getCourierDataHandler() {
     return courierData;
   }
 
-  const value = useMemo(() => ({
-    productReferences,
-    setProductReferences: setProductReferencesHandler,
-    addProductReference: addProductReferenceHandler,
-    removeProductReference: removeProductReferenceByIndexHandler,
-    getProductReferences: getProductReferencesDataHandler,
-    
-    productData,
-    addProduct: addProductHandler,
-    removeProduct: removeProductByIndexHandler,
-    setProductsData: setProductsDataHandler,
-    getProductsData: getProductsDataHandler,
-    updateProductColorByIndex: updateProductColorByIndexHandler,
-    updateProductSizeByIndex: updateProductSizeByIndexHandler,
+  const value = useMemo(
+    () => ({
+      productReferences,
+      setProductReferences: setProductReferencesHandler,
+      addProductReference: addProductReferenceHandler,
+      removeProductReference: removeProductReferenceByIndexHandler,
+      getProductReferences: getProductReferencesDataHandler,
 
-    buyerData,
-    setBuyerData: setBuyerDataHandler,
-    getBuyerData: getBuyerDataHandler,
+      productData,
+      addProduct: addProductHandler,
+      removeProduct: removeProductByIndexHandler,
+      setProductsData: setProductsDataHandler,
+      getProductsData: getProductsDataHandler,
+      updateProductColorByIndex: updateProductColorByIndexHandler,
+      updateProductSizeByIndex: updateProductSizeByIndexHandler,
 
-    courierData,
-    setCourierData: setCourierDataHandler,
-    getCourierData: getCourierDataHandler,
+      buyerData,
+      setBuyerData: setBuyerDataHandler,
+      getBuyerData: getBuyerDataHandler,
 
-    isReservation,
-    setIsReservation: setIsReservation,
+      courierData,
+      setCourierData: setCourierDataHandler,
+      getCourierData: getCourierDataHandler,
 
-    profileImage,
-    setProfileImage: setProfileImage,
-    
-    resetOrderData: resetOrderDataHandler,
-    createOrderHandler: createOrderHandler,
+      isReservation,
+      setIsReservation: setIsReservation,
 
-    customPrice,
-    setCustomPrice: setCustomPrice,
+      profileImage,
+      setProfileImage: setProfileImage,
 
-    weight,
-    setWeight: setWeight,
-    orderValue,
-    setOrderValue: setOrderValue,
-    internalRemark,
-    setInternalRemark: setInternalRemark,
-    deliveryRemark,
-    setDeliveryRemark: setDeliveryRemark,
-    orderNotes,
-    setOrderNotes: setOrderNotes,
-    reservationDate,
-    setReservationDate: setReservationDate,
-    // description,
-    // setDescription: setDescription
-  }), [productData, buyerData, productReferences, courierData, isReservation, profileImage, customPrice, weight, orderValue, internalRemark, deliveryRemark, orderNotes, reservationDate]);
+      resetOrderData: resetOrderDataHandler,
+      createOrderHandler: createOrderHandler,
 
-  return <NewOrderContext.Provider value={value}>{ children }</NewOrderContext.Provider>
+      customPrice,
+      setCustomPrice: setCustomPrice,
+
+      weight,
+      setWeight: setWeight,
+      orderValue,
+      setOrderValue: setOrderValue,
+      internalRemark,
+      setInternalRemark: setInternalRemark,
+      deliveryRemark,
+      setDeliveryRemark: setDeliveryRemark,
+      orderNotes,
+      setOrderNotes: setOrderNotes,
+      reservationDate,
+      setReservationDate: setReservationDate,
+      // description,
+      // setDescription: setDescription
+    }),
+    [
+      productData,
+      buyerData,
+      productReferences,
+      courierData,
+      isReservation,
+      profileImage,
+      customPrice,
+      weight,
+      orderValue,
+      internalRemark,
+      deliveryRemark,
+      orderNotes,
+      reservationDate,
+    ]
+  );
+
+  return <NewOrderContext.Provider value={value}>{children}</NewOrderContext.Provider>;
 }
 
 export default NewOrderContextProvider;

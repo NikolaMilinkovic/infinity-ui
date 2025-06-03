@@ -1,25 +1,31 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { ScrollView, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text } from 'react-native'
+import React, { useContext, useEffect, useState } from 'react';
+import { Keyboard, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { Colors } from '../../constants/colors';
+import DressColor from '../../models/DressColor';
+import PurseColor from '../../models/PurseColor';
+import { AuthContext } from '../../store/auth-context';
 import { CategoriesContext } from '../../store/categories-context';
 import { ColorsContext } from '../../store/colors-context';
+import { SuppliersContext } from '../../store/suppliers-context';
+import {
+  CategoryTypes,
+  ColorTypes,
+  DressColorTypes,
+  ProductImageTypes,
+  PurseColorTypes,
+  SupplierTypes,
+} from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
-import DressColor from '../../models/DressColor';
-import { AuthContext } from '../../store/auth-context';
+import DropdownList from '../../util-components/DropdownList';
+import InputField from '../../util-components/InputField';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { addDress, addPurse } from '../../util-methods/FetchMethods';
-import AddDressComponents from './unique_product_components/add/AddDressComponents';
+import { betterErrorLog } from '../../util-methods/LogMethods';
 import GenericProductInputComponents from './GenericProductInputComponents';
+import AddDressComponents from './unique_product_components/add/AddDressComponents';
 import AddPurseComponents from './unique_product_components/add/AddPurseComponents';
-import PurseColor from '../../models/PurseColor';
-import { CategoryTypes, ColorTypes, DressColorTypes, PurseColorTypes, ProductImageTypes, SupplierTypes } from '../../types/allTsTypes';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
-import InputField from '../../util-components/InputField';
-import DropdownList from '../../util-components/DropdownList';
-import { SuppliersContext } from '../../store/suppliers-context';
-import { types } from '@babel/core';
 
-function AddProduct(){
+function AddProduct() {
   const authCtx = useContext(AuthContext);
   const categoriesCtx = useContext(CategoriesContext);
   const colorsCtx = useContext(ColorsContext);
@@ -34,34 +40,31 @@ function AddProduct(){
   const [previewImage, setPreviewImage] = useState('');
 
   useEffect(() => {
-    if(!selectedColors) return;
-    setItemColors(prevItemColors => {
+    if (!selectedColors) return;
+    setItemColors((prevItemColors) => {
       // Add new colors that are in selectedColors but not in prevItemColors
-      const newColors = selectedColors.filter(
-        color => !prevItemColors.some(existingColor => existingColor.color === color)
-      ).map(color => {
-        if(!selectedCategory) return;
-        if(selectedCategory.stockType === 'Boja-Veličina-Količina'){
+      const newColors = selectedColors
+        .filter((color) => !prevItemColors.some((existingColor) => existingColor.color === color))
+        .map((color) => {
+          if (!selectedCategory) return;
+          if (selectedCategory.stockType === 'Boja-Veličina-Količina') {
+            const d = new DressColor();
+            d.setColor(color);
+            return d;
+          }
+          if (selectedCategory.stockType === 'Boja-Količina') {
+            const d = new PurseColor();
+            d.setColor(color);
+            return d;
+          }
           const d = new DressColor();
           d.setColor(color);
           return d;
-        }
-        if(selectedCategory.stockType === 'Boja-Količina'){
-          const d = new PurseColor();
-          d.setColor(color);
-          return d;
-        }
-        const d = new DressColor();
-        d.setColor(color);
-        return d;
-      });
-  
+        });
+
       // Keep only colors that are still in selectedColors
-      const updatedItemColors = prevItemColors.filter(existingColor =>
-        selectedColors.includes(existingColor.color)
-      );
-  
-      betterConsoleLog('> Selected color obj are:',[...updatedItemColors, ...newColors]);
+      const updatedItemColors = prevItemColors.filter((existingColor) => selectedColors.includes(existingColor.color));
+
       // Return combined list of existing valid and newly added dress colors
       return [...updatedItemColors, ...newColors];
     });
@@ -75,41 +78,38 @@ function AddProduct(){
   const [description, setDescription] = useState('');
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierTypes>();
 
-
   useEffect(() => {
     setAllCategories(categoriesCtx.getCategories());
     setAllColors(colorsCtx.getColors());
-  }, [categoriesCtx, colorsCtx])
-  
+  }, [categoriesCtx, colorsCtx]);
+
   function handleOutsideClick() {
     Keyboard.dismiss();
   }
-  function setErrorHandler(errMsg){
+  function setErrorHandler(errMsg) {
     popupMessage(errMsg, 'danger');
   }
-  function verifyInputsData(){
-    console.log('> Verifying data...')
-    if(!productName){
+  function verifyInputsData() {
+    if (!productName) {
       setErrorHandler('Proizvod mora imati ime.');
       return false;
-    } 
-    if(!price){
+    }
+    if (!price) {
       setErrorHandler('Proizvod mora imati cenu.');
       return false;
-    } 
-    if(!selectedCategory){
+    }
+    if (!selectedCategory) {
       setErrorHandler('Izaberite kategoriju proizvoda.');
       return false;
-    } 
-    if(selectedCategory.stockType === 'Boja-Količina' && !itemColors.length){
+    }
+    if (selectedCategory.stockType === 'Boja-Količina' && !itemColors.length) {
       setErrorHandler('Proizvod mora imati boje');
       return false;
     }
 
-    console.log('Validation passed');
     return true;
   }
-  function resetInputsHandler(){
+  function resetInputsHandler() {
     setItemColors([]);
     setSelectedColors([]);
     setProductName('');
@@ -124,18 +124,14 @@ function AddProduct(){
     resetDropdown();
   }
 
-  // useEffect(() => {
-  //   betterConsoleLog('> Selected category', selectedCategory);
-  // }, [selectedCategory])
-
   // Handles adding a new DRESS
-  async function handleAddDress(){
+  async function handleAddDress() {
     // Verify all data
     const isVerified = verifyInputsData();
-    if(!isVerified) return;
+    if (!isVerified) return;
 
     // Add new dress
-    const dressData ={
+    const dressData = {
       productName,
       selectedCategory,
       stockType: selectedCategory?.stockType,
@@ -143,11 +139,11 @@ function AddProduct(){
       itemColors,
       productImage,
       description,
-      supplier: selectedSupplier?.name || ''
-    }
+      supplier: selectedSupplier?.name || '',
+    };
 
     let result = false;
-    if(dressData && authCtx.token){
+    if (dressData && authCtx.token) {
       result = await addDress(dressData, authCtx.token);
 
       // Reset all inputs
@@ -156,10 +152,10 @@ function AddProduct(){
   }
 
   // Handles adding a new PURSE
-  async function handleAddPurse(){
+  async function handleAddPurse() {
     // Verify all data
     const isVerified = verifyInputsData();
-    if(!isVerified) return;
+    if (!isVerified) return;
 
     // Add new dress
     const purseData = {
@@ -170,11 +166,11 @@ function AddProduct(){
       itemColors,
       productImage,
       description,
-      supplier: selectedSupplier?.name || ''
-    }
+      supplier: selectedSupplier?.name || '',
+    };
 
     let result = false;
-    if(purseData && authCtx.token){
+    if (purseData && authCtx.token) {
       result = await addPurse(purseData, authCtx.token);
 
       // Reset all inputs
@@ -184,24 +180,24 @@ function AddProduct(){
 
   // Handles choosing correct method to add a product
   const [isAdding, setIsAdding] = useState(false);
-  async function handleAddProduct(){
-    try{
-      if(isAdding){
+  async function handleAddProduct() {
+    try {
+      if (isAdding) {
         return popupMessage('Dodavanje proizvoda u toku..', 'info');
       }
-      if(!selectedCategory){
+      if (!selectedCategory) {
         return popupMessage('Izaberite Kategoriju proizvoda', 'danger');
       } else {
         setIsAdding(true);
-        if(!selectedCategory.name) return popupMessage('Morate izabrati kategoriju','danger');
-  
+        if (!selectedCategory.name) return popupMessage('Morate izabrati kategoriju', 'danger');
+
         // Methods for adding productus based on category
-        if(selectedCategory.stockType === 'Boja-Veličina-Količina') return await handleAddDress();
-        if(selectedCategory.stockType === 'Boja-Količina') return await handleAddPurse();
+        if (selectedCategory.stockType === 'Boja-Veličina-Količina') return await handleAddDress();
+        if (selectedCategory.stockType === 'Boja-Količina') return await handleAddPurse();
       }
-    } catch (error){
+    } catch (error) {
       setIsAdding(false);
-      betterConsoleLog('> Došlo je do errora prilikom dodavanja novog proizvoda', error);
+      betterErrorLog('> Došlo je do errora prilikom dodavanja novog proizvoda', error);
       popupMessage('Došlo je do problema prilikom dodavanja novog proizvoda', 'danger');
     } finally {
       setIsAdding(false);
@@ -211,11 +207,11 @@ function AddProduct(){
   // Used in combination for resetInputsHandler to again populate the Categories and Colors
   // This has to be done because components dont have methods to full input reset..
   useEffect(() => {
-    if(allColors.length > 0 && allCategories.length > 0) return;
-    if(allColors.length === 0){
+    if (allColors.length > 0 && allCategories.length > 0) return;
+    if (allColors.length === 0) {
       setAllColors(colorsCtx.getColors());
     }
-    if(allCategories.length === 0){
+    if (allCategories.length === 0) {
       setAllCategories(categoriesCtx.getCategories());
     }
   }, [allColors]);
@@ -228,10 +224,10 @@ function AddProduct(){
     }
   }, [selectedSupplier]);
   const [resetKey, setResetKey] = useState(0);
-  function resetDropdown(){
-    setResetKey(prevKey => prevKey + 1);
+  function resetDropdown() {
+    setResetKey((prevKey) => prevKey + 1);
     setSelectedSupplier();
-  };
+  }
 
   return (
     <TouchableWithoutFeedback onPress={handleOutsideClick} style={{ flex: 1 }}>
@@ -253,17 +249,11 @@ function AddProduct(){
 
         {/* DRESES */}
         {selectedCategory && selectedCategory.stockType === 'Boja-Veličina-Količina' && (
-          <AddDressComponents
-            dressColors={itemColors}
-            setDressColors={setItemColors}
-          />
+          <AddDressComponents dressColors={itemColors} setDressColors={setItemColors} />
         )}
         {/* PURSES */}
         {selectedCategory && selectedCategory.stockType === 'Boja-Količina' && (
-          <AddPurseComponents
-            purseColors={itemColors}
-            setPurseColors={setItemColors}
-          />
+          <AddPurseComponents purseColors={itemColors} setPurseColors={setItemColors} />
         )}
         {/* GENERIC */}
         {/* {selectedCategory && selectedCategory.stockType !== 'Boja-Veličina-Količina' && selectedCategory.stockType !== 'Boja-Veličina' && (
@@ -274,7 +264,7 @@ function AddProduct(){
         {/* )} */}
         <Text style={styles.sectionText}>Dodatne informacije:</Text>
         <InputField
-          label='Opis proizvoda'
+          label="Opis proizvoda"
           labelStyles={styles.inputFieldLabelStyles}
           inputText={description}
           setInputText={(text: string | number | undefined) => setDescription(text as string)}
@@ -288,10 +278,10 @@ function AddProduct(){
           <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</Text>
           <DropdownList
             key={resetKey}
-            data={[{_id: '', name: 'Resetuj izbor'}, ...suppliersCtx.suppliers]}
-            placeholder='Izaberite dobavljača'
+            data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
+            placeholder="Izaberite dobavljača"
             onSelect={setSelectedSupplier}
-            buttonContainerStyles={{marginTop: 4}}
+            buttonContainerStyles={{ marginTop: 4 }}
             isDefaultValueOn={false}
           />
         </View>
@@ -301,7 +291,9 @@ function AddProduct(){
             backColor={Colors.highlight}
             textColor={Colors.whiteText}
             containerStyles={{ marginTop: 16 }}
-          >Sačuvaj Proizvod</Button>
+          >
+            Sačuvaj Proizvod
+          </Button>
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>
@@ -318,13 +310,13 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   buttonContainer: {
-    marginBottom: 50
+    marginBottom: 50,
   },
   sectionText: {
     fontSize: 18,
   },
   sectionTextTopMargin: {
-    marginTop: 16
+    marginTop: 16,
   },
   descriptionField: {
     justifyContent: 'flex-start',
@@ -335,7 +327,7 @@ const styles = StyleSheet.create({
   },
   inputFieldLabelStyles: {
     backgroundColor: Colors.white,
-  }
-})
+  },
+});
 
-export default AddProduct
+export default AddProduct;

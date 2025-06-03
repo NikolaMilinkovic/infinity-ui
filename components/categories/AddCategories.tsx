@@ -1,44 +1,48 @@
-import React, { useContext, useState } from 'react'
-import { View, StyleSheet, Text } from 'react-native';
-import { AuthContext } from '../../store/auth-context';
-import InputField from '../../util-components/InputField';
-import Button from '../../util-components/Button';
-import { Colors } from '../../constants/colors';
-import { popupMessage } from '../../util-components/PopupMessage';
-import DropdownList from '../../util-components/DropdownList';
 import Constants from 'expo-constants';
+import React, { useContext, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { Colors } from '../../constants/colors';
+import { AuthContext } from '../../store/auth-context';
+import Button from '../../util-components/Button';
+import DropdownList from '../../util-components/DropdownList';
+import InputField from '../../util-components/InputField';
+import { popupMessage } from '../../util-components/PopupMessage';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 interface DropdownTypes {
-  _id: string | number
-  name: string
-  value: string
+  _id: string | number;
+  name: string;
+  value: string;
 }
 function AddCategories() {
   const authCtx = useContext(AuthContext);
-  const [inputText, setInputText] = useState<string>('')
-  const [stockType, setStockType] = useState<DropdownTypes>({_id: 0, name: 'Veličina', value:'Boja-Veličina-Količina'})
+  const [inputText, setInputText] = useState<string>('');
+  const [stockType, setStockType] = useState<DropdownTypes>({
+    _id: 0,
+    name: 'Veličina',
+    value: 'Boja-Veličina-Količina',
+  });
   const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([
-    {_id: 0, name: 'Boja-Veličina-Količina', value: 'Boja-Veličina-Količina'},
-    {_id: 1, name: 'Boja-Količina', value: 'Boja-Količina'}
+    { _id: 0, name: 'Boja-Veličina-Količina', value: 'Boja-Veličina-Količina' },
+    { _id: 1, name: 'Boja-Količina', value: 'Boja-Količina' },
   ]);
-  const [error, setError] = useState<string>('')
-  
-  function resetInputAndError(){
+  const [error, setError] = useState<string>('');
+
+  function resetInputAndError() {
     setInputText('');
     setError('');
   }
-  function resetError(){
+  function resetError() {
     setError('');
   }
-  function validateInput(){
-    resetError()
-    if(inputText.trim() === ''){
+  function validateInput() {
+    resetError();
+    if (inputText.trim() === '') {
       setError('Kategorija mora imati ime!');
       popupMessage('Kategorija mora imati ime!', 'danger');
       return false;
     }
-    if(!stockType || !stockType.name){
+    if (!stockType || !stockType.name) {
       setError('Kategorija mora imati jedinicu lagera!');
       popupMessage('Kategorija mora jedinicu lagera!', 'danger');
       return false;
@@ -46,22 +50,22 @@ function AddCategories() {
     return true;
   }
 
-  async function addCategoryHandler(){
+  async function addCategoryHandler() {
     const validated = validateInput();
-    if(!validated) return;
-    try{
+    if (!validated) return;
+    try {
       const newCategory = {
         name: inputText,
-        stockType: stockType.value
+        stockType: stockType.value,
       };
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/categories`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${authCtx.token}`,
+          Authorization: `Bearer ${authCtx.token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ category: newCategory })
-      })
+        body: JSON.stringify({ category: newCategory }),
+      });
 
       // Handle errors
       if (!response.ok) {
@@ -73,8 +77,7 @@ function AddCategories() {
 
       popupMessage(`Kategorija ${newCategory.name} je uspesno dodata`, 'success');
       resetInputAndError();
-    } catch(error){
-
+    } catch (error) {
       console.error(error);
       throw new Error('Došlo je do problema prilikom dodavanja kategorije');
     }
@@ -83,11 +86,10 @@ function AddCategories() {
   return (
     <View style={styles.container}>
       <View style={styles.controllsContainer}>
-
         {/* INPUT */}
         <View style={styles.inputContainer}>
-          <InputField 
-            label='Unesi Kategoriju'
+          <InputField
+            label="Unesi Kategoriju"
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
@@ -99,33 +101,27 @@ function AddCategories() {
         </View>
       </View>
 
-        {/* DROPDOWN */}
-        <View style={styles.dropdownContainer}>
-          <DropdownList
-            data={dropdownData}
-            defaultValue={'Boja-Veličina-Količina'}
-            onSelect={setStockType}
-            buttonContainerStyles={styles.dropdown}
-          />
-        </View>
+      {/* DROPDOWN */}
+      <View style={styles.dropdownContainer}>
+        <DropdownList
+          data={dropdownData}
+          defaultValue={'Boja-Veličina-Količina'}
+          onSelect={setStockType}
+          buttonContainerStyles={styles.dropdown}
+        />
+      </View>
 
-        {/* ERROR MESSAGE */}
-        {error && (
-        <Text style={styles.error}>{error}</Text>
-        )}
+      {/* ERROR MESSAGE */}
+      {error && <Text style={styles.error}>{error}</Text>}
 
-        {/* BUTTON */}
-        <View style={styles.buttonContainer}>
-          <Button 
-              onPress={addCategoryHandler}
-              textColor={Colors.whiteText}
-              backColor={Colors.highlight}
-          >
-            Sačuvaj
-          </Button>
-        </View>
+      {/* BUTTON */}
+      <View style={styles.buttonContainer}>
+        <Button onPress={addCategoryHandler} textColor={Colors.whiteText} backColor={Colors.highlight}>
+          Sačuvaj
+        </Button>
+      </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -134,7 +130,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.primaryDark,
     borderWidth: 0.5,
     paddingVertical: 16,
-    backgroundColor: Colors.primaryLight
+    backgroundColor: Colors.primaryLight,
   },
   controllsContainer: {
     flexDirection: 'row',
@@ -144,7 +140,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   inputContainer: {
-    width: '100%'
+    width: '100%',
   },
   buttonContainer: {
     width: '100%',
@@ -165,8 +161,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   dropdown: {
-    backgroundColor: 'transparent'
-  }
-})
+    backgroundColor: 'transparent',
+  },
+});
 
-export default AddCategories
+export default AddCategories;

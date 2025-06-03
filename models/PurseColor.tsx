@@ -1,52 +1,47 @@
-export default class PurseColor{
-  _id: string
-  color: string
-  colorCode: string
-  stock: number
+export default class PurseColor {
+  _id: string;
+  color: string;
+  colorCode: string;
+  stock: number;
 
-  constructor(
-    id?:string,
-    color?:string,
-    colorCode?:string,
-    stock?: number,
-  ){
-    this._id = id || ''
-    this.color = color || ''
-    this.colorCode = colorCode || ''
-    this.stock = stock || 0
+  constructor(id?: string, color?: string, colorCode?: string, stock?: number) {
+    this._id = id || '';
+    this.color = color || '';
+    this.colorCode = colorCode || '';
+    this.stock = stock || 0;
   }
 
   // Setters
-  setId(id:string){
+  setId(id: string) {
     this._id = id;
   }
-  setColor(color:string){
+  setColor(color: string) {
     this.color = color;
   }
-  setColorCode(colorCode:string){
+  setColorCode(colorCode: string) {
     this.colorCode = colorCode;
   }
-  setStock(stock: number ){
+  setStock(stock: number) {
     this.stock = stock;
   }
   // Getters
-  getId(){
+  getId() {
     return this._id;
   }
-  getColor(){
+  getColor() {
     return this.color;
   }
-  getColorCode(){
+  getColorCode() {
     return this.colorCode;
   }
-  getStock(){
+  getStock() {
     return this.stock;
   }
 
-  print() {
-    console.log(`Color ID: ${this._id}`);
-    console.log(`Color: ${this.color}`);
-    console.log(`Color Code: ${this.colorCode}`);
-    console.log(`Stock: ${this.stock}`);
-  }
+  // print() {
+  //   console.log(`Color ID: ${this._id}`);
+  //   console.log(`Color: ${this.color}`);
+  //   console.log(`Color Code: ${this.colorCode}`);
+  //   console.log(`Stock: ${this.stock}`);
+  // }
 }

@@ -1,9 +1,7 @@
-import React, { useState } from 'react'
-import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native'
-import { betterConsoleLog } from '../../../util-methods/LogMethods'
+import React, { useState } from 'react';
+import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import useImagePreviewModal from '../../../hooks/useImagePreviewModal';
 import ImagePreviewModal from '../../../util-components/ImagePreviewModal';
-import { Colors } from '../../../constants/colors';
 
 function DisplayOrderProduct({ product, index }) {
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
@@ -16,15 +14,11 @@ function DisplayOrderProduct({ product, index }) {
   return (
     <Animated.View style={styles.container}>
       {previewImage && (
-        <ImagePreviewModal
-          image={previewImage}
-          isVisible={isImageModalVisible}
-          onCancel={hideImageModal}
-        />
+        <ImagePreviewModal image={previewImage} isVisible={isImageModalVisible} onCancel={hideImageModal} />
       )}
       {product && product.image && (
         <Pressable onPress={handleImagePreview}>
-          <Image source={{ uri: product.image.uri }} style={styles.image}/>
+          <Image source={{ uri: product.image.uri }} style={styles.image} />
         </Pressable>
       )}
       <View style={styles.info}>
@@ -34,12 +28,12 @@ function DisplayOrderProduct({ product, index }) {
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Boja:</Text>
-          <Text style={[styles.data, {fontWeight: 'bold'}]}>{product.selectedColor}</Text>
+          <Text style={[styles.data, { fontWeight: 'bold' }]}>{product.selectedColor}</Text>
         </View>
         {product.selectedSize && (
-            <View style={styles.row}>
+          <View style={styles.row}>
             <Text style={styles.label}>Veličina:</Text>
-            <Text style={[styles.data, {fontWeight: 'bold'}]}>{product.selectedSize}</Text>
+            <Text style={[styles.data, { fontWeight: 'bold' }]}>{product.selectedSize}</Text>
           </View>
         )}
         <View style={styles.row}>
@@ -48,7 +42,7 @@ function DisplayOrderProduct({ product, index }) {
         </View>
       </View>
     </Animated.View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -62,16 +56,14 @@ const styles = StyleSheet.create({
   info: {
     height: '100%',
     width: '100%',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   label: {
     width: 70,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
-  data: {
-  },
-  text: {
-  },
+  data: {},
+  text: {},
   image: {
     height: 80,
     width: 100,
@@ -79,7 +71,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-  }
-})
+  },
+});
 
-export default DisplayOrderProduct
+export default DisplayOrderProduct;

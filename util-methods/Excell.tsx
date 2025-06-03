@@ -1,9 +1,6 @@
-import { OrderTypes } from "../types/allTsTypes";
-import { getCurrentDate } from "./DateFormatters";
 import * as XLSX from 'xlsx';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
-import { betterConsoleLog } from "./LogMethods";
+import { OrderTypes } from '../types/allTsTypes';
+import { getCurrentDate } from './DateFormatters';
 
 // Adjust column widths to fit the content | Thank you chatGPT :)
 const adjustCellsWidth = (ws: XLSX.WorkSheet): void => {
@@ -34,7 +31,6 @@ const adjustCellsWidth = (ws: XLSX.WorkSheet): void => {
   ws['!cols'] = maxColumnLengths;
 };
 
-
 /**
  * Creates an excell file with all the neccessary data that courier expects
  * @param orders - OrderTypes[] - Array of orders
@@ -45,30 +41,30 @@ const adjustCellsWidth = (ws: XLSX.WorkSheet): void => {
  * }
  */
 export const generateExcellForOrders = (orders: OrderTypes[], courier?: string) => {
-  betterConsoleLog('> Logging orders:', orders);
   const filteredByCreationTime = sortOrdersByDate(orders);
   let allOrdersData = [];
   let index = 1;
-  for(const order of filteredByCreationTime){
+  for (const order of filteredByCreationTime) {
     const orderData = [];
-    orderData.push(order.buyer?.name.toUpperCase() || '');            // Ime i prezime
-    orderData.push(order.buyer?.address.toUpperCase() || '');         // Adresa
-    orderData.push(order.buyer?.place || '');           // Mesto
-    orderData.push(order.buyer?.phone || '');           // Telefon
-    orderData.push(order.buyer?.phone2 || '');          // Telefon 2
-    orderData.push(order?.weight || '0.5');             // Tezina
-    orderData.push('1');                                // Br paketa
-    orderData.push(order?.value || '');                 // Vrednost
-    orderData.push(order?.totalPrice || '');            // Otkup
-    orderData.push(order?.buyer.bankNumber || '');      // Ziro racun
-    orderData.push('0');                                // Lično uručenje
-    orderData.push('0');                                // Otpremnica
-    orderData.push('0');                                // Povratnica
-    orderData.push('0');                                // Placen odgovor
-    orderData.push('1');                                // Postarina
-    orderData.push(order?.internalRemark || '');        // Inerna napomena
-    orderData.push(order?.deliveryRemark || '');        // Napomena za dostavu
-    orderData.push('0');                                // Pravno lice
+    orderData.push(order.buyer?.name.toUpperCase() || ''); // Ime i prezime
+    orderData.push(order.buyer?.address.toUpperCase() || ''); // Adresa
+    orderData.push(order.buyer?.place.toUpperCase() || ''); // Mesto
+    orderData.push(''); // Ptt
+    orderData.push(order.buyer?.phone || order.buyer?.phone2 || ''); // Telefon
+    // orderData.push( || ''); // Telefon 2
+    orderData.push(order?.weight || '1'); // Tezina
+    orderData.push('1'); // Br paketa
+    orderData.push(order?.totalPrice || ''); // Otkup
+    // orderData.push(order?.value || ''); // Vrednost
+    orderData.push(order?.buyer.bankNumber || ''); // Ziro racun
+    orderData.push('1'); // Postarina
+    orderData.push(order?.internalRemark || ''); // Inerna napomena
+    orderData.push(order?.deliveryRemark || ''); // Napomena za dostavu
+    // orderData.push('0'); // Lično uručenje
+    // orderData.push('0'); // Otpremnica
+    // orderData.push('0'); // Povratnica
+    // orderData.push('0'); // Placen odgovor
+    // orderData.push('0'); // Pravno lice
     index += 1;
     allOrdersData.push(orderData);
   }
@@ -76,46 +72,47 @@ export const generateExcellForOrders = (orders: OrderTypes[], courier?: string) 
   let wb = XLSX.utils.book_new();
   let ws = XLSX.utils.aoa_to_sheet([
     [
-      'ime i prezime', 
-      'adresa', 
-      'mesto', 
-      'telefon', 
-      'telefon 2', 
-      'težina', 
-      'broj paketa', 
-      'vrednost', 
-      'otkup', 
-      'žiro račun', 
-      'lično uručenje',
-      'otpremnica',
-      'povratnica',
-      'plaćen odgovor',
-      'poštarina', 
-      'interna napomena', 
+      'ime i prezime',
+      'adresa',
+      'mesto',
+      'ptt',
+      'telefon',
+      // 'telefon 2',
+      'težina',
+      'broj paketa',
+      'otkup',
+      // 'vrednost',
+      'žiro račun',
+      'poštarina',
+      'interna napomena',
       'napomena za dostavu',
-      'pravno lice'
+      // 'lično uručenje',
+      // 'otpremnica',
+      // 'povratnica',
+      // 'plaćen odgovor',
+      // 'pravno lice',
     ],
     ...allOrdersData,
   ]);
 
   adjustCellsWidth(ws);
-  if(courier){
+  if (courier) {
     XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate} | Kurir-${courier}`, true);
   } else {
     XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate}`, true);
   }
   const base64 = XLSX.write(wb, { type: 'base64' });
 
-  if(courier){
+  if (courier) {
     return {
-      "fileName": `porudzbine-za-${courier}-${currentDate}.xlsx`,
-      "fileData": base64
-    }
+      fileName: `porudzbine-za-${courier}-${currentDate}.xlsx`,
+      fileData: base64,
+    };
   } else {
     return {
-      "fileName": `porudzbine-za-datum-${currentDate}.xlsx`,
-      "fileData": base64
-    }
+      fileName: `porudzbine-za-datum-${currentDate}.xlsx`,
+      fileData: base64,
+    };
   }
   // const filename = FileSystem.documentDirectory + `porudžbine-za-${currentDate}.xlsx`;
   // FileSystem.writeAsStringAsync(filename, base64, {
@@ -123,7 +120,7 @@ export const generateExcellForOrders = (orders: OrderTypes[], courier?: string) 
   // }).then(() => {
   //   Sharing.shareAsync(filename);
   // });
-}
+};
 
 /**
  * Sorts an array of orders based on createdAt field, oldest order is at the starting position

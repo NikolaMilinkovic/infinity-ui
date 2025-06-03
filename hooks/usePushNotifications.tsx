@@ -61,7 +61,7 @@ export const usePushNotifications = (): PushNotificationState => {
 
       return token;
     } else {
-      console.log('> Error: Please use a physical device to register for push notifications.');
+      console.error('> Error: Please use a physical device to register for push notifications.');
       return null;
     }
   }
@@ -82,13 +82,15 @@ export const usePushNotifications = (): PushNotificationState => {
 
     register();
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current!);
-      Notifications.removeNotificationSubscription(responseListener.current!);
+      if (notificationListener.current && responseListener.current) {
+        Notifications.removeNotificationSubscription(notificationListener.current!);
+        Notifications.removeNotificationSubscription(responseListener.current!);
+      }
     };
   }, []);
 
   return {
-    expoPushToken: expoPushToken ?? null,
-    notification: notification ?? null,
+    expoPushToken: expoPushToken || null,
+    notification: notification || null,
   };
 };

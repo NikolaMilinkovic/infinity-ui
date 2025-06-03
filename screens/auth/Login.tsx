@@ -44,11 +44,7 @@ function Login() {
    * @param {String | null} expoPushToken
    * @returns {Promise<void>}
    */
-  async function loginUserHandler(
-    username: string,
-    password: string,
-    expoPushToken: string | null = null
-  ): Promise<void> {
+  async function loginUserHandler(username: string, password: string, expoPushToken: string): Promise<void> {
     if (!username || !password) {
       setErrorMessage('Invalid input, please provide a valid username & password.');
       return;
@@ -109,7 +105,7 @@ function Login() {
         <Text style={styles.errorMessage}>{errorMessage}</Text>
       </View>
       <Button
-        onPress={() => loginUserHandler(username, password, expoPushToken?.data ?? '')}
+        onPress={() => loginUserHandler(username, password, expoPushToken?.data || '')}
         textColor={Colors.whiteText}
         backColor={Colors.primaryDark}
       >

@@ -1,17 +1,15 @@
-import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
-import { AuthContext } from './auth-context'
-import { SocketContext } from './socket-context'
 import Constants from 'expo-constants';
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { SupplierTypes } from '../types/allTsTypes';
-import { fetchData } from '../util-methods/FetchMethods';
 import { popupMessage } from '../util-components/PopupMessage';
-import { betterConsoleLog } from '../util-methods/LogMethods';
+import { AuthContext } from './auth-context';
+import { SocketContext } from './socket-context';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 interface SupplierContextType {
-  suppliers: SupplierTypes[]
-  setSuppliers: (suppliers: SupplierTypes[]) => void
-  fetchSuppliers: (token: string) => void
+  suppliers: SupplierTypes[];
+  setSuppliers: (suppliers: SupplierTypes[]) => void;
+  fetchSuppliers: (token: string) => void;
 }
 export const SuppliersContext = createContext<SupplierContextType>({
   suppliers: [],
@@ -19,7 +17,7 @@ export const SuppliersContext = createContext<SupplierContextType>({
   fetchSuppliers: () => [],
 });
 interface SuppliersContextProviderType {
-  children: ReactNode
+  children: ReactNode;
 }
 
 function SuppliersContextProvider({ children }: SuppliersContextProviderType) {
@@ -29,34 +27,34 @@ function SuppliersContextProvider({ children }: SuppliersContextProviderType) {
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
 
-  async function fetchSuppliers(token: string){
-    try{
+  async function fetchSuppliers(token: string) {
+    try {
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/suppliers`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
 
-      if(!response.ok){
+      if (!response.ok) {
         popupMessage('Došlo je do problema prilikom preuzimanja dobavljača.', 'danger');
         throw new Error('Failed to fetch suppliers');
       }
       const data = await response.json();
-      if(data.length > 0){
+      if (data.length > 0) {
         setSuppliers(data);
       }
-    } catch(error){
+    } catch (error) {
       console.error('Error fetching suppliers:', error);
     }
   }
 
   useEffect(() => {
-    if(token) fetchSuppliers(token);
+    if (token) fetchSuppliers(token);
   }, [token]);
 
-  function handleSupplierAdded(supplier: SupplierTypes){
+  function handleSupplierAdded(supplier: SupplierTypes) {
     setSuppliers((prev) => [supplier, ...prev]);
   }
   function handleSupplierUpdated(supplier: SupplierTypes) {
@@ -69,23 +67,22 @@ function SuppliersContextProvider({ children }: SuppliersContextProviderType) {
     );
   }
 
-  useEffect(() => {
-  }, [suppliers])
+  useEffect(() => {}, [suppliers]);
 
   // TO DO: Fix the filter issue, for some reason this always returns an empty array..
   function handleSupplierRemoved(supplier: string) {
-    fetchSuppliers(token as string)
-  
-    // const filteredSuppliers = suppliers.filter((supplierInstance) => 
+    fetchSuppliers(token as string);
+
+    // const filteredSuppliers = suppliers.filter((supplierInstance) =>
     //   supplierInstance._id.toString() !== supplier
     // );
-  
+
     // betterConsoleLog('> filteredSuppliers:', filteredSuppliers);
     // setSuppliers(filteredSuppliers);
   }
 
   useEffect(() => {
-    if(socket){
+    if (socket) {
       socket.on('supplierAdded', handleSupplierAdded);
       socket.on('supplierUpdated', handleSupplierUpdated);
       socket.on('supplierRemoved', handleSupplierRemoved);
@@ -94,17 +91,20 @@ function SuppliersContextProvider({ children }: SuppliersContextProviderType) {
         socket.off('supplierAdded', handleSupplierAdded);
         socket.off('supplierUpdated', handleSupplierUpdated);
         socket.off('supplierRemoved', handleSupplierRemoved);
-      }
+      };
     }
   }, [socket]);
 
-  const value = useMemo(() => ({
-    suppliers,
-    fetchSuppliers: fetchSuppliers,
-    setSuppliers: setSuppliers,
-  }), [suppliers]);
+  const value = useMemo(
+    () => ({
+      suppliers,
+      fetchSuppliers: fetchSuppliers,
+      setSuppliers: setSuppliers,
+    }),
+    [suppliers]
+  );
 
-  return <SuppliersContext.Provider value={value}>{children}</SuppliersContext.Provider>
+  return <SuppliersContext.Provider value={value}>{children}</SuppliersContext.Provider>;
 }
 
-export default SuppliersContextProvider
+export default SuppliersContextProvider;

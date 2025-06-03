@@ -1,10 +1,9 @@
-import { createContext, useEffect, useState, ReactNode, useContext, useMemo } from "react";
-import { AuthContext } from "./auth-context";
-import { SocketContext } from "./socket-context";
-import { fetchData } from "../util-methods/FetchMethods";
-import { betterConsoleLog } from "../util-methods/LogMethods";
-import { DressTypes } from "../types/allTsTypes";
-import { decreaseDressStock, increaseDressStock } from "../util-methods/StockMethods";
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { DressTypes } from '../types/allTsTypes';
+import { fetchData } from '../util-methods/FetchMethods';
+import { decreaseDressStock, increaseDressStock } from '../util-methods/StockMethods';
+import { AuthContext } from './auth-context';
+import { SocketContext } from './socket-context';
 
 interface DressContextType {
   activeDresses: DressTypes[];
@@ -100,21 +99,18 @@ function DressesContextProvider({ children }: DressContextProviderType) {
     });
   }
 
-  function decreaseDressStockHandler(data: any){
-    console.log('> decreaseDressStockHandler called')
-    if(data.length > 0){
-      for(const dress of data){
+  function decreaseDressStockHandler(data: any) {
+    if (data.length > 0) {
+      for (const dress of data) {
         decreaseDressStock(dress, setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
       }
     }
   }
-  function increaseDressStockHandler(data: any){
-    console.log('> increaseDressStockHandler called')
-    if(data.stockType === 'Boja-Veličina-Količina'){
+  function increaseDressStockHandler(data: any) {
+    if (data.stockType === 'Boja-Veličina-Količina') {
       increaseDressStock(data, setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
     }
   }
-  
 
   // Set up socket listeners
   useEffect(() => {
@@ -129,12 +125,12 @@ function DressesContextProvider({ children }: DressContextProviderType) {
       socket.on('handleDressStockIncrease', increaseDressStockHandler);
 
       return () => {
-        socket.off("activeDressAdded", handleActiveDressAdded);
-        socket.off("inactiveDressAdded", handleInactiveDressAdded);
-        socket.off("activeDressRemoved", handleActiveDressRemoved);
-        socket.off("inactiveDressRemoved", handleInactiveDressRemoved);
-        socket.off("activeDressToInactive", handleActiveToInactive);
-        socket.off("inactiveDressToActive", handleInactiveToActive);
+        socket.off('activeDressAdded', handleActiveDressAdded);
+        socket.off('inactiveDressAdded', handleInactiveDressAdded);
+        socket.off('activeDressRemoved', handleActiveDressRemoved);
+        socket.off('inactiveDressRemoved', handleInactiveDressRemoved);
+        socket.off('activeDressToInactive', handleActiveToInactive);
+        socket.off('inactiveDressToActive', handleInactiveToActive);
         socket.off('handleDressStockDecrease', decreaseDressStockHandler);
         socket.off('handleDressStockIncrease', increaseDressStockHandler);
       };
@@ -142,14 +138,17 @@ function DressesContextProvider({ children }: DressContextProviderType) {
   }, [socket]);
 
   // Memoizing the getters
-  const value = useMemo(() => ({
-    activeDresses,
-    setActiveDresses: setActiveDressesHandler,
-    getActiveDresses: getActiveDressesHandler,
-    inactiveDresses,
-    setInactiveDresses: setInactiveDressesHandler,
-    getInactiveDresses: getInactiveDressesHandler,
-  }), [activeDresses, inactiveDresses]);
+  const value = useMemo(
+    () => ({
+      activeDresses,
+      setActiveDresses: setActiveDressesHandler,
+      getActiveDresses: getActiveDressesHandler,
+      inactiveDresses,
+      setInactiveDresses: setInactiveDressesHandler,
+      getInactiveDresses: getInactiveDressesHandler,
+    }),
+    [activeDresses, inactiveDresses]
+  );
 
   return <DressesContext.Provider value={value}>{children}</DressesContext.Provider>;
 }

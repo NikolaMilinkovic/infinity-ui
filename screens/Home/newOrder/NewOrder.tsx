@@ -1,18 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Animated, StyleSheet, ScrollView, View } from 'react-native'
-import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
-import { NewOrderContext } from '../../../store/new-order-context';
+import React, { useContext, useState } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
+import ColorSizeSelectorsList from '../../../components/orders/ColorSizeSelectorsList';
+import CourierSelector from '../../../components/orders/CourierSelector';
+import NewOrderPreview from '../../../components/orders/NewOrderPreview';
 import SelectedProductsDisplay from '../../../components/orders/SelectedProductsList';
 import SortUserInformationField from '../../../components/orders/SortUserInformationField';
-import ColorSizeSelectorsList from '../../../components/orders/ColorSizeSelectorsList';
-import NewOrderPreview from '../../../components/orders/NewOrderPreview';
-import CourierSelector from '../../../components/orders/CourierSelector';
-import Button from '../../../util-components/Button';
 import { Colors } from '../../../constants/colors';
-import { addNewOrder } from '../../../util-methods/FetchMethods';
+import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { AuthContext } from '../../../store/auth-context';
+import { NewOrderContext } from '../../../store/new-order-context';
+import Button from '../../../util-components/Button';
 import { popupMessage } from '../../../util-components/PopupMessage';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
+import { addNewOrder } from '../../../util-methods/FetchMethods';
 
 function NewOrder() {
   // Fade in animation
@@ -20,39 +19,38 @@ function NewOrder() {
   const orderCtx = useContext(NewOrderContext);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
-  
 
   // ARTICLE LIST
   const [isArticleListOpen, setIsArticleListOpen] = useState(true);
-  function handleArticleListOk(){
+  function handleArticleListOk() {
     setIsArticleListOpen(false);
     setIsBuyerInfoOpen(false);
     setIsOrderPreviewOpen(false);
     setIsCourierPreviewOpen(false);
-    
+
     setTimeout(() => {
       setIsColorSizeSelectorsOpen(true);
-    }, 360)
+    }, 360);
   }
 
   // COLOR SIZES SELECTORS
   const [isColorSizeSelectorsOpen, setIsColorSizeSelectorsOpen] = useState(false);
-  function handleColorSizeSelectorsOk(){
+  function handleColorSizeSelectorsOk() {
     setIsArticleListOpen(false);
     setIsCourierPreviewOpen(false);
     setIsColorSizeSelectorsOpen(false);
-    setIsOrderPreviewOpen(false)
-    
+    setIsOrderPreviewOpen(false);
+
     setTimeout(() => {
       setIsBuyerInfoOpen(true);
-    }, 360)
+    }, 360);
   }
 
   // BUYER INFORMATION
   const [isBuyerInfoOpen, setIsBuyerInfoOpen] = useState(false);
   const [buyerInfo, setBuyerInfo] = useState('');
 
-  function handleBuyerInfoOk(){
+  function handleBuyerInfoOk() {
     setIsArticleListOpen(false);
     setIsBuyerInfoOpen(false);
     setIsOrderPreviewOpen(false);
@@ -60,28 +58,28 @@ function NewOrder() {
 
     setTimeout(() => {
       setIsCourierPreviewOpen(true);
-    }, 360)
+    }, 360);
   }
 
   // COURIER SELECTOR
   const [isCourierPreviewOpen, setIsCourierPreviewOpen] = useState(false);
-  function handleCourierSelectorOk(){
+  function handleCourierSelectorOk() {
     setIsArticleListOpen(false);
     setIsBuyerInfoOpen(false);
     setIsColorSizeSelectorsOpen(false);
-    setIsOrderPreviewOpen(false)
+    setIsOrderPreviewOpen(false);
     setIsCourierPreviewOpen(false);
-    
+
     setTimeout(() => {
       setIsOrderPreviewOpen(true);
-    }, 360)
+    }, 360);
   }
 
   // ORDER PREVIEW SECTION
   const [isOrderPreviewOpen, setIsOrderPreviewOpen] = useState(false);
 
   // Reset order entries
-  function handleResetOrderData(){
+  function handleResetOrderData() {
     setIsArticleListOpen(true);
     setIsBuyerInfoOpen(false);
     setIsColorSizeSelectorsOpen(false);
@@ -95,30 +93,30 @@ function NewOrder() {
     orderCtx.resetOrderData();
   }
 
-  const[isAddingOrder, setIsAddingOrder] = useState(false);
-  async function handleSubmitOrder(){
-    if(isAddingOrder) return popupMessage('Dodavanje porudzbine u toku, sačekajte.', 'info');
-    try{
+  const [isAddingOrder, setIsAddingOrder] = useState(false);
+  async function handleSubmitOrder() {
+    if (isAddingOrder) return popupMessage('Dodavanje porudzbine u toku, sačekajte.', 'info');
+    try {
       // get order form with all the data from new-order-context
       const order = orderCtx.createOrderHandler();
 
-      if(!order) return;
-      if(order === undefined) return;
-      if(order === null) return;
+      if (!order) return;
+      if (order === undefined) return;
+      if (order === null) return;
 
       // Send the data via fetch
-      if(!token) return popupMessage('Autentifikacioni token ne postoji!', 'danger');
+      if (!token) return popupMessage('Autentifikacioni token ne postoji!', 'danger');
       setIsAddingOrder(true);
       const response = await addNewOrder(order, token, 'orders');
       setIsAddingOrder(false);
-  
-      if(response){
+
+      if (response) {
         handleResetOrderData();
         popupMessage('Porudžbina uspešno dodata', 'success');
       } else {
         popupMessage('Došlo je do problema prilikom slanja nove porudžbine', 'danger');
       }
-    } catch (error){
+    } catch (error) {
       console.error(error);
       setIsAddingOrder(false);
       popupMessage('Došlo je do problema prilikom slanja nove porudžbine', 'danger');
@@ -126,11 +124,10 @@ function NewOrder() {
       setIsAddingOrder(false);
     }
   }
-  
+
   return (
     <>
-      <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
-      </Animated.View>
+      <Animated.View style={[styles.container, { opacity: fadeAnimation }]}></Animated.View>
       <Animated.ScrollView style={[styles.scrollViewContainer, { opacity: fadeAnimation }]}>
         <SelectedProductsDisplay
           setIsExpanded={setIsArticleListOpen}
@@ -166,7 +163,7 @@ function NewOrder() {
           <Button
             backColor={Colors.error}
             textColor={Colors.white}
-            containerStyles={[styles.button, {marginBottom: 6}]}
+            containerStyles={[styles.button, { marginBottom: 6 }]}
             onPress={handleResetOrderData}
           >
             Odustani i resetuj
@@ -174,7 +171,7 @@ function NewOrder() {
           <Button
             backColor={Colors.secondaryDark}
             textColor={Colors.white}
-            containerStyles={[styles.button, {marginBottom: 6}]}
+            containerStyles={[styles.button, { marginBottom: 6 }]}
             onPress={handleSubmitOrder}
           >
             Dodaj porudžbinu
@@ -182,7 +179,7 @@ function NewOrder() {
         </View>
       </Animated.ScrollView>
     </>
-  )
+  );
 }
 const styles = StyleSheet.create({
   container: {
@@ -190,18 +187,18 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   scrollViewContainer: {
-    paddingHorizontal: 16
+    paddingHorizontal: 16,
   },
   buttonsContainer: {
     marginTop: 'auto',
     display: 'flex',
     flexDirection: 'row',
     flex: 1,
-    gap: 10
+    gap: 10,
   },
   button: {
     flex: 2,
   },
-})
+});
 
-export default NewOrder
+export default NewOrder;

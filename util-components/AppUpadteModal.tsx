@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react'
-import ConfirmationModal from './ConfirmationModal'
-import { AppContext } from '../store/app-context';
-import { Linking } from 'react-native';
 import Constants from 'expo-constants';
+import React, { useContext, useEffect, useState } from 'react';
+import { Linking } from 'react-native';
+import { AppContext } from '../store/app-context';
+import ConfirmationModal from './ConfirmationModal';
 
 function AppUpadteModal() {
   // Handles update modal
@@ -13,30 +13,30 @@ function AppUpadteModal() {
   useEffect(() => {
     setBuildLink(appCtx.buildLink);
     setVersion(appCtx.version);
-    if(appCtx.version !== Constants?.expoConfig?.version){
+    if (appCtx.version !== Constants?.expoConfig?.version) {
       setIsModalVisible(true);
     }
   }, [appCtx.buildLink, appCtx.version, Constants?.expoConfig?.version]);
-  
+
   console.log('===============================================================');
   console.log(`> Expo Version ${Constants?.expoConfig?.version}`);
   console.log('===============================================================');
-  function onConfirm(){
+  function onConfirm() {
     Linking.openURL(buildLink);
   }
-  function onDecline(){
+  function onDecline() {
     setIsModalVisible(false);
   }
   return (
     <ConfirmationModal
       isVisible={isModalVisible}
       onConfirm={onConfirm}
-      onConfirmBtnText='Update App'
+      onConfirmBtnText="Update App"
       onCancel={onDecline}
-      onCancelBtnText='Odustani'
+      onCancelBtnText="Odustani"
       message={`Nova verzija aplikacije je dostupna\nTrenutna: ${Constants?.expoConfig?.version}\nNova: ${version}`}
     />
-  )
+  );
 }
 
-export default AppUpadteModal
+export default AppUpadteModal;

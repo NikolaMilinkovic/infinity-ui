@@ -1,82 +1,76 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Colors } from '../../../constants/colors'
-import { Pressable, StyleSheet, Text, View, Animated } from 'react-native'
+import React, { useContext, useEffect, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Colors } from '../../../constants/colors';
+import { useExpandAnimation } from '../../../hooks/useExpand';
+import { AuthContext } from '../../../store/auth-context';
 import { OrderTypes } from '../../../types/allTsTypes';
 import IconButton from '../../../util-components/IconButton';
-import DisplayOrderProduct from '../browseOrders/DisplayOrderProduct';
-import { getFormattedDate } from '../../../util-methods/DateFormatters';
-import { useExpandAnimation } from '../../../hooks/useExpand';
-import { fetchData } from '../../../util-methods/FetchMethods';
-import { AuthContext } from '../../../store/auth-context';
 import { popupMessage } from '../../../util-components/PopupMessage';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
+import { getFormattedDate } from '../../../util-methods/DateFormatters';
+import { fetchData } from '../../../util-methods/FetchMethods';
 import sleep from '../../../util-methods/SleepMethod';
+import DisplayOrderProduct from '../browseOrders/DisplayOrderProduct';
 interface PackOrderItemPropTypes {
-  order: OrderTypes
+  order: OrderTypes;
 }
 function PackOrderItem({ order }: PackOrderItemPropTypes) {
   const [isExpanded, setIsExpanded] = useState(!order.packedIndicator);
   const [isPacked, setIsPacked] = useState(order.packedIndicator || false);
   const [noteHeight] = useState(order.orderNotes ? 40 : 0);
-  const expandHeight = useExpandAnimation(isExpanded, 160, (order.products.length * 88 + 184 + noteHeight), 180);
+  const expandHeight = useExpandAnimation(isExpanded, 160, order.products.length * 88 + 184 + noteHeight, 180);
   const styles = getStyles(isPacked);
-  const authCtx = useContext(AuthContext)
+  const authCtx = useContext(AuthContext);
   const token = authCtx.token;
-  function handleOnPress(){
+  function handleOnPress() {
     setIsExpanded(() => !isExpanded);
   }
   useEffect(() => {
     setIsPacked(order.packedIndicator);
   }, [order.packedIndicator]);
 
-  async function handlePackOrder(){
-    try{
+  async function handlePackOrder() {
+    try {
       setIsPacked(true);
       setIsExpanded(false);
       await sleep(140);
       const response = await fetchData(token, `orders/packed/set-indicator-to-true/${order._id}`, 'POST');
-      if(!response){
+      if (!response) {
         popupMessage('Došlo je do problema prilikom ažuriranja pakovanja porudžbine', 'danger');
         setIsPacked(false);
         setIsExpanded(true);
       } else {
         popupMessage(response.message, 'success');
       }
-    } catch(error) {
+    } catch (error) {
       console.error(error);
     }
   }
-  async function handleUnpackOrder(){
-    try{
+  async function handleUnpackOrder() {
+    try {
       setIsPacked(false);
       setIsExpanded(true);
       await sleep(140);
       const response = await fetchData(token, `orders/packed/set-indicator-to-false/${order._id}`, 'POST');
-      if(!response){
+      if (!response) {
         popupMessage('Došlo je do problema prilikom ažuriranja pakovanja porudžbine', 'danger');
         setIsPacked(false);
         setIsExpanded(true);
       } else {
         popupMessage(response.message, 'success');
       }
-    } catch(error) {
+    } catch (error) {
       console.error(error);
     }
   }
-  
-  if(!order) return <></>;
+
+  if (!order) return <></>;
   return (
-    <Pressable
-      delayLongPress={100} 
-      onPress={handleOnPress}
-    >
+    <Pressable delayLongPress={100} onPress={handleOnPress}>
       <Animated.View style={[styles.container, { height: expandHeight }]}>
         <Text style={styles.timestamp}>{getFormattedDate(order.createdAt)}</Text>
 
-
         <View style={styles.infoContainer}>
           <View style={styles.info}>
-
             {/* NAME */}
             <View style={styles.rowInfo}>
               <Text style={styles.rowLabel}>Kupac:</Text>
@@ -84,9 +78,11 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
             </View>
 
             {/* ADDRESS */}
-            <View style={[styles.rowInfo, {minHeight: 10}]}>
+            <View style={[styles.rowInfo, { minHeight: 10 }]}>
               <Text style={styles.rowLabel}>Adresa:</Text>
-              <Text style={styles.rowText}>{order.buyer.address}, {order.buyer.place}</Text>
+              <Text style={styles.rowText}>
+                {order.buyer.address}, {order.buyer.place}
+              </Text>
             </View>
 
             {/* PHONE */}
@@ -108,9 +104,7 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
             </View>
 
             {/* ORDER NOTE INDICATOR */}
-            {order.orderNotes && (
-              <Text style={styles.orderNoteIndicator}>NAPOMENA</Text>
-            )}
+            {order.orderNotes && <Text style={styles.orderNoteIndicator}>NAPOMENA</Text>}
           </View>
           <View style={styles.buttonsContainer}>
             <View style={styles.buttonBorder}>
@@ -120,20 +114,17 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
                   color={Colors.success}
                   onPress={handleUnpackOrder}
                   key={`key-${order._id}-edit-button`}
-                  icon='check'
-                  style={styles.buttonChecked} 
+                  icon="check"
+                  style={styles.buttonChecked}
                   pressedStyles={styles.buttonContainerPressed}
                 />
               ) : (
-                <Pressable
-                  onPress={handlePackOrder}
-                  style={styles.packedButton}
-                />
+                <Pressable onPress={handlePackOrder} style={styles.packedButton} />
               )}
             </View>
           </View>
         </View>
-        
+
         {isExpanded && (
           <Animated.View style={styles.productsContainer}>
             {order.orderNotes && (
@@ -143,15 +134,17 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
               </View>
             )}
             <Text style={styles.header}>Lista artikala:</Text>
-            {order.products.map((product, index) => <DisplayOrderProduct key={`${index}-${product._id}`} product={product} index={index}/>)}
+            {order.products.map((product, index) => (
+              <DisplayOrderProduct key={`${index}-${product._id}`} product={product} index={index} />
+            ))}
           </Animated.View>
         )}
       </Animated.View>
     </Pressable>
-  )
+  );
 }
 
-function getStyles(isPacked: boolean){
+function getStyles(isPacked: boolean) {
   return StyleSheet.create({
     container: {
       position: 'relative',
@@ -174,7 +167,7 @@ function getStyles(isPacked: boolean){
       position: 'absolute',
       right: 10,
       fontSize: 12,
-      color: Colors.secondaryDark
+      color: Colors.secondaryDark,
     },
     infoContainer: {
       flex: 1,
@@ -200,7 +193,7 @@ function getStyles(isPacked: boolean){
     },
     buttonsContainer: {
       width: 50,
-      height: '100%'
+      height: '100%',
     },
     buttonBorder: {
       height: 42,
@@ -214,7 +207,7 @@ function getStyles(isPacked: boolean){
       marginTop: 10,
       borderRadius: 4,
     },
-    buttonChecked : {
+    buttonChecked: {
       position: 'absolute',
       overflow: 'hidden',
     },
@@ -226,9 +219,7 @@ function getStyles(isPacked: boolean){
       opacity: 0.7,
       elevation: 1,
     },
-    productsContainer: {
-
-    },
+    productsContainer: {},
     header: {
       fontWeight: 'bold',
     },
@@ -241,7 +232,7 @@ function getStyles(isPacked: boolean){
       backgroundColor: Colors.primaryDark,
       zIndex: 12,
       opacity: 0.4,
-      pointerEvents: 'none'
+      pointerEvents: 'none',
     },
     orderNoteContainer: {
       flexDirection: 'row',
@@ -256,8 +247,8 @@ function getStyles(isPacked: boolean){
     orderNoteText: {
       fontWeight: 'bold',
       color: Colors.error,
-    }
-  })
+    },
+  });
 }
 
-export default PackOrderItem
+export default PackOrderItem;

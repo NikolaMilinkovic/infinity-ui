@@ -1,68 +1,61 @@
-import { createContext, useEffect, useState, ReactNode, useContext } from "react";
-import { AuthContext } from "./auth-context";
-import { SocketContext } from "./socket-context";
-import Category from "../models/Category";
-import { CategoryTypes } from "../types/allTsTypes";
-import { fetchCategories } from "../util-methods/FetchMethods";
-import { betterConsoleLog } from "../util-methods/LogMethods";
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import Category from '../models/Category';
+import { CategoryTypes } from '../types/allTsTypes';
+import { fetchCategories } from '../util-methods/FetchMethods';
+import { AuthContext } from './auth-context';
+import { SocketContext } from './socket-context';
 
-interface CategoriesContextType{
-  categories: CategoryTypes[]
-  setCategories: (categories: CategoryTypes[]) => void
-  getCategories: () => CategoryTypes[]
+interface CategoriesContextType {
+  categories: CategoryTypes[];
+  setCategories: (categories: CategoryTypes[]) => void;
+  getCategories: () => CategoryTypes[];
 }
 export const CategoriesContext = createContext<CategoriesContextType>({
   categories: [],
   setCategories: () => {},
-  getCategories: () => []
+  getCategories: () => [],
 });
 
 interface CategoriesContextProviderType {
-  children: ReactNode
+  children: ReactNode;
 }
-function CategoriesContextProvider({ children }: CategoriesContextProviderType){
+function CategoriesContextProvider({ children }: CategoriesContextProviderType) {
   const [categories, setCategories] = useState<CategoryTypes[]>([]);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
 
-  // useEffect(() => {
-  //   betterConsoleLog('> Categories are', categories);
-  // }, [categories])
-
   const setCategoriesHandler = (categories: CategoryTypes[]) => {
     setCategories(categories);
-  }
+  };
   const getCategoriesHandler = () => {
     return categories;
-  }
+  };
 
   // Fetches initial categories data
   useEffect(() => {
-    async function fetchCategoriesData(){
-      if(token) setCategories(await fetchCategories(token));
+    async function fetchCategoriesData() {
+      if (token) setCategories(await fetchCategories(token));
     }
-    fetchCategoriesData()
-  }, [token])
+    fetchCategoriesData();
+  }, [token]);
 
   // SOCKETS
   useEffect(() => {
-    if(socket){
+    if (socket) {
       const handleCategoryAdded = (newCategory: Category) => {
-        setCategories(prevCategories => [...prevCategories, newCategory]);
+        setCategories((prevCategories) => [...prevCategories, newCategory]);
       };
       const handleCategoryRemoved = (categoryId: string) => {
-        setCategories(prevCategories => prevCategories.filter((category) => category._id !== categoryId));
-      }
+        setCategories((prevCategories) => prevCategories.filter((category) => category._id !== categoryId));
+      };
       const handleCategoryUpdated = (updatedCategory: Category) => {
-        setCategories(prevCategories => 
-          prevCategories.map(category => 
-            category._id === updatedCategory._id ? updatedCategory : category
-          )
+        setCategories((prevCategories) =>
+          prevCategories.map((category) => (category._id === updatedCategory._id ? updatedCategory : category))
         );
-      }
-  
+      };
+
       socket.on('categoryAdded', handleCategoryAdded);
       socket.on('categoryRemoved', handleCategoryRemoved);
       socket.on('categoryUpdated', handleCategoryUpdated);
@@ -81,4 +74,4 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType){
   return <CategoriesContext.Provider value={value}>{children}</CategoriesContext.Provider>;
 }
 
-export default CategoriesContextProvider
+export default CategoriesContextProvider;

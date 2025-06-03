@@ -1,9 +1,6 @@
-import { OrderTypes } from '../../types/allTsTypes'
-import { betterConsoleLog } from '../../util-methods/LogMethods';
+import { OrderTypes } from '../../types/allTsTypes';
 
 function filterReservations(data: OrderTypes[]) {
-  // console.log('> Filter reservations called');
-
   const dates = new Set();
   const reservations = [];
 
@@ -11,10 +8,7 @@ function filterReservations(data: OrderTypes[]) {
     if (reservation.reservation && reservation.reservationDate) {
       if (dates.has(reservation.reservationDate)) {
         for (const reservationObj of reservations) {
-          if (
-            reservationObj &&
-            reservationObj.date === reservation.reservationDate
-          ) {
+          if (reservationObj && reservationObj.date === reservation.reservationDate) {
             reservationObj.reservations.push(reservation);
           }
         }
@@ -28,8 +22,7 @@ function filterReservations(data: OrderTypes[]) {
     }
   }
 
-  // betterConsoleLog('> Logging sorted reservations by date:', reservations);
   return reservations;
 }
 
-export default filterReservations
+export default filterReservations;

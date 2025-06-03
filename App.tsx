@@ -10,7 +10,6 @@ import AuthenticatedStack from './navigation/AuthenticatedStack';
 import ContextProvider from './store/ContextProvider';
 import { AuthContext } from './store/auth-context';
 import { PopupMessagesComponent } from './util-components/PopupMessage';
-import { betterConsoleLog } from './util-methods/LogMethods';
 
 // Suppresses the VirtualizedList nesting warning
 LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
@@ -21,8 +20,6 @@ LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollV
  */
 function Navigation() {
   const authCtx = useContext(AuthContext);
-  betterConsoleLog('> Logging is Authenticated', authCtx.isAuthenticated);
-
   return (
     <NavigationContainer>
       {!authCtx.isAuthenticated && <AuthStack />}
@@ -85,14 +82,7 @@ function Root() {
 }
 
 export default function App() {
-  // const { expoPushToken, notification } = usePushNotifications();
   const networkStatus = useNetworkStatus();
-
-  // const data = JSON.stringify(notification, undefined, 2);
-  // useEffect(() => {
-  //   console.log(`> PUSH TOKEN: ${expoPushToken?.data}`);
-  //   console.log(`> DATA: ${data}`);
-  // }, [expoPushToken?.data, data]);
   return (
     <>
       <StatusBar style="light" />

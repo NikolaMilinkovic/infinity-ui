@@ -1,14 +1,13 @@
-import { createContext, useEffect, useState, ReactNode, useContext, useMemo } from "react";
-import { AuthContext } from "./auth-context";
-import { SocketContext } from "./socket-context";
-import { fetchData } from "../util-methods/FetchMethods";
-import { ProcessedOrderStatisticsFileTypes as StatFileTypes } from "../types/allTsTypes";
-import { betterConsoleLog } from "../util-methods/LogMethods";
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { ProcessedOrderStatisticsFileTypes as StatFileTypes } from '../types/allTsTypes';
+import { fetchData } from '../util-methods/FetchMethods';
+import { AuthContext } from './auth-context';
+import { SocketContext } from './socket-context';
 
 interface OrderStatisticsContextType {
   statisticData: StatFileTypes[];
   setStatisticData: (data: StatFileTypes[]) => void;
-  fetchOrderStatisticsData: () => Promise<void>
+  fetchOrderStatisticsData: () => Promise<void>;
 }
 interface OrderStatisticsContextProviderType {
   children: ReactNode;
@@ -17,7 +16,7 @@ interface OrderStatisticsContextProviderType {
 export const OrderStatisticsContext = createContext<OrderStatisticsContextType>({
   statisticData: [],
   setStatisticData: () => {},
-  fetchOrderStatisticsData: async() =>{},
+  fetchOrderStatisticsData: async () => {},
 });
 
 function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextProviderType) {
@@ -31,10 +30,10 @@ function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextP
   useEffect(() => {
     if (token) {
       async function getOrderStatisticsData(token: string) {
-        try{
+        try {
           const fetchedData = await fetchData(token, 'orders/get-order-statistic-files-for-period');
           setStatisticData(fetchedData.data);
-        } catch(error){
+        } catch (error) {
           console.error(error);
         }
       }
@@ -43,7 +42,7 @@ function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextP
   }, [token]);
 
   // TO DO : Add types
-  function handleAddNewStatisticFile(file: any){
+  function handleAddNewStatisticFile(file: any) {
     setStatisticData((prev) => [file, ...prev]);
   }
 
@@ -51,7 +50,7 @@ function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextP
   useEffect(() => {
     if (socket) {
       socket.on('addNewStatisticFile', handleAddNewStatisticFile);
-      
+
       return () => {
         socket.off('addNewStatisticFile', handleAddNewStatisticFile);
       };
@@ -59,21 +58,24 @@ function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextP
   }, [socket]);
 
   async function fetchOrderStatisticsData() {
-    if(!token) return;
-    try{
+    if (!token) return;
+    try {
       const fetchedData = await fetchData(token, 'orders/get-order-statistic-files-for-period');
       setStatisticData(fetchedData.data);
-    } catch(error){
+    } catch (error) {
       console.error(error);
     }
   }
 
   // Memoizing the getters
-  const value = useMemo(() => ({
-    statisticData,
-    setStatisticData: setStatisticData,
-    fetchOrderStatisticsData: fetchOrderStatisticsData,
-  }), [statisticData]);
+  const value = useMemo(
+    () => ({
+      statisticData,
+      setStatisticData: setStatisticData,
+      fetchOrderStatisticsData: fetchOrderStatisticsData,
+    }),
+    [statisticData]
+  );
 
   return <OrderStatisticsContext.Provider value={value}>{children}</OrderStatisticsContext.Provider>;
 }

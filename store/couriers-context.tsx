@@ -1,31 +1,28 @@
-import { createContext, useEffect, useState, ReactNode, useContext } from "react";
-import { AuthContext } from "./auth-context";
-import { SocketContext } from "./socket-context";
-import { CourierTypes } from "../types/allTsTypes";
-import { popupMessage } from "../util-components/PopupMessage";
-import { fetchData } from "../util-methods/FetchMethods";
-import { betterConsoleLog } from "../util-methods/LogMethods";
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { CourierTypes } from '../types/allTsTypes';
+import { fetchData } from '../util-methods/FetchMethods';
+import { AuthContext } from './auth-context';
+import { SocketContext } from './socket-context';
 
-
-interface CouriersContextType{
-  couriers: CourierTypes[]
-  setCouriers: (couriers: CourierTypes[]) => void
-  getCouriers: () => CourierTypes[]
+interface CouriersContextType {
+  couriers: CourierTypes[];
+  setCouriers: (couriers: CourierTypes[]) => void;
+  getCouriers: () => CourierTypes[];
 }
 export const CouriersContext = createContext<CouriersContextType>({
   couriers: [],
   setCouriers: () => {},
-  getCouriers: () => []
+  getCouriers: () => [],
 });
 
 interface CouriersContextProviderType {
-  children: ReactNode
+  children: ReactNode;
 }
 
 /**
  * Caches all global courier objects
  */
-function CouriersContextProvider({ children }: CouriersContextProviderType){
+function CouriersContextProvider({ children }: CouriersContextProviderType) {
   const [couriers, setCouriers] = useState<CourierTypes[]>([]);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
@@ -34,41 +31,39 @@ function CouriersContextProvider({ children }: CouriersContextProviderType){
 
   const setCouriersHandler = (couriers: CourierTypes[]) => {
     setCouriers(couriers);
-  }
+  };
   const getCouriersHandler = () => {
     return couriers;
-  }
-  async function fetchCouriers(token:string){
+  };
+  async function fetchCouriers(token: string) {
     const fetchedCouriers = await fetchData(token, 'couriers');
     if (fetchedCouriers !== false) setCouriers(fetchedCouriers);
   }
 
   useEffect(() => {
-    if(token) fetchCouriers(token);
-  }, [token])
+    if (token) fetchCouriers(token);
+  }, [token]);
 
   // SOCKETS
   useEffect(() => {
-    if(socket){
+    if (socket) {
       const handleCourierAdded = (newCourier: CourierTypes) => {
-        setCouriers(prevCouriers => [...prevCouriers, newCourier]);
+        setCouriers((prevCouriers) => [...prevCouriers, newCourier]);
       };
       const handleCourierRemoved = (courierId: string) => {
-        setCouriers(prevCouriers => prevCouriers.filter((courier) => courier._id !== courierId));
-      }
+        setCouriers((prevCouriers) => prevCouriers.filter((courier) => courier._id !== courierId));
+      };
       const handleCourierUpdated = (updatedCourier: CourierTypes) => {
         const newCourierObj = {
           _id: updatedCourier._id,
           name: updatedCourier.name,
           deliveryPrice: updatedCourier.deliveryPrice,
-        }
-        setCouriers(prevCouriers => 
-          prevCouriers.map(courier => 
-            courier._id === updatedCourier._id ? newCourierObj : courier
-          )
+        };
+        setCouriers((prevCouriers) =>
+          prevCouriers.map((courier) => (courier._id === updatedCourier._id ? newCourierObj : courier))
         );
-      }
-  
+      };
+
       socket.on('courierAdded', handleCourierAdded);
       socket.on('courierRemoved', handleCourierRemoved);
       socket.on('courierUpdated', handleCourierUpdated);
@@ -87,4 +82,4 @@ function CouriersContextProvider({ children }: CouriersContextProviderType){
   return <CouriersContext.Provider value={value}>{children}</CouriersContext.Provider>;
 }
 
-export default CouriersContextProvider
+export default CouriersContextProvider;

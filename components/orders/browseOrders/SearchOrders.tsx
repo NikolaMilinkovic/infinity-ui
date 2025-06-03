@@ -1,231 +1,240 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
-import { Animated, Dimensions, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native'
-import InputField from '../../../util-components/InputField'
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { Animated, Dimensions, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
+import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
 import { Colors } from '../../../constants/colors';
+import useBackClickHandler from '../../../hooks/useBackClickHandler';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
-import ExpandButton from '../../../util-components/ExpandButton';
-import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
-import Button from '../../../util-components/Button';
-import { CategoryTypes } from '../../../types/allTsTypes';
-import DropdownList from '../../../util-components/DropdownList';
-import { CouriersContext } from '../../../store/couriers-context';
-import { fetchData } from '../../../util-methods/FetchMethods';
-import { popupMessage } from '../../../util-components/PopupMessage';
-import { OrdersContext } from '../../../store/orders-context';
 import { AuthContext } from '../../../store/auth-context';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import useBackClickHandler from '../../../hooks/useBackClickHandler';
+import { CouriersContext } from '../../../store/couriers-context';
+import { OrdersContext } from '../../../store/orders-context';
+import { CategoryTypes } from '../../../types/allTsTypes';
+import Button from '../../../util-components/Button';
+import DropdownList from '../../../util-components/DropdownList';
+import ExpandButton from '../../../util-components/ExpandButton';
+import InputField from '../../../util-components/InputField';
+import { popupMessage } from '../../../util-components/PopupMessage';
+import { fetchData } from '../../../util-methods/FetchMethods';
 
 interface PropTypes {
-  searchData: string
-  setSearchData: (data: string | number | undefined) => void
-  updateSearchParam: (data: boolean) => void
-  isDatePicked: boolean
-  setIsDatePicked: (isDatePicked: boolean) => void
-  setPickedDate: (date:string) => void
-  isDateForPeriodPicked: boolean
-  setIsDateForPeriodPicked: (isDatePicked: boolean) => void
-  setPickedDateForPeriod: (date:string) => void
+  searchData: string;
+  setSearchData: (data: string | number | undefined) => void;
+  updateSearchParam: (data: boolean) => void;
+  isDatePicked: boolean;
+  setIsDatePicked: (isDatePicked: boolean) => void;
+  setPickedDate: (date: string) => void;
+  isDateForPeriodPicked: boolean;
+  setIsDateForPeriodPicked: (isDatePicked: boolean) => void;
+  setPickedDateForPeriod: (date: string) => void;
 }
-function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePicked, setIsDatePicked, setPickedDate, isDateForPeriodPicked, setIsDateForPeriodPicked, setPickedDateForPeriod }: PropTypes) {
+function SearchOrders({
+  searchData,
+  setSearchData,
+  updateSearchParam,
+  isDatePicked,
+  setIsDatePicked,
+  setPickedDate,
+  isDateForPeriodPicked,
+  setIsDateForPeriodPicked,
+  setPickedDateForPeriod,
+}: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(false);
   const screenHeight = Dimensions.get('window').height;
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 172, 180);
   const toggleFade = useToggleFadeAnimation(isExpanded, 180);
-  function handleToggleExpand(){
+  function handleToggleExpand() {
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
   }
   useBackClickHandler(isExpanded, handleToggleExpand);
 
-    // PROCESSED | UNPROCESSED RADIO BUTTONS
-    const processedUnprocessedButtons: RadioButtonProps[] = useMemo(() => ([
+  // PROCESSED | UNPROCESSED RADIO BUTTONS
+  const processedUnprocessedButtons: RadioButtonProps[] = useMemo(
+    () => [
       {
-          id: '1', 
-          label: 'Neizvršene',
-          value: 'unprocessed',
+        id: '1',
+        label: 'Neizvršene',
+        value: 'unprocessed',
       },
       {
-          id: '2',
-          label: 'Izvršene',
-          value: 'processed',
+        id: '2',
+        label: 'Izvršene',
+        value: 'processed',
       },
-    ]), []);
-    type ProcessedUnprocessedTypes = {
-      processed: boolean;
-      unprocessed: boolean;
+    ],
+    []
+  );
+  type ProcessedUnprocessedTypes = {
+    processed: boolean;
+    unprocessed: boolean;
+  };
+  const [areProcessedOrders, setAreProcessedOrders] = useState<string>('1');
+  useEffect(() => {
+    const updateParams: Record<string, ProcessedUnprocessedTypes> = {
+      '1': { processed: false, unprocessed: true },
+      '2': { processed: true, unprocessed: false },
     };
-    const [areProcessedOrders, setAreProcessedOrders] = useState<string>('1');
-    useEffect(() => {
-      const updateParams: Record<string, ProcessedUnprocessedTypes> = {
-        '1': { processed: false, unprocessed: true },
-        '2': { processed: true, unprocessed: false },
-      };
-      const params = updateParams[areProcessedOrders];
-      if (params) {
-        Object.entries(params).forEach(([key, value]) => {
-          updateSearchParam(key as keyof ProcessedUnprocessedTypes, value);
-        });
-      }
-    }, [areProcessedOrders]);
-
-
-    // PACKED | UNPACKED RADIO BUTTONS
-    const packedUnpackedButtons: RadioButtonProps[] = useMemo(() => ([
-      {
-          id: '1', 
-          label: 'Za pakovanje',
-          value: 'unpacked',
-      },
-      {
-          id: '2',
-          label: 'Spakovane',
-          value: 'packed',
-      },
-      {
-          id: '3',
-          label: 'Sve',
-          value: 'packedAndUnpacked',
-      },
-    ]), []);
-    type ActiveProductsParams = {
-      packed: boolean;
-      unpacked: boolean;
-      packedAndUnpacked: boolean;
-    };
-    const [arePacked, setArePacked] = useState<string>('3');
-    useEffect(() => {
-      const updateParams: Record<string, ActiveProductsParams> = {
-        '1': { unpacked: true, packed: false, packedAndUnpacked: false },
-        '2': { unpacked: false, packed: true, packedAndUnpacked: false },
-        '3': { packed: false, unpacked: false, packedAndUnpacked: true },
-      };
-      const params = updateParams[arePacked];
-      if (params) {
-        Object.entries(params).forEach(([key, value]) => {
-          updateSearchParam(key as keyof ActiveProductsParams, value);
-        });
-      }
-    }, [arePacked]);
-
-    // ASCENDING | DESCENDING RADIO BUTTONS
-    const ascendDescendFilterButtons: RadioButtonProps[] = useMemo(() => ([
-      {
-          id: '1',
-          label: 'Najstarije prvo',
-          value: 'ascending',
-      },
-      {
-          id: '2', 
-          label: 'Najnovije prvo',
-          value: 'descending',
-      },
-    ]), []);
-    type AscDescPropTypes = {
-      ascending: boolean;
-      descending: boolean;
-    };
-    const [isAscending, setIsAscending] = useState<string>('1');
-    useEffect(() => {
-      const updateParams: Record<string, AscDescPropTypes> = {
-        '1': { ascending: true, descending: false },
-        '2': { ascending: false, descending: true },
-      };
-      const params = updateParams[isAscending];
-      if (params) {
-        Object.entries(params).forEach(([key, value]) => {
-          updateSearchParam(key as keyof AscDescPropTypes, value);
-        });
-      }
-    }, [isAscending]);
-
-    // CATEGORY FILTER
-    const couriersCtx = useContext(CouriersContext);
-    const [selectedCourier, setSelectedCourier] = useState<CategoryTypes | null>(null);
-    useEffect(() => {
-      if (selectedCourier && selectedCourier?.name === 'Resetuj izbor') {
-        resetDropdown()
-        return; 
-      }
-      updateSearchParam('onCourierSearch', selectedCourier?.name);
-    }, [selectedCourier]);
-
-    // Category Dropdown Reset
-    const [resetKey, setResetKey] = useState(0);
-    function resetDropdown(){
-      updateSearchParam('onCourierSearch', null);
-      setResetKey(prevKey => prevKey + 1);
-      setSelectedCourier(null);
-    };
-
-
-    // DATE PICKER
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [date, setDate] = useState( new Date() );
-    const ordersCtx = useContext(OrdersContext);
-    const authCtx = useContext(AuthContext);
-    const token = authCtx.token;
-
-    function formatDateHandler(date: Date){
-      return date.toLocaleDateString(
-        'en-GB', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-          }
-      )
+    const params = updateParams[areProcessedOrders];
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        updateSearchParam(key as keyof ProcessedUnprocessedTypes, value);
+      });
     }
+  }, [areProcessedOrders]);
 
+  // PACKED | UNPACKED RADIO BUTTONS
+  const packedUnpackedButtons: RadioButtonProps[] = useMemo(
+    () => [
+      {
+        id: '1',
+        label: 'Za pakovanje',
+        value: 'unpacked',
+      },
+      {
+        id: '2',
+        label: 'Spakovane',
+        value: 'packed',
+      },
+      {
+        id: '3',
+        label: 'Sve',
+        value: 'packedAndUnpacked',
+      },
+    ],
+    []
+  );
+  type ActiveProductsParams = {
+    packed: boolean;
+    unpacked: boolean;
+    packedAndUnpacked: boolean;
+  };
+  const [arePacked, setArePacked] = useState<string>('3');
+  useEffect(() => {
+    const updateParams: Record<string, ActiveProductsParams> = {
+      '1': { unpacked: true, packed: false, packedAndUnpacked: false },
+      '2': { unpacked: false, packed: true, packedAndUnpacked: false },
+      '3': { packed: false, unpacked: false, packedAndUnpacked: true },
+    };
+    const params = updateParams[arePacked];
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        updateSearchParam(key as keyof ActiveProductsParams, value);
+      });
+    }
+  }, [arePacked]);
 
-    async function handleFetchOrdersByDate(date: Date, token: any){
-      const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0));
-      const formattedDate = utcDate.toISOString().split('T')[0]; // Gets 'YYYY-MM-DD' format 
-      setShowDatePicker(false);
-      const response = await fetchData(token, `orders/fetch-by-date/${formattedDate}`);
-      if(response === false) popupMessage('Došlo je do problema prilikom preuzimanja podataka o porudžbinama', 'danger');
+  // ASCENDING | DESCENDING RADIO BUTTONS
+  const ascendDescendFilterButtons: RadioButtonProps[] = useMemo(
+    () => [
+      {
+        id: '1',
+        label: 'Najstarije prvo',
+        value: 'ascending',
+      },
+      {
+        id: '2',
+        label: 'Najnovije prvo',
+        value: 'descending',
+      },
+    ],
+    []
+  );
+  type AscDescPropTypes = {
+    ascending: boolean;
+    descending: boolean;
+  };
+  const [isAscending, setIsAscending] = useState<string>('1');
+  useEffect(() => {
+    const updateParams: Record<string, AscDescPropTypes> = {
+      '1': { ascending: true, descending: false },
+      '2': { ascending: false, descending: true },
+    };
+    const params = updateParams[isAscending];
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        updateSearchParam(key as keyof AscDescPropTypes, value);
+      });
+    }
+  }, [isAscending]);
 
-      betterConsoleLog('> Logging response', response);
-      popupMessage(response.message, 'success');
-      ordersCtx.setCustomOrderSet(response.orders)
+  // CATEGORY FILTER
+  const couriersCtx = useContext(CouriersContext);
+  const [selectedCourier, setSelectedCourier] = useState<CategoryTypes | null>(null);
+  useEffect(() => {
+    if (selectedCourier && selectedCourier?.name === 'Resetuj izbor') {
+      resetDropdown();
       return;
     }
-    function handleSetPickedDate(date: Date){
-      const formattedDate = date.toISOString().split('T')[0].split('-').reverse().join('/');
-      setPickedDate(formattedDate);
-    }
-    function handleOpenDatePicker(){
-      setShowDatePicker(true);
-    }
-    const handleDatePick = async (e:NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
-      if(e.type === "set"){
-        setDate(selectedDate);
-        setIsDatePicked(true);
-        // Handle resetting other date picker
-        setIsDateForPeriodPicked(false);
-        setPickedDateForPeriod('');
-        handleSetPickedDate(selectedDate);
-        await handleFetchOrdersByDate(selectedDate, token);
+    updateSearchParam('onCourierSearch', selectedCourier?.name);
+  }, [selectedCourier]);
 
-      }
+  // Category Dropdown Reset
+  const [resetKey, setResetKey] = useState(0);
+  function resetDropdown() {
+    updateSearchParam('onCourierSearch', null);
+    setResetKey((prevKey) => prevKey + 1);
+    setSelectedCourier(null);
+  }
 
-      setShowDatePicker(false);
+  // DATE PICKER
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const ordersCtx = useContext(OrdersContext);
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+
+  function formatDateHandler(date: Date) {
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  async function handleFetchOrdersByDate(date: Date, token: any) {
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0));
+    const formattedDate = utcDate.toISOString().split('T')[0]; // Gets 'YYYY-MM-DD' format
+    setShowDatePicker(false);
+    const response = await fetchData(token, `orders/fetch-by-date/${formattedDate}`);
+    if (response === false) popupMessage('Došlo je do problema prilikom preuzimanja podataka o porudžbinama', 'danger');
+
+    popupMessage(response.message, 'success');
+    ordersCtx.setCustomOrderSet(response.orders);
+    return;
+  }
+  function handleSetPickedDate(date: Date) {
+    const formattedDate = date.toISOString().split('T')[0].split('-').reverse().join('/');
+    setPickedDate(formattedDate);
+  }
+  function handleOpenDatePicker() {
+    setShowDatePicker(true);
+  }
+  const handleDatePick = async (e: NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
+    if (e.type === 'set') {
+      setDate(selectedDate);
+      setIsDatePicked(true);
+      // Handle resetting other date picker
+      setIsDateForPeriodPicked(false);
+      setPickedDateForPeriod('');
+      handleSetPickedDate(selectedDate);
+      await handleFetchOrdersByDate(selectedDate, token);
     }
-    const handleDateReset = () => {
-      setDate(new Date());
-      setIsDatePicked(false);
-      setShowDatePicker(false);
-      setPickedDate('');
-      ordersCtx.setCustomOrderSet([]);
-    }
 
-
+    setShowDatePicker(false);
+  };
+  const handleDateReset = () => {
+    setDate(new Date());
+    setIsDatePicked(false);
+    setShowDatePicker(false);
+    setPickedDate('');
+    ordersCtx.setCustomOrderSet([]);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
         <InputField
-          label='Pretraži porudžbine'
+          label="Pretraži porudžbine"
           inputText={searchData}
           setInputText={setSearchData}
           background={Colors.white}
@@ -241,110 +250,104 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
         />
       </View>
       <Animated.ScrollView style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
-          <Animated.ScrollView style={{ opacity: toggleFade }}>
-            <Text style={styles.filtersH1}>Filteri</Text>
-          </Animated.ScrollView>
+        <Animated.ScrollView style={{ opacity: toggleFade }}>
+          <Text style={styles.filtersH1}>Filteri</Text>
+        </Animated.ScrollView>
 
-          {/* Courier */}
-          <View style={styles.courierContainer}>
-            <Text style={styles.filtersH2}>Pretraga na osnovu kurira</Text>
-            <DropdownList
-              key={resetKey}
-              data={[{_id: '', name: 'Resetuj izbor'}, ...couriersCtx.couriers]}
-              onSelect={setSelectedCourier}
-              placeholder='Izaberite kurira'
-              isDefaultValueOn={false}
+        {/* Courier */}
+        <View style={styles.courierContainer}>
+          <Text style={styles.filtersH2}>Pretraga na osnovu kurira</Text>
+          <DropdownList
+            key={resetKey}
+            data={[{ _id: '', name: 'Resetuj izbor' }, ...couriersCtx.couriers]}
+            onSelect={setSelectedCourier}
+            placeholder="Izaberite kurira"
+            isDefaultValueOn={false}
+          />
+        </View>
+
+        {/* Date Picker */}
+        <View style={styles.radioGroupContainer}>
+          <Text style={styles.filtersH2absolute}>Pretrazi po datumu</Text>
+          <View style={styles.dateButtonsContainer}>
+            <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+              Izaberi datum
+            </Button>
+            <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
+              Resetuj izbor
+            </Button>
+          </View>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              is24Hour={true}
+              onChange={handleDatePick}
+              onTouchCancel={handleDateReset}
+            />
+          )}
+          {date && isDatePicked && (
+            <View style={styles.dateDisplayContainer}>
+              <Text style={styles.dateLabel}>Izabrani datum:</Text>
+              <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+            </View>
+          )}
+        </View>
+
+        <DatePickerFromDateToNow
+          isDatePicked={isDateForPeriodPicked}
+          setIsDatePicked={setIsDateForPeriodPicked}
+          setPickedDate={setPickedDateForPeriod}
+          resetOtherDatePickers={handleDateReset}
+        />
+
+        {/* Ascending | Descending */}
+        <View style={styles.radioGroupContainer}>
+          <Text style={styles.filtersH2absolute}>Redosled</Text>
+          <View style={styles.radioGroup}>
+            <RadioGroup
+              radioButtons={ascendDescendFilterButtons}
+              onPress={setIsAscending}
+              selectedId={isAscending}
+              containerStyle={styles.radioComponentContainer}
+              layout="row"
             />
           </View>
+        </View>
 
-          {/* Date Picker */}
-          <View style={styles.radioGroupContainer}>
-          <Text style={styles.filtersH2absolute}>Pretrazi po datumu</Text>
-            <View style={styles.dateButtonsContainer}>
-              <Button
-                containerStyles={styles.dateButton}
-                onPress={handleOpenDatePicker}
-              >
-                Izaberi datum
-              </Button>
-              <Button
-                containerStyles={styles.dateButton}
-                onPress={handleDateReset}
-              >
-                Resetuj izbor
-              </Button>
-            </View>
-
-            {showDatePicker && (
-              <DateTimePicker
-                value={date}
-                mode='date'
-                is24Hour={true}
-                onChange={handleDatePick}
-                onTouchCancel={handleDateReset}
-              />
-            )}
-            {date && isDatePicked && (
-              <View style={styles.dateDisplayContainer}>
-                <Text style={styles.dateLabel}>Izabrani datum:</Text>
-                <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
-              </View>
-            )}
+        {/* Processed | Unprocessed */}
+        {/* {!isDatePicked && ( */}
+        <View style={styles.radioGroupContainer}>
+          <Text style={styles.filtersH2absolute}>Da li je porudžbina izvršena</Text>
+          <View style={styles.radioGroup}>
+            <RadioGroup
+              radioButtons={processedUnprocessedButtons}
+              onPress={setAreProcessedOrders}
+              selectedId={areProcessedOrders}
+              containerStyle={styles.radioComponentContainer}
+              layout="row"
+            />
           </View>
+        </View>
+        {/* )} */}
 
-          <DatePickerFromDateToNow
-            isDatePicked={isDateForPeriodPicked}
-            setIsDatePicked={setIsDateForPeriodPicked}
-            setPickedDate={setPickedDateForPeriod}
-            resetOtherDatePickers={handleDateReset}
-          />
-
-          {/* Ascending | Descending */}
-          <View style={styles.radioGroupContainer}>
-            <Text style={styles.filtersH2absolute}>Redosled</Text>
-            <View style={styles.radioGroup}>
-              <RadioGroup 
-                radioButtons={ascendDescendFilterButtons} 
-                onPress={setIsAscending}
-                selectedId={isAscending}
-                containerStyle={styles.radioComponentContainer}
-                layout='row'
-              />
-            </View>
+        {/* Packed | Unpacked */}
+        <View style={styles.radioGroupContainer}>
+          <Text style={styles.filtersH2absolute}>Da li je porudžbine spakovana</Text>
+          <View style={styles.radioGroup}>
+            <RadioGroup
+              radioButtons={packedUnpackedButtons}
+              onPress={setArePacked}
+              selectedId={arePacked}
+              containerStyle={styles.radioComponentContainer}
+              layout="row"
+            />
           </View>
+        </View>
 
-          {/* Processed | Unprocessed */}
-          {/* {!isDatePicked && ( */}
-            <View style={styles.radioGroupContainer}>
-              <Text style={styles.filtersH2absolute}>Da li je porudžbina izvršena</Text>
-              <View style={styles.radioGroup}>
-                <RadioGroup 
-                  radioButtons={processedUnprocessedButtons} 
-                  onPress={setAreProcessedOrders}
-                  selectedId={areProcessedOrders}
-                  containerStyle={styles.radioComponentContainer}
-                  layout='row'
-                />
-              </View>
-            </View>
-          {/* )} */}
-
-          {/* Packed | Unpacked */}
-          <View style={styles.radioGroupContainer}>
-            <Text style={styles.filtersH2absolute}>Da li je porudžbine spakovana</Text>
-            <View style={styles.radioGroup}>
-              <RadioGroup 
-                radioButtons={packedUnpackedButtons} 
-                onPress={setArePacked}
-                selectedId={arePacked}
-                containerStyle={styles.radioComponentContainer}
-                layout='row'
-              />
-            </View>
-          </View>
-
-          {/* CLOSE BUTTON */}
-          {/* <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
+        {/* CLOSE BUTTON */}
+        {/* <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
             <Button
               onPress={() => setIsExpanded(!isExpanded)}
               backColor={Colors.highlight}
@@ -356,48 +359,51 @@ function SearchOrders({ searchData, setSearchData, updateSearchParam, isDatePick
           </Animated.View> */}
       </Animated.ScrollView>
     </View>
-  )
+  );
 }
 
-
-interface DatePickerFromDateToNowTypes{
-  isDatePicked: boolean
-  setIsDatePicked: (isPicked:boolean) => void
-  setPickedDate: (date:string) => void
-  resetOtherDatePickers: () => void
+interface DatePickerFromDateToNowTypes {
+  isDatePicked: boolean;
+  setIsDatePicked: (isPicked: boolean) => void;
+  setPickedDate: (date: string) => void;
+  resetOtherDatePickers: () => void;
 }
 /**
  * Handles component for fetching orders from certain date until the current moment
  */
-function DatePickerFromDateToNow({ isDatePicked, setIsDatePicked, setPickedDate, resetOtherDatePickers }:DatePickerFromDateToNowTypes){
+function DatePickerFromDateToNow({
+  isDatePicked,
+  setIsDatePicked,
+  setPickedDate,
+  resetOtherDatePickers,
+}: DatePickerFromDateToNowTypes) {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [date, setDate] = useState( new Date() );
+  const [date, setDate] = useState(new Date());
   const ordersCtx = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
 
-  async function handleFetchOrdersFromDateToNow(date: Date, token: any){
+  async function handleFetchOrdersFromDateToNow(date: Date, token: any) {
     const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0));
-    const formattedDate = utcDate.toISOString().split('T')[0]; // Gets 'YYYY-MM-DD' format 
+    const formattedDate = utcDate.toISOString().split('T')[0]; // Gets 'YYYY-MM-DD' format
     setShowDatePicker(false);
 
     const response = await fetchData(token, `orders/fetch-for-period-from-date/${formattedDate}`);
-    if(response === false) popupMessage('Došlo je do problema prilikom preuzimanja podataka o porudžbinama', 'danger');
+    if (response === false) popupMessage('Došlo je do problema prilikom preuzimanja podataka o porudžbinama', 'danger');
 
-    betterConsoleLog('> Logging response', response);
     popupMessage(response.message, 'success');
-    ordersCtx.setCustomOrderSet(response.orders)
+    ordersCtx.setCustomOrderSet(response.orders);
     return;
   }
-  function handleSetPickedDate(date: Date){
+  function handleSetPickedDate(date: Date) {
     const formattedDate = date.toISOString().split('T')[0].split('-').reverse().join('/');
     setPickedDate(formattedDate);
   }
-  function handleOpenDatePicker(){
+  function handleOpenDatePicker() {
     setShowDatePicker(true);
   }
-  const handleDatePick = async (e:NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
-    if(e.type === "set"){
+  const handleDatePick = async (e: NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
+    if (e.type === 'set') {
       setIsDatePicked(true);
       resetOtherDatePickers();
       handleSetPickedDate(selectedDate);
@@ -407,59 +413,51 @@ function DatePickerFromDateToNow({ isDatePicked, setIsDatePicked, setPickedDate,
     }
 
     setShowDatePicker(false);
-  }
+  };
   const handleDateReset = () => {
     setDate(new Date());
     setIsDatePicked(false);
     setShowDatePicker(false);
     setPickedDate('');
     ordersCtx.setCustomOrderSet([]);
-  }
+  };
 
-  function formatDateHandler(date: Date){
-    return date.toLocaleDateString(
-      'en-GB', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        }
-    )
+  function formatDateHandler(date: Date) {
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
   }
-  return(
-  <View style={styles.radioGroupContainer}>
-  <Text style={styles.filtersH2absolute}>Pretrazi porudžbine od datuma pa do sada</Text>
-    <View style={styles.dateButtonsContainer}>
-      <Button
-        containerStyles={styles.dateButton}
-        onPress={handleOpenDatePicker}
-      >
-        Izaberi datum
-      </Button>
-      <Button
-        containerStyles={styles.dateButton}
-        onPress={handleDateReset}
-      >
-        Resetuj izbor
-      </Button>
-    </View>
-
-    {showDatePicker && (
-      <DateTimePicker
-        value={date}
-        mode='date'
-        is24Hour={true}
-        onChange={handleDatePick}
-        onTouchCancel={handleDateReset}
-      />
-    )}
-    {date && isDatePicked && (
-      <View style={styles.dateDisplayContainer}>
-        <Text style={styles.dateLabel}>Izabrani datum:</Text>
-        <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+  return (
+    <View style={styles.radioGroupContainer}>
+      <Text style={styles.filtersH2absolute}>Pretrazi porudžbine od datuma pa do sada</Text>
+      <View style={styles.dateButtonsContainer}>
+        <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+          Izaberi datum
+        </Button>
+        <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
+          Resetuj izbor
+        </Button>
       </View>
-    )}
-  </View>
-  )
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          is24Hour={true}
+          onChange={handleDatePick}
+          onTouchCancel={handleDateReset}
+        />
+      )}
+      {date && isDatePicked && (
+        <View style={styles.dateDisplayContainer}>
+          <Text style={styles.dateLabel}>Izabrani datum:</Text>
+          <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+        </View>
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -482,7 +480,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
     backgroundColor: Colors.white,
     flex: 7,
-    height: 50
+    height: 50,
   },
   expandButton: {
     position: 'relative',
@@ -490,12 +488,10 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     height: 45,
     right: 0,
-    top: 10
+    top: 10,
   },
-  searchParamsContainer: {
-  },
-  overlay: {
-  },
+  searchParamsContainer: {},
+  overlay: {},
   radioGroupContainer: {
     padding: 10,
     borderWidth: 0.5,
@@ -505,8 +501,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     marginTop: 10,
   },
-  radioGroup: {
-  },
+  radioGroup: {},
   radioComponentContainer: {
     justifyContent: 'flex-start',
   },
@@ -514,14 +509,14 @@ const styles = StyleSheet.create({
     marginTop: 32,
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.primaryDark
+    color: Colors.primaryDark,
   },
   filtersH2: {
     fontSize: 14,
     color: Colors.primaryDark,
     marginBottom: 8,
     backgroundColor: Colors.white,
-    paddingHorizontal: 14
+    paddingHorizontal: 14,
   },
   filtersH2absolute: {
     fontSize: 14,
@@ -532,16 +527,16 @@ const styles = StyleSheet.create({
     top: -12,
     backgroundColor: Colors.white,
     borderRadius: 4,
-    paddingHorizontal: 4
+    paddingHorizontal: 4,
   },
   dateButtonsContainer: {
     flexDirection: 'row',
-    gap: 10
+    gap: 10,
   },
   dateButton: {
     flex: 1,
     backgroundColor: Colors.secondaryLight,
-    color: Colors.primaryDark
+    color: Colors.primaryDark,
   },
   dateDisplayContainer: {
     flexDirection: 'column',
@@ -549,8 +544,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dateLabel: {
-  },
+  dateLabel: {},
   dateText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -559,7 +553,7 @@ const styles = StyleSheet.create({
   },
   courierContainer: {
     marginBottom: 10,
-  }
-})
+  },
+});
 
-export default SearchOrders
+export default SearchOrders;

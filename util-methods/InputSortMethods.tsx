@@ -1,31 +1,33 @@
-import { NewOrderContextTypes } from "../types/allTsTypes";
-import { popupMessage } from "../util-components/PopupMessage";
 import Constants from 'expo-constants';
-import { betterConsoleLog } from "./LogMethods";
+import { NewOrderContextTypes } from '../types/allTsTypes';
+import { popupMessage } from '../util-components/PopupMessage';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 interface BuyerDataObjectTypes {
-  name: string
-  address: string
-  place: string
-  phone: number
-  phone2: number
+  name: string;
+  address: string;
+  place: string;
+  phone: number;
+  phone2: number;
 }
 
-
-export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string, orderCtx: NewOrderContextTypes) => {
-  if(buyerInfo.trim() === ''){
-    popupMessage('Morate uneti podatke o kupcu','danger')
+export const handleBuyerDataInputSort = async (
+  authToken: string,
+  buyerInfo: string,
+  orderCtx: NewOrderContextTypes
+) => {
+  if (buyerInfo.trim() === '') {
+    popupMessage('Morate uneti podatke o kupcu', 'danger');
     return;
   }
   try {
     const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/orders/parse`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${authToken}`,
+        Authorization: `Bearer ${authToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ orderData: buyerInfo })
-    })
+      body: JSON.stringify({ orderData: buyerInfo }),
+    });
 
     // Handle errors
     if (!response.ok) {
@@ -44,10 +46,9 @@ export const handleBuyerDataInputSort = async(authToken:string, buyerInfo:string
     orderCtx.setDeliveryRemark(parsedResponse.data.orderNotes || '');
     popupMessage(parsedResponse.message, 'success');
     return true;
-
-  } catch(error) {
+  } catch (error) {
     console.error(error);
     popupMessage('Došlo je do problema prilikom sortiranja podataka', 'danger');
     throw new Error('Došlo je do problema prilikom sortiranja podataka');
   }
-}
+};

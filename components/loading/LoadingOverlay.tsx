@@ -1,15 +1,12 @@
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 
-interface LoadingOverlayTypes{
-  message?: string
+interface LoadingOverlayTypes {
+  message?: string;
 }
 function LoadingOverlay({ message }: LoadingOverlayTypes) {
   return (
     <View style={styles.rootContainer}>
-      <Image 
-        source={require('../../assets/infinity.png')}
-        style={styles.image}
-      />
+      <Image source={require('../../assets/infinity.png')} style={styles.image} />
       <Text style={styles.message}>{message}</Text>
       <ActivityIndicator size="large" />
     </View>
@@ -31,8 +28,8 @@ const styles = StyleSheet.create({
   },
   image: {
     maxHeight: 140,
-    aspectRatio: 16/9,
+    aspectRatio: 16 / 9,
     resizeMode: 'contain',
-    marginBottom: 24
-  }
+    marginBottom: 24,
+  },
 });

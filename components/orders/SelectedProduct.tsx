@@ -1,29 +1,30 @@
-import React from 'react'
-import { Pressable, Text, StyleSheet } from 'react-native'
-import { ProductTypes } from '../../types/allTsTypes'
-import { Colors } from '../../constants/colors'
-import { NewOrderContextTypes } from '../../types/allTsTypes'
+import React from 'react';
+import { Pressable, StyleSheet, Text } from 'react-native';
+import { Colors } from '../../constants/colors';
+import { NewOrderContextTypes, ProductTypes } from '../../types/allTsTypes';
 
-interface PropTypes{
-  item: ProductTypes
-  orderCtx: NewOrderContextTypes
-  index: number
+interface PropTypes {
+  item: ProductTypes;
+  orderCtx: NewOrderContextTypes;
+  index: number;
 }
 function SelectedProduct({ item, orderCtx, index }: PropTypes) {
-  
-  function onPressHandler(){
+  function onPressHandler() {
+    // item.totalStock++;
     orderCtx.removeProductReference(index);
     orderCtx.removeProduct(index);
   }
   return (
-    <Pressable 
+    <Pressable
       onPress={onPressHandler}
-      style={({pressed}) => [styles.pressable, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
       key={`${index}-${item._id}`}
     >
-      <Text style={styles.text}>[{index + 1}]  {item.name}</Text>
+      <Text style={styles.text}>
+        [{index + 1}] {item.name}
+      </Text>
     </Pressable>
-  )
+  );
 }
 const styles = StyleSheet.create({
   pressable: {
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.secondaryLight,
     elevation: 2,
     borderRadius: 4,
-    marginBottom: 6
+    marginBottom: 6,
   },
   pressed: {
     opacity: 0.7,
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
   text: {
     color: Colors.primaryDark,
     fontSize: 16,
-  }
-})
+  },
+});
 
-export default SelectedProduct
+export default SelectedProduct;

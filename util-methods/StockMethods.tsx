@@ -1,14 +1,10 @@
-import { useContext } from "react";
-import { DressTypes, PurseTypes } from "../types/allTsTypes";
-import { betterConsoleLog } from "./LogMethods";
-import { DressesContext } from "../store/dresses-context";
-import { PursesContext } from "../store/purses-context";
+import { DressTypes, PurseTypes } from '../types/allTsTypes';
 
 interface DressStockDataDecrease {
-  dressId: string,
-  colorId: string,
-  sizeId: string,
-  increment: number,
+  dressId: string;
+  colorId: string;
+  sizeId: string;
+  increment: number;
 }
 // Function to decrease stock for a specific dress, color, and size
 export const decreaseDressStock = (
@@ -17,26 +13,27 @@ export const decreaseDressStock = (
 ) => {
   setActiveDresses((prevDresses) => {
     const updatedDresses = prevDresses.map((dress) => {
-        if (dress._id.toString() === data.dressId.toString()) {
-            return {
-                ...dress,
-                colors: dress.colors.map((color) => {
-                    if (color._id.toString() === data.colorId.toString()) {
-                        return {
-                            ...color,
-                            sizes: color.sizes.map((size) => {
-                                if (size._id.toString() === data.sizeId.toString()) {
-                                    return { ...size, stock: size.stock - 1 };
-                                }
-                                return size;
-                            }),
-                        };
-                    }
-                    return color;
+      if (dress._id.toString() === data.dressId.toString()) {
+        return {
+          ...dress,
+          totalStock: dress.totalStock - 1,
+          colors: dress.colors.map((color) => {
+            if (color._id.toString() === data.colorId.toString()) {
+              return {
+                ...color,
+                sizes: color.sizes.map((size) => {
+                  if (size._id.toString() === data.sizeId.toString()) {
+                    return { ...size, stock: size.stock - 1 };
+                  }
+                  return size;
                 }),
-            };
-        }
-        return dress;
+              };
+            }
+            return color;
+          }),
+        };
+      }
+      return dress;
     });
     return updatedDresses;
   });
@@ -80,10 +77,10 @@ export const decreaseDressStock = (
 // }
 
 interface DressStockDataIncrease {
-  dressId: string,
-  colorId: string,
-  sizeId: string,
-  increment: number,
+  dressId: string;
+  colorId: string;
+  sizeId: string;
+  increment: number;
 }
 
 // Increase stock for a specific dress, color, and size
@@ -93,48 +90,48 @@ export const increaseDressStock = (
 ) => {
   setActiveDresses((prevDresses) => {
     const updatedDresses = prevDresses.map((dress) => {
-        if (dress._id.toString() === data.dressId.toString()) {
-            return {
-                ...dress,
-                colors: dress.colors.map((color) => {
-                    if (color._id.toString() === data.colorId.toString()) {
-                        return {
-                            ...color,
-                            sizes: color.sizes.map((size) => {
-                                if (size._id.toString() === data.sizeId.toString()) {
-                                    return { ...size, stock: size.stock + 1 };
-                                }
-                                return size;
-                            }),
-                        };
-                    }
-                    return color;
+      if (dress._id.toString() === data.dressId.toString()) {
+        return {
+          ...dress,
+          totalStock: dress.totalStock + 1,
+          colors: dress.colors.map((color) => {
+            if (color._id.toString() === data.colorId.toString()) {
+              return {
+                ...color,
+                sizes: color.sizes.map((size) => {
+                  if (size._id.toString() === data.sizeId.toString()) {
+                    return { ...size, stock: size.stock + 1 };
+                  }
+                  return size;
                 }),
-            };
-        }
-        return dress;
+              };
+            }
+            return color;
+          }),
+        };
+      }
+      return dress;
     });
     return updatedDresses;
   });
 };
 
-
 interface PurseStockDataDecrease {
-  purseId: string,
-  colorId: string,
-  decrement: number,
+  purseId: string;
+  colorId: string;
+  decrement: number;
 }
 // Function to decrease stock for a specific purse, color
 export const decreasePurseStock = (
   data: PurseStockDataDecrease,
   setActivePurses: React.Dispatch<React.SetStateAction<PurseTypes[]>>
 ) => {
-  betterConsoleLog('> decreasePurseStock method has received following data', data);
   setActivePurses((prevPurses) =>
     prevPurses.map((purse) => {
       if (purse._id.toString() === data.purseId.toString()) {
         return {
           ...purse,
+          totalStock: purse.totalStock - 1,
           colors: purse.colors.map((color) => {
             if (color._id.toString() === data.colorId.toString()) {
               return {
@@ -151,11 +148,10 @@ export const decreasePurseStock = (
   );
 };
 
-
 interface PurseStockDataIncrease {
-  purseId: string,
-  colorId: string,
-  increment: number,
+  purseId: string;
+  colorId: string;
+  increment: number;
 }
 
 // Function to increase stock for a specific purse, color
@@ -163,17 +159,14 @@ export const increasePurseStock = (
   data: PurseStockDataIncrease,
   setActivePurses: React.Dispatch<React.SetStateAction<PurseTypes[]>>
 ) => {
-  console.log('> Increasing active purses by 1')
-  betterConsoleLog('> Logging out data object', data);
   setActivePurses((prevPurses) =>
     prevPurses.map((purse) => {
       if (purse._id.toString() === data.purseId.toString()) {
-        betterConsoleLog('> Purse found', purse);
         return {
           ...purse,
+          totalStock: purse.totalStock + 1,
           colors: purse.colors.map((color) => {
             if (color._id.toString() === data.colorId.toString()) {
-              betterConsoleLog('> Color obj found', color);
               return {
                 ...color,
                 stock: color.stock + data.increment,
@@ -188,7 +181,6 @@ export const increasePurseStock = (
   );
 };
 
-
 export const increaseDressBatchStock = (
   data: DressStockDataIncrease[],
   setActiveDresses: React.Dispatch<React.SetStateAction<DressTypes[]>>
@@ -200,7 +192,7 @@ export const increaseDressBatchStock = (
     let remainingData = [...data];
 
     return prevDresses.map((dress) => {
-      const itemIndex = remainingData.findIndex(d => d.dressId.toString() === dress._id.toString());
+      const itemIndex = remainingData.findIndex((d) => d.dressId.toString() === dress._id.toString());
       if (itemIndex !== -1) {
         const itemData = remainingData[itemIndex];
         // Increment stock for the matching dress
@@ -208,6 +200,7 @@ export const increaseDressBatchStock = (
 
         return {
           ...dress,
+          totalStock: dress.totalStock + itemData.increment,
           colors: dress.colors.map((color) => {
             if (color._id.toString() === itemData.colorId.toString() && color.sizes) {
               return {
@@ -240,7 +233,7 @@ export const decreaseDressBatchStock = (
     let remainingData = [...data];
 
     return prevDresses.map((dress) => {
-      const itemIndex = remainingData.findIndex(d => d.dressId.toString() === dress._id.toString());
+      const itemIndex = remainingData.findIndex((d) => d.dressId.toString() === dress._id.toString());
       if (itemIndex !== -1) {
         const itemData = remainingData[itemIndex];
         // Increment stock for the matching dress
@@ -248,6 +241,7 @@ export const decreaseDressBatchStock = (
 
         return {
           ...dress,
+          totalStock: dress.totalStock - itemData.increment,
           colors: dress.colors.map((color) => {
             if (color._id.toString() === itemData.colorId.toString() && color.sizes) {
               return {
@@ -269,7 +263,6 @@ export const decreaseDressBatchStock = (
   });
 };
 
-
 interface PurseStockDataIncrease {
   purseId: string;
   colorId: string;
@@ -287,7 +280,7 @@ export const increasePurseBatchStock = (
     let remainingData = [...data]; // Create a copy to keep track of unprocessed IDs
 
     return prevPurses.map((purse) => {
-      const itemIndex = remainingData.findIndex(d => d.purseId.toString() === purse._id.toString());
+      const itemIndex = remainingData.findIndex((d) => d.purseId.toString() === purse._id.toString());
 
       if (itemIndex !== -1) {
         const itemData = remainingData[itemIndex];
@@ -295,6 +288,7 @@ export const increasePurseBatchStock = (
 
         return {
           ...purse,
+          totalStock: purse.totalStock + itemData.increment,
           colors: purse.colors.map((color) => {
             if (color._id.toString() === itemData.colorId.toString()) {
               console.log('> Color object found for increment', color);
@@ -323,7 +317,7 @@ export const decreasePurseBatchStock = (
     let remainingData = [...data]; // Create a copy to keep track of unprocessed IDs
 
     return prevPurses.map((purse) => {
-      const itemIndex = remainingData.findIndex(d => d.purseId.toString() === purse._id.toString());
+      const itemIndex = remainingData.findIndex((d) => d.purseId.toString() === purse._id.toString());
 
       if (itemIndex !== -1) {
         const itemData = remainingData[itemIndex];
@@ -331,6 +325,7 @@ export const decreasePurseBatchStock = (
 
         return {
           ...purse,
+          totalStock: purse.totalStock + itemData.increment,
           colors: purse.colors.map((color) => {
             if (color._id.toString() === itemData.colorId.toString()) {
               console.log('> Color object found for increment', color);
@@ -350,19 +345,19 @@ export const decreasePurseBatchStock = (
 };
 
 interface PurseStockDataIncrease {
-  purseId: string,
-  colorId: string,
-  increment: number,
+  purseId: string;
+  colorId: string;
+  increment: number;
 }
 interface DressStockDataIncrease {
-  dressId: string,
-  colorId: string,
-  sizeId: string,
-  increment: number,
+  dressId: string;
+  colorId: string;
+  sizeId: string;
+  increment: number;
 }
 interface DataArrPropTypes {
-  dresses: DressStockDataIncrease[]
-  purses: PurseStockDataIncrease[]
+  dresses: DressStockDataIncrease[];
+  purses: PurseStockDataIncrease[];
 }
 // const dressesCtx = useContext(DressesContext);
 // const pursesCtx = useContext(PursesContext);

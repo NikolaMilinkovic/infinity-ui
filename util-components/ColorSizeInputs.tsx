@@ -1,38 +1,30 @@
-import React, { useEffect, useRef } from 'react'
-import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native'
+import React from 'react';
+import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Colors } from '../constants/colors';
 import { DressColorTypes } from '../types/allTsTypes';
-import { betterConsoleLog } from '../util-methods/LogMethods';
 
-interface PropTypes{
-  colorsData: DressColorTypes[],
-  setColorsData: (data:DressColorTypes[]) => void
+interface PropTypes {
+  colorsData: DressColorTypes[];
+  setColorsData: (data: DressColorTypes[]) => void;
 }
 
-function ColorSizeInputs({
-  colorsData,
-  setColorsData,
-}: PropTypes) {
-
+function ColorSizeInputs({ colorsData, setColorsData }: PropTypes) {
   // Ensure all sizes have a stock value initialized to 0 if undefined
-  const initializedColorsData = colorsData.map(item => ({
+  const initializedColorsData = colorsData.map((item) => ({
     ...item,
-    sizes: item.sizes.map(sizeItem => ({
+    sizes: item.sizes.map((sizeItem) => ({
       ...sizeItem,
       stock: sizeItem.stock ?? 0,
     })),
   }));
 
   // Method for handling input changes
-  function handleInputChange(color: string, size: string, value: string){
-    betterConsoleLog(`> Changing value for color: ${color}, size: ${size}, value: ${value}`, '')
+  function handleInputChange(color: string, size: string, value: string) {
     const newStock = parseInt(value, 10) || 0;
     const updatedColors = initializedColorsData.map((item) => {
       if (item.color === color) {
-        const updatedSizes = item.sizes.map((s) => 
-          s.size === size ? { ...s, stock: newStock } : s
-        );
+        const updatedSizes = item.sizes.map((s) => (s.size === size ? { ...s, stock: newStock } : s));
         return { ...item, sizes: updatedSizes };
       }
       return item;
@@ -58,8 +50,8 @@ function ColorSizeInputs({
         <Text style={styles.header}>XL</Text>
       </View>
       {initializedColorsData.map((item, index) => (
-        <KeyboardAvoidingView 
-          style={[styles.rowContainer, index % 2 === 0 ? styles.rowColor1 : styles.rowColor2 ]} 
+        <KeyboardAvoidingView
+          style={[styles.rowContainer, index % 2 === 0 ? styles.rowColor1 : styles.rowColor2]}
           key={`${index}-${item.color}`}
         >
           <Text style={styles.colorLabel}>{item.color}</Text>
@@ -90,7 +82,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.primaryDark,
     borderWidth: 0.5,
   },
-  sizesContainer:{
+  sizesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 8,
@@ -106,14 +98,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 8, 
+    paddingVertical: 8,
     paddingHorizontal: 2,
   },
   rowColor1: {
-    backgroundColor: Colors.secondaryHighlight
+    backgroundColor: Colors.secondaryHighlight,
   },
-  rowColor2: {
-  },
+  rowColor2: {},
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -123,7 +114,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
     flex: 1,
     textAlign: 'center',
-    backgroundColor: Colors.white
+    backgroundColor: Colors.white,
   },
   colorLabel: {
     width: 100,
@@ -131,4 +122,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ColorSizeInputs
+export default ColorSizeInputs;
