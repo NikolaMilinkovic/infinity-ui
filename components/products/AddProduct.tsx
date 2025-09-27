@@ -7,6 +7,7 @@ import { AuthContext } from '../../store/auth-context';
 import { CategoriesContext } from '../../store/categories-context';
 import { ColorsContext } from '../../store/colors-context';
 import { SuppliersContext } from '../../store/suppliers-context';
+import { useUser } from '../../store/user-context';
 import {
   CategoryTypes,
   ColorTypes,
@@ -30,6 +31,7 @@ function AddProduct() {
   const categoriesCtx = useContext(CategoriesContext);
   const colorsCtx = useContext(ColorsContext);
   const suppliersCtx = useContext(SuppliersContext);
+  const user = useUser();
 
   // Other data
   const [allCategories, setAllCategories] = useState<CategoryTypes[]>([]);
@@ -182,6 +184,9 @@ function AddProduct() {
   const [isAdding, setIsAdding] = useState(false);
   async function handleAddProduct() {
     try {
+      if (!user?.permissions?.products?.create) {
+        return popupMessage('Nemate dozvolu za kreiranje proizvoda.', 'danger');
+      }
       if (isAdding) {
         return popupMessage('Dodavanje proizvoda u toku..', 'info');
       }
@@ -232,68 +237,71 @@ function AddProduct() {
   return (
     <TouchableWithoutFeedback onPress={handleOutsideClick} style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
-        <GenericProductInputComponents
-          productName={productName}
-          setProductName={setProductName}
-          price={price}
-          setPrice={setPrice}
-          setProductImage={setProductImage}
-          previewImage={previewImage}
-          setPreviewImage={setPreviewImage}
-          allCategories={allCategories}
-          setSelectedCategory={setSelectedCategory}
-          allColors={allColors}
-          setSelectedColors={setSelectedColors}
-          isMultiDropdownOpen={isMultiDropdownOpen}
-        />
+        <View style={styles.card}>
+          <GenericProductInputComponents
+            productName={productName}
+            setProductName={setProductName}
+            price={price}
+            setPrice={setPrice}
+            setProductImage={setProductImage}
+            previewImage={previewImage}
+            setPreviewImage={setPreviewImage}
+            allCategories={allCategories}
+            setSelectedCategory={setSelectedCategory}
+            allColors={allColors}
+            setSelectedColors={setSelectedColors}
+            isMultiDropdownOpen={isMultiDropdownOpen}
+          />
 
-        {/* DRESES */}
-        {selectedCategory && selectedCategory.stockType === 'Boja-Veličina-Količina' && (
-          <AddDressComponents dressColors={itemColors} setDressColors={setItemColors} />
-        )}
-        {/* PURSES */}
-        {selectedCategory && selectedCategory.stockType === 'Boja-Količina' && (
-          <AddPurseComponents purseColors={itemColors} setPurseColors={setItemColors} />
-        )}
-        {/* GENERIC */}
-        {/* {selectedCategory && selectedCategory.stockType !== 'Boja-Veličina-Količina' && selectedCategory.stockType !== 'Boja-Veličina' && (
+          {/* DRESES */}
+          {selectedCategory && selectedCategory.stockType === 'Boja-Veličina-Količina' && (
+            <AddDressComponents dressColors={itemColors} setDressColors={setItemColors} />
+          )}
+          {/* PURSES */}
+          {selectedCategory && selectedCategory.stockType === 'Boja-Količina' && (
+            <AddPurseComponents purseColors={itemColors} setPurseColors={setItemColors} />
+          )}
+          {/* GENERIC */}
+          {/* {selectedCategory && selectedCategory.stockType !== 'Boja-Veličina-Količina' && selectedCategory.stockType !== 'Boja-Veličina' && (
           <AddDressComponents
           dressColors={itemColors}
           setDressColors={setItemColors}
         /> */}
-        {/* )} */}
-        <Text style={styles.sectionText}>Dodatne informacije:</Text>
-        <InputField
-          label="Opis proizvoda"
-          labelStyles={styles.inputFieldLabelStyles}
-          inputText={description}
-          setInputText={(text: string | number | undefined) => setDescription(text as string)}
-          containerStyles={styles.descriptionField}
-          selectTextOnFocus={true}
-          multiline={true}
-          numberOfLines={4}
-          labelBorders={true}
-        />
-        <View style={styles.wrapper}>
-          <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</Text>
-          <DropdownList
-            key={resetKey}
-            data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
-            placeholder="Izaberite dobavljača"
-            onSelect={setSelectedSupplier}
-            buttonContainerStyles={{ marginTop: 4 }}
-            isDefaultValueOn={false}
+          {/* )} */}
+          {/* <Text style={[styles.sectionText, styles.dodatneInfo]}>Dodatne informacije:</Text> */}
+          <InputField
+            label="Opis proizvoda"
+            labelStyles={styles.inputFieldLabelStyles}
+            inputText={description}
+            setInputText={(text: string | number | undefined) => setDescription(text as string)}
+            containerStyles={styles.descriptionField}
+            selectTextOnFocus={true}
+            multiline={true}
+            numberOfLines={4}
+            labelBorders={false}
           />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            onPress={handleAddProduct}
-            backColor={Colors.highlight}
-            textColor={Colors.whiteText}
-            containerStyles={{ marginTop: 16 }}
-          >
-            Sačuvaj Proizvod
-          </Button>
+
+          <View style={styles.wrapper}>
+            <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</Text>
+            <DropdownList
+              key={resetKey}
+              data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
+              placeholder="Izaberite dobavljača"
+              onSelect={setSelectedSupplier}
+              buttonContainerStyles={{ marginTop: 4 }}
+              isDefaultValueOn={false}
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              onPress={handleAddProduct}
+              backColor={Colors.highlight}
+              textColor={Colors.whiteText}
+              containerStyles={{ marginTop: 16 }}
+            >
+              Sačuvaj Proizvod
+            </Button>
+          </View>
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>
@@ -302,16 +310,23 @@ function AddProduct() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     display: 'flex',
-    padding: 16,
+    position: 'relative',
+    backgroundColor: Colors.primaryLight,
+  },
+  card: {
+    backgroundColor: Colors.white,
+    padding: 10,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: Colors.secondaryLight,
+    marginBottom: 16,
+    margin: 10,
   },
   wrapper: {
     marginBottom: 0,
   },
-  buttonContainer: {
-    marginBottom: 50,
-  },
+  buttonContainer: {},
   sectionText: {
     fontSize: 18,
   },

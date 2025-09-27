@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     padding: 4,
     borderRadius: 4,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     borderWidth: 0.5,
   },
   sizesContainer: {

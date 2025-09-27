@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { LogBox, View } from 'react-native';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import AuthStack from './navigation/AuthStack';
@@ -32,6 +32,7 @@ function Root() {
    * Makes the native splash screen remain visible until hideAsync is called.
    */
   SplashScreen.preventAutoHideAsync();
+
   const [isCheckingToken, setIsCheckingToken] = useState(true);
   const authCtx = useContext(AuthContext);
 
@@ -75,8 +76,16 @@ function Root() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <PopupMessagesComponent />
-      <Navigation />
+      {/* ✅ Show this always, even before splash hides */}
+      {/* <LoadingLogDisplay /> */}
+
+      {/* ⛔️ Only show navigation once splash is hidden */}
+      {!isCheckingToken && (
+        <>
+          <PopupMessagesComponent />
+          <Navigation />
+        </>
+      )}
     </View>
   );
 }
@@ -84,11 +93,13 @@ function Root() {
 export default function App() {
   const networkStatus = useNetworkStatus();
   return (
+    // <React.StrictMode>
     <>
       <StatusBar style="light" />
       <ContextProvider>
         <Root />
       </ContextProvider>
     </>
+    // </React.StrictMode>
   );
 }

@@ -1,33 +1,31 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Animated, StyleSheet, Text, View } from 'react-native'
-import IconButton from '../../util-components/IconButton'
-import { Colors } from '../../constants/colors'
-import { useExpandAnimation, useExpandAnimationWithContentVisibility } from '../../hooks/useExpand'
-import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation'
-import { AuthContext } from '../../store/auth-context'
-import { popupMessage } from '../../util-components/PopupMessage'
-import Button from '../../util-components/Button'
-
+import React, { useEffect, useState } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
+import { Colors } from '../../constants/colors';
+import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
+import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
+import { useUser } from '../../store/user-context';
+import Button from '../../util-components/Button';
+import IconButton from '../../util-components/IconButton';
 
 interface PropTypes {
-  active: boolean
-  onRemoveBatchPress: () => void
-  handleSortProducts: (position: string) => void
+  active: boolean;
+  onRemoveBatchPress: () => void;
+  handleSortProducts: (position: string) => void;
 }
-function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }:PropTypes) {
+function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }: PropTypes) {
   useEffect(() => {
     setIsExpanded(active);
-  }, [active])
+  }, [active]);
   const [isContentVisible, setIsContentVisible] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleFade = useToggleFadeAnimation(isExpanded, 100);
   const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 0, 60, 100);
+  const user = useUser();
 
   return (
     <>
       {isContentVisible && (
         <Animated.View style={[styles.container, { height: toggleExpandAnimation, opacity: toggleFade }]}>
-
           {/* Product sorting buttons */}
           <View style={styles.sortProductsContainer}>
             <Button containerStyles={styles.button} onPress={() => handleSortProducts('top')}>
@@ -47,27 +45,28 @@ function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }:P
             color={Colors.highlight}
             onPress={onRemoveBatchPress}
             key={`key-remove-batch-button`}
-            icon='delete'
-            style={styles.removeBatchItemsButton} 
+            icon="delete"
+            style={styles.removeBatchItemsButton}
             pressedStyles={styles.removeBatchItemsButtonPressed}
           />
         </Animated.View>
       )}
     </>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
     backgroundColor: Colors.white,
-    borderBottomWidth: 0.5,
+    // borderBottomWidth: 0.5,
     borderBottomColor: Colors.primaryDark,
     flexDirection: 'row',
+    elevation: 2,
   },
   removeBatchItemsButton: {
     margin: 10,
-    borderWidth: 0.5,
+    // borderWidth: 0.5,
     borderColor: Colors.primaryDark,
     backgroundColor: Colors.white,
     borderRadius: 4,
@@ -76,7 +75,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 'auto'
+    marginLeft: 'auto',
   },
   removeBatchItemsButtonPressed: {
     opacity: 0.7,
@@ -90,7 +89,7 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: 60,
     height: 40,
-    borderWidth: 0.5,
+    // borderWidth: 0.5,
     borderColor: Colors.primaryDark,
     backgroundColor: Colors.white,
     borderRadius: 4,
@@ -102,7 +101,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
     paddingVertical: 0,
     paddingHorizontal: 0,
-  }
-})
+  },
+});
 
-export default BatchModeControlls
+export default BatchModeControlls;

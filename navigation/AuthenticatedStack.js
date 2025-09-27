@@ -7,8 +7,7 @@ import { useEffect } from 'react';
 import { useGetAppColors } from '../constants/useGetAppColors';
 import { useAuthContext } from '../hooks/useAuthContext';
 import Profile from '../screens/Profile/Profile';
-import Settings from '../screens/Settings/Settings';
-import UserManager from '../screens/UserManager/UserManager';
+import { useGetAppContexts } from '../store/app-context';
 import EndOfDayStatisticsContextProvider from '../store/end-of-day-statistics';
 import { initializeAuthContext } from '../util-methods/FetchMethods';
 import AdminDashboardTabs from './AdminDashboardTabs';
@@ -18,12 +17,15 @@ import CouriersTabs from './CouriersTabs';
 import EndOfDayTabs from './EndOfDayTabs';
 import OrdersManagerTabs from './OrdersManagerTabs';
 import ProductsManagerTabs from './ProductsManagerTabs';
+import SettingsTabs from './SettingsTabs';
+import UserManagerTabs from './userManagerTabs';
 
 const Drawer = createDrawerNavigator();
 
 export default function AuthenticatedStack() {
   const navigation = useNavigation();
   const authCtx = useAuthContext();
+  const appCtx = useGetAppContexts();
   const Colors = useGetAppColors();
   useEffect(() => {
     initializeAuthContext(authCtx);
@@ -41,7 +43,12 @@ export default function AuthenticatedStack() {
           onPress={logoOnPressNavigator}
           style={({ pressed }) => [pressed && styles.pressed, { marginBottom: 10 }]}
         >
-          <Image source={require('../assets/infinity-white.png')} style={styles.headerImage} resizeMode="contain" />
+          {/* <Image source={require('../assets/infinity-white.png')} style={styles.headerImage} resizeMode="contain" /> */}
+          <Image
+            source={{ uri: appCtx?.appSettings?.appIcon?.appIconUri }}
+            style={styles.headerImage}
+            resizeMode="contain"
+          />
         </Pressable>
       </View>
     ),
@@ -56,6 +63,7 @@ export default function AuthenticatedStack() {
     },
     drawerActiveTintColor: Colors.defaultText,
     drawerInactiveTintColor: Colors.defaultText,
+    tabBarPressColor: Colors.tabsPressEffect,
   };
 
   /**
@@ -77,7 +85,7 @@ export default function AuthenticatedStack() {
       <Drawer.Screen name="Profile" component={Profile} />
 
       {/* SETTINGS */}
-      <Drawer.Screen name="Settings" component={Settings} />
+      <Drawer.Screen name="SettingsTabs" component={SettingsTabs} />
 
       {/* END OF DAY */}
       <Drawer.Screen name="EndOfDayTabs">
@@ -93,7 +101,7 @@ export default function AuthenticatedStack() {
       <Drawer.Screen name="AdminDashboardTabs" component={AdminDashboardTabs} />
 
       {/* USERMANAGER */}
-      <Drawer.Screen name="UserManager" component={UserManager} />
+      <Drawer.Screen name="UserManagerTabs" component={UserManagerTabs} />
 
       {/* COLORS AND CATEGORIES TAB SCREEN */}
       <Drawer.Screen

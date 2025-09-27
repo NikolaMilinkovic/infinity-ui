@@ -1,22 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native'
-import { Colors } from '../../constants/colors'
-import Button from '../../util-components/Button'
-import IconButton from '../../util-components/IconButton'
-import { AuthContext } from '../../store/auth-context'
-import { popupMessage } from '../../util-components/PopupMessage'
-import { AppColors, ColorTypes } from '../../types/allTsTypes'
 import Constants from 'expo-constants';
-import { useGetAppColors } from '../../constants/useGetAppColors'
+import React, { useContext, useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useGetAppColors } from '../../constants/useGetAppColors';
+import { AuthContext } from '../../store/auth-context';
+import { useUser } from '../../store/user-context';
+import { AppColors, ColorTypes } from '../../types/allTsTypes';
+import Button from '../../util-components/Button';
+import IconButton from '../../util-components/IconButton';
+import { popupMessage } from '../../util-components/PopupMessage';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function EditColorItem({ data }: { data: ColorTypes }) {
   const [colorData, setColorData] = useState<ColorTypes>({
     _id: '',
     name: '',
-    colorCode: ''
+    colorCode: '',
   });
-  const [newName, setNewName] = useState('')
+  const [newName, setNewName] = useState('');
   const [showEdit, setShowEdit] = useState<Boolean>(false);
   const authCtx = useContext(AuthContext);
   const [success, setSucces] = useState('');
@@ -24,39 +24,43 @@ function EditColorItem({ data }: { data: ColorTypes }) {
   const [display, setDisplay] = useState(true);
   const Colors = useGetAppColors();
   const styles = getStyles(Colors);
+  const user = useUser();
 
-  // Resets Error & Success 
-  function resetNotifications(){
+  // Resets Error & Success
+  function resetNotifications() {
     setSucces('');
     setError('');
   }
 
   // Toggler
-  function showEditColorHandler(){
-    setNewName(data.name)
+  function showEditColorHandler() {
+    setNewName(data.name);
     setShowEdit(!showEdit);
   }
 
   // On input text change
   function handleNameChange(newName: string) {
-    setNewName(newName)
+    setNewName(newName);
   }
 
   // Set default data to read from
   useEffect(() => {
     setColorData(data);
-    setNewName(data.name)
-  }, [data])
+    setNewName(data.name);
+  }, [data]);
 
   // Updates the current color name in the database
-  async function updateColorHandler(){
-    try{
+  async function updateColorHandler() {
+    try {
+      if (!user?.permissions?.colors?.update) {
+        return popupMessage('Nemate permisiju za ažuriranje boja.', 'danger');
+      }
       resetNotifications();
-      if(newName.trim() === data.name){
+      if (newName.trim() === data.name) {
         setShowEdit(false);
         return;
       }
-      if(newName.trim() === ''){
+      if (newName.trim() === '') {
         setError('Boja mora imati ime!');
         popupMessage('Boja mora imati ime', 'danger');
         return;
@@ -64,15 +68,15 @@ function EditColorItem({ data }: { data: ColorTypes }) {
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colors/${colorData._id}`, {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${authCtx.token}`,
+          Authorization: `Bearer ${authCtx.token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           id: colorData._id,
           name: newName,
-          colorCode: colorData.colorCode
-        })
-      })
+          colorCode: colorData.colorCode,
+        }),
+      });
 
       if (!response.ok) {
         const parsedResponse = await response.json();
@@ -84,22 +88,25 @@ function EditColorItem({ data }: { data: ColorTypes }) {
       setSucces(parsedResponse.message);
       popupMessage(parsedResponse.message, 'success');
       setShowEdit(false);
-    } catch(error){
+    } catch (error) {
       console.error('Error updating the color:', error);
     }
   }
 
   // Deletes the color from the database
-  async function removeColorHandler(){
+  async function removeColorHandler() {
+    if (!user?.permissions?.colors?.delete) {
+      return popupMessage('Nemate permisiju za brisanje boja.', 'danger');
+    }
     setDisplay(false);
-    try{
+    try {
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colors/${colorData._id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${authCtx.token}`,
+          Authorization: `Bearer ${authCtx.token}`,
           'Content-Type': 'application/json',
         },
-      })
+      });
 
       if (!response.ok) {
         const parsedResponse = await response.json();
@@ -109,59 +116,41 @@ function EditColorItem({ data }: { data: ColorTypes }) {
         return;
       }
 
-      popupMessage(`Boja je uspesno obrisana`, 'success');
-    } catch(error){
+      popupMessage(`Boja je uspešno obrisana`, 'success');
+    } catch (error) {
       console.error('Error deleting color:', error);
     }
   }
 
-  if(display === false){
+  if (display === false) {
     return;
   }
 
-  if(colorData === null){
-    return (
-      <></>
-    )
+  if (colorData === null) {
+    return <></>;
   }
 
   return (
-    <Pressable 
-      style={styles.colorItem}
-      onPress={showEditColorHandler}
-    >
+    <Pressable style={styles.colorItem} onPress={showEditColorHandler}>
       {showEdit ? (
         <View style={styles.mainInputsContainer}>
-          <TextInput 
-            style={styles.input}
-            placeholder='Ime boje'
-            value={newName}
-            onChangeText={handleNameChange}
-          />
+          <TextInput style={styles.input} placeholder="Ime boje" value={newName} onChangeText={handleNameChange} />
           <View style={styles.buttons}>
-            <Button 
-              onPress={showEditColorHandler}
-              textColor={Colors.whiteText}
-              backColor={Colors.deleteButton}
-            >Otkazi</Button>
-            <Button 
-              onPress={updateColorHandler}
-              textColor={Colors.whiteText}
-              backColor={Colors.primaryDark}
-            >Sačuvaj</Button>
+            <Button onPress={showEditColorHandler} textColor={Colors.whiteText} backColor={Colors.deleteButton}>
+              Otkaži
+            </Button>
+            <Button onPress={updateColorHandler} textColor={Colors.whiteText} backColor={Colors.primaryDark}>
+              Sačuvaj
+            </Button>
           </View>
-          {error && (
-            <Text style={styles.error}>{error}</Text>
-          )}
-          {success && (
-            <Text style={styles.success}>{success}</Text>
-          )}
+          {error && <Text style={styles.error}>{error}</Text>}
+          {success && <Text style={styles.success}>{success}</Text>}
         </View>
       ) : (
         <View style={styles.displayColor}>
           <Text style={styles.colorText}>{colorData.name}</Text>
           <IconButton
-            icon='delete'
+            icon="delete"
             onPress={removeColorHandler}
             color={Colors.deleteButton}
             style={styles.deleteIcon}
@@ -170,21 +159,22 @@ function EditColorItem({ data }: { data: ColorTypes }) {
         </View>
       )}
     </Pressable>
-  )
+  );
 }
 
-function getStyles(Colors: AppColors){
+function getStyles(Colors: AppColors) {
   return StyleSheet.create({
     colorItem: {
       padding: 14,
       paddingHorizontal: 25,
-      borderBottomWidth: 1,
-      borderBottomColor: '#cccccc',
+      borderWidth: 0.5,
+      borderColor: Colors.secondaryLight,
       backgroundColor: Colors.buttonBackground,
       marginBottom: 1,
       flexDirection: 'row',
       gap: 20,
-      alignItems: 'center'
+      alignItems: 'center',
+      elevation: 1,
     },
     deleteIcon: {
       marginLeft: 'auto',
@@ -204,10 +194,10 @@ function getStyles(Colors: AppColors){
       flexDirection: 'column',
     },
     input: {
-      borderBottomColor: Colors.primaryDark,
+      borderBottomColor: Colors.secondaryLight,
       borderBottomWidth: 1,
       flex: 1,
-      marginBottom: 10, 
+      marginBottom: 10,
       fontSize: 16,
     },
     buttons: {
@@ -224,9 +214,9 @@ function getStyles(Colors: AppColors){
     success: {
       marginTop: 8,
       color: Colors.success,
-      textAlign: 'center'
-    }
+      textAlign: 'center',
+    },
   });
 }
 
-export default EditColorItem
+export default EditColorItem;

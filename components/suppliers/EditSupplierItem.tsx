@@ -1,12 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native'
-import { Colors } from '../../constants/colors'
-import Button from '../../util-components/Button'
-import IconButton from '../../util-components/IconButton'
-import { AuthContext } from '../../store/auth-context'
-import { popupMessage } from '../../util-components/PopupMessage'
-import { SupplierTypes } from '../../types/allTsTypes'
 import Constants from 'expo-constants';
+import React, { useContext, useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Colors } from '../../constants/colors';
+import { AuthContext } from '../../store/auth-context';
+import { useUser } from '../../store/user-context';
+import { SupplierTypes } from '../../types/allTsTypes';
+import Button from '../../util-components/Button';
+import IconButton from '../../util-components/IconButton';
+import { popupMessage } from '../../util-components/PopupMessage';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function EditSupplierItem({ data }: { data: SupplierTypes }) {
@@ -14,60 +15,67 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
     _id: '',
     name: '',
   });
-  const [newName, setNewName] = useState('')
+  const [newName, setNewName] = useState('');
   const [showEdit, setShowEdit] = useState<Boolean>(false);
   const authCtx = useContext(AuthContext);
   const [success, setSucces] = useState('');
   const [error, setError] = useState('');
   const [display, setDisplay] = useState(true);
+  const user = useUser();
 
-  // Resets Error & Success 
-  function resetNotifications(){
+  // Resets Error & Success
+  function resetNotifications() {
     setSucces('');
     setError('');
   }
 
   // Toggler
-  function showEditSupplierHandler(){
-    setNewName(data.name)
+  function showEditSupplierHandler() {
+    setNewName(data.name);
     setShowEdit(!showEdit);
   }
 
   // On input text change
   function handleNameChange(newName: string) {
-    setNewName(newName)
+    setNewName(newName);
   }
 
   // Set default data to read from
   useEffect(() => {
     setSupplierData(data);
-    setNewName(data.name)
-  }, [data])
+    setNewName(data.name);
+  }, [data]);
 
   // Updates the current color name in the database
-  async function updateSupplierHandler(){
-    try{
+  async function updateSupplierHandler() {
+    try {
+      if (!user?.permissions?.suppliers?.update) {
+        return popupMessage('Nemate dozvolu za ažuriranje dobavljača', 'danger');
+      }
       resetNotifications();
-      if(newName.trim() === data.name){
+      if (newName.trim() === data.name) {
         setShowEdit(false);
         return;
       }
-      if(newName.trim() === ''){
+      if (newName.trim() === '') {
         setError('Dobavljač mora imati ime!');
         popupMessage('Dobavljač mora imati ime', 'danger');
         return;
       }
-      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/suppliers/${supplierData._id}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${authCtx.token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          id: supplierData._id,
-          name: newName,
-        }),
-      })
+      const response = await fetch(
+        `${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/suppliers/${supplierData._id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${authCtx.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: supplierData._id,
+            name: newName,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const parsedResponse = await response.json();
@@ -79,22 +87,28 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
       setSucces(parsedResponse.message);
       popupMessage(parsedResponse.message, 'success');
       setShowEdit(false);
-    } catch(error){
+    } catch (error) {
       console.error('Error updating the supplier:', error);
     }
   }
 
   // Deletes the color from the database
-  async function removeSupplierHandler(){
+  async function removeSupplierHandler() {
+    if (!user?.permissions?.suppliers?.delete) {
+      return popupMessage('Nemate dozvolu za brisanje dobavljača', 'danger');
+    }
     setDisplay(false);
-    try{
-      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/suppliers/${supplierData._id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${authCtx.token}`,
-          'Content-Type': 'application/json',
-        },
-      })
+    try {
+      const response = await fetch(
+        `${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/suppliers/${supplierData._id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${authCtx.token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       if (!response.ok) {
         const parsedResponse = await response.json();
@@ -105,58 +119,45 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
       }
 
       popupMessage(`Dobavljač je uspesno obrisan`, 'success');
-    } catch(error){
+    } catch (error) {
       console.error('Error deleting supplier:', error);
     }
   }
 
-  if(display === false){
+  if (display === false) {
     return;
   }
 
-  if(supplierData === null){
-    return (
-      <></>
-    )
+  if (supplierData === null) {
+    return <></>;
   }
 
   return (
-    <Pressable 
-      style={styles.supplierItem}
-      onPress={showEditSupplierHandler}
-    >
+    <Pressable style={styles.supplierItem} onPress={showEditSupplierHandler}>
       {showEdit ? (
         <View style={styles.mainInputsContainer}>
-          <TextInput 
+          <TextInput
             style={styles.input}
-            placeholder='Ime dobavljača'
+            placeholder="Ime dobavljača"
             value={newName}
             onChangeText={handleNameChange}
           />
           <View style={styles.buttons}>
-            <Button 
-              onPress={showEditSupplierHandler}
-              textColor={Colors.primaryLight}
-              backColor={Colors.error}
-            >Otkazi</Button>
-            <Button 
-              onPress={updateSupplierHandler}
-              textColor={Colors.primaryLight}
-              backColor={Colors.primaryDark}
-            >Sacuvaj</Button>
+            <Button onPress={showEditSupplierHandler} textColor={Colors.primaryLight} backColor={Colors.error}>
+              Otkaži
+            </Button>
+            <Button onPress={updateSupplierHandler} textColor={Colors.primaryLight} backColor={Colors.primaryDark}>
+              Sačuvaj
+            </Button>
           </View>
-          {error && (
-            <Text style={styles.error}>{error}</Text>
-          )}
-          {success && (
-            <Text style={styles.success}>{success}</Text>
-          )}
+          {error && <Text style={styles.error}>{error}</Text>}
+          {success && <Text style={styles.success}>{success}</Text>}
         </View>
       ) : (
         <View style={styles.displayItem}>
           <Text style={styles.supplierText}>{supplierData.name}</Text>
           <IconButton
-            icon='delete'
+            icon="delete"
             onPress={removeSupplierHandler}
             color={Colors.error}
             style={styles.deleteIcon}
@@ -165,7 +166,7 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
         </View>
       )}
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
     marginBottom: 1,
     flexDirection: 'row',
     gap: 20,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   deleteIcon: {
     marginLeft: 'auto',
@@ -197,10 +198,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   input: {
-    borderBottomColor: Colors.primaryDark,
+    borderBottomColor: Colors.secondaryLight,
     borderBottomWidth: 1,
     flex: 1,
-    marginBottom: 10, 
+    marginBottom: 10,
     fontSize: 16,
   },
   buttons: {
@@ -217,8 +218,8 @@ const styles = StyleSheet.create({
   success: {
     marginTop: 8,
     color: Colors.success,
-    textAlign: 'center'
-  }
-})
+    textAlign: 'center',
+  },
+});
 
-export default EditSupplierItem
+export default EditSupplierItem;

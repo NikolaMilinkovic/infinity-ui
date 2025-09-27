@@ -7,6 +7,7 @@ import useBackClickHandler from '../../../hooks/useBackClickHandler';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { AuthContext } from '../../../store/auth-context';
+import { ColorsContext } from '../../../store/colors-context';
 import { CouriersContext } from '../../../store/couriers-context';
 import { OrdersContext } from '../../../store/orders-context';
 import { CategoryTypes } from '../../../types/allTsTypes';
@@ -14,13 +15,15 @@ import Button from '../../../util-components/Button';
 import DropdownList from '../../../util-components/DropdownList';
 import ExpandButton from '../../../util-components/ExpandButton';
 import InputField from '../../../util-components/InputField';
+import MultiDropdownList from '../../../util-components/MultiDropdownList';
 import { popupMessage } from '../../../util-components/PopupMessage';
+import SizePickerCheckboxes from '../../../util-components/SizePickerCheckboxes';
 import { fetchData } from '../../../util-methods/FetchMethods';
 
 interface PropTypes {
   searchData: string;
   setSearchData: (data: string | number | undefined) => void;
-  updateSearchParam: (data: boolean) => void;
+  updateSearchParam: (paramName: string, value: any) => void;
   isDatePicked: boolean;
   setIsDatePicked: (isDatePicked: boolean) => void;
   setPickedDate: (date: string) => void;
@@ -230,6 +233,30 @@ function SearchOrders({
     ordersCtx.setCustomOrderSet([]);
   };
 
+  // SIZE FILTER
+  const colorsCtx = useContext(ColorsContext);
+  const [colorsData, setColorsData] = useState<ColorDataType[]>(colorsCtx.getColorItemsForDropdownList() || []);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  useEffect(() => {
+    updateSearchParam('onColorsSearch', selectedColors);
+    updateSearchParam('onSizeSearch', selectedSizes);
+  }, [selectedColors, selectedSizes]);
+
+  // COLOR FILTER
+  interface ColorDataType {
+    key: string | number;
+    value: string | number;
+  }
+  useEffect(() => {
+    setColorsData(
+      colorsCtx.colors.map((item) => ({
+        key: item.name,
+        value: item.name,
+      }))
+    );
+  }, [colorsCtx.colors]);
+
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -249,7 +276,9 @@ function SearchOrders({
           containerStyles={styles.expandButton}
         />
       </View>
-      <Animated.ScrollView style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
+      <Animated.ScrollView
+        style={[styles.searchParamsContainer, { height: toggleExpandAnimation, opacity: toggleFade }]}
+      >
         <Animated.ScrollView style={{ opacity: toggleFade }}>
           <Text style={styles.filtersH1}>Filteri</Text>
         </Animated.ScrollView>
@@ -266,44 +295,8 @@ function SearchOrders({
           />
         </View>
 
-        {/* Date Picker */}
-        <View style={styles.radioGroupContainer}>
-          <Text style={styles.filtersH2absolute}>Pretrazi po datumu</Text>
-          <View style={styles.dateButtonsContainer}>
-            <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
-              Izaberi datum
-            </Button>
-            <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
-              Resetuj izbor
-            </Button>
-          </View>
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              is24Hour={true}
-              onChange={handleDatePick}
-              onTouchCancel={handleDateReset}
-            />
-          )}
-          {date && isDatePicked && (
-            <View style={styles.dateDisplayContainer}>
-              <Text style={styles.dateLabel}>Izabrani datum:</Text>
-              <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
-            </View>
-          )}
-        </View>
-
-        <DatePickerFromDateToNow
-          isDatePicked={isDateForPeriodPicked}
-          setIsDatePicked={setIsDateForPeriodPicked}
-          setPickedDate={setPickedDateForPeriod}
-          resetOtherDatePickers={handleDateReset}
-        />
-
         {/* Ascending | Descending */}
-        <View style={styles.radioGroupContainer}>
+        <View style={[styles.radioGroupContainer]}>
           <Text style={styles.filtersH2absolute}>Redosled</Text>
           <View style={styles.radioGroup}>
             <RadioGroup
@@ -346,17 +339,76 @@ function SearchOrders({
           </View>
         </View>
 
+        {/* COLORS FILTER */}
+        <Text style={styles.filtersH2}>Pretraga po boji proizvoda</Text>
+        <MultiDropdownList
+          data={colorsData}
+          setSelected={setSelectedColors}
+          isOpen={true}
+          label="Boje"
+          placeholder="Filtriraj po bojama"
+          dropdownStyles={{ maxHeight: 150 }}
+        />
+
+        {/* SIZE FILTER */}
+        <View style={[styles.radioGroupContainer, { paddingBottom: 8, paddingTop: 8, marginTop: 36 }]}>
+          <Text style={styles.filtersH2absolute}>Pretraga po veličini proizvoda</Text>
+          <SizePickerCheckboxes
+            sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
+            selectedSizes={selectedSizes}
+            setSelectedSizes={setSelectedSizes}
+            borders={false}
+          />
+        </View>
+
+        {/* Date Picker */}
+
+        <DatePickerFromDateToNow
+          isDatePicked={isDateForPeriodPicked}
+          setIsDatePicked={setIsDateForPeriodPicked}
+          setPickedDate={setPickedDateForPeriod}
+          resetOtherDatePickers={handleDateReset}
+        />
+        <View style={styles.radioGroupContainer}>
+          <Text style={styles.filtersH2absolute}>Pretrazi po datumu</Text>
+          <View style={styles.dateButtonsContainer}>
+            <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+              Izaberi datum
+            </Button>
+            <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
+              Resetuj izbor
+            </Button>
+          </View>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              is24Hour={true}
+              onChange={handleDatePick}
+              onTouchCancel={handleDateReset}
+            />
+          )}
+          {date && isDatePicked && (
+            <View style={styles.dateDisplayContainer}>
+              <Text style={styles.dateLabel}>Izabrani datum:</Text>
+              <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+            </View>
+          )}
+        </View>
+
         {/* CLOSE BUTTON */}
         {/* <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
             <Button
-              onPress={() => setIsExpanded(!isExpanded)}
-              backColor={Colors.highlight}
-              textColor={Colors.white}
-              containerStyles={{ marginBottom: 16, marginTop: 10}}
+            onPress={() => setIsExpanded(!isExpanded)}
+            backColor={Colors.highlight}
+            textColor={Colors.white}
+            containerStyles={{ marginBottom: 16, marginTop: 10}}
             >
-              Zatvori
+            Zatvori
             </Button>
-          </Animated.View> */}
+            </Animated.View> */}
+        <View style={{ marginBottom: 26 }}></View>
       </Animated.ScrollView>
     </View>
   );
@@ -463,18 +515,19 @@ function DatePickerFromDateToNow({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    borderWidth: 0.5,
+    elevation: 2,
     borderColor: Colors.primaryDark,
     backgroundColor: Colors.white,
-    paddingVertical: 32,
+    marginBottom: 2,
   },
   inputContainer: {
     flexDirection: 'row',
-    flex: 1,
-    marginBottom: 10,
+    marginBottom: 6,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+    zIndex: 2,
+    backgroundColor: Colors.white,
   },
   input: {
     marginTop: 18,
@@ -490,15 +543,16 @@ const styles = StyleSheet.create({
     right: 0,
     top: 10,
   },
-  searchParamsContainer: {},
+  searchParamsContainer: {
+    position: 'relative',
+  },
   overlay: {},
   radioGroupContainer: {
     padding: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderWidth: 2,
+    borderColor: Colors.primaryLight,
     borderRadius: 4,
-    marginBottom: 8,
-    paddingTop: 20,
+    marginBottom: 16,
     marginTop: 10,
   },
   radioGroup: {},
@@ -506,7 +560,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   filtersH1: {
-    marginTop: 32,
+    marginTop: 10,
     fontSize: 20,
     fontWeight: 'bold',
     color: Colors.primaryDark,

@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { ColorsContext } from '../../store/colors-context';
-import { View, StyleSheet, Text, FlatList } from 'react-native'
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { CourierTypes } from '../../types/allTsTypes';
 import { CouriersContext } from '../../store/couriers-context';
+import { CourierTypes } from '../../types/allTsTypes';
 import EditCourierItem from './EditCourierItem';
 
 function EditCourier() {
-  const couriersCtx = useContext(CouriersContext);  
+  const couriersCtx = useContext(CouriersContext);
   const [couriers, setCouriers] = useState<CourierTypes[]>([]);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchCouriers = async () => {
@@ -17,51 +17,71 @@ function EditCourier() {
       setIsLoading(false);
     };
     fetchCouriers();
-  }, [couriersCtx])
+  }, [couriersCtx]);
+
+  // Filter couriers based on search query
+  const filteredCouriers = useMemo(() => {
+    if (!searchQuery.trim()) return couriers;
+    return couriers.filter(
+      (courier) =>
+        courier.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        courier.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        courier.phone?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        courier.address?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [couriers, searchQuery]);
 
   if (isLoading) {
     return <Text>Ucitavam kurire...</Text>;
   }
 
-  function NoCouriersRenderer(){
+  function NoCouriersRenderer() {
     const internalStyle = StyleSheet.create({
       container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
       },
-      text: {
-        
-      }
-    })
+      text: {},
+    });
 
     return (
       <View style={internalStyle.container}>
-        <Text style={internalStyle.text}>
-          Trenutno ne postoje dodati kuriri
-        </Text>
+        <Text style={internalStyle.text}>Trenutno ne postoje dodati kuriri</Text>
       </View>
-    )
+    );
   }
 
   return (
     <View style={styles.container}>
       {couriers.length > 0 ? (
-        <FlatList 
-          data={couriers} 
-          keyExtractor={(item) => item._id} 
-          renderItem={(item) => <EditCourierItem data={item.item}/>}
-          style={styles.list}
-          contentContainerStyle={styles.listContent}
-          ListHeaderComponent={() => <Text style={styles.header}>Lista Kurira</Text>}
-          initialNumToRender={10}
-          removeClippedSubviews={false}
-        />
+        <>
+          {/* Header and TextInput moved outside FlatList */}
+          <View style={styles.headerWrapper}>
+            <Text style={styles.header}>Ukupno kurira: {couriers.length}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Pretraži kurire"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+
+          <FlatList
+            data={filteredCouriers}
+            keyExtractor={(item) => item._id}
+            renderItem={(item) => <EditCourierItem data={item.item} />}
+            style={styles.list}
+            contentContainerStyle={styles.listContent}
+            initialNumToRender={10}
+            removeClippedSubviews={false}
+          />
+        </>
       ) : (
-        <NoCouriersRenderer/>
+        <NoCouriersRenderer />
       )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -74,14 +94,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    paddingBottom: 20,
+    paddingBottom: 10,
+    gap: 2,
+  },
+  headerWrapper: {
+    backgroundColor: Colors.white,
+    flexDirection: 'row',
+    paddingHorizontal: 10,
+    marginBottom: 6,
+    borderBottomColor: Colors.secondaryLight,
+    borderBottomWidth: 0.5,
+    elevation: 2,
   },
   header: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: 'bold',
     padding: 10,
-    backgroundColor: 'white',
-  }
-})
+    backgroundColor: Colors.white,
+    textAlign: 'center',
+  },
+  input: {
+    borderBottomColor: Colors.secondaryLight,
+    borderBottomWidth: 1,
+    flex: 1,
+    marginBottom: 10,
+    marginLeft: 10,
+    fontSize: 14,
+    textAlignVertical: 'bottom',
+  },
+});
 
-export default EditCourier
+export default EditCourier;

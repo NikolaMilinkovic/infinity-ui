@@ -15,7 +15,7 @@ import DropdownList from '../../util-components/DropdownList';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { handleFetchingWithBodyData } from '../../util-methods/FetchMethods';
 
-function Settings() {
+function UserSettings() {
   const authToken = useAuthToken();
   const userCtx = useContext(UserContext);
   const text = useTextForActiveLanguage('settings');
@@ -60,54 +60,52 @@ function Settings() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* LIST PRODUCTS BY */}
-      <Text style={styles.h1}>{text.listProductsBy_header}</Text>
-      <View style={styles.sectionOutline}>
-        <ListProductsByDropdown updateDefault={updateDefault} />
+      <View style={styles.card}>
+        {/* UPDATES */}
+        <Text style={[styles.h1, { marginTop: 0 }]}>Ažuriranje | Updates:</Text>
+        <View style={styles.sectionOutline}>
+          <CheckForUpdates appCtx={appCtx} />
+        </View>
+
+        {/* LIST PRODUCTS BY */}
+        <Text style={styles.h1}>{text.listProductsBy_header}</Text>
+        <View style={styles.sectionOutline}>
+          <ListProductsByDropdown updateDefault={updateDefault} />
+        </View>
+
+        {/* DEFAULT COURIER */}
+        <Text style={styles.h1}>Kuriri</Text>
+        <View style={styles.sectionOutline}>
+          <CouriersSettings updateDefault={updateDefault} />
+        </View>
+
+        {/* NOVA PORUDZBINA */}
+        {/* <Text style={styles.h1}>Nova Porudžbina:</Text>
+        <View style={styles.sectionOutline}>
+          <DefaultCourier updateDefault={updateDefault} />
+        </View> */}
+
+        {/* THEME SELECTOR */}
+        <Text style={styles.h1}>{text.theme_header}</Text>
+        <View style={styles.sectionOutline}>
+          <ThemeSelector updateDefault={updateDefault} />
+        </View>
+
+        {/* LANGUAGE SELECTOR */}
+        {/* <Text style={styles.h1}>{text.language_header}</Text>
+        <View style={styles.sectionOutline}>
+        <LanguageSelector updateUserSetting={updateUserSetting} />
+        </View> */}
+
+        {/* SAVE BTN */}
+        <Button
+          containerStyles={styles.saveButton}
+          onPress={saveAndUpdateUserSettings}
+          textStyles={styles.saveButtonText}
+        >
+          Sačuvaj
+        </Button>
       </View>
-
-      {/* DEFAULT COURIER */}
-      <Text style={styles.h1}>Kuriri</Text>
-      <View style={styles.sectionOutline}>
-        <CouriersSettings updateDefault={updateDefault} />
-      </View>
-
-      {/* UPDATES */}
-      <Text style={styles.h1}>Ažuriranje | Updates:</Text>
-      <View style={styles.sectionOutline}>
-        <CheckForUpdates appCtx={appCtx} />
-      </View>
-
-      {/* NOVA PORUDZBINA */}
-      {/* <Text style={styles.h1}>Nova Porudžbina:</Text>
-      <View style={styles.sectionOutline}>
-        <DefaultCourier
-          updateDefault={updateDefault}
-        />
-      </View> */}
-
-      {/* THEME SELECTOR */}
-      <Text style={styles.h1}>{text.theme_header}</Text>
-      <View style={styles.sectionOutline}>
-        <ThemeSelector updateDefault={updateDefault} />
-      </View>
-
-      {/* LANGUAGE SELECTOR */}
-      {/* <Text style={styles.h1}>{text.language_header}</Text>
-      <View style={styles.sectionOutline}>
-        <LanguageSelector
-          updateUserSetting={updateUserSetting}
-        />
-      </View> */}
-
-      {/* SAVE BTN */}
-      <Button
-        containerStyles={styles.saveButton}
-        onPress={saveAndUpdateUserSettings}
-        textStyles={styles.saveButtonText}
-      >
-        Sačuvaj
-      </Button>
     </ScrollView>
   );
 }
@@ -115,8 +113,18 @@ function Settings() {
 function getStyles(Colors: AppColors) {
   return StyleSheet.create({
     container: {
-      padding: 10,
+      display: 'flex',
+      position: 'relative',
       backgroundColor: Colors.primaryLight,
+    },
+    card: {
+      backgroundColor: Colors.white,
+      padding: 10,
+      borderRadius: 4,
+      borderWidth: 1,
+      borderColor: Colors.secondaryLight,
+      marginBottom: 16,
+      margin: 10,
     },
     h1: {
       fontSize: 18,
@@ -124,6 +132,8 @@ function getStyles(Colors: AppColors) {
       marginBottom: 8,
       marginTop: 16,
       color: Colors.defaultText,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.secondaryLight,
     },
     h2: {
       color: Colors.defaultText,
@@ -134,17 +144,20 @@ function getStyles(Colors: AppColors) {
     },
     sectionOutline: {
       padding: 10,
-      borderWidth: 0.5,
-      borderColor: Colors.borders,
+      paddingTop: 0,
+      borderColor: Colors.secondaryLight,
       borderRadius: 10,
+      backgroundColor: Colors.white,
     },
     dropdown: {
       backgroundColor: Colors.buttonBackground,
       marginTop: 10,
-      elevation: 2,
+      elevation: 1,
       shadowOffset: { width: 1, height: 1 },
       shadowOpacity: 0.25,
       shadowRadius: 4,
+      borderWidth: 0.5,
+      borderColor: Colors.secondaryLight,
     },
     dropdownText: {
       color: Colors.defaultText,
@@ -152,7 +165,6 @@ function getStyles(Colors: AppColors) {
     saveButton: {
       backgroundColor: Colors.highlight,
       marginTop: 10,
-      marginBottom: 20,
     },
     saveButtonText: {
       color: Colors.white,
@@ -241,7 +253,7 @@ function LanguageSelector({ updateUserSetting }: { updateUserSetting: (field: st
         data={listSelectorData}
         defaultValue={getDefaultValue()}
         onSelect={updateSetting}
-        buttonContainerStyles={{ marginTop: 10 }}
+        buttonContainerStyles={[styles.dropdown, { marginTop: 10 }]}
       />
     </>
   );
@@ -300,4 +312,4 @@ function DefaultCourier({ updateDefault }: { updateDefault: (field: string, valu
   );
 }
 
-export default Settings;
+export default UserSettings;

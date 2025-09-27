@@ -1,54 +1,58 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import BrowseProducts from '../screens/Home/browseProducts/BrowseProducts';
-import AddItem from '../screens/ProductsManager/AddProduct/AddItem';
-import NewOrder from '../screens/Home/newOrder/NewOrder';
-import { Colors } from '../constants/colors';
 import { Dimensions } from 'react-native';
 import { useGetAppColors } from '../constants/useGetAppColors';
+import BrowseProducts from '../screens/Home/browseProducts/BrowseProducts';
+import NewOrder from '../screens/Home/newOrder/NewOrder';
+import { useUser } from '../store/user-context';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function BrowsePageTabs(){
+export default function BrowsePageTabs() {
   const Colors = useGetAppColors();
+  const user = useUser();
+
   /**
    * Main TAB navigation | The sliding windows
    */
   return (
-    <Tab.Navigator 
+    <Tab.Navigator
       initialLayout={{
-        width: Dimensions.get('window').width
+        width: Dimensions.get('window').width,
       }}
-      screenOptions={{  
-        tabBarLabelStyle: { 
+      screenOptions={{
+        tabBarPressColor: Colors.tabsPressEffect,
+        tabBarLabelStyle: {
           fontSize: 11,
-          color: Colors.primaryDark
+          color: Colors.primaryDark,
         },
-        tabBarStyle: { 
+        tabBarStyle: {
           backgroundColor: Colors.tabsBackground,
-          
         },
         tabBarIndicatorStyle: {
           backgroundColor: Colors.highlight,
-          height: 3, 
+          height: 3,
         },
         lazy: false,
         tabBarBounces: true,
         swipeEnabled: true,
-    }}>
-      <Tab.Screen 
-        name="BrowseProducts" 
+      }}
+    >
+      <Tab.Screen
+        name="BrowseProducts"
         component={BrowseProducts}
         options={{
           title: 'Lista Proizvoda',
         }}
       />
-      <Tab.Screen 
-        name="NewOrder" 
-        component={NewOrder} 
-        options={{
-          title: 'Nova Porudžbina',
-        }}
-      />
+      {user && user?.permissions?.orders?.create && (
+        <Tab.Screen
+          name="NewOrder"
+          component={NewOrder}
+          options={{
+            title: 'Nova Porudžbina',
+          }}
+        />
+      )}
     </Tab.Navigator>
-  )
+  );
 }

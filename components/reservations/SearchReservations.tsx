@@ -7,29 +7,21 @@ import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useExpandAnimation } from '../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
 import { AuthContext } from '../../store/auth-context';
-import { OrdersContext } from '../../store/orders-context';
+import { ColorsContext } from '../../store/colors-context';
 import Button from '../../util-components/Button';
 import ExpandButton from '../../util-components/ExpandButton';
 import InputField from '../../util-components/InputField';
+import MultiDropdownList from '../../util-components/MultiDropdownList';
 import { popupMessage } from '../../util-components/PopupMessage';
+import SizePickerCheckboxes from '../../util-components/SizePickerCheckboxes';
 import { fetchData } from '../../util-methods/FetchMethods';
 
 interface PropTypes {
-  searchData: string;
-  setSearchData: (data: string | number | undefined) => void;
-  updateSearchParam: (data: boolean) => void;
-  isDatePicked: boolean;
-  setIsDatePicked: (isDatePicked: boolean) => void;
-  setPickedDate: (date: string) => void;
+  searchParams: any;
+  setSearchParams: any;
+  updateSearchParam: any;
 }
-function SearchReservations({
-  searchData,
-  setSearchData,
-  updateSearchParam,
-  isDatePicked,
-  setIsDatePicked,
-  setPickedDate,
-}: PropTypes) {
+function SearchReservations({ searchParams, setSearchParams, updateSearchParam }: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(false);
   const screenHeight = Dimensions.get('window').height;
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 172, 180);
@@ -76,7 +68,6 @@ function SearchReservations({
   // DATE PICKER
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
-  const ordersCtx = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
 
@@ -97,45 +88,60 @@ function SearchReservations({
       popupMessage('Došlo je do problema prilikom preuzimanja podataka o rezervacijama', 'danger');
 
     popupMessage(response.message, 'success');
-    ordersCtx.setCustomReservationsSet(response.reservations);
     return;
   }
   function handleSetPickedDate(date: Date) {
     const formattedDate = date.toISOString().split('T')[0].split('-').reverse().join('/');
-    setPickedDate(formattedDate);
+    setSearchParams((prev: any) => ({ ...prev, pickedDateFormatted: formattedDate }));
   }
   function handleOpenDatePicker() {
     setShowDatePicker(true);
   }
   const handleDatePick = async (e: NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
     if (e.type === 'set') {
-      setDate(selectedDate);
-      setIsDatePicked(true);
-      await handleFetchReservationsByDate(selectedDate, token);
-      handleSetPickedDate(selectedDate);
+      const normalized = new Date(
+        Date.UTC(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate())
+      );
+
+      setSearchParams((prev: any) => ({ ...prev, pickedDate: normalized }));
+      await handleFetchReservationsByDate(normalized, token);
+      handleSetPickedDate(normalized);
     }
 
     setShowDatePicker(false);
   };
   const handleDateReset = () => {
-    setDate(new Date());
-    setIsDatePicked(false);
+    setSearchParams((prev: any) => ({ ...prev, pickedDate: '' }));
+    setSearchParams((prev: any) => ({ ...prev, pickedDateFormatted: '' }));
     setShowDatePicker(false);
-    setPickedDate('');
-    ordersCtx.setCustomReservationsSet([]);
   };
+
+  // COLORS AND SIZES FILTER
+  interface ColorDataType {
+    key: string | number;
+    value: string | number;
+  }
+  const colorsCtx = useContext(ColorsContext);
+  const [colorsData] = useState<ColorDataType[]>(colorsCtx.getColorItemsForDropdownList() || []);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  useEffect(() => {
+    updateSearchParam('onColorsSearch', selectedColors);
+    updateSearchParam('onSizeSearch', selectedSizes);
+  }, [selectedColors, selectedSizes]);
 
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
         <InputField
-          label="Pretraži porudžbine"
-          inputText={searchData}
-          setInputText={setSearchData}
+          label="Pretraži rezervacije"
+          inputText={searchParams.query}
+          setInputText={(text) => setSearchParams((prev: any) => ({ ...prev, query: text }))}
           background={Colors.white}
           color={Colors.primaryDark}
           labelBorders={false}
           containerStyles={styles.input}
+          displayClearInputButton={true}
         />
         <ExpandButton
           isExpanded={isExpanded}
@@ -143,10 +149,10 @@ function SearchReservations({
           containerStyles={styles.expandButton}
         />
       </View>
-      <Animated.ScrollView style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
-        <Animated.ScrollView style={{ opacity: toggleFade }}>
-          <Text style={styles.filtersH1}>Filteri</Text>
-        </Animated.ScrollView>
+      <Animated.ScrollView
+        style={[styles.searchParamsContainer, { height: toggleExpandAnimation, opacity: toggleFade }]}
+      >
+        <Text style={styles.filtersH1}>Filteri</Text>
 
         {/* Date Picker */}
         <View style={styles.radioGroupContainer}>
@@ -162,17 +168,17 @@ function SearchReservations({
 
           {showDatePicker && (
             <DateTimePicker
-              value={date}
+              value={searchParams.pickedDate || new Date()}
               mode="date"
               is24Hour={true}
               onChange={handleDatePick}
               onTouchCancel={handleDateReset}
             />
           )}
-          {date && isDatePicked && (
+          {date && searchParams.pickedDate !== '' && (
             <View style={styles.dateDisplayContainer}>
               <Text style={styles.dateLabel}>Izabrani datum:</Text>
-              <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+              <Text style={styles.dateText}>{formatDateHandler(searchParams.pickedDate)}</Text>
             </View>
           )}
         </View>
@@ -191,17 +197,27 @@ function SearchReservations({
           </View>
         </View>
 
-        {/* CLOSE BUTTON */}
-        <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
-          <Button
-            onPress={() => setIsExpanded(!isExpanded)}
-            backColor={Colors.highlight}
-            textColor={Colors.white}
-            containerStyles={{ marginBottom: 16, marginTop: 10 }}
-          >
-            Zatvori
-          </Button>
-        </Animated.View>
+        {/* COLORS FILTER */}
+        <Text style={styles.filtersH2}>Pretraga po boji proizvoda</Text>
+        <MultiDropdownList
+          data={colorsData}
+          setSelected={setSelectedColors}
+          isOpen={true}
+          label="Boje"
+          placeholder="Filtriraj po bojama"
+          dropdownStyles={{ maxHeight: 150 }}
+        />
+
+        {/* SIZE FILTER */}
+        <View style={[styles.radioGroupContainer, { paddingBottom: 8, paddingTop: 8, marginTop: 36 }]}>
+          <Text style={styles.filtersH2absolute}>Pretraga po veličini proizvoda</Text>
+          <SizePickerCheckboxes
+            sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
+            selectedSizes={selectedSizes}
+            setSelectedSizes={setSelectedSizes}
+            borders={false}
+          />
+        </View>
       </Animated.ScrollView>
     </View>
   );
@@ -210,17 +226,18 @@ function SearchReservations({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    borderWidth: 0.5,
+    elevation: 2,
     borderColor: Colors.primaryDark,
     backgroundColor: Colors.white,
-    paddingVertical: 32,
+    marginBottom: 2,
   },
   inputContainer: {
     flexDirection: 'row',
-    flex: 1,
-    marginBottom: 10,
+    marginBottom: 6,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 2,
+    backgroundColor: Colors.white,
   },
   input: {
     marginTop: 18,
@@ -236,15 +253,17 @@ const styles = StyleSheet.create({
     right: 0,
     top: 10,
   },
-  searchParamsContainer: {},
+  searchParamsContainer: {
+    position: 'relative',
+  },
   overlay: {},
   radioGroupContainer: {
     padding: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderWidth: 2,
+    borderColor: Colors.primaryLight,
     borderRadius: 4,
-    marginBottom: 8,
-    paddingTop: 20,
+    marginBottom: 16,
+    // paddingTop: 20,
     marginTop: 10,
   },
   radioGroup: {},
@@ -252,7 +271,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   filtersH1: {
-    marginTop: 32,
+    marginTop: 10,
     fontSize: 20,
     fontWeight: 'bold',
     color: Colors.primaryDark,

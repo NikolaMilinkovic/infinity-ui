@@ -103,14 +103,44 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes) {
   }
 
   function handleStockIndicatorToTrue(id: string) {
-    setUnpackedOrders((prevOrders) =>
-      prevOrders.map((order) => (order._id === id ? { ...order, packedIndicator: true } : order))
+    // setUnpackedOrders((prevOrders) =>
+    //   prevOrders.map((order) => (order._id === id ? { ...order, packedIndicator: true } : order))
+    // );
+    let filterProcessed = true;
+    setUnprocessedOrders((prevOrders) =>
+      prevOrders.map((order) => {
+        if (order._id === id) {
+          filterProcessed = false;
+          return { ...order, packedIndicator: !order.packedIndicator };
+        }
+        return order;
+      })
     );
+    if (filterProcessed) {
+      setProcessedOrders((prevOrders) =>
+        prevOrders.map((order) => (order._id === id ? { ...order, packedIndicator: true } : order))
+      );
+    }
   }
   function handleStockIndicatorToFalse(id: string) {
-    setUnpackedOrders((prevOrders) =>
-      prevOrders.map((order) => (order._id === id ? { ...order, packedIndicator: false } : order))
+    // setUnpackedOrders((prevOrders) =>
+    //   prevOrders.map((order) => (order._id === id ? { ...order, packedIndicator: false } : order))
+    // );
+    let filterProcessed = true;
+    setUnprocessedOrders((prevOrders) =>
+      prevOrders.map((order) => {
+        if (order._id === id) {
+          filterProcessed = false;
+          return { ...order, packedIndicator: !order.packedIndicator };
+        }
+        return order;
+      })
     );
+    if (filterProcessed) {
+      setProcessedOrders((prevOrders) =>
+        prevOrders.map((order) => (order._id === id ? { ...order, packedIndicator: false } : order))
+      );
+    }
   }
   function handlePackOrders(orderIds: string[]) {
     setUnprocessedOrders((prevOrders) =>
@@ -140,6 +170,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes) {
               deliveryPrice: data.courier.deliveryPrice,
             },
             totalPrice: Number(item.productsPrice) + Number(data.courier.deliveryPrice),
+            createdAt: new Date() as any,
           };
         }
         return item;

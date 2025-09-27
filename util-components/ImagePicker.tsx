@@ -14,8 +14,20 @@ interface PropTypes {
   setPreviewImage: (img: any) => void;
   height?: number;
   resizeMode?: string;
+  showCamera?: boolean;
+  showGallery?: boolean;
+  containerStyles?: any;
 }
-function ImagePicker({ onTakeImage, previewImage, setPreviewImage, height = 400, resizeMode = 'contain' }: PropTypes) {
+function ImagePicker({
+  onTakeImage,
+  previewImage,
+  setPreviewImage,
+  height = 400,
+  resizeMode = 'contain',
+  showCamera = true,
+  showGallery = true,
+  containerStyles,
+}: PropTypes) {
   const [permissionInfo, requestPermission] = useCameraPermissions();
   const [isExpanded, setIsExpanded] = useState(previewImage ? true : false);
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 50, height, 180);
@@ -76,7 +88,7 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage, height = 400,
   return (
     <View>
       <Pressable onPress={takeImageHandler}>
-        <Animated.View style={[styles.imagePreview, { height: toggleExpandAnimation }]}>
+        <Animated.View style={[styles.imagePreview, { height: toggleExpandAnimation }, containerStyles]}>
           <Pressable style={styles.toggleExpand} onPress={handleToggleExpand}>
             <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} size={24} />
           </Pressable>
@@ -84,12 +96,16 @@ function ImagePicker({ onTakeImage, previewImage, setPreviewImage, height = 400,
         </Animated.View>
       </Pressable>
       <View style={styles.buttonsContainer}>
-        <Button onPress={takeImageHandler} containerStyles={styles.button} textStyles={styles.buttonText}>
-          <Icon name="camera" size={24} color={Colors.primaryDark} />
-        </Button>
-        <Button onPress={openGalleryHandler} containerStyles={styles.button} textStyles={styles.buttonText}>
-          <Icon name="image" size={24} color={Colors.primaryDark} />
-        </Button>
+        {showCamera && (
+          <Button onPress={takeImageHandler} containerStyles={styles.button} textStyles={styles.buttonText}>
+            <Icon name="camera" size={24} color={Colors.primaryDark} />
+          </Button>
+        )}
+        {showGallery && (
+          <Button onPress={openGalleryHandler} containerStyles={styles.button} textStyles={styles.buttonText}>
+            <Icon name="image" size={24} color={Colors.primaryDark} />
+          </Button>
+        )}
       </View>
     </View>
   );
@@ -103,7 +119,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.white,
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     borderRadius: 4,
     overflow: 'hidden',
     position: 'relative',
@@ -112,7 +128,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    backgroundColor: Colors.secondaryLight,
+    backgroundColor: Colors.white,
   },
   text: {
     fontSize: 16,
@@ -123,8 +139,9 @@ const styles = StyleSheet.create({
   },
   button: {
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     flex: 1,
+    elevation: 1,
   },
   buttonText: {
     fontWeight: 400,
@@ -134,7 +151,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 4,
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     width: 30,
@@ -143,6 +160,7 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
     zIndex: 1,
+    elevation: 1,
   },
   collapsedArea: {
     width: '100%',

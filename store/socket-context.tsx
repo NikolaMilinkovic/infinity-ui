@@ -1,29 +1,30 @@
-import React, { createContext, useEffect, useState, ReactNode, useContext } from 'react';
+import Constants from 'expo-constants';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { AuthContext } from './auth-context';
-import Constants from 'expo-constants';
-import { LastUpdatedContext } from './last-updated-context';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 interface ISocketContext {
-  socket: Socket | null
+  socket: Socket | null;
 }
 export const SocketContext = createContext<ISocketContext | null>(null);
 
-
 interface SocketProviderProps {
-  children: ReactNode
+  children: ReactNode;
 }
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   // const lastUpdatedCtx = useContext(LastUpdatedContext);
   const authCtx = useContext(AuthContext);
-  
+
   useEffect(() => {
     if (authCtx.isAuthenticated) {
       const newSocket = io(process.env.EXPO_PUBLIC_BACKEND_URI || backendURI, {
         transports: ['websocket'],
         reconnectionAttempts: 5,
+        auth: {
+          token: `Bearer ${authCtx.token}`,
+        },
       });
 
       newSocket.on('reconnect', (attempt) => {
@@ -55,9 +56,5 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     }
   }, [authCtx.isAuthenticated]);
 
-  return (
-    <SocketContext.Provider value={{ socket }}>
-      {children}
-    </SocketContext.Provider>
-  )
-}
+  return <SocketContext.Provider value={{ socket }}>{children}</SocketContext.Provider>;
+};

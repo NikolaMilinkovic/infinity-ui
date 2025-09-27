@@ -15,6 +15,10 @@
 
       "language_header": "Jezik",
       "language_description": "Podešavanje jezika aplikacije:"
+    },
+    "globalSettings": {
+      "app_icon": "Custom slika aplikacije",
+      "app_icon_description": "Dodata ikonica predstavlja sliku koja se nalazi na vrhu aplikacije."
     }
   }
 }

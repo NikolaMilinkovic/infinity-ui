@@ -1,19 +1,17 @@
-import React, { useEffect } from 'react'
-import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native'
+import React from 'react';
+import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Colors } from '../constants/colors';
 import { PurseColorTypes } from '../types/allTsTypes';
 
-
-interface PropTypes{
-  colorsData: PurseColorTypes[],
-  setColorsData: (data:PurseColorTypes[]) => void
+interface PropTypes {
+  colorsData: PurseColorTypes[];
+  setColorsData: (data: PurseColorTypes[]) => void;
 }
 
 function ColorStockInputs({ colorsData, setColorsData }) {
-
   // Initialize stock to 0 if undefined
-  const initializedColorsData = colorsData.map(item => ({
+  const initializedColorsData = colorsData.map((item) => ({
     ...item,
     stock: item.stock ?? 0,
   }));
@@ -69,11 +67,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     padding: 4,
     borderRadius: 4,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     borderWidth: 0.5,
     marginTop: 10,
   },
-  sizesContainer:{
+  sizesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 8,
@@ -89,14 +87,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 8, 
+    paddingVertical: 8,
     paddingHorizontal: 2,
   },
   rowColor1: {
-    backgroundColor: Colors.secondaryHighlight
+    backgroundColor: Colors.secondaryHighlight,
   },
-  rowColor2: {
-  },
+  rowColor2: {},
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -106,7 +103,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
     flex: 1,
     textAlign: 'center',
-    backgroundColor: Colors.white
+    backgroundColor: Colors.white,
   },
   colorLabel: {
     width: 100,
@@ -114,4 +111,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ColorStockInputs
+export default ColorStockInputs;

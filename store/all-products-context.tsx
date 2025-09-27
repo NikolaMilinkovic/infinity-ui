@@ -2,6 +2,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { DressTypes, ProductTypes, PurseTypes } from '../types/allTsTypes';
 import { popupMessage } from '../util-components/PopupMessage';
 import { fetchData } from '../util-methods/FetchMethods';
+import { betterErrorLog } from '../util-methods/LogMethods';
 import {
   decreaseDressStock,
   decreasePurseStock,
@@ -107,11 +108,9 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
       // if(!data[0].stockType) return popupMessage('Update stanja nije uspeo, stockType je obavezan!', 'danger');
       for (const item of data) {
         if (item.stockType === 'Boja-Veličina-Količina') {
-          console.log('> Decreasing Dress Stock');
           decreaseDressStock(item, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
         }
         if (item.stockType === 'Boja-Količina') {
-          console.log('> Decreasing Purse Stock');
           decreasePurseStock(item, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
         }
       }
@@ -323,7 +322,8 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
         setActiveProducts(mergeSortedProductArrays(activeDresses, activePurses));
         setInactiveProducts(mergeSortedProductArrays(inactiveDresses, inactivePurses));
       } catch (error) {
-        console.error('Error fetching products:', error);
+        popupMessage('Došlo je do problema prilikom preuzimanja proizvoda', 'danger');
+        betterErrorLog('Error fetching products', error);
       }
     }
   }

@@ -1,28 +1,27 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, TouchableWithoutFeedback, Keyboard, View, Pressable } from 'react-native';
-import { MultipleSelectList } from 'react-native-dropdown-select-list'
-import { Colors } from '../constants/colors';
+import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Colors } from '../constants/colors';
 import TestMultipleDropdownList from './TestMultiDropdownList';
 
 // React Native Dropdown Select List Documentation
 // https://www.npmjs.com/package/react-native-dropdown-select-list
 interface DataTypes {
-  key: string | number
-  value: string | number
+  key: string | number;
+  value: string | number;
 }
 
 interface DropdownPropTypes {
-  data: DataTypes[]
-  setSelected: (selectedData:any) => void
-  isOpen?: boolean
-  label?: string
-  placeholder?: string
-  dropdownStyles?: any
-  containerStyles?: any
-  defaultOption?: any
-  defaultValues?: any
-  search?: boolean
+  data: DataTypes[];
+  setSelected: (selectedData: any) => void;
+  isOpen?: boolean;
+  label?: string;
+  placeholder?: string;
+  dropdownStyles?: any;
+  containerStyles?: any;
+  defaultOption?: any;
+  defaultValues?: any;
+  search?: boolean;
 }
 
 export default function MultiDropdownList({
@@ -30,50 +29,44 @@ export default function MultiDropdownList({
   setSelected,
   isOpen = false,
   label,
-  placeholder='Izaberi iz liste',
+  placeholder = 'Izaberi iz liste',
   dropdownStyles,
   containerStyles,
   defaultOption,
   defaultValues = [],
   search = true,
-}:DropdownPropTypes){
-
-  const [dropdownData, setDropdownData] = useState([])
+}: DropdownPropTypes) {
+  const [dropdownData, setDropdownData] = useState([]);
 
   useEffect(() => {
     let d = [];
-    data.forEach(item => {
+    data.forEach((item) => {
       let t = {
         key: item._id,
-        value: item?.name || item?.value || item?.color
-      }
+        value: item?.name || item?.value || item?.color,
+      };
       d.push(t);
     });
     setDropdownData(d);
-  }, [data])
+  }, [data]);
 
-  return(
+  return (
     <View style={[styles.containerStyles, containerStyles]}>
       {dropdownData.length > 0 && (
         <TestMultipleDropdownList
-          defaultValues={defaultValues} 
+          defaultValues={defaultValues}
           defaultOption={defaultOption || dropdownData[0]}
           placeholder={placeholder}
           dropdownShown={isOpen}
-          setSelected={setSelected} 
+          setSelected={setSelected}
           data={dropdownData}
           save="value"
           label={label}
-          notFoundText='Oof, ništa nije pronađeno pod tim imenom..'
+          notFoundText="Oof, ništa nije pronađeno pod tim imenom.."
           // search={false}
-          searchPlaceholder='Pretraži'
-          arrowicon={
-            <Icon name={'chevron-down'} style={styles.dropdown1ButtonArrowStyle} size={18}/>
-          }
-          closeicon={
-            <Icon name={'chevron-up'} style={styles.dropdown1ButtonArrowStyle} size={18}/>
-          }
-
+          searchPlaceholder="Pretraži"
+          arrowicon={<Icon name={'chevron-down'} style={styles.dropdown1ButtonArrowStyle} size={18} />}
+          closeicon={<Icon name={'chevron-up'} style={styles.dropdown1ButtonArrowStyle} size={18} />}
           // STYLES
           boxStyles={styles.boxStyles}
           inputStyles={styles.inputStyles}
@@ -82,7 +75,6 @@ export default function MultiDropdownList({
           dropdownTextStyles={styles.dropdownTextStyles}
           disabledItemStyles={styles.disabledItemStyles}
           disabledTextStyles={styles.disabledTextStyles}
-
           disabledCheckBoxStyles={styles.disabledCheckBoxStyles}
           checkBoxStyles={styles.checkBoxStyles}
           badgeStyles={styles.badgeStyles}
@@ -91,8 +83,8 @@ export default function MultiDropdownList({
         />
       )}
     </View>
-  )
-};
+  );
+}
 
 const styles = StyleSheet.create({
   containerStyles: {
@@ -101,16 +93,16 @@ const styles = StyleSheet.create({
   boxStyles: {
     backgroundColor: Colors.white,
     borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderWidth: 2,
+    borderColor: Colors.primaryLight,
   },
   inputStyles: {
-    fontSize: 16
+    fontSize: 16,
   },
   dropdownStyles: {
     backgroundColor: Colors.white,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderWidth: 2,
+    borderColor: Colors.primaryLight,
     borderRadius: 4,
     maxHeight: 200,
   },
@@ -120,12 +112,8 @@ const styles = StyleSheet.create({
   dropdownTextStyles: {
     fontSize: 16,
   },
-  disabledItemStyles: {
-
-  },
-  disabledTextStyles: {
-
-  },
+  disabledItemStyles: {},
+  disabledTextStyles: {},
   dropdown1ButtonArrowStyle: {
     alignSelf: 'center',
     justifyContent: 'center',
@@ -133,8 +121,7 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20,
   },
-  disabledCheckBoxStyles: {
-  },
+  disabledCheckBoxStyles: {},
   checkBoxStyles: {
     borderColor: Colors.primaryDark,
   },
@@ -142,11 +129,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.secondaryHighlight,
   },
   badgeTextStyles: {
-    color: Colors.highlight
+    color: Colors.highlight,
   },
   labelStyles: {
     color: Colors.primaryDark,
     borderBottomColor: Colors.secondaryLight,
-    borderBottomWidth: 0.5
+    borderBottomWidth: 0.5,
   },
 });

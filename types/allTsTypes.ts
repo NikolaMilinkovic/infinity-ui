@@ -179,7 +179,7 @@ export interface NewOrderContextTypes {
   setDeliveryRemark: (deliveryRemark: string) => void;
   orderNotes: string;
   setOrderNotes: (note: string) => void;
-  reservationDate: Date;
+  reservationDate: Date | null;
   setReservationDate: (date: Date) => void;
 }
 
@@ -315,6 +315,7 @@ export interface AppColors {
   // Text colors
   defaultText: string;
   whiteText: string;
+  grayText: string;
 
   // Dark colors
   primaryDark: string;
@@ -339,7 +340,8 @@ export interface AppColors {
 
   buttonBackground: string;
   borders: string;
-  navText: string;
+  navTextNormal: string;
+  selectedNavText: string;
 
   deleteButton: string;
 
@@ -348,4 +350,10 @@ export interface AppColors {
 
   // nav
   tabsBackground: string;
+}
+
+export interface DropdownTypes {
+  _id: string | number;
+  name: string;
+  value: string;
 }

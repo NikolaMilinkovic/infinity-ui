@@ -9,12 +9,16 @@
     "settings": {
       "listProductsBy_header": "Products",
       "listProductsBy_description": "Sort and create product lists based on the selected parameter. These lists are displayed above the product list and help with quicker product overview:",
-      
+
       "theme_header": "Color Theme",
       "theme_description": "Toggle between dark | light theme:",
 
       "language_header": "Language",
       "language_description": "Sets the app language:"
+    },
+    "globalSettings": {
+      "app_icon": "Custom app image",
+      "app_icon_description": "Set the icon located at the top / navbar / of application."
     }
-  },
+  }
 }

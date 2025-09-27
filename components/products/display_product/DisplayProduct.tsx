@@ -2,10 +2,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../../constants/colors';
 import useCheckStockAvailability from '../../../hooks/useCheckStockAvailability';
+import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useHighlightAnimation } from '../../../hooks/useHighlightAnimation';
 import { NewOrderContext } from '../../../store/new-order-context';
-import { DressTypes, PurseTypes } from '../../../types/allTsTypes';
-import ExpandButton from '../../../util-components/ExpandButton';
+import { useUser } from '../../../store/user-context';
+import { DressTypes, ImageTypes, PurseTypes } from '../../../types/allTsTypes';
 import IconButton from '../../../util-components/IconButton';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import DisplayDressStock from '../unique_product_components/display_stock/DisplayDressStock';
@@ -21,8 +22,11 @@ interface DisplayProductProps {
   setEditItem: (data: ProductType | null) => void;
   highlightedItems: HighlightedItemsProps[];
   batchMode: boolean;
-  onRemoveHighlight: (id: string) => void;
-  showImagePreview: (image: string) => void;
+  onRemoveHighlight: (item: ProductType, stockType: string) => void;
+  showImagePreview: (image: ImageTypes) => void;
+  handleLongPress: any;
+  handlePress: any;
+  showAddBtn?: boolean;
 }
 
 function DisplayProduct({
@@ -32,13 +36,20 @@ function DisplayProduct({
   batchMode,
   onRemoveHighlight,
   showImagePreview,
+  handleLongPress,
+  handlePress,
+  showAddBtn = true,
 }: DisplayProductProps) {
   const [onStock, setOnStock] = useState(false);
   const newOrderCtx = useContext(NewOrderContext);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHighlighted, setIsHighlighted] = useState(false);
-  const styles = getStyles(onStock, isHighlighted);
+  const styles = getStyles(onStock, isHighlighted, showAddBtn);
   if (item) useCheckStockAvailability(item, setOnStock);
+  const user = useUser();
+
+  const expandedHeight = 600;
+  const expandHeight = useExpandAnimation(isExpanded, 160, expandedHeight, 280);
 
   useEffect(() => {
     const highlighted = highlightedItems.some((highlightedItem) => item._id === highlightedItem._id);
@@ -50,6 +61,8 @@ function DisplayProduct({
   }, [highlightedItems, item]);
 
   const toggleExpand = () => {
+    handlePress(item);
+    if (batchMode) return;
     setIsExpanded(!isExpanded);
   };
 
@@ -62,6 +75,9 @@ function DisplayProduct({
     // if (item.totalStock === 0) return popupMessage('Ovog proizvoda više nema na lageru!', 'danger');
     // item.totalStock--;
 
+    if (!user?.permissions?.orders?.create) {
+      return popupMessage('Nemate permisiju za kreiranje porudžbina', 'danger');
+    }
     if (onStock) {
       newOrderCtx.addProductReference(item);
       if (item.stockType === 'Boja-Veličina-Količina') {
@@ -114,33 +130,6 @@ function DisplayProduct({
     setEditItem(item);
   }
 
-  // async function handleOnShare() {
-  //   const message = `Proizvod: ${item.name}, Cena: ${item.price}, Kategorija: ${item.category}`;
-  //   await useShareMessage({ message: message, image: item.image });
-  // }
-
-  const [longPressActivated, setLongPressActivated] = useState(false);
-  // function handleLongPress(orderId: string){
-  //   if(batchMode) return;
-  //   setLongPressActivated(true);
-  //   setTimeout(() => setLongPressActivated(false), 500); // Reset flag after 500ms
-  //   if(selectedReservations.length === 0) setSelectedReservations([{_id: orderId}])
-  //   setBatchMode(true);
-  // }
-  // Press handler after select mode is initialized
-  // function handlePress(orderId: string){
-  //   if(!batchMode) return;
-  //   if (longPressActivated) return;
-  //   if(selectedReservations.length === 0) return;
-  //   const isIdSelected = selectedReservations?.some((presentItem) => presentItem._id === orderId)
-  //   if(isIdSelected){
-  //     if(selectedReservations.length === 1) setBatchMode(false);
-  //     setSelectedReservations(selectedReservations.filter((order) => order._id !== orderId));
-  //   } else {
-  //     setSelectedReservations((prev) => [...prev, {_id: orderId}]);
-  //   }
-  // }
-
   const backgroundColor = useHighlightAnimation({
     isHighlighted,
     duration: 120,
@@ -148,111 +137,108 @@ function DisplayProduct({
   });
 
   return (
-    <Animated.View
+    <Pressable
       key={item._id}
-      style={[styles.container, { backgroundColor: onStock ? backgroundColor : Colors.secondaryHighlight }]}
-      // onPress={toggleExpand}
-      // delayLongPress={100}
+      onPress={toggleExpand}
+      delayLongPress={100}
+      onLongPress={() => handleLongPress(item._id, item.stockType)}
     >
-      {/* {isHighlighted && (
-        <View style={styles.itemHighlightedOverlay}/>
-      )} */}
+      <Animated.View
+        style={[
+          styles.container,
+          { maxHeight: expandHeight, backgroundColor: onStock ? backgroundColor : Colors.secondaryHighlight },
+        ]}
+      >
+        {/* IMAGE AND INFORMATIONS */}
+        <View style={styles.infoContainer}>
+          <Pressable style={styles.imageContainer} onPress={() => showImagePreview(item.image as any)}>
+            <Image source={{ uri: item.image.uri }} style={styles.image} />
+          </Pressable>
 
-      {/* IMAGE AND INFORMATIONS */}
-      <View style={styles.infoContainer}>
-        <Pressable style={styles.imageContainer} onPress={() => showImagePreview(item.image as any)}>
-          <Image source={{ uri: item.image.uri }} style={styles.image} />
-        </Pressable>
+          <View style={styles.info}>
+            <Text style={styles.headerText}>{item.name}</Text>
+            <Text>Kategorija: {item.category}</Text>
+            <Text>Cena: {item.price} RSD</Text>
 
-        <View style={styles.info}>
-          <Text style={styles.headerText}>{item.name}</Text>
-          {/* <Text style={styles.headerText}>{item.totalStock}</Text> */}
+            {/* OBRISATI NAKON TESTIRANJA */}
+            {/* <Text>TOTAL STOCK: {item.totalStock}</Text> */}
 
-          {/* TEMP | REMOVE AFTER TESTING */}
-          {/* <Text style={styles.headerText}>{item.displayPriority}</Text> */}
+            {!onStock && <Text style={styles.soldText}>RASPRODATO</Text>}
+            {onStock && <Text style={styles.onStockText}>DOSTUPNO</Text>}
+          </View>
 
-          <Text>Kategorija: {item.category}</Text>
-          <Text>Cena: {item.price} RSD</Text>
-
-          {!onStock && <Text style={styles.soldText}>RASPRODATO</Text>}
-          {onStock && <Text style={styles.onStockText}>DOSTUPNO</Text>}
-          <ExpandButton
-            isExpanded={isExpanded}
-            handleToggleExpand={toggleExpand}
-            containerStyles={styles.expandButton}
-            iconStyles={styles.expandButtonIcon}
-          />
+          {batchMode ? (
+            <>
+              {isHighlighted && (
+                <IconButton
+                  size={26}
+                  color={Colors.secondaryDark}
+                  onPress={() => onRemoveHighlight(item, item.stockType)}
+                  key={`key-${item._id}-add-button`}
+                  icon="check"
+                  style={[styles.addButtonContainer, { backgroundColor: '#9FB7C6' }]}
+                  pressedStyles={styles.buttonContainerPressed}
+                />
+              )}
+            </>
+          ) : (
+            <>
+              {onStock && user?.permissions?.products?.create && showAddBtn && (
+                <IconButton
+                  size={26}
+                  color={Colors.secondaryDark}
+                  onPress={handleOnAddPress}
+                  key={`key-${item._id}-add-button`}
+                  icon="add"
+                  style={styles.addButtonContainer}
+                  pressedStyles={styles.buttonContainerPressed}
+                />
+              )}
+              {user?.permissions?.products?.update && (
+                <IconButton
+                  size={26}
+                  color={Colors.secondaryDark}
+                  onPress={handleOnEditPress}
+                  key={`key-${item._id}-edit-button`}
+                  icon="edit"
+                  style={styles.editButtonContainer}
+                  pressedStyles={styles.buttonContainerPressed}
+                />
+              )}
+            </>
+          )}
         </View>
 
-        {batchMode ? (
-          <>
-            {isHighlighted && (
-              <IconButton
-                size={26}
-                color={Colors.secondaryDark}
-                onPress={() => onRemoveHighlight(item._id)}
-                key={`key-${item._id}-add-button`}
-                icon="check"
-                style={[styles.addButtonContainer, { backgroundColor: '#9FB7C6' }]}
-                pressedStyles={styles.buttonContainerPressed}
-              />
-            )}
-          </>
-        ) : (
-          <>
-            {onStock && (
-              <IconButton
-                size={26}
-                color={Colors.secondaryDark}
-                onPress={handleOnAddPress}
-                key={`key-${item._id}-add-button`}
-                icon="add"
-                style={styles.addButtonContainer}
-                pressedStyles={styles.buttonContainerPressed}
-              />
-            )}
-            <IconButton
-              size={26}
-              color={Colors.secondaryDark}
-              onPress={handleOnEditPress}
-              key={`key-${item._id}-edit-button`}
-              icon="edit"
-              style={styles.editButtonContainer}
-              pressedStyles={styles.buttonContainerPressed}
-            />
-          </>
-        )}
-      </View>
+        {/* STOCK DATA */}
+        <View style={[styles.stockDataContainer]}>
+          {/* DISPLAY DRESSES STOCK */}
+          {item && item.stockType === 'Boja-Veličina-Količina' && (
+            <DisplayDressStock isExpanded={isExpanded} item={item as DressTypes} />
+          )}
 
-      {/* STOCK DATA */}
-      <View style={styles.stockDataContainer}>
-        {/* DISPLAY DRESSES STOCK */}
-        {item && item.stockType === 'Boja-Veličina-Količina' && (
-          <DisplayDressStock isExpanded={isExpanded} item={item as DressTypes} />
-        )}
-
-        {/* DISPLAY PURSES STOCK */}
-        {item && item.stockType === 'Boja-Količina' && (
-          <DisplayPurseStock isExpanded={isExpanded} item={item as PurseTypes} />
-        )}
-      </View>
-      {item.supplier && isExpanded && (
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.descriptionLabel}>Dobavljač: </Text>
-          <Text style={styles.descriptionText}>{item.supplier}</Text>
+          {/* DISPLAY PURSES STOCK */}
+          {item && item.stockType === 'Boja-Količina' && (
+            <DisplayPurseStock isExpanded={isExpanded} item={item as PurseTypes} />
+          )}
         </View>
-      )}
-      {item.description && isExpanded && (
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.descriptionLabel}>Opis: </Text>
-          <Text style={styles.descriptionText}>{item.description}</Text>
-        </View>
-      )}
-    </Animated.View>
+        {item.supplier && isExpanded && (
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.descriptionLabel}>Dobavljač: </Text>
+            <Text style={styles.descriptionText}>{item.supplier}</Text>
+          </View>
+        )}
+        {item.description && isExpanded && (
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.descriptionLabel}>Opis: </Text>
+            <Text style={styles.descriptionText}>{item.description}</Text>
+          </View>
+        )}
+      </Animated.View>
+    </Pressable>
   );
 }
 
-function getStyles(onStock: boolean, isHighlighted: boolean) {
+function getStyles(onStock: boolean, isHighlighted: boolean, showAddBtn: boolean) {
   return StyleSheet.create({
     descriptionContainer: {
       flexDirection: 'row',
@@ -272,9 +258,7 @@ function getStyles(onStock: boolean, isHighlighted: boolean) {
       width: '100%',
       borderBottomWidth: 0.5,
       borderColor: Colors.highlight,
-      flex: 1,
       alignItems: 'center',
-      justifyContent: 'center',
       overflow: 'hidden',
       marginBottom: 4,
       elevation: 2,
@@ -331,9 +315,13 @@ function getStyles(onStock: boolean, isHighlighted: boolean) {
     expandButtonIcon: {
       color: onStock ? Colors.success : Colors.error,
     },
+
+    // STOCK DATA CONTAINER
     stockDataContainer: {
       width: '100%',
       paddingHorizontal: 6,
+      flexDirection: 'column',
+      alignSelf: 'flex-start',
     },
     onStockText: {
       color: Colors.success,
@@ -352,7 +340,7 @@ function getStyles(onStock: boolean, isHighlighted: boolean) {
     editButtonContainer: {
       position: 'absolute',
       right: 8,
-      top: onStock ? 56 : 0,
+      top: onStock ? (showAddBtn ? 56 : 0) : 0,
       borderRadius: 100,
       overflow: 'hidden',
       backgroundColor: onStock ? Colors.white : Colors.secondaryHighlight,

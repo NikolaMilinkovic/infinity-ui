@@ -160,8 +160,9 @@ function getStyles(selectedColor: string, selectedSize: string) {
       color: Colors.primaryDark,
     },
     container: {
-      borderWidth: 0.5,
-      borderColor: Colors.primaryDark,
+      borderWidth: 1,
+      borderColor: Colors.secondaryLight,
+      backgroundColor: Colors.white,
       borderRadius: 4,
       marginBottom: 8,
     },
@@ -181,8 +182,8 @@ function getStyles(selectedColor: string, selectedSize: string) {
       color: Colors.primaryDark,
     },
     colorHeader: {
-      borderTopWidth: 0.5,
-      borderTopColor: Colors.primaryDark,
+      borderTopWidth: 1,
+      borderTopColor: Colors.secondaryLight,
       color: Colors.primaryDark,
       fontSize: 16,
       fontWeight: 'bold',

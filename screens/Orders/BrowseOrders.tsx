@@ -18,6 +18,8 @@ interface SearchParamsTypes {
   onCourierSearch: string;
   ascending: boolean;
   descending: boolean;
+  onColorsSearch: string[];
+  onSizeSearch: string[];
 }
 function BrowseOrders() {
   const ordersCtx = useContext(OrdersContext);
@@ -42,6 +44,8 @@ function BrowseOrders() {
     onCourierSearch: '',
     ascending: true,
     descending: false,
+    onColorsSearch: [],
+    onSizeSearch: [],
   });
   function updateSearchParam<K extends keyof SearchParamsTypes>(paramName: K, value: SearchParamsTypes[K]) {
     setSearchParams((prevParams) => ({

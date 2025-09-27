@@ -1,60 +1,82 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { View, StyleSheet, Text, FlatList } from 'react-native'
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { SuppliersContext } from '../../store/suppliers-context';
-import { SupplierTypes } from '../../types/allTsTypes';
 import EditSupplierItem from './EditSupplierItem';
 
 function EditSuppliers() {
-  const suppliersCtx = useContext(SuppliersContext);  
+  const suppliersCtx = useContext(SuppliersContext);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    if(suppliersCtx.suppliers.length !== 0){
+    if (suppliersCtx.suppliers.length !== 0) {
       setIsLoading(false);
     }
   }, [suppliersCtx.suppliers]);
-  
+
+  // Filter suppliers based on search query
+  const filteredSuppliers = useMemo(() => {
+    if (!searchQuery.trim()) return suppliersCtx.suppliers;
+    return suppliersCtx.suppliers.filter(
+      (supplier) =>
+        supplier.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        supplier.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        supplier.phone?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        supplier.address?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [suppliersCtx.suppliers, searchQuery]);
+
   if (isLoading) {
     return <Text>Ucitavam dobavljače...</Text>;
   }
 
-  function NoSuppliersRenderer(){
+  function NoSuppliersRenderer() {
     const internalStyle = StyleSheet.create({
       container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
       },
-    })
+    });
 
     return (
       <View style={internalStyle.container}>
-        <Text>
-          Trenutno ne postoje dodati dobavljači
-        </Text>
+        <Text>Trenutno ne postoje dodati dobavljači</Text>
       </View>
-    )
+    );
   }
 
   return (
     <View style={styles.container}>
       {suppliersCtx.suppliers.length > 0 ? (
-        <FlatList 
-          data={suppliersCtx.suppliers} 
-          keyExtractor={(item) => item._id} 
-          renderItem={(item) => <EditSupplierItem data={item.item}/>}
-          style={styles.list}
-          contentContainerStyle={styles.listContent}
-          ListHeaderComponent={() => <Text style={styles.header}>Lista Dobavljača</Text>}
-          initialNumToRender={10}
-          removeClippedSubviews={false}
-        />
+        <>
+          {/* Header and TextInput moved outside FlatList */}
+          <View style={styles.headerWrapper}>
+            <Text style={styles.header}>Ukupno dobavljača: {suppliersCtx.suppliers.length}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Pretraži dobavljače"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+
+          <FlatList
+            data={filteredSuppliers}
+            keyExtractor={(item) => item._id}
+            renderItem={(item) => <EditSupplierItem data={item.item} />}
+            style={styles.list}
+            contentContainerStyle={styles.listContent}
+            initialNumToRender={10}
+            removeClippedSubviews={false}
+          />
+        </>
       ) : (
-        <NoSuppliersRenderer/>
+        <NoSuppliersRenderer />
       )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -67,14 +89,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    paddingBottom: 20,
+    paddingBottom: 10,
+    gap: 2,
+  },
+  headerWrapper: {
+    backgroundColor: Colors.white,
+    flexDirection: 'row',
+    marginBottom: 6,
+    paddingHorizontal: 10,
+    borderBottomColor: Colors.secondaryLight,
+    borderBottomWidth: 0.5,
+    elevation: 2,
   },
   header: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: 'bold',
     padding: 10,
-    backgroundColor: 'white',
-  }
-})
+    backgroundColor: Colors.white,
+    textAlign: 'center',
+  },
+  input: {
+    borderBottomColor: Colors.secondaryLight,
+    borderBottomWidth: 1,
+    flex: 1,
+    marginBottom: 10,
+    marginLeft: 10,
+    fontSize: 14,
+    textAlignVertical: 'bottom',
+  },
+});
 
-export default EditSuppliers
+export default EditSuppliers;

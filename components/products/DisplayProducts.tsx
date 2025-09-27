@@ -14,7 +14,7 @@ import ConfirmationModal from '../../util-components/ConfirmationModal';
 import ImagePreviewModal from '../../util-components/ImagePreviewModal';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { fetchWithBodyData } from '../../util-methods/FetchMethods';
-import { betterErrorLog } from '../../util-methods/LogMethods';
+import { betterConsoleLog, betterErrorLog } from '../../util-methods/LogMethods';
 import { serachProducts } from '../../util-methods/ProductFilterMethods';
 import { handleRemoveBatch } from '../../util-methods/ProductsBatchRemove';
 import ProductListSelector from '../products/ProductListSelector';
@@ -25,12 +25,13 @@ const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 interface DisplayProductsPropTypes {
   setEditItem: (data: ProductTypes | null) => void;
+  showAddBtn?: boolean;
 }
 interface SelectedItemsTypes {
   _id: string;
   stockType: string;
 }
-function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
+function DisplayProducts({ setEditItem, showAddBtn = true }: DisplayProductsPropTypes) {
   const [selectedItems, setSelectedItems] = useState<SelectedItemsTypes[]>([]);
   const [longPressActivated, setLongPressActivated] = useState(false);
   const [batchMode, setBatchMode] = useState(false);
@@ -49,17 +50,17 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
   const [previewImage, setPreviewImage] = useState<string>('');
   const appCtx = useContext(AppContext);
   const userCtx = useContext(UserContext);
-  const [settings, setSettings] = useState(appCtx.defaults);
+  const [settings, setSettings] = useState(appCtx.appSettings);
   const [userSettings, setUserSettings] = useState(userCtx.settings);
   useEffect(() => {
-    setSettings(appCtx.defaults);
-  }, [appCtx.defaults]);
+    setSettings(appCtx.appSettings);
+  }, [appCtx.appSettings]);
   useEffect(() => {
     setUserSettings(userCtx.settings);
   }, [userCtx.settings]);
 
   function handleImagePreview(image: ImageTypes) {
-    setPreviewImage(image);
+    setPreviewImage(image as any);
     showImageModal();
   }
 
@@ -127,7 +128,9 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
     return productsBySuppliers?.[selectedList] ?? [];
   }
 
-  useEffect(() => {}, [filteredData]);
+  useEffect(() => {
+    if (selectedItems.length === 0) setBatchMode(false);
+  }, [selectedItems]);
 
   // Long press that initializes select mode
   function handleLongPress(itemId: string, stockType: string) {
@@ -136,16 +139,17 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
     if (selectedItems.length === 0) setSelectedItems([{ _id: itemId, stockType }]);
     setBatchMode(true);
   }
+
   // Press handler after select mode is initialized
-  function handlePress(itemId: string, stockType: string) {
+  function handlePress(item: any, stockType: string) {
+    if (!batchMode) return;
     if (longPressActivated) return;
     if (selectedItems.length === 0) return;
-    const isIdSelected = selectedItems?.some((presentItem) => presentItem._id === itemId);
+    const isIdSelected = selectedItems?.some((presentItem) => presentItem._id === item._id);
     if (isIdSelected) {
-      if (selectedItems.length === 1) setBatchMode(false);
-      setSelectedItems(selectedItems.filter((item) => item._id !== itemId));
+      setSelectedItems(selectedItems.filter((selectedItem) => selectedItem._id !== item._id));
     } else {
-      setSelectedItems((prev) => [...prev, { _id: itemId, stockType }]);
+      setSelectedItems((prev) => [...prev, { _id: item._id, stockType: item.stockType }]);
     }
   }
 
@@ -170,6 +174,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
 
   async function handleSortProducts(position: string) {
     try {
+      betterConsoleLog('> selected items', selectedItems);
       const purses = selectedItems.filter((purse) => purse.stockType === 'Boja-Količina').map((purse) => purse._id);
       const dresses = selectedItems
         .filter((dress) => dress.stockType === 'Boja-Veličina-Količina')
@@ -206,7 +211,7 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
         message="Da li sigurno želiš da obrišeš selektovane proizvode?"
       />
       {previewImage && (
-        <ImagePreviewModal image={previewImage} isVisible={isImageModalVisible} onCancel={hideImageModal} />
+        <ImagePreviewModal image={previewImage as any} isVisible={isImageModalVisible} onCancel={hideImageModal} />
       )}
       <SearchProducts
         searchData={searchData}
@@ -238,6 +243,9 @@ function DisplayProducts({ setEditItem }: DisplayProductsPropTypes) {
                 batchMode={batchMode}
                 onRemoveHighlight={handlePress}
                 showImagePreview={handleImagePreview}
+                handleLongPress={handleLongPress}
+                handlePress={handlePress}
+                showAddBtn={showAddBtn}
               />
             </Pressable>
           )}

@@ -1,24 +1,32 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import ColorSizeSelectorsList from '../../../components/orders/ColorSizeSelectorsList';
 import CourierSelector from '../../../components/orders/CourierSelector';
-import NewOrderPreview from '../../../components/orders/NewOrderPreview';
+import NewOrderPreview, { NewOrderPreviewRef } from '../../../components/orders/NewOrderPreview';
 import SelectedProductsDisplay from '../../../components/orders/SelectedProductsList';
 import SortUserInformationField from '../../../components/orders/SortUserInformationField';
 import { Colors } from '../../../constants/colors';
 import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
+import { AllProductsContext } from '../../../store/all-products-context';
 import { AuthContext } from '../../../store/auth-context';
+import { useConfirmationModal } from '../../../store/modals/confirmation-modal-context';
 import { NewOrderContext } from '../../../store/new-order-context';
+import { OrdersContext } from '../../../store/orders-context';
 import Button from '../../../util-components/Button';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { addNewOrder } from '../../../util-methods/FetchMethods';
+import { betterConsoleLog } from '../../../util-methods/LogMethods';
 
 function NewOrder() {
   // Fade in animation
   const fadeAnimation = useFadeAnimation();
-  const orderCtx = useContext(NewOrderContext);
+  const newOrderCtx = useContext(NewOrderContext);
+  const orderCtx = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
+  const productCtx = useContext(AllProductsContext);
   const token = authCtx.token;
+  const orderPreviewRef = useRef<NewOrderPreviewRef>(null);
+  const { showConfirmation } = useConfirmationModal();
 
   // ARTICLE LIST
   const [isArticleListOpen, setIsArticleListOpen] = useState(true);
@@ -49,6 +57,9 @@ function NewOrder() {
   // BUYER INFORMATION
   const [isBuyerInfoOpen, setIsBuyerInfoOpen] = useState(false);
   const [buyerInfo, setBuyerInfo] = useState('');
+  useEffect(() => {
+    betterConsoleLog('> buyerInfo', buyerInfo);
+  }, [buyerInfo]);
 
   function handleBuyerInfoOk() {
     setIsArticleListOpen(false);
@@ -89,16 +100,64 @@ function NewOrder() {
     // BUYER INFORMATION SECTION
     setBuyerInfo('');
     // ORDER PREVIEW SECTION
-    orderCtx.setCustomPrice('');
-    orderCtx.resetOrderData();
+    newOrderCtx.setCustomPrice('');
+    newOrderCtx.resetOrderData();
+    orderPreviewRef.current?.handleRecalculatePrice();
   }
 
   const [isAddingOrder, setIsAddingOrder] = useState(false);
+
+  function checkBuyerSimilarities() {
+    const newBuyer = newOrderCtx.buyerData;
+    const unprocessedOrders = orderCtx.unprocessedOrders;
+
+    let overallMatches = {
+      name: false,
+      address: false,
+      phone: false,
+    };
+
+    for (const order of unprocessedOrders) {
+      const matches = {
+        name: newBuyer?.name === order.buyer.name,
+        address: newBuyer?.address === order.buyer.address,
+        phone: newBuyer?.phone === order.buyer.phone,
+      };
+
+      // Update overall matches
+      overallMatches = {
+        name: overallMatches.name || matches.name,
+        address: overallMatches.address || matches.address,
+        phone: overallMatches.phone || matches.phone,
+      };
+
+      // Stop immediately if name + address + phone all match
+      if (matches.name && matches.address && matches.phone) {
+        return { sameBuyer: true, matches };
+      }
+    }
+
+    // After checking all orders
+    const sameBuyer = overallMatches.name || overallMatches.address || overallMatches.phone;
+    return { sameBuyer, matches: overallMatches };
+  }
+
+  async function submitOrder(order: any, token: string) {
+    const response = await addNewOrder(order, token, 'orders');
+    setIsAddingOrder(false);
+    if (response) {
+      handleResetOrderData();
+      popupMessage('Porudžbina uspešno dodata', 'success');
+    } else {
+      popupMessage('Došlo je do problema prilikom slanja nove porudžbine', 'danger');
+    }
+  }
+
   async function handleSubmitOrder() {
     if (isAddingOrder) return popupMessage('Dodavanje porudzbine u toku, sačekajte.', 'info');
     try {
       // get order form with all the data from new-order-context
-      const order = orderCtx.createOrderHandler();
+      const order = newOrderCtx.createOrderHandler();
 
       if (!order) return;
       if (order === undefined) return;
@@ -107,15 +166,29 @@ function NewOrder() {
       // Send the data via fetch
       if (!token) return popupMessage('Autentifikacioni token ne postoji!', 'danger');
       setIsAddingOrder(true);
-      const response = await addNewOrder(order, token, 'orders');
-      setIsAddingOrder(false);
 
-      if (response) {
-        handleResetOrderData();
-        popupMessage('Porudžbina uspešno dodata', 'success');
-      } else {
-        popupMessage('Došlo je do problema prilikom slanja nove porudžbine', 'danger');
+      const buyerConflict = checkBuyerSimilarities();
+
+      if (buyerConflict.sameBuyer) {
+        showConfirmation(
+          async () => {
+            await submitOrder(order, token);
+          },
+          `Prethodna porudžbina ima iste podatke: ${buyerConflict.matches.name ? 'Imena kupca,' : ''} ${
+            buyerConflict.matches.address ? 'Adrese,' : ''
+          } ${buyerConflict.matches.phone ? 'Broja telefona,' : ''}\n\nDa li sigurno želite da dodate ovu porudžbinu?`,
+          () => {
+            setIsBuyerInfoOpen(true);
+            setIsArticleListOpen(false);
+            setIsColorSizeSelectorsOpen(false);
+            setIsCourierPreviewOpen(false);
+            setIsOrderPreviewOpen(false);
+          }
+        );
+        return;
       }
+
+      await submitOrder(order, token);
     } catch (error) {
       console.error(error);
       setIsAddingOrder(false);
@@ -133,10 +206,10 @@ function NewOrder() {
           setIsExpanded={setIsArticleListOpen}
           isExpanded={isArticleListOpen}
           onNext={handleArticleListOk}
-          ordersCtx={orderCtx}
+          ordersCtx={newOrderCtx}
         />
         <ColorSizeSelectorsList
-          ordersCtx={orderCtx}
+          ordersCtx={newOrderCtx}
           isExpanded={isColorSizeSelectorsOpen}
           setIsExpanded={setIsColorSizeSelectorsOpen}
           onNext={handleColorSizeSelectorsOk}
@@ -156,8 +229,8 @@ function NewOrder() {
         <NewOrderPreview
           isExpanded={isOrderPreviewOpen}
           setIsExpanded={setIsOrderPreviewOpen}
-          customPrice={orderCtx.customPrice}
-          setCustomPrice={orderCtx.setCustomPrice}
+          setCustomPrice={newOrderCtx.setCustomPrice}
+          ref={orderPreviewRef}
         />
         <View style={styles.buttonsContainer}>
           <Button

@@ -10,7 +10,6 @@ import AppUpadteModal from '../../../util-components/AppUpadteModal';
 
 function BrowseProducts() {
   const [editedProduct, setEditedProduct] = useState<ProductTypes | null>(null);
-
   const editProductFade = useFadeTransition(editedProduct !== null);
   const overlayView = useFadeTransitionReversed(editedProduct === null, 500, 150);
   useBackClickHandler(!!editedProduct, handleRemoveEditedProduct);
@@ -21,13 +20,15 @@ function BrowseProducts() {
   return (
     <>
       <View>
+        {/* <Button onPress={fetchAllProducts}>FETCH PRODUCTS</Button> */}
+        {/* <SocketDcRc /> */}
         <AppUpadteModal />
         <Animated.View style={[overlayView, styles.overlayView]} />
         <DisplayProducts setEditItem={setEditedProduct} />
       </View>
       <Modal animationType="slide" visible={editedProduct !== null} onRequestClose={handleRemoveEditedProduct}>
         <Animated.View style={editProductFade}>
-          <EditProductComponent item={editedProduct} setItem={setEditedProduct} />
+          <EditProductComponent item={editedProduct as any} setItem={setEditedProduct} />
         </Animated.View>
       </Modal>
     </>

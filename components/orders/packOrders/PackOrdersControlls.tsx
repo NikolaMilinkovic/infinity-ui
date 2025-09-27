@@ -1,33 +1,40 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../../constants/colors';
 import { useExpandAnimation } from '../../../hooks/useExpand';
+import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { AuthContext } from '../../../store/auth-context';
-import { CouriersContext } from '../../../store/couriers-context';
-import { CategoryTypes, OrderTypes } from '../../../types/allTsTypes';
+import { useUser } from '../../../store/user-context';
+import { OrderTypes } from '../../../types/allTsTypes';
 import Button from '../../../util-components/Button';
-import DropdownList from '../../../util-components/DropdownList';
+import InputField from '../../../util-components/InputField';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { fetchWithBodyData } from '../../../util-methods/FetchMethods';
 
 interface PackOrdersControllsPropTypes {
-  selectedCourier: CategoryTypes | null;
-  setSelectedCourier: (courier: CategoryTypes | null) => void;
+  searchParams: any;
+  setSearchParams: any;
   orders: OrderTypes[];
 }
-function PackOrdersControlls({ selectedCourier, setSelectedCourier, orders }: PackOrdersControllsPropTypes) {
+function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrdersControllsPropTypes) {
   const [packedCounter, setPackedCounter] = useState(0);
   const [toBePackedCounter, setToBePackedCounter] = useState(0);
-  const [isExpanded, setIsExpanded] = useState(true);
-  const height = useExpandAnimation(isExpanded, 40, 200, 180);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const height = useExpandAnimation(isExpanded, 100, 200, 180);
+  const toggleFade = useToggleFadeAnimation(isExpanded, 260);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
+  const user = useUser();
 
   async function finishPackingHandler() {
+    if (!user?.permissions?.packaging?.finish_packaging) {
+      return popupMessage('Nemate dozvolu za završavanje pakovanja.', 'danger');
+    }
+    if (orders.length === 0) return popupMessage('Ne postoje porudžbine za pakovanje.', 'info');
     const packedIds = orders.filter((order) => order.packedIndicator === true).map((order) => order._id);
     const response = await fetchWithBodyData(token, 'orders/pack-orders', { packedIds }, 'POST');
-    if (response.status === 200) {
+    if (response?.status === 200) {
       const data = await response?.json();
       return popupMessage(data.message, 'success');
     } else {
@@ -53,46 +60,60 @@ function PackOrdersControlls({ selectedCourier, setSelectedCourier, orders }: Pa
     setToBePackedCounter(toBePacked);
   }, [orders]);
 
-  // CATEGORY FILTER
-  const couriersCtx = useContext(CouriersContext);
-  useEffect(() => {
-    if (selectedCourier && selectedCourier?.name === 'Resetuj izbor') {
-      resetDropdown();
-      return;
-    }
-  }, [selectedCourier]);
-
   // Category Dropdown Reset
   const [resetKey, setResetKey] = useState(0);
   function resetDropdown() {
     setResetKey((prevKey) => prevKey + 1);
-    setSelectedCourier(null);
+    setSearchParams((prev: any) => ({ ...prev, courier: '' }));
   }
 
   return (
     <Animated.View style={[styles.container, { height: height }]}>
-      <Pressable style={styles.counterContainer} onPress={() => setIsExpanded(true)}>
+      <View style={styles.counterContainer}>
         <Text style={styles.counterText}>Spakovano: {packedCounter}</Text>
-        {!isExpanded && (
-          <Icon
-            name={isExpanded ? 'chevron-up' : 'chevron-down'}
-            style={styles.iconStyle}
-            size={26}
-            color={Colors.primaryDark}
-          />
-        )}
+        {/* <Pressable style={styles.counterContainer} onPress={() => setIsExpanded(true)}>
+          {!isExpanded && (
+            <Icon
+              name={isExpanded ? 'chevron-up' : 'chevron-down'}
+              style={styles.iconStyle}
+              size={26}
+              color={Colors.primaryDark}
+            />
+          )}
+        </Pressable> */}
         <Text style={styles.counterText}>Za pakovanje: {toBePackedCounter}</Text>
-      </Pressable>
-      <View style={styles.buttonsContainer}>
+      </View>
+      {!isExpanded && (
+        <View style={{ marginHorizontal: 10, flexDirection: 'row', gap: 8 }}>
+          <InputField
+            label="Pretraži"
+            inputText={searchParams.query}
+            setInputText={(text) => setSearchParams((prev: any) => ({ ...prev, query: text }))}
+            background={Colors.white}
+            labelBorders={false}
+            containerStyles={[styles.inputFieldStyle, { flex: 1.35 }]}
+            displayClearInputButton={true}
+          />
+          <Button
+            containerStyles={[styles.button, styles.finishPackingButton, { flex: 1, height: 46, marginTop: 'auto' }]}
+            onPress={finishPackingHandler}
+            backColor={Colors.highlight}
+            textColor={Colors.white}
+          >
+            Završi pakovanje
+          </Button>
+        </View>
+      )}
+      <Animated.View style={[styles.buttonsContainer, { opacity: toggleFade }]}>
         {isExpanded && (
           <>
-            <DropdownList
-              buttonContainerStyles={styles.button}
-              key={resetKey}
-              data={[{ _id: '', name: 'Resetuj izbor' }, ...couriersCtx.couriers]}
-              onSelect={setSelectedCourier}
-              placeholder="Izaberite kurira"
-              isDefaultValueOn={false}
+            <InputField
+              label="Pretraži"
+              inputText={searchParams.query}
+              setInputText={(text) => setSearchParams((prev: any) => ({ ...prev, query: text }))}
+              background={Colors.white}
+              labelBorders={false}
+              containerStyles={styles.inputFieldStyle}
             />
             <Button
               containerStyles={[styles.button, styles.finishPackingButton]}
@@ -112,7 +133,7 @@ function PackOrdersControlls({ selectedCourier, setSelectedCourier, orders }: Pa
             </Button>
           </>
         )}
-      </View>
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -140,6 +161,14 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingBottom: 8,
     paddingHorizontal: 16,
+  },
+  inputFieldStyle: {
+    marginTop: 5,
+  },
+  drpodownStyle: {
+    borderWidth: 0.5,
+    elevation: 2,
+    height: 45,
   },
   button: {
     borderWidth: 0,

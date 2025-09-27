@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import CustomCheckbox from './CustomCheckbox';
 import { Colors } from '../constants/colors';
+import CustomCheckbox from './CustomCheckbox';
 
 interface PropTypes {
-  selectedSizes: string[]
-  setSelectedSizes: (prev: any) => void
-  sizes: string[]
+  selectedSizes: string[];
+  setSelectedSizes: (prev: any) => void;
+  sizes: string[];
+  borders?: boolean;
 }
-function SizePickerCheckboxes({ selectedSizes, setSelectedSizes, sizes = [] }: PropTypes) {
+function SizePickerCheckboxes({ selectedSizes, setSelectedSizes, sizes = [], borders = true }: PropTypes) {
   const [sizeData, setSizeData] = useState<string[]>([]);
   useEffect(() => {
     setSizeData(sizes);
-  },[sizes])
+  }, [sizes]);
   const [sizeValues, setSizevalue] = useState({
     UNI: false,
     XS: false,
@@ -20,51 +21,48 @@ function SizePickerCheckboxes({ selectedSizes, setSelectedSizes, sizes = [] }: P
     M: false,
     L: false,
     XL: false,
-  }) 
-  function insertSizeHandler(size: string){
+  });
+  function insertSizeHandler(size: string) {
     setSelectedSizes((prev) => [...prev, size]);
   }
-  function removeSizeHandler(size: string){
+  function removeSizeHandler(size: string) {
     setSelectedSizes((prev) => prev.filter((s) => s !== size));
   }
   return (
-    <View style={styles.checkboxesContainer}>
+    <View style={[styles.checkboxesContainer, !borders && { borderWidth: 0 }]}>
       {sizeData.map((size) => (
         <View key={`key-size-${size}`} style={styles.checkboxWrapper}>
           <CustomCheckbox
             key={`key-size-${size}`}
             label={size}
             checked={sizeValues[size]}
-            onCheckedChange={
-              (newValue) => {
-                  // Update the checkbox state
-                  setSizevalue((prev) => ({
-                  ...prev,
-                  [size]: newValue,
-                }));
-                
-                // true > add size to checkedSizes arr
-                if (newValue) {
-                  insertSizeHandler(size);
+            onCheckedChange={(newValue) => {
+              // Update the checkbox state
+              setSizevalue((prev) => ({
+                ...prev,
+                [size]: newValue,
+              }));
+
+              // true > add size to checkedSizes arr
+              if (newValue) {
+                insertSizeHandler(size);
 
                 // false > remove size from checkedSizes arr
-                } else {
-                  removeSizeHandler(size);
-                }
+              } else {
+                removeSizeHandler(size);
               }
-            }
+            }}
           />
         </View>
-      ))
-    }
-  </View>
-  )
+      ))}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   checkboxesContainer: {
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderWidth: 2,
+    borderColor: Colors.primaryLight,
     marginTop: 8,
     borderRadius: 4,
     flexDirection: 'row',
@@ -77,4 +75,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SizePickerCheckboxes
+export default SizePickerCheckboxes;

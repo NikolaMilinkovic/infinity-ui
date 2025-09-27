@@ -1,35 +1,37 @@
-import React, { useContext, useState } from 'react'
-import { View, StyleSheet, Text } from 'react-native';
-import { AuthContext } from '../../store/auth-context';
-import InputField from '../../util-components/InputField';
-import Button from '../../util-components/Button';
-import { Colors } from '../../constants/colors';
-import { popupMessage } from '../../util-components/PopupMessage';
 import Constants from 'expo-constants';
+import React, { useContext, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { Colors } from '../../constants/colors';
+import { AuthContext } from '../../store/auth-context';
+import { useUser } from '../../store/user-context';
+import Button from '../../util-components/Button';
+import InputField from '../../util-components/InputField';
+import { popupMessage } from '../../util-components/PopupMessage';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function AddCourier() {
   const authCtx = useContext(AuthContext);
-  const [inputText, setInputText] = useState<string>('')
-  const [inputPrice, setInputPrice] = useState<number>('')
-  const [error, setError] = useState<string>('')
-  
-  function resetInputAndError(){
+  const [inputText, setInputText] = useState<string>('');
+  const [inputPrice, setInputPrice] = useState<number>('');
+  const [error, setError] = useState<string>('');
+  const user = useUser();
+
+  function resetInputAndError() {
     setInputText('');
     setInputPrice(0);
     setError('');
   }
-  function resetError(){
+  function resetError() {
     setError('');
   }
-  function validateInput(){
-    resetError()
-    if(inputText.trim() === ''){
+  function validateInput() {
+    resetError();
+    if (inputText.trim() === '') {
       setError('Kurir mora imati ime!');
       popupMessage('Kurir mora imati ime!', 'danger');
       return false;
     }
-    if(!inputPrice){
+    if (!inputPrice) {
       setError('Kurir mora imati cenu dostave!');
       popupMessage('Kurir mora imati cenu dostave!', 'danger');
       return false;
@@ -37,23 +39,26 @@ function AddCourier() {
     return true;
   }
 
-  async function addCourierHandler(){
+  async function addCourierHandler() {
+    if (!user?.permissions?.couriers?.create) {
+      return popupMessage('Nemate permisiju za dodavanje kurira.', 'danger');
+    }
     const validated = validateInput();
-    if(!validated) return;
+    if (!validated) return;
 
-    try{
+    try {
       const newCourier = {
         name: inputText,
-        deliveryPrice: inputPrice
+        deliveryPrice: inputPrice,
       };
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/couriers`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${authCtx.token}`,
+          Authorization: `Bearer ${authCtx.token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ courier: newCourier })
-      })
+        body: JSON.stringify({ courier: newCourier }),
+      });
 
       // Handle errors
       if (!response.ok) {
@@ -65,8 +70,7 @@ function AddCourier() {
 
       popupMessage(`Kurir ${newCourier.name} je uspešno dodat`, 'success');
       resetInputAndError();
-    } catch(error){
-
+    } catch (error) {
       console.error(error);
       throw new Error('Došlo je do problema prilikom dodavanja kurira');
     }
@@ -75,59 +79,59 @@ function AddCourier() {
   return (
     <View style={styles.container}>
       <View style={styles.controllsContainer}>
-        <InputField 
-          label='Unesi Kurira'
-          isSecure={false}
-          inputText={inputText}
-          setInputText={setInputText}
-          background={Colors.primaryLight}
-          color={Colors.primaryDark}
-          activeColor={Colors.secondaryDark}
-          labelBorders={false}
-        />
-        <InputField 
-          label='Cena dostave po paketu'
-          isSecure={false}
-          inputText={inputPrice}
-          setInputText={setInputPrice}
-          background={Colors.primaryLight}
-          color={Colors.primaryDark}
-          activeColor={Colors.secondaryDark}
-          labelBorders={false}
-          keyboard='numeric'
-        />
-        <Button 
-            onPress={addCourierHandler}
-            textColor={Colors.whiteText}
-            backColor={Colors.highlight}
-        >
+        <View style={styles.inputContainer}>
+          <InputField
+            label="Unesi Kurira"
+            isSecure={false}
+            inputText={inputText}
+            setInputText={setInputText}
+            background={Colors.white}
+            color={Colors.primaryDark}
+            activeColor={Colors.highlight}
+            labelBorders={false}
+            containerStyles={{ flex: 1 }}
+          />
+          <InputField
+            label="Cena dostave"
+            isSecure={false}
+            inputText={inputPrice}
+            setInputText={setInputPrice}
+            background={Colors.white}
+            color={Colors.primaryDark}
+            activeColor={Colors.highlight}
+            labelBorders={false}
+            keyboard="numeric"
+            containerStyles={{ flex: 1 }}
+          />
+        </View>
+        <Button onPress={addCourierHandler} textColor={Colors.white} backColor={Colors.highlight}>
           Sačuvaj
         </Button>
       </View>
-      {error && (
-        <Text style={styles.error}>{error}</Text>
-      )}
+      {error && <Text style={styles.error}>{error}</Text>}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     borderColor: Colors.primaryDark,
-    borderWidth: 0.5,
+    borderWidth: 0,
     paddingVertical: 16,
-    backgroundColor: Colors.primaryLight
+    paddingBottom: 8,
+    backgroundColor: Colors.white,
   },
   controllsContainer: {
     flexDirection: 'column',
     alignItems: 'center',
     width: '100%',
-    gap: 16,
+    gap: 8,
     paddingHorizontal: 16,
   },
   inputContainer: {
-    flex: 0.6
+    flexDirection: 'row',
+    gap: 8,
   },
   buttonContainer: {
     flex: 0.4,
@@ -139,7 +143,7 @@ const styles = StyleSheet.create({
   success: {
     color: Colors.success,
     marginTop: 10,
-  }
-})
+  },
+});
 
-export default AddCourier
+export default AddCourier;

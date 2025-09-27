@@ -1,14 +1,13 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import React from 'react';
+import { View } from 'react-native';
+import AddUser from '../../components/userManager/AddUser';
 
 function UserManager() {
   return (
     <View>
-      <Text>
-        Ovo je UserManager stranica | Dashboard
-      </Text>
+      <AddUser />
     </View>
-  )
+  );
 }
 
-export default UserManager
+export default UserManager;

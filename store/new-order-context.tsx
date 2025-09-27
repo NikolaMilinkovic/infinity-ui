@@ -75,6 +75,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
   const [isReservation, setIsReservation] = useState(false);
   const [profileImage, setProfileImage] = useState<ProductImageTypes | null>(null);
   const [customPrice, setCustomPrice] = useState<string | number>('');
+  const [promoPrice, setPromoPrice] = useState<string | number>('');
   const [orderValue, setOrderValue] = useState('');
   const [weight, setWeight] = useState('1');
   const [internalRemark, setInternalRemark] = useState('');
@@ -300,6 +301,9 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
       customPrice,
       setCustomPrice: setCustomPrice,
 
+      promoPrice,
+      setPromoPrice: setPromoPrice,
+
       weight,
       setWeight: setWeight,
       orderValue,
@@ -312,6 +316,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
       setOrderNotes: setOrderNotes,
       reservationDate,
       setReservationDate: setReservationDate,
+
       // description,
       // setDescription: setDescription
     }),

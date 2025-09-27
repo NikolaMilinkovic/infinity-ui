@@ -1,8 +1,8 @@
 export const Colors = {
-
   // Text colors
   defaultText: '#000000',
   whiteText: '#F0F0F0',
+  grayText: '#aaaaaaff',
 
   // Dark colors
   primaryDark: '#012340',
@@ -11,6 +11,7 @@ export const Colors = {
   // Light colors
   primaryLight: '#F0F0F0',
   secondaryLight: '#C5D5D9',
+  secondaryLightDarken: '#7d878aff',
   highlight: '#C28E8E',
   secondaryHighlight: '#FFE4E4',
 
@@ -23,7 +24,11 @@ export const Colors = {
   white: '#FFFFFF',
   highlightBlue: '#6A5ACD',
   successSecondary: '#F0FAF0',
-}
+
+  // nav
+  tabsBackground: '#C5D5D9',
+  tabsPressEffect: '#b0bdc1ff',
+};
 
 // export const getColors = (theme: 'light' | 'dark') => ({
 //   defaultText: theme === 'light' ? '#000000' : '#FFFFFF',

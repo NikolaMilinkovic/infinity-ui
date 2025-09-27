@@ -1,19 +1,29 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../constants/colors';
 
-const CustomCheckbox = ({ label, checked, onCheckedChange }) => {
+const CustomCheckbox = ({ label, checked, onCheckedChange, containerStyles, customColor }) => {
   function onPressHandler() {
     const newCheckedState = !checked; // Toggle the checked state
     onCheckedChange(newCheckedState); // Call the onCheckedChange function
   }
 
+  // Custom color but ligter for check
+  const getLightColor = (hexColor: string, opacity = 0.3) => {
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${opacity})`;
+  };
+  const lightColor = customColor ? getLightColor(customColor, 0.4) : Colors.primaryDark;
+
   return (
-    <Pressable style={styles.checkboxContainer} onPress={onPressHandler}>
-      <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
-        {checked && <View style={styles.checkboxTick} />}
+    <Pressable style={[styles.checkboxContainer, containerStyles]} onPress={onPressHandler}>
+      <View style={[styles.checkbox, checked && styles.checkboxChecked, customColor && { borderColor: customColor }]}>
+        {checked && <View style={[styles.checkboxTick, customColor && { backgroundColor: lightColor }]} />}
       </View>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, customColor && { color: customColor }]}>{label}</Text>
     </Pressable>
   );
 };
@@ -40,9 +50,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   checkboxTick: {
-    width: 12,
-    height: 12,
-    backgroundColor: Colors.primaryDark,
+    width: 15,
+    height: 15,
+    backgroundColor: Colors.highlight,
     borderRadius: 50,
   },
   label: {

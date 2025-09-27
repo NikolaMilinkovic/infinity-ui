@@ -160,11 +160,12 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
           updateSuppliersContext(dataType.data);
           break;
         case 'order':
-          if (productsAlreadyUpdated) break;
-          productsAlreadyUpdated = true;
           updateOrdersContext(dataType.data);
-          await fetchAllProducts();
           await updateProcessedOrdersForPeriod();
+          if (productsAlreadyUpdated) break;
+          await fetchAllProducts();
+          popupMessage('FETCHED ALL', 'info');
+          productsAlreadyUpdated = true;
           break;
 
         default:

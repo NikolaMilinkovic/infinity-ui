@@ -110,13 +110,11 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
   }
 
   function decreasePurseStockHandler(data: any) {
-    console.log('> decreasePurseStockHandler called');
     if (data.stockType === 'Boja-Količina') {
       decreasePurseStock(data, setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
     }
   }
   function increasePurseStockHandler(data: any) {
-    console.log('> increasePurseStockHandler called');
     if (data.stockType === 'Boja-Količina') {
       increasePurseStock(data, setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
     }

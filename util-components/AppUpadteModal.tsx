@@ -11,6 +11,7 @@ function AppUpadteModal() {
   const [buildLink, setBuildLink] = useState(appCtx.buildLink);
   const [version, setVersion] = useState('');
   useEffect(() => {
+    if (!appCtx || !appCtx.buildLink || !appCtx.version || !Constants?.expoConfig?.version) return;
     setBuildLink(appCtx.buildLink);
     setVersion(appCtx.version);
     if (appCtx.version !== Constants?.expoConfig?.version) {
@@ -18,6 +19,7 @@ function AppUpadteModal() {
     }
   }, [appCtx.buildLink, appCtx.version, Constants?.expoConfig?.version]);
 
+  if (!appCtx?.buildLink || !appCtx?.version || !Constants?.expoConfig?.version) return null;
   console.log('===============================================================');
   console.log(`> Expo Version ${Constants?.expoConfig?.version}`);
   console.log('===============================================================');
@@ -27,6 +29,7 @@ function AppUpadteModal() {
   function onDecline() {
     setIsModalVisible(false);
   }
+
   return (
     <ConfirmationModal
       isVisible={isModalVisible}

@@ -9,6 +9,10 @@ import { AppColors } from '../types/allTsTypes';
 // GitHub Repo & Documentation | Examples
 // https://github.com/AdelRedaa97/react-native-select-dropdown/tree/master
 
+// RESET DROPDOWN VIA REF
+// dropdownRef.current?.reset();
+// Parent provide ref putem reference i potrebno je samo da pozovemo ovo gore
+
 interface DropdownPropTypes {
   data: any[];
   placeholder?: string;
@@ -36,9 +40,9 @@ const DropdownList = ({
   const [dropdownData, setDropdownData] = useState<any[]>([]);
   const [defaultVal, setDefaultVal] = useState(['']);
   const Colors = useGetAppColors();
+
   useEffect(() => {
     setDropdownData(data || []);
-
     if (!isDefaultValueOn) return setDefaultVal([]);
     // Looks for value from the data
     // If value is found > set that object as default & give onSelect that object
@@ -72,7 +76,7 @@ const DropdownList = ({
         renderButton={(selectedItem, isOpen) => {
           return (
             <View style={[styles.dropdownButtonStyle, buttonContainerStyles]}>
-              <Text style={[styles.dropdownButtonTxtStyle, buttonTextStyles]}>
+              <Text style={[styles.dropdownButtonTxtStyle, buttonTextStyles]} numberOfLines={1}>
                 {selectedItem?.name || selectedItem?.value || placeholder || 'No placeholder value provided'}
               </Text>
               <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} style={styles.dropdown1ButtonArrowStyle} size={18} />
@@ -118,8 +122,8 @@ function getStyles(Colors: AppColors) {
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: 22,
-      borderWidth: 0.5,
-      borderColor: Colors.primaryDark,
+      borderWidth: 2,
+      borderColor: Colors.primaryLight,
       marginTop: 0,
       backgroundColor: Colors.white,
     },
@@ -140,7 +144,7 @@ function getStyles(Colors: AppColors) {
       borderBottomColor: Colors.borders,
     },
     dropdownItemStyle: {
-      width: '100%',
+      minWidth: '100%',
       flexDirection: 'row',
       paddingHorizontal: 12,
       justifyContent: 'center',

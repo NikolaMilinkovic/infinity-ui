@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { ColorsContext } from '../../store/colors-context';
-import { View, StyleSheet, Text, FlatList } from 'react-native'
-import EditColorItem from './EditColorItem';
-import { Colors } from '../../constants/colors';
-import { AppColors, ColorType } from '../../types/allTsTypes';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useGetAppColors } from '../../constants/useGetAppColors';
+import { ColorsContext } from '../../store/colors-context';
+import { AppColors, ColorType } from '../../types/allTsTypes';
+import EditColorItem from './EditColorItem';
 
 function EditColors() {
-  const colorsCtx = useContext(ColorsContext);  
+  const colorsCtx = useContext(ColorsContext);
   const [colors, setColors] = useState<ColorType[]>([]);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const Colors = useGetAppColors();
   const styles = getStyles(Colors);
 
@@ -20,54 +20,72 @@ function EditColors() {
       setIsLoading(false);
     };
     fetchColors();
-  }, [colorsCtx])
+  }, [colorsCtx]);
+
+  // Filter colors based on search query
+  const filteredColors = useMemo(() => {
+    if (!searchQuery.trim()) return colors;
+    return colors.filter(
+      (color) =>
+        color.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        color.hex?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [colors, searchQuery]);
 
   if (isLoading) {
     return <Text>Ucitavam boje...</Text>;
   }
 
-  function NoColorRenderer(){
+  function NoColorRenderer() {
     const internalStyle = StyleSheet.create({
       container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
       },
-      text: {
-        
-      }
-    })
+      text: {},
+    });
 
     return (
       <View style={internalStyle.container}>
-        <Text style={internalStyle.text}>
-          Trenutno ne postoje dodate boje
-        </Text>
+        <Text style={internalStyle.text}>Trenutno ne postoje dodate boje</Text>
       </View>
-    )
+    );
   }
 
   return (
     <View style={styles.container}>
       {colors.length > 0 ? (
-        <FlatList 
-          data={colors} 
-          keyExtractor={(item) => item._id} 
-          renderItem={(item) => <EditColorItem data={item.item}/>}
-          style={styles.list}
-          contentContainerStyle={styles.listContent}
-          ListHeaderComponent={() => <Text style={styles.header}>Lista Boja</Text>}
-          initialNumToRender={10}
-          removeClippedSubviews={false}
-        />
+        <>
+          {/* Header and TextInput moved outside FlatList */}
+          <View style={styles.headerWrapper}>
+            <Text style={styles.header}>Ukupno boja: {colors.length}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Pretraži boje"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+
+          <FlatList
+            data={filteredColors}
+            keyExtractor={(item) => item._id}
+            renderItem={(item) => <EditColorItem data={item.item} />}
+            style={styles.list}
+            contentContainerStyle={styles.listContent}
+            initialNumToRender={10}
+            removeClippedSubviews={false}
+          />
+        </>
       ) : (
-        <NoColorRenderer/>
+        <NoColorRenderer />
       )}
     </View>
-  )
+  );
 }
 
-function getStyles(Colors: AppColors){
+function getStyles(Colors: AppColors) {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -78,16 +96,35 @@ function getStyles(Colors: AppColors){
       flex: 1,
     },
     listContent: {
-      paddingBottom: 20,
+      paddingBottom: 10,
+      gap: 2,
+    },
+    headerWrapper: {
+      backgroundColor: Colors.white,
+      flexDirection: 'row',
+      marginBottom: 6,
+      paddingHorizontal: 10,
+      borderBottomColor: Colors.secondaryLight,
+      borderBottomWidth: 0.5,
+      elevation: 2,
     },
     header: {
-      fontSize: 20,
+      fontSize: 14,
       fontWeight: 'bold',
       padding: 10,
-      backgroundColor: Colors.buttonBackground,
-      color: Colors.defaultText
-    }
+      backgroundColor: Colors.white,
+      textAlign: 'center',
+    },
+    input: {
+      borderBottomColor: Colors.secondaryLight,
+      borderBottomWidth: 1,
+      flex: 1,
+      marginBottom: 10,
+      marginLeft: 10,
+      fontSize: 14,
+      textAlignVertical: 'bottom',
+    },
   });
 }
 
-export default EditColors
+export default EditColors;

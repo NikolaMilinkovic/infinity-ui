@@ -1,24 +1,21 @@
-import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { Share } from 'react-native';
 import { popupMessage } from '../util-components/PopupMessage';
 
 interface PropTypes {
   message?: string;
   image?: {
-    uri: string,
-    imageName: string
-  }
+    uri: string;
+    imageName: string;
+  };
 }
 
 export const useShareMessage = async ({ message, image }: PropTypes) => {
   try {
     if (image) {
       // Step 1: Download the image locally
-      const { uri: localUri } = await FileSystem.downloadAsync(
-        image.uri,
-        FileSystem.cacheDirectory + image.imageName
-      );
+      const { uri: localUri } = await FileSystem.downloadAsync(image.uri, FileSystem.cacheDirectory + image.imageName);
 
       if (await Sharing.isAvailableAsync()) {
         const shareOptions = {

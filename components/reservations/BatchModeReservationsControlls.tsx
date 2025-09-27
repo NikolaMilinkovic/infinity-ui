@@ -47,14 +47,13 @@ function BatchModeReservationsControlls({
 
       if (response?.status === 200) {
         const data = await response?.json();
-        popupMessage(response.message, 'success');
         return popupMessage(data.message, 'success');
       } else {
         const data = await response?.json();
         return popupMessage(data.message, 'danger');
       }
     } catch (error) {
-      betterErrorLog(error);
+      betterErrorLog('> Error while moving reservations to orders', error);
       popupMessage('Došlo je do problema prilikom prebacivanja rezervacija u porudžbine', 'danger');
     }
   }
@@ -103,7 +102,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   courierSelector: {
-    borderColor: Colors.primaryDark,
+    borderWidth: 0.5,
+    borderColor: Colors.secondaryLight,
     backgroundColor: Colors.white,
     borderRadius: 4,
     elevation: 2,
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   saveToCourrierButton: {
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     backgroundColor: Colors.white,
     borderRadius: 4,
     elevation: 2,
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   removeBatchItemsButton: {
     margin: 10,
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     backgroundColor: Colors.white,
     borderRadius: 4,
     elevation: 2,

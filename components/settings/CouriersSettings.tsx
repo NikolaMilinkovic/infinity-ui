@@ -65,10 +65,12 @@ function getStyles(Colors: AppColors) {
     dropdown: {
       backgroundColor: Colors.buttonBackground,
       marginTop: 10,
-      elevation: 2,
+      elevation: 1,
       shadowOffset: { width: 1, height: 1 },
       shadowOpacity: 0.25,
       shadowRadius: 4,
+      borderWidth: 0.5,
+      borderColor: Colors.secondaryLight,
     },
     dropdownText: {
       color: Colors.defaultText,

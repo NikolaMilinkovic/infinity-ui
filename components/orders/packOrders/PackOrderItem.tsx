@@ -3,6 +3,7 @@ import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../../constants/colors';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { AuthContext } from '../../../store/auth-context';
+import { useUser } from '../../../store/user-context';
 import { OrderTypes } from '../../../types/allTsTypes';
 import IconButton from '../../../util-components/IconButton';
 import { popupMessage } from '../../../util-components/PopupMessage';
@@ -16,11 +17,22 @@ interface PackOrderItemPropTypes {
 function PackOrderItem({ order }: PackOrderItemPropTypes) {
   const [isExpanded, setIsExpanded] = useState(!order.packedIndicator);
   const [isPacked, setIsPacked] = useState(order.packedIndicator || false);
-  const [noteHeight] = useState(order.orderNotes ? 40 : 0);
+  function getNoteHeight(orderNotes: string) {
+    if (!orderNotes) return 0;
+
+    const baseHeight = 40; // minimal height for one line
+    const charsPerLine = 40; // tweak until it fits your font/width
+    const extraHeightPerLine = 20; // pixels per extra line
+
+    const lines = Math.ceil(orderNotes.length / charsPerLine);
+    return baseHeight + (lines - 1) * extraHeightPerLine;
+  }
+  const [noteHeight] = useState(getNoteHeight(order.orderNotes));
   const expandHeight = useExpandAnimation(isExpanded, 160, order.products.length * 88 + 184 + noteHeight, 180);
   const styles = getStyles(isPacked);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
+  const user = useUser();
   function handleOnPress() {
     setIsExpanded(() => !isExpanded);
   }
@@ -30,6 +42,9 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
 
   async function handlePackOrder() {
     try {
+      if (!user?.permissions?.packaging?.check) {
+        return popupMessage('Nemate permisiju za pakovanje porudžbina', 'danger');
+      }
       setIsPacked(true);
       setIsExpanded(false);
       await sleep(140);
@@ -47,6 +62,9 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
   }
   async function handleUnpackOrder() {
     try {
+      if (!user?.permissions?.packaging?.check) {
+        return popupMessage('Nemate permisiju za pakovanje porudžbina', 'danger');
+      }
       setIsPacked(false);
       setIsExpanded(true);
       await sleep(140);
@@ -135,7 +153,7 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
             )}
             <Text style={styles.header}>Lista artikala:</Text>
             {order.products.map((product, index) => (
-              <DisplayOrderProduct key={`${index}-${product._id}`} product={product} index={index} />
+              <DisplayOrderProduct key={`${index}-${product._id}`} product={product} index={index} grayedText={true} />
             ))}
           </Animated.View>
         )}
@@ -187,6 +205,8 @@ function getStyles(isPacked: boolean) {
     },
     rowLabel: {
       flex: 1.2,
+      color: Colors.grayText,
+      fontWeight: 'bold',
     },
     rowText: {
       flex: 4,
@@ -236,17 +256,18 @@ function getStyles(isPacked: boolean) {
     },
     orderNoteContainer: {
       flexDirection: 'row',
-      height: 40,
+      // height: 40,
       gap: 10,
     },
     orderNoteLabel: {
       fontWeight: 'bold',
-      minWidth: 25,
+      minWidth: 75,
       flex: 4,
     },
     orderNoteText: {
       fontWeight: 'bold',
       color: Colors.error,
+      flexShrink: 1,
     },
   });
 }

@@ -37,6 +37,7 @@ function OrderItemsList({
   const authCtx = useContext(AuthContext);
   const styles = getStyles(batchMode);
   const token = authCtx.token;
+
   function resetBatch() {
     setBatchMode(false);
     setSelectedOrders([]);
@@ -187,7 +188,10 @@ function OrderItemsList({
         style={styles.list}
         contentContainerStyle={styles.listContainer}
         ListHeaderComponent={() => getTotalOrdersCount()}
-        initialNumToRender={10}
+        initialNumToRender={20}
+        maxToRenderPerBatch={10}
+        windowSize={20}
+        removeClippedSubviews={true}
       />
     </View>
   );

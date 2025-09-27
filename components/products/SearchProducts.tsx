@@ -1,31 +1,35 @@
-import React, { useContext, useEffect, useState, useMemo } from 'react'
-import { View, StyleSheet, Animated, Text  } from 'react-native'
-import InputField from '../../util-components/InputField'
-import ExpandButton from '../../util-components/ExpandButton';
-import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
-import MultiDropdownList from '../../util-components/MultiDropdownList';
-import { ColorsContext } from '../../store/colors-context';
-import SizePickerCheckboxes from '../../util-components/SizePickerCheckboxes';
-import Button from '../../util-components/Button';
-import DropdownList from '../../util-components/DropdownList';
-import { CategoriesContext } from '../../store/categories-context';
-import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
-import { useExpandAnimation } from '../../hooks/useExpand';
-import { Dimensions } from 'react-native';
-import useBackClickHandler from '../../hooks/useBackClickHandler';
-import { SuppliersContext } from '../../store/suppliers-context';
-import { AppColors, SupplierTypes } from '../../types/allTsTypes';
-import useTextForComponent from '../../hooks/useTextForComponent';
+import React, { Dispatch, SetStateAction, useContext, useEffect, useMemo, useState } from 'react';
+import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
+import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
 import { useGetAppColors } from '../../constants/useGetAppColors';
+import useBackClickHandler from '../../hooks/useBackClickHandler';
+import { useExpandAnimation } from '../../hooks/useExpand';
+import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
+import useTextForComponent from '../../hooks/useTextForComponent';
+import { CategoriesContext } from '../../store/categories-context';
+import { ColorsContext } from '../../store/colors-context';
+import { SuppliersContext } from '../../store/suppliers-context';
+import { AppColors, SearchParamsTypes, SupplierTypes } from '../../types/allTsTypes';
+import DropdownList from '../../util-components/DropdownList';
+import ExpandButton from '../../util-components/ExpandButton';
+import InputField from '../../util-components/InputField';
+import MultiDropdownList from '../../util-components/MultiDropdownList';
+import SizePickerCheckboxes from '../../util-components/SizePickerCheckboxes';
 
 interface SearchProductsPropTypes {
-  searchData: string
-  setSearchData: string
-  isExpanded: boolean
-  setIsExpanded: boolean
-  updateSearchParam: (paramName: string, value: boolean) => void
+  searchData: string;
+  setSearchData: any;
+  isExpanded: boolean;
+  setIsExpanded: Dispatch<SetStateAction<boolean>>;
+  updateSearchParam: <K extends keyof SearchParamsTypes>(paramName: K, value: SearchParamsTypes[K]) => void;
 }
-function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, updateSearchParam }: SearchProductsPropTypes) {
+function SearchProducts({
+  searchData,
+  setSearchData,
+  isExpanded,
+  setIsExpanded,
+  updateSearchParam,
+}: SearchProductsPropTypes) {
   // EXPAND ANIMATION & TOGGLING
   const screenHeight = Dimensions.get('window').height;
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 132, 180);
@@ -34,24 +38,27 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   const Colors = useGetAppColors();
   const styles = getStyles(isExpanded, useGetAppColors());
 
-  function handleToggleExpand(){
-    setIsExpanded((prevIsExpanded) => !prevIsExpanded);
+  function handleToggleExpand() {
+    setIsExpanded((prevIsExpanded: boolean) => !prevIsExpanded);
   }
-  useBackClickHandler(isExpanded, handleToggleExpand)
+  useBackClickHandler(isExpanded, handleToggleExpand);
 
   // ACTIVE | INACTIVE RADIO BUTTONS
-  const activeRadioButtons: RadioButtonProps[] = useMemo(() => ([
-    {
-        id: '1', 
+  const activeRadioButtons: RadioButtonProps[] = useMemo(
+    () => [
+      {
+        id: '1',
         label: 'Aktivni proizvodi',
         value: 'active',
-    },
-    {
+      },
+      {
         id: '2',
         label: 'Neaktivni proizvodi',
         value: 'inactive',
-    },
-  ]), []);
+      },
+    ],
+    []
+  );
   const [areActiveProducts, setAreActiveProducts] = useState<string>('1');
   type ActiveProductsParams = {
     active: boolean;
@@ -71,23 +78,26 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   }, [areActiveProducts]);
 
   // RADIO BUTTONS
-  const radioButtons: RadioButtonProps[] = useMemo(() => ([
-    {
-        id: '1', 
+  const radioButtons: RadioButtonProps[] = useMemo(
+    () => [
+      {
+        id: '1',
         label: 'Na lageru',
         value: 'OnStock',
-    },
-    {
+      },
+      {
         id: '2',
         label: 'Rasprodato',
         value: 'isNotOnStock',
-    },
-    {
+      },
+      {
         id: '3',
         label: 'Sve',
         value: 'onStockAndSoldOut',
-    }
-  ]), []);
+      },
+    ],
+    []
+  );
   const [selectedId, setSelectedId] = useState<string>('1');
   type SearchParams = {
     isOnStock: boolean;
@@ -111,28 +121,25 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   // COLORS PICKER
   const colorsCtx = useContext(ColorsContext);
   interface ColorDataType {
-    key: string | number
-    value: string | number
+    key: string | number;
+    value: string | number;
   }
   const [colorsData, setColorsData] = useState<ColorDataType[]>([]);
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
   useEffect(() => {
-    setColorsData(colorsCtx.colors.map(item => ({
-      key: item.name,
-      value: item.name
-    })));
-  }, [colorsCtx.colors])
+    setColorsData(colorsCtx.getColorItemsForDropdownList());
+  }, [colorsCtx.colors]);
 
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
   // SIZE CHECKBOXES
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
 
   // CATEGORIES
   interface CategoryTypes {
-    _id: string
-    name: string
-    stockType: string
-    __v: number
+    _id: string;
+    name: string;
+    stockType: string;
+    __v: number;
   }
   const categoriesCtx = useContext(CategoriesContext);
   const suppliersCtx = useContext(SuppliersContext);
@@ -140,18 +147,18 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierTypes | null>(null);
 
   useEffect(() => {
-    if(selectedCategory?.stockType !== 'Boja-Veličina-Količina'){
+    if (selectedCategory?.stockType !== 'Boja-Veličina-Količina') {
       setSelectedSizes([]);
     }
     if (selectedCategory && selectedCategory?.name === 'Resetuj izbor') {
       resetDropdown();
-      return; 
+      return;
     }
     updateSearchParam('onCategorySearch', selectedCategory?.name);
   }, [selectedCategory]);
 
   useEffect(() => {
-    if(selectedSupplier && selectedSupplier?.name === 'Resetuj izbor'){
+    if (selectedSupplier && selectedSupplier?.name === 'Resetuj izbor') {
       resetSupplierDropdown();
       return;
     }
@@ -167,14 +174,14 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
   // Dropdown Reset
   const [resetKey, setResetKey] = useState(10000);
   const [supplierResetKey, setSupplierResetKey] = useState(0);
-  function resetDropdown(){
+  function resetDropdown() {
     updateSearchParam('onCategorySearch', '');
-    setResetKey(prevKey => prevKey + 1);
+    setResetKey((prevKey) => prevKey + 1);
     setSelectedCategory('');
-  };
-  function resetSupplierDropdown(){
+  }
+  function resetSupplierDropdown() {
     updateSearchParam('onSupplierSearch', '');
-    setSupplierResetKey(prevKey => prevKey + 1);
+    setSupplierResetKey((prevKey) => prevKey + 1);
     setSelectedSupplier('');
   }
 
@@ -201,99 +208,89 @@ function SearchProducts({ searchData, setSearchData, isExpanded, setIsExpanded, 
 
       {/* FILTERS */}
       <Animated.View style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
-          <Animated.View style={{ opacity: toggleFade, height: screenHeight - 172 }}>
-            <Text style={styles.filtersH1}>Filteri</Text>
-
-            {/* ACTIVE INACTIVE */}
-            {/* <View style={styles.radioGroupContainer}>
-              <Text style={styles.filtersH2absolute}>Izbor Aktivni | Neaktivni proizvodi</Text>
-              <View style={styles.radioGroup}>
-                <RadioGroup 
-                  radioButtons={activeRadioButtons} 
-                  onPress={setAreActiveProducts}
-                  selectedId={areActiveProducts}
-                  layout='row'
-                />
-              </View>
-            </View> */}
-
-            {/* STOCK AVAILABILITY FILTER INPUT */}
-            <View style={styles.radioGroupContainer}>
-              <Text style={styles.filtersH2absolute}>Stanje na lageru</Text>
-              <View style={styles.radioGroup}>
-                <RadioGroup 
-                  radioButtons={radioButtons} 
-                  onPress={setSelectedId}
-                  selectedId={selectedId}
-                  layout='row'
-                />
-              </View>
-            </View>
-
-            {/* CATEGORIES FILTER INPUT */}
-            <DropdownList
-              key={resetKey}
-              data={[{_id: '', name: 'Resetuj izbor'}, ...categoriesCtx.categories]}
-              onSelect={setSelectedCategory}
-              placeholder='Izaberite kategoriju'
-              isDefaultValueOn={false}
-            />
-
-            {/* SUPPLIER */}
-            <View style={{marginTop: 8,}}>
-              <DropdownList
-                key={supplierResetKey}
-                data={[{_id: '', name: 'Resetuj izbor'}, ...suppliersCtx.suppliers]}
-                onSelect={setSelectedSupplier}
-                placeholder='Izaberite dobavljača'
-                isDefaultValueOn={false}
+        <Animated.View style={{ opacity: toggleFade, height: screenHeight - 172 }}>
+          <Text style={styles.filtersH1}>Filteri</Text>
+          {/* ACTIVE INACTIVE */}
+          {/* <View style={styles.radioGroupContainer}>
+            <Text style={styles.filtersH2absolute}>Izbor Aktivni | Neaktivni proizvodi</Text>
+            <View style={styles.radioGroup}>
+              <RadioGroup
+                radioButtons={activeRadioButtons}
+                onPress={setAreActiveProducts}
+                selectedId={areActiveProducts}
+                layout="row"
               />
             </View>
-
-              {/* SIZES FILTER INPUT */}
-              {(!selectedCategory || selectedCategory?.stockType === 'Boja-Veličina-Količina') && (
-                <SizePickerCheckboxes
-                  sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
-                  selectedSizes={selectedSizes}
-                  setSelectedSizes={setSelectedSizes}
-                />
-              )}
-
-              {/* COLORS FILTER INPUT */}
-              <View style={{ marginTop: 8, }}>
-                <MultiDropdownList
-                  data={colorsData}
-                  setSelected={setSelectedColors}
-                  isOpen={true}
-                  label='Boje'
-                  placeholder='Filtriraj po bojama'
-                  dropdownStyles={{maxHeight: 150}}
-                />
-              </View>
-          </Animated.View>
-          {/* CLOSE BUTTON */}
-          <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
-            <Button
-              onPress={() => setIsExpanded(!isExpanded)}
-              backColor={Colors.highlight}
-              textColor={Colors.white}
-              containerStyles={{ marginBottom: 10, marginTop: -90, position: 'static'}}
-            >
-              Zatvori
-            </Button>
-          </Animated.View>
+          </View> */}
+          {/* STOCK AVAILABILITY FILTER INPUT */}
+          <View style={styles.radioGroupContainer}>
+            <Text style={styles.filtersH2absolute}>Stanje na lageru</Text>
+            <View style={styles.radioGroup}>
+              <RadioGroup radioButtons={radioButtons} onPress={setSelectedId} selectedId={selectedId} layout="row" />
+            </View>
+          </View>
+          {/* CATEGORIES FILTER INPUT */}
+          <DropdownList
+            key={resetKey}
+            data={[{ _id: '', name: 'Resetuj izbor' }, ...categoriesCtx.categories]}
+            onSelect={setSelectedCategory}
+            placeholder="Izaberite kategoriju"
+            isDefaultValueOn={false}
+          />
+          {/* SUPPLIER */}
+          <View style={{ marginTop: 8 }}>
+            <DropdownList
+              key={supplierResetKey}
+              data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
+              onSelect={setSelectedSupplier}
+              placeholder="Izaberite dobavljača"
+              isDefaultValueOn={false}
+            />
+          </View>
+          {/* SIZES FILTER INPUT */}
+          {(!selectedCategory || selectedCategory?.stockType === 'Boja-Veličina-Količina') && (
+            <SizePickerCheckboxes
+              sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
+              selectedSizes={selectedSizes}
+              setSelectedSizes={setSelectedSizes}
+            />
+          )}
+          {/* COLORS FILTER INPUT */}
+          <View style={{ marginTop: 8 }}>
+            <MultiDropdownList
+              data={colorsData}
+              setSelected={setSelectedColors}
+              isOpen={true}
+              label="Boje"
+              placeholder="Filtriraj po bojama"
+              dropdownStyles={{ maxHeight: 150 }}
+            />
+          </View>
+        </Animated.View>
+        {/* CLOSE BUTTON */}
+        {/* <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
+          <Button
+            onPress={() => setIsExpanded(!isExpanded)}
+            backColor={Colors.highlight}
+            textColor={Colors.white}
+            containerStyles={{ marginBottom: 10, marginTop: -90, position: 'static' }}
+          >
+            Zatvori
+          </Button>
+        </Animated.View> */}
       </Animated.View>
     </View>
-  )
+  );
 }
 
-function getStyles(isExpanded?:boolean, Colors: AppColors){
+function getStyles(isExpanded?: boolean, Colors: AppColors) {
   return StyleSheet.create({
     container: {
       paddingHorizontal: 16,
-      borderWidth: 0.5,
+      // borderWidth: 0.5,
       borderColor: Colors.primaryDark,
       backgroundColor: Colors.white,
+      elevation: 2,
     },
     inputContainer: {
       flexDirection: 'row',
@@ -307,7 +304,7 @@ function getStyles(isExpanded?:boolean, Colors: AppColors){
       marginTop: 18,
       backgroundColor: Colors.white,
       flex: 7,
-      height: 50
+      height: 50,
     },
     expandButton: {
       position: 'relative',
@@ -315,7 +312,7 @@ function getStyles(isExpanded?:boolean, Colors: AppColors){
       marginLeft: 10,
       height: 45,
       right: 0,
-      top: 10
+      top: 10,
     },
     searchParamsContainer: {
       // flex: 1,
@@ -325,28 +322,28 @@ function getStyles(isExpanded?:boolean, Colors: AppColors){
     },
     radioGroupContainer: {
       padding: 10,
-      borderWidth: 0.5,
-      borderColor: Colors.primaryDark,
+      borderWidth: 2,
+      borderColor: Colors.primaryLight,
       borderRadius: 4,
       marginBottom: 8,
       position: 'relative',
-      marginTop: 10
+      marginTop: 10,
     },
     radioGroup: {
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
     },
     filtersH1: {
       fontSize: 20,
       fontWeight: 'bold',
-      color: Colors.primaryDark
+      color: Colors.primaryDark,
     },
     filtersH2: {
       fontSize: 14,
       color: Colors.primaryDark,
       marginBottom: 8,
       backgroundColor: Colors.white,
-      paddingHorizontal: 18
+      paddingHorizontal: 18,
     },
     filtersH2absolute: {
       fontSize: 14,
@@ -357,9 +354,9 @@ function getStyles(isExpanded?:boolean, Colors: AppColors){
       top: -12,
       backgroundColor: Colors.white,
       borderRadius: 4,
-      paddingHorizontal: 4
-    }
-  })
+      paddingHorizontal: 4,
+    },
+  });
 }
 
-export default SearchProducts
+export default SearchProducts;

@@ -37,11 +37,4 @@ export default class PurseColor {
   getStock() {
     return this.stock;
   }
-
-  // print() {
-  //   console.log(`Color ID: ${this._id}`);
-  //   console.log(`Color: ${this.color}`);
-  //   console.log(`Color Code: ${this.colorCode}`);
-  //   console.log(`Stock: ${this.stock}`);
-  // }
 }

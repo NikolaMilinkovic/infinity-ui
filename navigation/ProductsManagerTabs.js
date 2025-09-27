@@ -5,39 +5,41 @@ import EditItem from '../screens/ProductsManager/editProduct/EditItem';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function ProductsManagerTabs(){
-
+export default function ProductsManagerTabs() {
   /**
    * PRODUCTS MANAGER Tabs
    */
   return (
-    <Tab.Navigator screenOptions={{
-      tabBarLabelStyle: { 
-        fontSize: 11,
-        color: Colors.secondaryDark
-      },
-      tabBarStyle: { 
-        backgroundColor: Colors.secondaryLight,
-        
-      },
-      tabBarIndicatorStyle: {
-        backgroundColor: Colors.highlight,
-        height: 3, 
-      }
-    }}>
-      <Tab.Screen 
-        name="AddItem" 
+    <Tab.Navigator
+      screenOptions={{
+        tabBarPressColor: Colors.tabsPressEffect,
+        tabBarLabelStyle: {
+          fontSize: 11,
+          color: Colors.secondaryDark,
+        },
+        tabBarStyle: {
+          backgroundColor: Colors.secondaryLight,
+        },
+        tabBarIndicatorStyle: {
+          backgroundColor: Colors.highlight,
+          height: 3,
+        },
+      }}
+    >
+      <Tab.Screen
+        name="AddItem"
         component={AddItem}
         options={{
           title: 'Dodaj Proizvod',
         }}
       />
-      <Tab.Screen 
-        name="EditItem" 
-        component={EditItem} 
+      <Tab.Screen
+        name="EditItem"
+        component={EditItem}
         options={{
-        title: 'Izmeni Proizvod',
-      }}/>
+          title: 'Izmeni Proizvod',
+        }}
+      />
     </Tab.Navigator>
-  )
+  );
 }

@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { AuthContext } from '../../store/auth-context';
+import { useUser } from '../../store/user-context';
 import { CourierTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
 import IconButton from '../../util-components/IconButton';
@@ -22,6 +23,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
   const [success, setSucces] = useState('');
   const [error, setError] = useState('');
   const [display, setDisplay] = useState(true);
+  const user = useUser();
 
   // Resets Error & Success
   function resetNotifications() {
@@ -55,6 +57,9 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
   // Updates the current color name in the database
   async function updateCourierHandler() {
     try {
+      if (!user?.permissions?.couriers?.update) {
+        return popupMessage('Nemate permisiju za ažuriranje kurira.', 'danger');
+      }
       resetNotifications();
       if (newName.trim() === data.name && deliveryPrice === data.deliveryPrice) {
         setShowEdit(false);
@@ -100,6 +105,9 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
 
   // Deletes the color from the database
   async function removeCourierHandler() {
+    if (!user?.permissions?.couriers?.delete) {
+      return popupMessage('Nemate permisiju za brisanje kurira.', 'danger');
+    }
     setDisplay(false);
     try {
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/couriers/${courierData._id}`, {
@@ -146,10 +154,10 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
           />
           <View style={styles.buttons}>
             <Button onPress={showEditCourierHandler} textColor={Colors.primaryLight} backColor={Colors.error}>
-              Otkazi
+              Otkaži
             </Button>
             <Button onPress={updateCourierHandler} textColor={Colors.primaryLight} backColor={Colors.primaryDark}>
-              Sacuvaj
+              Sačuvaj
             </Button>
           </View>
           {error && <Text style={styles.error}>{error}</Text>}
@@ -178,13 +186,14 @@ const styles = StyleSheet.create({
   courierItem: {
     padding: 14,
     paddingHorizontal: 25,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderWidth: 0.5,
+    borderColor: Colors.secondaryLight,
     backgroundColor: 'white',
     marginBottom: 1,
     flexDirection: 'row',
     gap: 20,
     alignItems: 'center',
+    elevation: 1,
   },
   deleteIcon: {
     marginLeft: 'auto',
@@ -208,7 +217,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   input: {
-    borderBottomColor: Colors.primaryDark,
+    borderBottomColor: Colors.secondaryLight,
     borderBottomWidth: 1,
     flex: 1,
     marginBottom: 10,

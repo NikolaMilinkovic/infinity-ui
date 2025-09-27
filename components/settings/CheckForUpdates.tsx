@@ -1,29 +1,29 @@
-import { useEffect, useState } from "react";
-import { Linking, StyleSheet, Text, View } from 'react-native';
-import Button from "../../util-components/Button";
-import { Colors } from "../../constants/colors";
 import Constants from 'expo-constants';
-import { AppColors } from "../../types/allTsTypes";
-import { useGetAppColors } from "../../constants/useGetAppColors";
+import { useEffect, useState } from 'react';
+import { Linking, StyleSheet, Text, View } from 'react-native';
+import { Colors } from '../../constants/colors';
+import { useGetAppColors } from '../../constants/useGetAppColors';
+import { AppColors } from '../../types/allTsTypes';
+import Button from '../../util-components/Button';
 
 // Handles updates from Settings screen > Opens the remote link where user
 // can download the new version of the app
-function CheckForUpdates({ appCtx }: any){
+function CheckForUpdates({ appCtx }: any) {
   const [currentVersion] = useState(Constants?.expoConfig?.version);
-  const [buildLink, setBuildLink] = useState(appCtx.buildLink)
+  const [buildLink, setBuildLink] = useState(appCtx.buildLink);
   const [remoteVersion, setRemoteVersion] = useState('');
   const styles = getStyles(useGetAppColors());
-  
+
   useEffect(() => {
     setRemoteVersion(appCtx?.version);
     setBuildLink(appCtx.buildLink);
-  }, [appCtx?.version])
-  
-  function handleOnUpdate(){
+  }, [appCtx?.version]);
+
+  function handleOnUpdate() {
     Linking.openURL(buildLink);
   }
 
-  return(
+  return (
     <View>
       {currentVersion === remoteVersion && (
         <View>
@@ -38,7 +38,7 @@ function CheckForUpdates({ appCtx }: any){
           <Text style={styles.text}>Nova verzija: {remoteVersion}</Text>
           <Button
             onPress={handleOnUpdate}
-            containerStyles={{ borderWidth: 0.5, borderColor: Colors.primaryDark, marginTop: 10 }}
+            containerStyles={{ borderWidth: 0.5, borderColor: Colors.secondaryLight, marginTop: 10, elevation: 1 }}
           >
             Ažuriraj aplikaciju
           </Button>
@@ -51,22 +51,21 @@ function CheckForUpdates({ appCtx }: any){
         </View>
       )}
     </View>
-  )
+  );
 }
 
-
-function getStyles(Colors: AppColors){
+function getStyles(Colors: AppColors) {
   return StyleSheet.create({
     text: {
       fontSize: 16,
-      color: Colors.defaultText
+      color: Colors.defaultText,
     },
     button: {
       backgroundColor: Colors.buttonBackground,
     },
     buttonText: {
-      color: Colors.defaultText
-    }
+      color: Colors.defaultText,
+    },
   });
 }
 

@@ -1,284 +1,316 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Animated, NativeSyntheticEvent, Pressable, StyleSheet, Text, View } from 'react-native'
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import React, { forwardRef, useContext, useEffect, useImperativeHandle, useState } from 'react';
+import { Animated, NativeSyntheticEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
 import { NewOrderContext } from '../../store/new-order-context';
-import { popupMessage } from '../../util-components/PopupMessage';
-import InputField from '../../util-components/InputField';
-import CustomCheckbox from '../../util-components/CustomCheckbox';
 import Button from '../../util-components/Button';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-
+import CustomCheckbox from '../../util-components/CustomCheckbox';
+import InputField from '../../util-components/InputField';
 
 interface PropTypes {
-  isExpanded: boolean
-  setIsExpanded: (expanded: boolean) => void
-  customPrice: string | number
-  setCustomPrice: (price: string | number) => void
+  isExpanded: boolean;
+  setIsExpanded: (expanded: boolean) => void;
+  setCustomPrice: (price: string | number) => void;
 }
 
+export type NewOrderPreviewRef = {
+  handleRecalculatePrice: () => void;
+};
 
-function NewOrderPreview({ isExpanded, setIsExpanded, customPrice, setCustomPrice }: PropTypes) {
-  const orderCtx = useContext(NewOrderContext)
-  const [itemsPrice, setItemsPrice] = useState<string | number>('N/A');
+const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
+  ({ isExpanded, setIsExpanded, setCustomPrice }, ref) => {
+    const orderCtx = useContext(NewOrderContext);
+    const [itemsPrice, setItemsPrice] = useState<string | number>('N/A');
+    const [calculateItemsPrice, setCalculateItemsPrice] = useState(true);
 
-  // Calculate total article price
-  useEffect(() => {
-    if(orderCtx.productData.length > 0){
-      const calc = orderCtx.productData.map((item) => item.itemReference.price)
-      .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+    // Calculate total article price
+    function recalculatePrice() {
+      if (orderCtx.productData.length > 0) {
+        const calc = orderCtx.productData
+          .map((item) => item.itemReference.price)
+          .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-      setItemsPrice(calc);
-      if(orderCtx.courierData)
-        setCustomPrice((calc + orderCtx.courierData?.deliveryPrice).toString());
-    } else {
-      setItemsPrice(0);
-      orderCtx.setCustomPrice(orderCtx.courierData?.deliveryPrice.toString() || '');
-    }
-  }, [orderCtx.productData, orderCtx.courierData])
-
-  function handleToggleExpand(){
-    setIsExpanded(!isExpanded)
-  }
-
-  // DATE PICKER
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [pickedDateDisplay, setPickedDateDisplay] = useState<Date | string>( new Date() );
-  function formatDateHandler(date: Date){
-    return date.toLocaleDateString(
-      'en-GB', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
+        setItemsPrice(calc);
+        if (calculateItemsPrice) {
+          if (orderCtx.courierData) setCustomPrice((calc + orderCtx.courierData?.deliveryPrice).toString());
         }
-    )
-  }
+      } else {
+        setItemsPrice(0);
+        orderCtx.setCustomPrice(orderCtx.courierData?.deliveryPrice.toString() || '');
+      }
+    }
+    useEffect(() => {
+      if (calculateItemsPrice) {
+        recalculatePrice();
+      }
+    }, [orderCtx.productData, orderCtx.courierData, recalculatePrice]);
 
-  function handleSetPickedDate(date: Date){
-    const formattedDate = date.toISOString().split('T')[0].split('-').reverse().join('/');
-    setPickedDateDisplay(formattedDate);
-  }
-  function handleOpenDatePicker(){
-    setShowDatePicker(true);
-  }
-  const handleDatePick = async (e:NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
-    if(e.type === "set"){
-      orderCtx.setReservationDate(selectedDate);
-      // setIsDatePicked(true);
-      // await handleFetchReservationsByDate(selectedDate, token);
-      handleSetPickedDate(selectedDate);
+    function handleToggleExpand() {
+      setIsExpanded(!isExpanded);
     }
 
-    setShowDatePicker(false);
-  }
-  const handleDateReset = () => {
-    orderCtx.setReservationDate(null);
-    setShowDatePicker(false);
-    setPickedDateDisplay('');
-  }
+    // DATE PICKER
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [pickedDateDisplay, setPickedDateDisplay] = useState<Date | string>(new Date());
+    function formatDateHandler(date: Date) {
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      });
+    }
 
-  return (
-    <Animated.ScrollView>
-      {/* TOGGLE BUTTON */}
-      <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
-        <Text style={styles.header}>Pregled nove porudžbine</Text>
-        <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.white}/>
-      </Pressable>
-      
-      {isExpanded &&(
-        <View style={styles.container}>
+    function handleSetPickedDate(date: Date) {
+      const formattedDate = date.toISOString().split('T')[0].split('-').reverse().join('/');
+      setPickedDateDisplay(formattedDate);
+    }
+    function handleOpenDatePicker() {
+      setShowDatePicker(true);
+    }
+    const handleDatePick = async (e: NativeSyntheticEvent<DateTimePickerEvent>, selectedDate: Date) => {
+      if (e.type === 'set') {
+        orderCtx.setReservationDate(selectedDate);
+        // setIsDatePicked(true);
+        // await handleFetchReservationsByDate(selectedDate, token);
+        handleSetPickedDate(selectedDate);
+      }
 
-          {/* BUYER INFORMATION */}
-          <View style={styles.buyerInfoContainer}>
-            <Text style={styles.header2}>Informacije o kupcu</Text>
+      setShowDatePicker(false);
+    };
+    const handleDateReset = () => {
+      orderCtx.setReservationDate(null);
+      setShowDatePicker(false);
+      setPickedDateDisplay('');
+    };
 
-            {/* NAME */}
-            <View style={styles.rowContainer}>
-              <Text style={styles.label}>Ime:</Text>
-              <Text style={styles.information}>{orderCtx.buyerData?.name || 'N/A'}</Text>
-            </View>
+    // Handles manual user input, turns off automatic price calculation
+    function handleUserManualPriceInput() {
+      if (calculateItemsPrice === false) return;
+      setCalculateItemsPrice(false);
+    }
 
-            {/* ADDRESS */}
-            <View style={styles.rowContainer}>
-              <Text style={styles.label}>Adresa:</Text>
-              <Text style={styles.information}>{orderCtx.buyerData?.address || 'N/A'}</Text>
-            </View>
+    function handleRecalculatePrice() {
+      setCalculateItemsPrice(true);
+    }
+    useImperativeHandle(ref, () => ({
+      handleRecalculatePrice,
+    }));
 
-            {/* PLACE */}
-            <View style={styles.rowContainer}>
-              <Text style={styles.label}>Mesto:</Text>
-              <Text style={styles.information}>{orderCtx.buyerData?.place || 'N/A'}</Text>
-            </View>
+    return (
+      <Animated.ScrollView>
+        {/* TOGGLE BUTTON */}
+        <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
+          <Text style={styles.header}>Pregled nove porudžbine</Text>
+          <Icon
+            name={isExpanded ? 'chevron-up' : 'chevron-down'}
+            style={styles.iconStyle}
+            size={26}
+            color={Colors.white}
+          />
+        </Pressable>
 
-            {/* PHONE */}
-            <View style={styles.rowContainer}>
-              <Text style={styles.label}>Telefon:</Text>
-              <Text style={styles.information}>{orderCtx.buyerData?.phone || 'N/A'}</Text>
-            </View>
+        {isExpanded && (
+          <View style={styles.container}>
+            {/* BUYER INFORMATION */}
+            <View style={styles.buyerInfoContainer}>
+              <Text style={styles.header2}>Informacije o kupcu</Text>
 
-            {/* PHONE2 */}
-            {orderCtx.buyerData?.phone2 !== '' && (
+              {/* NAME */}
               <View style={styles.rowContainer}>
-                <Text style={styles.label}>Dodatni telefon:</Text>
-                <Text style={styles.information}>{orderCtx.buyerData?.phone2 || 'N/A'}</Text>
+                <Text style={styles.label}>Ime:</Text>
+                <Text style={styles.information}>{orderCtx.buyerData?.name || 'N/A'}</Text>
               </View>
-            )}
 
-          </View>
+              {/* ADDRESS */}
+              <View style={styles.rowContainer}>
+                <Text style={styles.label}>Adresa:</Text>
+                <Text style={styles.information}>{orderCtx.buyerData?.address || 'N/A'}</Text>
+              </View>
 
-          {/* SELECTED PRODUCTS */}
-          <View style={styles.selectedItemsContainer}>
-            <Text style={styles.header2}>Izabrani proizvodi ({orderCtx.productData.length}) :</Text>
-            {orderCtx?.productData.map((item, index) => (
-              <View 
-                style={[
-                  styles.selectedItem, 
-                  index === orderCtx.productData.length - 1 ? styles.lastItemStyle : null,
-                ]}
-                key={index}
-                
+              {/* PLACE */}
+              <View style={styles.rowContainer}>
+                <Text style={styles.label}>Mesto:</Text>
+                <Text style={styles.information}>{orderCtx.buyerData?.place || 'N/A'}</Text>
+              </View>
+
+              {/* PHONE */}
+              <View style={styles.rowContainer}>
+                <Text style={styles.label}>Telefon:</Text>
+                <Text style={styles.information}>{orderCtx.buyerData?.phone || 'N/A'}</Text>
+              </View>
+
+              {/* PHONE2 */}
+              {orderCtx.buyerData?.phone2 !== '' && (
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Dodatni telefon:</Text>
+                  <Text style={styles.information}>{orderCtx.buyerData?.phone2 || 'N/A'}</Text>
+                </View>
+              )}
+            </View>
+
+            {/* SELECTED PRODUCTS */}
+            <View style={styles.selectedItemsContainer}>
+              <Text style={styles.header2}>Izabrani proizvodi ({orderCtx.productData.length}) :</Text>
+              {orderCtx?.productData.map((item, index) => (
+                <View
+                  style={[styles.selectedItem, index === orderCtx.productData.length - 1 ? styles.lastItemStyle : null]}
+                  key={index}
                 >
-                <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Artikal:</Text>
-                  <Text style={styles.information}>{item.itemReference.name || 'N/A'}</Text>
-                </View>
-                <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Kategorija:</Text>
-                  <Text style={styles.information}>{item.itemReference.category || 'N/A'}</Text>
-                </View>
-                <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Boja:</Text>
-                  <Text style={styles.information}>{item.selectedColor || 'N/A'}</Text>
-                </View>
-                {item.hasOwnProperty('selectedSize') && (
                   <View style={styles.rowContainer}>
-                    <Text style={styles.label}>Veličina:</Text>
-                    <Text style={styles.information}>{item.selectedSize || 'N/A'}</Text>
+                    <Text style={styles.label}>Artikal:</Text>
+                    <Text style={styles.information}>{item.itemReference.name || 'N/A'}</Text>
                   </View>
-                )}
+                  <View style={styles.rowContainer}>
+                    <Text style={styles.label}>Kategorija:</Text>
+                    <Text style={styles.information}>{item.itemReference.category || 'N/A'}</Text>
+                  </View>
+                  <View style={styles.rowContainer}>
+                    <Text style={styles.label}>Boja:</Text>
+                    <Text style={styles.information}>{item.selectedColor || 'N/A'}</Text>
+                  </View>
+                  {item.hasOwnProperty('selectedSize') && (
+                    <View style={styles.rowContainer}>
+                      <Text style={styles.label}>Veličina:</Text>
+                      <Text style={styles.information}>{item.selectedSize || 'N/A'}</Text>
+                    </View>
+                  )}
                   <View style={styles.rowContainer}>
                     <Text style={styles.label}>Cena:</Text>
                     <Text style={styles.information}>{`${item.itemReference.price} din` || 'N/A'}</Text>
                   </View>
-              </View>
-            ))}
+                </View>
+              ))}
+            </View>
 
-          </View>
-
-          <View style={styles.otherInfoContainer}>
-            {/* EDIT FIELDS BUTTON */}
-            {/* <Pressable onPress={() => setShowEdit(!showEdit)} style={styles.editButton}>
+            <View style={styles.otherInfoContainer}>
+              {/* EDIT FIELDS BUTTON */}
+              {/* <Pressable onPress={() => setShowEdit(!showEdit)} style={styles.editButton}>
               <Icon name={showEdit ? 'file-edit-outline' : 'cancel'} style={styles.editIcon} size={28} color={Colors.primaryDark}/>
             </Pressable> */}
-            <Text style={styles.header2}>Rezervacija:</Text>
-            <View style={styles.rowContainer}>
-              <CustomCheckbox
-                label={'Da'}
-                checked={orderCtx.isReservation === true}
-                onCheckedChange={() => orderCtx.setIsReservation(true)}
-              />
-              <CustomCheckbox
-                label={'Ne'}
-                checked={orderCtx.isReservation === false}
-                onCheckedChange={() => orderCtx.setIsReservation(false)}
-              />
-            </View>
-
-          {/* DATE PICKER */}
-          {orderCtx.isReservation === true && (
-            <View style={styles.radioGroupContainer}>
-            {orderCtx.reservationDate && pickedDateDisplay && (
-              <View style={styles.dateDisplayContainer}>
-                {/* <Text style={styles.dateLabel}>Izabrani datum:</Text> */}
-                <Text style={styles.dateText}>{formatDateHandler(orderCtx.reservationDate)}</Text>
-              </View>
-            )}
-            <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
-              <View style={styles.dateButtonsContainer}>
-                <Button
-                  containerStyles={styles.dateButton}
-                  onPress={handleOpenDatePicker}
-                >
-                  Izaberi datum
-                </Button>
-              </View>
-
-              {showDatePicker && (
-                <DateTimePicker
-                  value={orderCtx.reservationDate}
-                  mode='date'
-                  is24Hour={true}
-                  onChange={handleDatePick}
-                  onTouchCancel={handleDateReset}
+              <Text style={styles.header2}>Rezervacija:</Text>
+              <View style={styles.rowContainer}>
+                <CustomCheckbox
+                  label={'Da'}
+                  checked={orderCtx.isReservation === true}
+                  onCheckedChange={() => orderCtx.setIsReservation(true)}
                 />
-              )}
-            </View>
-          )}
+                <CustomCheckbox
+                  label={'Ne'}
+                  checked={orderCtx.isReservation === false}
+                  onCheckedChange={() => orderCtx.setIsReservation(false)}
+                />
+              </View>
 
-            <Text style={styles.header2}>Ostale informacije:</Text>
-            <View style={styles.rowContainer}>
-              <Text style={styles.label}>Težina:</Text>
-              <Text style={styles.information}>{orderCtx?.weight} kg</Text>
+              {/* DATE PICKER */}
+              {orderCtx.isReservation === true && (
+                <View style={styles.radioGroupContainer}>
+                  {orderCtx.reservationDate && pickedDateDisplay && (
+                    <View style={styles.dateDisplayContainer}>
+                      {/* <Text style={styles.dateLabel}>Izabrani datum:</Text> */}
+                      <Text style={styles.dateText}>{formatDateHandler(orderCtx.reservationDate)}</Text>
+                    </View>
+                  )}
+                  <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+                  <View style={styles.dateButtonsContainer}>
+                    <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+                      Izaberi datum
+                    </Button>
+                  </View>
+
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={orderCtx.reservationDate}
+                      mode="date"
+                      is24Hour={true}
+                      onChange={handleDatePick}
+                      onTouchCancel={handleDateReset}
+                    />
+                  )}
+                </View>
+              )}
+
+              <Text style={styles.header2}>Ostale informacije:</Text>
+              <View style={styles.rowContainer}>
+                <Text style={styles.label}>Težina:</Text>
+                <Text style={styles.information}>{orderCtx?.weight} kg</Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Text style={styles.label}>Kurir:</Text>
+                <Text style={styles.information}>{orderCtx.courierData?.name}</Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Text style={styles.label}>Cena dostave:</Text>
+                <Text style={styles.information}>{Number(orderCtx.courierData?.deliveryPrice) | 0} din</Text>
+              </View>
+              <View style={styles.rowContainer}>
+                <Text style={styles.label}>Ukupna cena artikala:</Text>
+                <Text style={styles.information}>{Number(itemsPrice) || 0} din</Text>
+              </View>
+              {/* Final price */}
+              <View style={styles.rowContainer}>
+                <Text style={styles.label}>Ukupno:</Text>
+                <Text style={styles.information}>
+                  {Number(itemsPrice) + Number(orderCtx.courierData?.deliveryPrice) || 0} din
+                </Text>
+              </View>
+              <View style={styles.priceContainer}>
+                <InputField
+                  label="Finalna cena"
+                  inputText={orderCtx.customPrice}
+                  setInputText={orderCtx.setCustomPrice}
+                  containerStyles={styles.customPriceInput}
+                  background={Colors.white}
+                  keyboard="numeric"
+                  selectTextOnFocus={true}
+                  onManualInput={handleUserManualPriceInput}
+                  labelBorders={false}
+                />
+                {!calculateItemsPrice && (
+                  <Button
+                    containerStyles={styles.recalculatePriceBtn}
+                    textStyles={{ color: Colors.primaryDark }}
+                    onPress={() => setCalculateItemsPrice(true)}
+                  >
+                    Preračunaj cenu
+                  </Button>
+                )}
+              </View>
             </View>
-            <View style={styles.rowContainer}>
-              <Text style={styles.label}>Kurir:</Text>
-              <Text style={styles.information}>{orderCtx.courierData?.name}</Text>
-            </View>
-            <View style={styles.rowContainer}>
-              <Text style={styles.label}>Cena dostave:</Text>
-              <Text style={styles.information}>{Number(orderCtx.courierData?.deliveryPrice) | 0} din</Text>
-            </View>
-            <View style={styles.rowContainer}>
-              <Text style={styles.label}>Ukupna cena artikala:</Text>
-              <Text style={styles.information}>{Number(itemsPrice) || 0} din</Text>
-            </View>
-            {/* Final price */}
-            <View style={styles.rowContainer}>
-              <Text style={styles.label}>Ukupno:</Text>
-              <Text style={styles.information}>{Number(itemsPrice) + Number(orderCtx.courierData?.deliveryPrice) || 0} din</Text>
-            </View>
-            <InputField
-              label='Finalna cena'
-              inputText={orderCtx.customPrice}
-              setInputText={orderCtx.setCustomPrice}
-              containerStyles={styles.customPriceInput}
-              background={Colors.white}
-              keyboard='numeric'
-              selectTextOnFocus={true}
-            />
           </View>
-        </View>
-      )}
-    </Animated.ScrollView>
-  )
-}
+        )}
+      </Animated.ScrollView>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 8
+    paddingHorizontal: 8,
   },
   headerContainer: {
     padding: 10,
     borderRadius: 4,
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     backgroundColor: Colors.secondaryDark,
     marginBottom: 6,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   iconStyle: {
-    marginLeft:'auto'
+    marginLeft: 'auto',
   },
   header: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.white
+    color: Colors.white,
   },
   buyerInfoContainer: {
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     borderRadius: 4,
     padding: 10,
+    backgroundColor: Colors.white,
   },
   header2: {
     fontSize: 16,
@@ -289,7 +321,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
     width: '100%',
-    marginLeft: 8
+    marginLeft: 8,
   },
   label: {
     flex: 2,
@@ -299,28 +331,30 @@ const styles = StyleSheet.create({
   },
   selectedItemsContainer: {
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     borderRadius: 4,
     padding: 10,
     marginVertical: 8,
     paddingBottom: 0,
+    backgroundColor: Colors.white,
   },
   selectedItem: {
     borderBottomWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     borderRadius: 4,
     paddingVertical: 8,
   },
   lastItemStyle: {
-    borderBottomWidth: 0
+    borderBottomWidth: 0,
   },
   otherInfoContainer: {
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     borderRadius: 4,
     padding: 10,
     marginBottom: 8,
     position: 'relative',
+    backgroundColor: Colors.white,
   },
   editButton: {
     position: 'absolute',
@@ -330,27 +364,26 @@ const styles = StyleSheet.create({
     width: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1
+    zIndex: 1,
   },
-  editIcon: {
-
-  },
+  editIcon: {},
   customPriceInput: {
-    marginTop: 16
+    marginTop: 16,
+    flex: 1,
   },
   deliveryRemarkInput: {
     marginTop: 16,
     justifyContent: 'flex-start',
-    textAlignVertical: 'top'
+    textAlignVertical: 'top',
   },
   dateButtonsContainer: {
     flexDirection: 'row',
-    gap: 10
+    gap: 10,
   },
   dateButton: {
     flex: 1,
     backgroundColor: Colors.secondaryLight,
-    color: Colors.primaryDark
+    color: Colors.primaryDark,
   },
   dateDisplayContainer: {
     flexDirection: 'column',
@@ -358,8 +391,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dateLabel: {
-  },
+  dateLabel: {},
   dateText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -376,17 +408,32 @@ const styles = StyleSheet.create({
     top: -12,
     backgroundColor: Colors.primaryLight,
     borderRadius: 4,
-    paddingHorizontal: 4
+    paddingHorizontal: 4,
   },
   radioGroupContainer: {
     padding: 10,
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     borderRadius: 4,
     marginBottom: 8,
     paddingTop: 20,
     marginTop: 10,
   },
-})
+  priceContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    gap: 10,
+  },
+  recalculatePriceBtn: {
+    flex: 1,
+    maxHeight: 44,
+    marginTop: 'auto',
+    backgroundColor: Colors.secondaryLight,
+    textAlign: 'center',
+    justifyContent: 'center',
+    maxWidth: 150,
+    marginBottom: 1,
+  },
+});
 
-export default NewOrderPreview
+export default NewOrderPreview;

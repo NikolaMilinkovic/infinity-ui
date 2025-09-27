@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { AuthContext } from '../../store/auth-context';
+import { useUser } from '../../store/user-context';
 import Button from '../../util-components/Button';
 import DropdownList from '../../util-components/DropdownList';
 import InputField from '../../util-components/InputField';
@@ -16,6 +17,7 @@ interface DropdownTypes {
 }
 function AddCategories() {
   const authCtx = useContext(AuthContext);
+  const user = useUser();
   const [inputText, setInputText] = useState<string>('');
   const [stockType, setStockType] = useState<DropdownTypes>({
     _id: 0,
@@ -53,6 +55,8 @@ function AddCategories() {
   async function addCategoryHandler() {
     const validated = validateInput();
     if (!validated) return;
+    if (!user?.permissions?.categories?.create)
+      return popupMessage('Nemate permisiju za dodavanje nove kategorije.', 'danger');
     try {
       const newCategory = {
         name: inputText,
@@ -93,22 +97,21 @@ function AddCategories() {
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
-            background={Colors.primaryLight}
+            background={Colors.white}
             color={Colors.primaryDark}
-            activeColor={Colors.secondaryDark}
+            activeColor={Colors.highlight}
             labelBorders={false}
           />
         </View>
-      </View>
-
-      {/* DROPDOWN */}
-      <View style={styles.dropdownContainer}>
-        <DropdownList
-          data={dropdownData}
-          defaultValue={'Boja-Veličina-Količina'}
-          onSelect={setStockType}
-          buttonContainerStyles={styles.dropdown}
-        />
+        {/* DROPDOWN */}
+        <View style={styles.dropdownContainer}>
+          <DropdownList
+            data={dropdownData}
+            defaultValue={'Boja-Veličina-Količina'}
+            onSelect={setStockType}
+            buttonContainerStyles={styles.dropdown}
+          />
+        </View>
       </View>
 
       {/* ERROR MESSAGE */}
@@ -116,7 +119,7 @@ function AddCategories() {
 
       {/* BUTTON */}
       <View style={styles.buttonContainer}>
-        <Button onPress={addCategoryHandler} textColor={Colors.whiteText} backColor={Colors.highlight}>
+        <Button onPress={addCategoryHandler} textColor={Colors.white} backColor={Colors.highlight}>
           Sačuvaj
         </Button>
       </View>
@@ -127,24 +130,25 @@ function AddCategories() {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     borderWidth: 0.5,
     paddingVertical: 16,
-    backgroundColor: Colors.primaryLight,
+    paddingBottom: 8,
+    backgroundColor: Colors.white,
   },
   controllsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    gap: 16,
+    gap: 8,
     paddingHorizontal: 16,
   },
   inputContainer: {
-    width: '100%',
+    flex: 1,
   },
   buttonContainer: {
     width: '100%',
-    marginTop: 16,
+    marginTop: 6,
     paddingHorizontal: 16,
   },
   error: {
@@ -156,12 +160,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   dropdownContainer: {
-    width: '100%',
-    paddingHorizontal: 16,
-    marginTop: 6,
+    flex: 1,
+    elevation: 0,
   },
   dropdown: {
-    backgroundColor: 'transparent',
+    borderWidth: 0.5,
+    borderColor: Colors.secondaryLight,
+    backgroundColor: Colors.white,
+    borderRadius: 4,
+    height: 46,
   },
 });
 

@@ -5,40 +5,41 @@ import PreviousStatisticFiles from '../screens/EndOfDay/PreviousStatisticFiles';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function EndOfDayTabs(){
-
+export default function EndOfDayTabs() {
   /**
    * END OF DAY tabs
    */
   return (
-    <Tab.Navigator screenOptions={{
-      tabBarLabelStyle: { 
-        fontSize: 11,
-        color: Colors.secondaryDark
-      },
-      tabBarStyle: { 
-        backgroundColor: Colors.secondaryLight,
-        
-      },
-      tabBarIndicatorStyle: {
-        backgroundColor: Colors.highlight,
-        height: 3, 
-      }
-    }}>
-      <Tab.Screen 
-        name="EndOfDayScreen" 
+    <Tab.Navigator
+      screenOptions={{
+        tabBarPressColor: Colors.tabsPressEffect,
+        tabBarLabelStyle: {
+          fontSize: 11,
+          color: Colors.secondaryDark,
+        },
+        tabBarStyle: {
+          backgroundColor: Colors.secondaryLight,
+        },
+        tabBarIndicatorStyle: {
+          backgroundColor: Colors.highlight,
+          height: 3,
+        },
+      }}
+    >
+      <Tab.Screen
+        name="EndOfDayScreen"
         component={EndOfDay}
         options={{
           title: 'Izvuci Porudžbine',
         }}
       />
-      <Tab.Screen 
-        name="StatisticFiles" 
+      <Tab.Screen
+        name="StatisticFiles"
         component={PreviousStatisticFiles}
         options={{
           title: 'Prethodni Dani',
         }}
       />
     </Tab.Navigator>
-  )
+  );
 }

@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { StyleSheet, Text, View,TouchableOpacity, ScrollView } from 'react-native'
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { SuppliersContext } from '../../store/suppliers-context';
-import { ProductTypes } from '../../types/allTsTypes';
 import { CategoriesContext } from '../../store/categories-context';
+import { SuppliersContext } from '../../store/suppliers-context';
 import { UserContext } from '../../store/user-context';
+import { ProductTypes } from '../../types/allTsTypes';
 
-interface ProductListSelectorPropTypes{
-  products: ProductTypes[]
-  setSelectedList: () => void
+interface ProductListSelectorPropTypes {
+  products: ProductTypes[];
+  setSelectedList: Dispatch<SetStateAction<string>>;
 }
 
 function ProductListSelector({ products, setSelectedList }: ProductListSelectorPropTypes) {
@@ -29,25 +29,25 @@ function ProductListSelector({ products, setSelectedList }: ProductListSelectorP
   );
 }
 
-interface ListButtonPropTypes{
+interface ListButtonPropTypes {
   text: string;
   activeBtn: string;
   onPress: (text: string) => void;
 }
 /**
- * Button component that is displayed in each List Types 
+ * Button component that is displayed in each List Types
  */
-function ListButton({ text, activeBtn, onPress }: ListButtonPropTypes){
+function ListButton({ text, activeBtn, onPress }: ListButtonPropTypes) {
   const [isActive, setIsActive] = useState(false);
   useEffect(() => {
-    if(activeBtn === text){
+    if (activeBtn === text) {
       setIsActive(true);
     } else {
       setIsActive(false);
     }
-  }, [activeBtn])
+  }, [activeBtn]);
 
-  return(
+  return (
     <TouchableOpacity
       style={{
         padding: 10,
@@ -56,88 +56,74 @@ function ListButton({ text, activeBtn, onPress }: ListButtonPropTypes){
         minWidth: 60,
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 2,
-        borderColor: isActive ? Colors.highlight : Colors.secondaryLight,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 5,
-        elevation: 5,
+        elevation: 3,
       }}
       onPress={() => onPress(text)}
     >
       <Text style={{ color: isActive ? Colors.white : Colors.primaryDark }}>{text}</Text>
     </TouchableOpacity>
-  )
+  );
 }
 
-interface ListProductsBySupplierPropTypes{ 
-  products: ProductTypes[], 
-  setSelectedList: (list: string) => void 
-} 
-function ListProductsBySupplier({ products, setSelectedList }: ListProductsBySupplierPropTypes){
+interface ListProductsBySupplierPropTypes {
+  products: ProductTypes[];
+  setSelectedList: (list: string) => void;
+}
+function ListProductsBySupplier({ products, setSelectedList }: ListProductsBySupplierPropTypes) {
   const suppliers = useContext(SuppliersContext);
   const [activeBtn, setActiveBtn] = useState('Svi');
-  function onListChange(text:string){
+  function onListChange(text: string) {
     setActiveBtn(text);
     setSelectedList(text);
   }
-  
+
   return (
     <View>
       <ScrollView horizontal showsHorizontalScrollIndicator={true} style={supplierStyles.scrollView}>
         <View style={supplierStyles.buttonsWrapper}>
           <ListButton text={'Svi'} activeBtn={activeBtn} onPress={onListChange} />
           {suppliers.suppliers.map((supplier, index) => (
-            <ListButton
-              text={supplier.name}
-              activeBtn={activeBtn}
-              key={index}
-              onPress={onListChange}
-            />
+            <ListButton text={supplier.name} activeBtn={activeBtn} key={index} onPress={onListChange} />
           ))}
         </View>
       </ScrollView>
     </View>
-  )
+  );
 }
 const supplierStyles = StyleSheet.create({
-  scrollView: {
-  },
+  scrollView: {},
   buttonsWrapper: {
-    flexDirection: 'row', 
-    padding: 10, 
-    gap: 10, 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    padding: 10,
+    gap: 10,
+    alignItems: 'center',
     justifyContent: 'center',
-  }
-})
+  },
+});
 
-
-function ListProductsByCategory({ products, setSelectedList }: ListProductsBySupplierPropTypes){
+function ListProductsByCategory({ products, setSelectedList }: ListProductsBySupplierPropTypes) {
   const categories = useContext(CategoriesContext);
   const [activeBtn, setActiveBtn] = useState('Svi');
-  function onListChange(text:string){
+  function onListChange(text: string) {
     setActiveBtn(text);
     setSelectedList(text);
   }
-  
+
   return (
     <View>
       <ScrollView horizontal showsHorizontalScrollIndicator={true} style={supplierStyles.scrollView}>
         <View style={supplierStyles.buttonsWrapper}>
           <ListButton text={'Svi'} activeBtn={activeBtn} onPress={onListChange} />
           {categories.categories.map((category, index) => (
-            <ListButton
-              text={category.name}
-              activeBtn={activeBtn}
-              key={index}
-              onPress={onListChange}
-            />
+            <ListButton text={category.name} activeBtn={activeBtn} key={index} onPress={onListChange} />
           ))}
         </View>
       </ScrollView>
     </View>
-  )
+  );
 }
-export default ProductListSelector
+export default ProductListSelector;

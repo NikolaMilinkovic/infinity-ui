@@ -1,20 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { View, StyleSheet, Text, FlatList, Pressable, Animated } from 'react-native'
-import SelectedProduct from './SelectedProduct'
-import { ScrollView } from 'react-native-gesture-handler'
-import { Colors } from '../../constants/colors'
-import { NewOrderContextTypes } from '../../types/allTsTypes'
+import React, { useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation'
-import Button from '../../util-components/Button'
-import { popupMessage } from '../../util-components/PopupMessage'
-import { useExpandAnimation, useExpandAnimationWithContentVisibility } from '../../hooks/useExpand'
+import { Colors } from '../../constants/colors';
+import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
+import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
+import { NewOrderContextTypes } from '../../types/allTsTypes';
+import Button from '../../util-components/Button';
+import { popupMessage } from '../../util-components/PopupMessage';
+import SelectedProduct from './SelectedProduct';
 
-interface PropTypes{
-  ordersCtx: NewOrderContextTypes
-  isExpanded: boolean
-  onNext: () => void
-  setIsExpanded: (expanded: boolean) => void
+interface PropTypes {
+  ordersCtx: NewOrderContextTypes;
+  isExpanded: boolean;
+  onNext: () => void;
+  setIsExpanded: (expanded: boolean) => void;
 }
 function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext }: PropTypes) {
   const fadeAnimation = useToggleFadeAnimation(isExpanded, 180);
@@ -22,9 +21,9 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
   // Expand animation that makescontent visible when expanded
   // Used to fix the padding issue when expand is collapsed
   const [isContentVisible, setIsContentVisible] = useState(true);
-  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 250)
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 250);
 
-  function handleToggleExpand(){
+  function handleToggleExpand() {
     if (isExpanded) {
       setIsExpanded(false);
     } else {
@@ -32,40 +31,36 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
     }
   }
 
-
   // ON NEXT
-  function handleOnNext(){
-    if(ordersCtx.productReferences.length > 0){
-      onNext()
+  function handleOnNext() {
+    if (ordersCtx.productReferences.length > 0) {
+      onNext();
     } else {
-      popupMessage('Molimo izaberite proizvod', 'danger')
+      popupMessage('Molimo izaberite proizvod', 'danger');
     }
   }
 
   return (
     <View style={styles.container}>
-
       {/* TOGGLE BUTTON */}
       <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
         <Text style={styles.header}>Izabrani artikli</Text>
-        <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.white}/>
+        <Icon
+          name={isExpanded ? 'chevron-up' : 'chevron-down'}
+          style={styles.iconStyle}
+          size={26}
+          color={Colors.white}
+        />
       </Pressable>
 
       {/* MAIN */}
       {isContentVisible && (
-        <View style={{marginHorizontal: 8}}>
-
+        <View style={{ marginHorizontal: 8 }}>
           {/* LIST */}
-          <Animated.FlatList 
-            style={[styles.listContainer, {height: toggleExpandAnimation, opacity: fadeAnimation}]}
+          <Animated.FlatList
+            style={[styles.listContainer, { height: toggleExpandAnimation, opacity: fadeAnimation }]}
             data={ordersCtx.productReferences}
-            renderItem={({item, index}) => (          
-                <SelectedProduct 
-                  item={item}
-                  orderCtx={ordersCtx}
-                  index={index}
-                />
-            )}
+            renderItem={({ item, index }) => <SelectedProduct item={item} orderCtx={ordersCtx} index={index} />}
             keyExtractor={(item, index) => `${index}-${item._id}`}
             contentContainerStyle={{ paddingBottom: 16 }}
           />
@@ -74,7 +69,7 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
           <Button
             backColor={Colors.highlight}
             textColor={Colors.white}
-            containerStyles={{marginBottom: 6}}
+            containerStyles={{ marginBottom: 6 }}
             onPress={handleOnNext}
           >
             Dalje
@@ -82,12 +77,10 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
         </View>
       )}
     </View>
-  )
+  );
 }
 const styles = StyleSheet.create({
-  container: {
-
-  },
+  container: {},
   headerContainer: {
     padding: 10,
     borderRadius: 4,
@@ -95,23 +88,24 @@ const styles = StyleSheet.create({
     borderColor: Colors.primaryDark,
     backgroundColor: Colors.secondaryDark,
     marginBottom: 6,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   iconStyle: {
-    marginLeft:'auto'
+    marginLeft: 'auto',
   },
   header: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.white
+    color: Colors.white,
   },
   listContainer: {
     padding: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderWidth: 1,
+    borderColor: Colors.secondaryLight,
+    backgroundColor: Colors.white,
     borderRadius: 4,
-    marginBottom: 6
-  }
-})
+    marginBottom: 6,
+  },
+});
 
-export default SelectedProductsDisplay
+export default SelectedProductsDisplay;

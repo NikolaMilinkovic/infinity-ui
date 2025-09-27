@@ -294,12 +294,14 @@ const TestMultipleDropdownList: React.FC<any> = ({
               ) : (
                 <TouchableOpacity
                   style={[styles.option, dropdownItemStyles]}
-                  onPress={() => {
-                    setSelected(undefined);
-                    setSelectedVal('');
-                    slideup();
-                    setTimeout(() => setFilteredData(data), 800);
-                  }}
+                  // NOTE: UGASENO ZATO STO KADA KLIKNEM NUKE MI POLJE U OBJEKTU U KOJE TREBA DA SETUJEM PODATKE
+
+                  // onPress={() => {
+                  //   setSelected(undefined);
+                  //   setSelectedVal('');
+                  //   slideup();
+                  //   setTimeout(() => setFilteredData(data), 800);
+                  // }}
                 >
                   <Text style={dropdownTextStyles}>{notFoundText}</Text>
                 </TouchableOpacity>

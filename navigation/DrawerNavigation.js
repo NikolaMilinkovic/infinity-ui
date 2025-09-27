@@ -34,28 +34,34 @@ export function CustomDrawerContent(props) {
   function handleBackgroundChange(pageName) {
     return isActive === pageName ? Colors.selectedNavBackground : 'transparent';
   }
+  if (!userCtx.permissions) return;
 
   return (
     <View style={{ flex: 1, paddingBottom: 60, paddingTop: 60, paddingRight: 10 }}>
-      <NavigationButton
-        backgroundColor={handleBackgroundChange('Home')}
-        icon="playlist-plus"
-        onPress={() => setActiveAndNavigate('Home')}
-        size={18}
-        color={handleActiveColorChange('Home')}
-        text={'Lista Artikla'}
-        type="MaterialCommunityIcons"
-      />
+      {userCtx.permissions.navigation.lista_artikla && (
+        <NavigationButton
+          backgroundColor={handleBackgroundChange('Home')}
+          icon="playlist-plus"
+          onPress={() => setActiveAndNavigate('Home')}
+          size={18}
+          color={handleActiveColorChange('Home')}
+          text={'Lista Artikla'}
+          type="MaterialCommunityIcons"
+        />
+      )}
 
       {/* ORDERS MANAGER */}
-      <NavigationButton
-        backgroundColor={handleBackgroundChange('Orders')}
-        icon="filetext1"
-        onPress={() => setActiveAndNavigate('Orders')}
-        size={18}
-        color={handleActiveColorChange('Orders')}
-        text="Porudžbine | Rezervacije"
-      />
+      {userCtx.permissions.navigation.porudzbine_rezervacije && (
+        <NavigationButton
+          backgroundColor={handleBackgroundChange('Orders')}
+          icon="filetext1"
+          onPress={() => setActiveAndNavigate('Orders')}
+          size={18}
+          color={handleActiveColorChange('Orders')}
+          text="Porudžbine | Rezervacije"
+        />
+      )}
+
       {/* <NavigationButton 
         backgroundColor={handleBackgroundChange('Profile')}
         icon="user" 
@@ -63,73 +69,85 @@ export function CustomDrawerContent(props) {
         size={18} 
         color={handleActiveColorChange('Profile')}
         text='Profil'
-      /> */}
+        /> */}
 
       {/* COLORS | CATEGORIES */}
-      <NavigationButton
-        backgroundColor={handleBackgroundChange('ColorsCategoriesTabs')}
-        icon="color-palette-outline"
-        onPress={() => setActiveAndNavigate('ColorsCategoriesTabs')}
-        size={18}
-        color={handleActiveColorChange('ColorsCategoriesTabs')}
-        text="Boje, Kategorije i Dobabljači"
-        type="Ionicons"
-      />
+      {userCtx.permissions.navigation.boje_kategorije_dobavljaci && (
+        <NavigationButton
+          backgroundColor={handleBackgroundChange('ColorsCategoriesTabs')}
+          icon="color-palette-outline"
+          onPress={() => setActiveAndNavigate('ColorsCategoriesTabs')}
+          size={18}
+          color={handleActiveColorChange('ColorsCategoriesTabs')}
+          text="Boje i Kategorije"
+          type="Ionicons"
+        />
+      )}
 
       {/* COURIERS */}
-      <NavigationButton
-        backgroundColor={handleBackgroundChange('CouriersTabs')}
-        icon="truck-delivery-outline"
-        onPress={() => setActiveAndNavigate('CouriersTabs')}
-        size={18}
-        color={handleActiveColorChange('CouriersTabs')}
-        text="Kuriri"
-        type="MaterialCommunityIcons"
-      />
+      {userCtx.permissions.navigation.kuriri && (
+        <NavigationButton
+          backgroundColor={handleBackgroundChange('CouriersTabs')}
+          icon="truck-delivery-outline"
+          onPress={() => setActiveAndNavigate('CouriersTabs')}
+          size={18}
+          color={handleActiveColorChange('CouriersTabs')}
+          text="Kuriri i Dobavljači"
+          type="MaterialCommunityIcons"
+        />
+      )}
 
       {/* PRODUCTS MANAGER */}
-      <NavigationButton
-        backgroundColor={handleBackgroundChange('ProductsManager')}
-        icon="profile"
-        onPress={() => setActiveAndNavigate('ProductsManager')}
-        size={18}
-        color={handleActiveColorChange('ProductsManager')}
-        text="Dodaj Artikal"
-      />
+      {userCtx.permissions.navigation.dodaj_artikal && (
+        <NavigationButton
+          backgroundColor={handleBackgroundChange('ProductsManager')}
+          icon="profile"
+          onPress={() => setActiveAndNavigate('ProductsManager')}
+          size={18}
+          color={handleActiveColorChange('ProductsManager')}
+          text="Dodaj Artikal"
+        />
+      )}
 
       {/* USERS MANAGER */}
-      <NavigationButton
-        backgroundColor={handleBackgroundChange('UserManager')}
-        icon="addusergroup"
-        onPress={() => setActiveAndNavigate('UserManager')}
-        size={18}
-        color={handleActiveColorChange('UserManager')}
-        text="Upravljanje Korisnicima"
-      />
+      {userCtx.permissions.navigation.upravljanje_korisnicima && (
+        <NavigationButton
+          backgroundColor={handleBackgroundChange('UserManagerTabs')}
+          icon="addusergroup"
+          onPress={() => setActiveAndNavigate('UserManagerTabs')}
+          size={18}
+          color={handleActiveColorChange('UserManagerTabs')}
+          text="Upravljanje Korisnicima"
+        />
+      )}
 
       {/* SETTINGS */}
-      <NavigationButton
-        backgroundColor={handleBackgroundChange('Settings')}
-        icon="setting"
-        onPress={() => setActiveAndNavigate('Settings')}
-        size={18}
-        color={handleActiveColorChange('Settings')}
-        text="Podešavanja"
-      />
+      {userCtx.permissions.navigation.podesavanja && (
+        <NavigationButton
+          backgroundColor={handleBackgroundChange('SettingsTabs')}
+          icon="setting"
+          onPress={() => setActiveAndNavigate('SettingsTabs')}
+          size={18}
+          color={handleActiveColorChange('SettingsTabs')}
+          text="Podešavanja"
+        />
+      )}
 
       {/* END OF DAY */}
-      <NavigationButton
-        backgroundColor={handleBackgroundChange('EndOfDayTabs')}
-        icon="file-excel"
-        onPress={() => setActiveAndNavigate('EndOfDayTabs')}
-        size={18}
-        color={handleActiveColorChange('EndOfDayTabs')}
-        text="Završi dan"
-        type="MaterialCommunityIcons"
-      />
+      {userCtx.permissions.navigation.zavrsi_dan && (
+        <NavigationButton
+          backgroundColor={handleBackgroundChange('EndOfDayTabs')}
+          icon="file-excel"
+          onPress={() => setActiveAndNavigate('EndOfDayTabs')}
+          size={18}
+          color={handleActiveColorChange('EndOfDayTabs')}
+          text="Završi dan"
+          type="MaterialCommunityIcons"
+        />
+      )}
 
       {/* ADMIN DASHBOARD */}
-      {userCtx.userRole === 'admin' && (
+      {userCtx.userRole === 'admin' && userCtx.permissions.navigation.admin_dashboard && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('AdminDashboardTabs')}
           icon="equalizer"
