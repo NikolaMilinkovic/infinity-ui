@@ -175,8 +175,8 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
     },
     orderNoteIndicator: {
       position: 'absolute',
-      right: -60,
-      bottom: packed ? 20 : 0,
+      right: -50,
+      bottom: packed ? 10 : 0,
       color: Colors.error,
       fontWeight: 'bold',
     },

@@ -50,11 +50,16 @@ function DressesContextProvider({ children }: DressContextProviderType) {
   useEffect(() => {
     if (token) {
       async function getDressesData(token: string) {
-        const fetchActiveDresses = await fetchData(token, 'products/active-dresses');
-        if (fetchActiveDresses !== false) setActiveDresses(fetchActiveDresses);
+        try {
+          const fetchActiveDresses = await fetchData(token, 'products/active-dresses');
+          if (fetchActiveDresses !== false) setActiveDresses(fetchActiveDresses);
 
-        const fetchInactiveDresses = await fetchData(token, 'products/inactive-dresses');
-        if (fetchInactiveDresses !== false) setInactiveDresses(fetchInactiveDresses);
+          const fetchInactiveDresses = await fetchData(token, 'products/inactive-dresses');
+          if (fetchInactiveDresses !== false) setInactiveDresses(fetchInactiveDresses);
+          console.log('%c[dresses-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+        } catch (error) {
+          console.log('%c[dresses-context] Initial fetch: false', 'color: red; font-weight: bold;');
+        }
       }
       getDressesData(token);
     }

@@ -95,13 +95,7 @@ export async function loginUser({ username, password, expoPushToken = '' }: Logi
 export async function updateUserExpoPushToken(token: string, expoPushToken: string) {
   try {
     if (!expoPushToken) return;
-    const jsonToken = JSON.stringify(expoPushToken);
-    const response = await handleFetchingWithBodyData(
-      { expoPushToken: jsonToken },
-      token,
-      'user/update-user-push-token',
-      'POST'
-    );
+    const response = await handleFetchingWithBodyData({ expoPushToken }, token, 'user/update-user-push-token', 'POST');
     if (!response.ok) {
       const parsedResponse = await response.json();
       popupMessage(parsedResponse.message, 'danger');

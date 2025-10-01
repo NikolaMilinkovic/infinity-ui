@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import ColorSizeSelectorsList from '../../../components/orders/ColorSizeSelectorsList';
 import CourierSelector from '../../../components/orders/CourierSelector';
@@ -7,15 +7,14 @@ import SelectedProductsDisplay from '../../../components/orders/SelectedProducts
 import SortUserInformationField from '../../../components/orders/SortUserInformationField';
 import { Colors } from '../../../constants/colors';
 import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
-import { AllProductsContext } from '../../../store/all-products-context';
 import { AuthContext } from '../../../store/auth-context';
 import { useConfirmationModal } from '../../../store/modals/confirmation-modal-context';
 import { NewOrderContext } from '../../../store/new-order-context';
 import { OrdersContext } from '../../../store/orders-context';
+import { UserContext } from '../../../store/user-context';
 import Button from '../../../util-components/Button';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { addNewOrder } from '../../../util-methods/FetchMethods';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
 
 function NewOrder() {
   // Fade in animation
@@ -23,10 +22,15 @@ function NewOrder() {
   const newOrderCtx = useContext(NewOrderContext);
   const orderCtx = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
-  const productCtx = useContext(AllProductsContext);
+  const userCtx = useContext(UserContext);
   const token = authCtx.token;
   const orderPreviewRef = useRef<NewOrderPreviewRef>(null);
   const { showConfirmation } = useConfirmationModal();
+  const courierSelectorRef = useRef<any>(null);
+  const resetCourierToDefault = () => {
+    courierSelectorRef.current?.reset();
+    courierSelectorRef.current?.selectCourier(userCtx?.settings?.defaults?.courier || 'Bex');
+  };
 
   // ARTICLE LIST
   const [isArticleListOpen, setIsArticleListOpen] = useState(true);
@@ -57,9 +61,6 @@ function NewOrder() {
   // BUYER INFORMATION
   const [isBuyerInfoOpen, setIsBuyerInfoOpen] = useState(false);
   const [buyerInfo, setBuyerInfo] = useState('');
-  useEffect(() => {
-    betterConsoleLog('> buyerInfo', buyerInfo);
-  }, [buyerInfo]);
 
   function handleBuyerInfoOk() {
     setIsArticleListOpen(false);
@@ -96,6 +97,11 @@ function NewOrder() {
     setIsColorSizeSelectorsOpen(false);
     setIsCourierPreviewOpen(false);
     setIsOrderPreviewOpen(false);
+
+    // Issue, ne rerender se na default value
+    // Takodje mozemo opet da set default value kurira kada resetujemo sve
+    // Ali to i dalje nece rerender dropdown da prikazuje value Bex
+    // resetCourierToDefault();
 
     // BUYER INFORMATION SECTION
     setBuyerInfo('');
@@ -225,6 +231,7 @@ function NewOrder() {
           isExpanded={isCourierPreviewOpen}
           setIsExpanded={setIsCourierPreviewOpen}
           onNext={handleCourierSelectorOk}
+          courierSelectorRef={courierSelectorRef}
         />
         <NewOrderPreview
           isExpanded={isOrderPreviewOpen}

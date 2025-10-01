@@ -62,7 +62,7 @@ function EditUser() {
 
   return (
     <>
-      <View>
+      <View style={{ minHeight: '100%' }}>
         <Animated.View style={[overlayView, styles.overlayView]} />
         <ConfirmationModal
           isVisible={isModalVisible}
@@ -96,7 +96,6 @@ function EditUser() {
       <Modal animationType="slide" visible={editedUser !== null} onRequestClose={handleRemoveEditedUser}>
         <Animated.View style={editProductFade}>
           <EditUserModal user={editedUser} setUser={setEditedUser} />
-          {/* <EditProductComponent item={editedUser} setItem={setEditedUser} /> */}
         </Animated.View>
       </Modal>
     </>

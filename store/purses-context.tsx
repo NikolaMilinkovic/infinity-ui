@@ -50,11 +50,16 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
   useEffect(() => {
     if (token) {
       async function getPursesData(token: string) {
-        const fetchActivePurses = await fetchData(token, 'products/active-purses');
-        if (fetchActivePurses !== false) setActivePurses(fetchActivePurses);
+        try {
+          const fetchActivePurses = await fetchData(token, 'products/active-purses');
+          if (fetchActivePurses !== false) setActivePurses(fetchActivePurses);
 
-        const fetchInactivePurses = await fetchData(token, 'products/inactive-purses');
-        if (fetchInactivePurses !== false) setInactivePurses(fetchInactivePurses);
+          const fetchInactivePurses = await fetchData(token, 'products/inactive-purses');
+          if (fetchInactivePurses !== false) setInactivePurses(fetchInactivePurses);
+          console.log('%c[purses-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+        } catch (error) {
+          console.log('%c[purses-context] Initial fetch: false', 'color: red; font-weight: bold;');
+        }
       }
       getPursesData(token);
     }

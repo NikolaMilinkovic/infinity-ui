@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { AuthContext } from '../../store/auth-context';
+import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
 import { useUser } from '../../store/user-context';
 import { CategoryTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
@@ -112,35 +113,43 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
   }
 
   // Deletes the category from the database
+  const { showConfirmation } = useConfirmationModal();
   async function removeCategoryHandler() {
     if (!user?.permissions?.categories?.delete) {
       return popupMessage('Nemate permisiju za brisanje kategorija.', 'danger');
     }
-    setDisplay(false);
-    try {
-      const response = await fetch(
-        `${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/categories/${categoryData._id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${authCtx.token}`,
-            'Content-Type': 'application/json',
-          },
+    showConfirmation(
+      async () => {
+        try {
+          setDisplay(false);
+          const response = await fetch(
+            `${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/categories/${categoryData._id}`,
+            {
+              method: 'DELETE',
+              headers: {
+                Authorization: `Bearer ${authCtx.token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (!response.ok) {
+            const parsedResponse = await response.json();
+            setDisplay(true);
+            setError(parsedResponse.message);
+            popupMessage(parsedResponse.message, 'danger');
+            return;
+          }
+
+          popupMessage(`Kategorija je uspešno obrisana`, 'success');
+        } catch (error) {
+          popupMessage('Došlo je do problema prilikom brisanja kategorije.', 'danger');
+          console.error('Error deleting category:', error);
         }
-      );
-
-      if (!response.ok) {
-        const parsedResponse = await response.json();
-        setDisplay(true);
-        setError(parsedResponse.message);
-        popupMessage(parsedResponse.message, 'danger');
-        return;
-      }
-
-      popupMessage(`Kategorija je uspesno obrisana`, 'success');
-    } catch (error) {
-      console.error('Error deleting category:', error);
-    }
+      },
+      `Da li sigurno želite da obrišete kategoriju ${categoryData.name}?`,
+      () => {}
+    );
   }
 
   if (display === false) {

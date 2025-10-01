@@ -13,7 +13,8 @@ interface PropTypes {
   isExpanded: boolean;
   setIsExpanded: (expanded: boolean) => void;
   onNext: () => void;
-  defaultValueByMatch: string;
+  defaultValueByMatch?: string;
+  courierSelectorRef: any;
 }
 interface DropdownTypes {
   _id: string;
@@ -21,7 +22,13 @@ interface DropdownTypes {
   deliveryPrice: number;
 }
 
-function CourierSelector({ isExpanded, setIsExpanded, onNext, defaultValueByMatch = 'Bex' }: PropTypes) {
+function CourierSelector({
+  isExpanded,
+  setIsExpanded,
+  onNext,
+  defaultValueByMatch = 'Bex',
+  courierSelectorRef,
+}: PropTypes) {
   const userCtx = useContext(UserContext);
   const couriersCtx = useContext(CouriersContext);
   const orderCtx = useContext(NewOrderContext);
@@ -57,6 +64,7 @@ function CourierSelector({ isExpanded, setIsExpanded, onNext, defaultValueByMatc
           isDefaultValueOn={true}
           placeholder="Izaberite kurira za dostavu"
           defaultValue={userCtx?.settings?.defaults?.courier || defaultValueByMatch}
+          reference={courierSelectorRef}
         />
         {/* ON NEXT BUTTON */}
         <Button

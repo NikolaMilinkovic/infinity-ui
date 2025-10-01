@@ -53,6 +53,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
     new Date(editedOrder?.reservationDate ? editedOrder.reservationDate : new Date())
   );
   const [orderNotes, setOrderNotes] = useState(editedOrder?.orderNotes || '');
+  const [deliveryNotes, setDeliveryNotes] = useState(editedOrder?.deliveryRemark || '');
   const [isPacked, setIsPacked] = useState(editedOrder?.packed);
 
   const [productsPrice, setProductsPrice] = useState(editedOrder?.productsPrice);
@@ -98,6 +99,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
       data.append('customPrice', customPrice ? customPrice : totalPrice);
       if (isReservation === true) data.append('reservationDate', reservationDate.toISOString());
       data.append('orderNotes', orderNotes || '');
+      data.append('deliveryNotes', deliveryNotes || '');
 
       const response = await handleFetchingWithFormData(data, token, `orders/update/${editedOrder?._id}`, 'PATCH');
 
@@ -130,6 +132,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         customPrice: customPrice ? customPrice : totalPrice,
         orderNotes,
         reservationDate,
+        deliveryNotes,
       };
       const response = await handleFetchingWithBodyData(data, token, `orders/update/${editedOrder?._id}`, 'PATCH');
 
@@ -147,37 +150,33 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
     }
   }
 
-  // PRICE CALCULATION HANDLING
-  useEffect(() => {
+  // TOTAL PRICE CALCULATIONS AND LOGIC
+  const [calculateItemsPrice, setCalculateItemsPrice] = useState(false);
+  // reCalculate total price
+  function recalculatePrice() {
     if (products && products.length > 0) {
-      let newProductsPrice = 0;
-      for (const product of products) {
-        newProductsPrice += product.price;
-      }
+      const calc = products
+        .map((item) => item.price)
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-      setProductsPrice(newProductsPrice);
-      if (deliveryPrice) {
-        const price = newProductsPrice + deliveryPrice;
-        setCustomPrice(price);
+      setCustomPrice(calc);
+      if (calculateItemsPrice) {
+        if (deliveryPrice) setCustomPrice(Number(calc) + Number(deliveryPrice));
       }
     } else {
-      setProductsPrice(0);
-      setCustomPrice(deliveryPrice);
+      setCustomPrice(0);
+      setCustomPrice(deliveryPrice || 0);
     }
-  }, [products]);
-
-  // PRICE CALCULATION HANDLING
+  }
   useEffect(() => {
-    if (deliveryPrice) {
-      if (productsPrice) {
-        let price = deliveryPrice + productsPrice;
-
-        // price of delivery + products for Ukupno field
-        setTotalPrice(price);
-        setCustomPrice(price);
-      }
+    if (calculateItemsPrice) {
+      recalculatePrice();
     }
-  }, [deliveryPrice, productsPrice]);
+  }, [products, recalculatePrice]);
+  function handleUserManualPriceInput() {
+    if (calculateItemsPrice === false) return;
+    setCalculateItemsPrice(false);
+  }
 
   // Sets the displayed custom price, since we are calculating the custom price render
   // this will bypass setting the newly calculated custom price upon rendering
@@ -271,6 +270,8 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             setPhone={setPhone}
             orderNotes={orderNotes}
             setOrderNotes={setOrderNotes}
+            deliveryNotes={deliveryNotes}
+            setDeliveryNotes={setDeliveryNotes}
             profileImage={profileImage}
             setProfileImage={setProfileImage}
           />
@@ -376,17 +377,30 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
               <Text style={styles.rowItem}>Ukupno:</Text>
               <Text style={styles.rowItem}>{totalPrice} din.</Text>
             </View>
+
             {/* Custom Price */}
-            <InputField
-              labelBorders={false}
-              label="Finalna cena"
-              inputText={customPrice ? customPrice.toString() : '0'}
-              setInputText={setCustomPrice}
-              background={Colors.white}
-              containerStyles={{ marginTop: 22 }}
-              selectTextOnFocus={true}
-              labelBorders={false}
-            />
+            <View style={styles.priceContainer}>
+              <InputField
+                label="Finalna cena"
+                inputText={customPrice ? customPrice.toString() : '0'}
+                setInputText={setCustomPrice}
+                containerStyles={styles.customPriceInput}
+                background={Colors.white}
+                keyboard="numeric"
+                selectTextOnFocus={true}
+                onManualInput={handleUserManualPriceInput}
+                labelBorders={false}
+              />
+              {!calculateItemsPrice && (
+                <Button
+                  containerStyles={styles.recalculatePriceBtn}
+                  textStyles={{ color: Colors.primaryDark }}
+                  onPress={() => setCalculateItemsPrice(true)}
+                >
+                  Preračunaj cenu
+                </Button>
+              )}
+            </View>
           </View>
 
           {/* Buttons */}
@@ -551,8 +565,7 @@ const styles = StyleSheet.create({
     left: 10,
     top: -12,
     backgroundColor: Colors.white,
-    borderWidth: 0.5,
-    borderRadius: 4,
+    borderWidth: 0,
     paddingHorizontal: 4,
   },
   orderNotesInput: {
@@ -563,6 +576,25 @@ const styles = StyleSheet.create({
   },
   inputFieldLabelStyles: {
     backgroundColor: Colors.white,
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    gap: 10,
+  },
+  recalculatePriceBtn: {
+    flex: 1,
+    maxHeight: 44,
+    marginTop: 'auto',
+    backgroundColor: Colors.secondaryLight,
+    textAlign: 'center',
+    justifyContent: 'center',
+    maxWidth: 150,
+    marginBottom: 1,
+  },
+  customPriceInput: {
+    marginTop: 16,
+    flex: 1,
   },
 });
 
@@ -581,6 +613,8 @@ function BuyerDataInputs({
   setProfileImage,
   orderNotes,
   setOrderNotes,
+  deliveryNotes,
+  setDeliveryNotes,
 }: any) {
   return (
     <View style={styles.sectionContainer}>
@@ -637,6 +671,18 @@ function BuyerDataInputs({
         labelStyles={styles.inputFieldLabelStyles}
         inputText={orderNotes}
         setInputText={(text: string | number | undefined) => setOrderNotes(text as string)}
+        containerStyles={[styles.orderNotesInput, styles.input]}
+        selectTextOnFocus={true}
+        multiline={true}
+        numberOfLines={4}
+        labelBorders={false}
+      />
+      {/* Courier Notes */}
+      <InputField
+        label="Napomena za kurira"
+        labelStyles={styles.inputFieldLabelStyles}
+        inputText={deliveryNotes}
+        setInputText={(text: string | number | undefined) => setDeliveryNotes(text as string)}
         containerStyles={[styles.orderNotesInput, styles.input]}
         selectTextOnFocus={true}
         multiline={true}

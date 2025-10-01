@@ -39,7 +39,7 @@ function ReservationItem({
   const [isVisible, setIsVisible] = useState(false);
   const [noteHeight] = useState(order.orderNotes ? 40 : 0);
   const expandHeight = useExpandAnimation(isExpanded, 160, order.products.length * 88 + 184 + noteHeight, 180);
-  const styles = getStyles(isHighlighted);
+  const styles = getStyles(isHighlighted, order.packed);
 
   useEffect(() => {
     const highlighted = highlightedItems.some((highlightedItem) => order._id === highlightedItem._id);
@@ -126,6 +126,7 @@ function ReservationItem({
                 pressedStyles={styles.buttonContainerPressed}
               />
             )}
+            {order.packed && order.packedIndicator && <Text style={styles.packedText}>SPAKOVANO</Text>}
           </View>
         </View>
 
@@ -148,7 +149,7 @@ function ReservationItem({
   );
 }
 
-function getStyles(isHighlighted: boolean) {
+function getStyles(isHighlighted: boolean, packed: boolean) {
   return StyleSheet.create({
     container: {
       position: 'relative',
@@ -162,8 +163,8 @@ function getStyles(isHighlighted: boolean) {
     },
     orderNoteIndicator: {
       position: 'absolute',
-      right: -60,
-      bottom: 0,
+      right: -50,
+      bottom: packed ? 10 : 0,
       color: Colors.error,
       fontWeight: 'bold',
     },
@@ -230,6 +231,13 @@ function getStyles(isHighlighted: boolean) {
     orderNoteText: {
       fontWeight: 'bold',
       color: Colors.error,
+    },
+    packedText: {
+      position: 'absolute',
+      color: Colors.success,
+      bottom: 10,
+      right: -10,
+      width: 100,
     },
   });
 }

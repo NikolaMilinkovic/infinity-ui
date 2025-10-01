@@ -224,11 +224,14 @@ export async function fetchCategories(token: string | null) {
     }
 
     const data = await response.json();
+    console.log('%c[categories-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+
     if (data.length > 0) {
       return data;
     }
     return [];
   } catch (error) {
+    console.log('%c[categories-context] Initial fetch: false', 'color: red; font-weight: bold;');
     console.error('Error fetching categories:', error);
   }
 }

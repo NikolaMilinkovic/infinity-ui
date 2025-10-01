@@ -57,25 +57,52 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
       if (expoPushToken && expoPushToken !== userData.pushToken) {
         await updateUserExpoPushToken(token, expoPushToken);
       }
+      console.log('%c[user-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
     } catch (error) {
+      console.log('%c[user-context] Initial fetch: false', 'color: red; font-weight: bold;');
       betterErrorLog('> Došlo je do problema unutar UserContextProvider > getUserData metodi', error);
       popupMessage('Došlo je do problema unutar UserContextProvider > getUserData metodi', 'danger');
     }
   }
 
+  // HANDLE NOTIFICATION PUSH TOKEN
+  useEffect(() => {
+    if (token && expoPushToken?.data) {
+      console.log('> Push token ready, checking if update needed');
+      console.log('> expoPushToken.data:', expoPushToken.data);
+
+      async function checkAndUpdateToken() {
+        try {
+          const userData = await fetchData(token, 'user/data');
+          console.log('> userData.pushToken:', userData.pushToken);
+
+          if (expoPushToken?.data !== userData.pushToken) {
+            console.log('> Token mismatch, updating...');
+            popupMessage('Updating expo push token', 'info');
+            await updateUserExpoPushToken(token, expoPushToken?.data);
+          } else {
+            console.log('> Push token already up to date');
+          }
+        } catch (error) {
+          betterErrorLog('> Error checking/updating push token', error);
+        }
+      }
+
+      checkAndUpdateToken();
+    } else {
+      console.log('> No token found huh');
+      console.log(`> Token: ${token}`);
+      console.log(`> Expo Push Token: ${expoPushToken?.data}`);
+    }
+  }, [token, expoPushToken?.data]);
+
+  // FETCH USER DATA
   useEffect(() => {
     if (token) {
       const controller = new AbortController();
       const signal = controller.signal;
 
-      /**
-       * Fetches user.permissions, user.settings, user.role and pushToken
-       *
-       * Sets the values of the contex & compares the remote pushToken with local
-       *
-       * If pushTokens differ updates the remote to match the local
-       */
-      async function getUserData(token: string, expoPushToken: string | undefined) {
+      async function getUserData(token: string) {
         try {
           const userData = await fetchData(token, 'user/data');
           setPermissions(userData.permissions || null);
@@ -83,21 +110,18 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
           setUserRole(userData.role || null);
           setUsersList(userData.usersList || []);
           setActiveUserId(userData.id || null);
-
-          if (expoPushToken && expoPushToken !== userData.pushToken) {
-            await updateUserExpoPushToken(token, expoPushToken);
-          }
         } catch (error) {
           if (!signal.aborted) {
-            betterErrorLog('> Došlo je do problema unutar UserContextProvider > getUserData metodi', error);
-            popupMessage('Došlo je do problema unutar UserContextProvider > getUserData metodi', 'danger');
+            betterErrorLog('> Error fetching user data', error);
+            popupMessage('Error fetching user data', 'danger');
           }
         }
       }
-      getUserData(token, expoPushToken?.data);
+
+      getUserData(token);
       return () => controller.abort();
     }
-  }, [token, expoPushToken]);
+  }, [token]);
 
   function handleUpdateUserPermissions() {}
   function handleUpdateUserSettings() {}

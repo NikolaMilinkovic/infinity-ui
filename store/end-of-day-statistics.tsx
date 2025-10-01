@@ -33,7 +33,9 @@ function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextP
         try {
           const fetchedData = await fetchData(token, 'orders/get-order-statistic-files-for-period');
           setStatisticData(fetchedData.data);
+          console.log('%c[end-of-day-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
         } catch (error) {
+          console.log('%c[end-of-day-context] Initial fetch: false', 'color: red; font-weight: bold;');
           console.error(error);
         }
       }

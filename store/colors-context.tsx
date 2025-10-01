@@ -63,7 +63,9 @@ function ColorsContextProvider({ children }: ColorsContextProviderType) {
 
         setColors(sortedColors);
       }
+      console.log('%c[colors-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
     } catch (error) {
+      console.log('%c[colors-context] Initial fetch: false', 'color: red; font-weight: bold;');
       console.error('Error fetching colors:', error);
     }
   }

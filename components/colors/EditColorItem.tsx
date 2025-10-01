@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useGetAppColors } from '../../constants/useGetAppColors';
 import { AuthContext } from '../../store/auth-context';
+import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
 import { useUser } from '../../store/user-context';
 import { AppColors, ColorTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
@@ -93,33 +94,45 @@ function EditColorItem({ data }: { data: ColorTypes }) {
     }
   }
 
+  const { showConfirmation } = useConfirmationModal();
+
   // Deletes the color from the database
   async function removeColorHandler() {
     if (!user?.permissions?.colors?.delete) {
       return popupMessage('Nemate permisiju za brisanje boja.', 'danger');
     }
-    setDisplay(false);
-    try {
-      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colors/${colorData._id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${authCtx.token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+    showConfirmation(
+      async () => {
+        try {
+          setDisplay(false);
+          const response = await fetch(
+            `${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colorsss/${colorData._id}`,
+            {
+              method: 'DELETE',
+              headers: {
+                Authorization: `Bearer ${authCtx.token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
 
-      if (!response.ok) {
-        const parsedResponse = await response.json();
-        setDisplay(true);
-        setError(parsedResponse.message);
-        popupMessage(parsedResponse.message, 'danger');
-        return;
-      }
+          if (!response.ok) {
+            const parsedResponse = await response.json();
+            setDisplay(true);
+            setError(parsedResponse.message);
+            popupMessage(parsedResponse.message, 'danger');
+            return;
+          }
 
-      popupMessage(`Boja je uspešno obrisana`, 'success');
-    } catch (error) {
-      console.error('Error deleting color:', error);
-    }
+          popupMessage(`Boja je uspešno obrisana`, 'success');
+        } catch (error) {
+          popupMessage('Došlo je do problema prilikom brisanja boje.', 'danger');
+          console.error('Error deleting color:', error);
+        }
+      },
+      `Da li sigurno želite da obrišete ${colorData.name} boju?`,
+      () => {}
+    );
   }
 
   if (display === false) {

@@ -53,12 +53,22 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes) {
   // Initial orders data fetch
   useEffect(() => {
     async function fetchUnprocessedOrdersData() {
-      const unprocessedOrdersData = await fetchData(token, 'orders/unprocessed');
-      setUnprocessedOrders(unprocessedOrdersData.orders);
+      try {
+        const unprocessedOrdersData = await fetchData(token, 'orders/unprocessed');
+        setUnprocessedOrders(unprocessedOrdersData.orders);
+        console.log('%c[orders-unprocessed-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+      } catch (error) {
+        console.log('%c[orders-unprocessed-context] Initial fetch: false', 'color: red; font-weight: bold;');
+      }
     }
     async function fetchProcessedOrdersData() {
-      const processedOrdersData = await fetchData(token, 'orders/processed');
-      setProcessedOrders(processedOrdersData.orders);
+      try {
+        const processedOrdersData = await fetchData(token, 'orders/processed');
+        setProcessedOrders(processedOrdersData.orders);
+        console.log('%c[orders-processed-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+      } catch (error) {
+        console.log('%c[orders-processed-context] Initial fetch: false', 'color: red; font-weight: bold;');
+      }
     }
     if (token) {
       fetchUnprocessedOrdersData();
@@ -169,7 +179,6 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes) {
               name: data.courier.name,
               deliveryPrice: data.courier.deliveryPrice,
             },
-            totalPrice: Number(item.productsPrice) + Number(data.courier.deliveryPrice),
             createdAt: new Date() as any,
           };
         }

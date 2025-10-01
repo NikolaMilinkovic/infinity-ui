@@ -3,7 +3,7 @@
     "name": "Infinity Boutique App",
     "slug": "infinity-boutique-app",
     "backgroundColor": "#ffffff",
-    "version": "1.0.6",
+    "version": "1.0.9",
     "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,14 +15,23 @@
       "backgroundColor": "#ffffff"
     },
     "notification": {
-      "icon": "./assets/icon.png",
+      "icon": "./assets/notification.png",
       "color": "#ffffff"
     },
     "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
       [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to add products images."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification.png",
+          "color": "#ffffff"
         }
       ]
     ],
@@ -38,7 +47,12 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["android.permission.RECORD_AUDIO"],
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECORD_AUDIO",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ],
       "package": "com.infinity.infinityboutiqueapp",
       "googleServicesFile": "./android/app/google-services.json"
     },

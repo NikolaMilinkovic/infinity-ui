@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { AuthContext } from '../../store/auth-context';
+import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
 import { useUser } from '../../store/user-context';
 import { CourierTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
@@ -104,32 +105,43 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
   }
 
   // Deletes the color from the database
+  const { showConfirmation } = useConfirmationModal();
   async function removeCourierHandler() {
     if (!user?.permissions?.couriers?.delete) {
       return popupMessage('Nemate permisiju za brisanje kurira.', 'danger');
     }
-    setDisplay(false);
-    try {
-      const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/couriers/${courierData._id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${authCtx.token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+    showConfirmation(
+      async () => {
+        try {
+          setDisplay(false);
+          const response = await fetch(
+            `${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/couriers/${courierData._id}`,
+            {
+              method: 'DELETE',
+              headers: {
+                Authorization: `Bearer ${authCtx.token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
 
-      if (!response.ok) {
-        const parsedResponse = await response.json();
-        setDisplay(true);
-        setError(parsedResponse.message);
-        popupMessage(parsedResponse.message, 'danger');
-        return;
-      }
+          if (!response.ok) {
+            const parsedResponse = await response.json();
+            setDisplay(true);
+            setError(parsedResponse.message);
+            popupMessage(parsedResponse.message, 'danger');
+            return;
+          }
 
-      popupMessage(`Kurir je uspešno obrisan`, 'success');
-    } catch (error) {
-      console.error('Error deleting courier:', error);
-    }
+          popupMessage(`Kurir je uspešno obrisan`, 'success');
+        } catch (error) {
+          popupMessage('Došlo je do problema prilikom brisanja kurira.', 'danger');
+          console.error('Error deleting courier:', error);
+        }
+      },
+      `Da li sigurno želite da obrišete kurira ${courierData.name}?`,
+      () => {}
+    );
   }
 
   if (display === false) {

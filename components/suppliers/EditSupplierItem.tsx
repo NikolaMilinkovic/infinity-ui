@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { AuthContext } from '../../store/auth-context';
+import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
 import { useUser } from '../../store/user-context';
 import { SupplierTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
@@ -93,35 +94,44 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
   }
 
   // Deletes the color from the database
+  const { showConfirmation } = useConfirmationModal();
   async function removeSupplierHandler() {
     if (!user?.permissions?.suppliers?.delete) {
       return popupMessage('Nemate dozvolu za brisanje dobavljača', 'danger');
     }
-    setDisplay(false);
-    try {
-      const response = await fetch(
-        `${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/suppliers/${supplierData._id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${authCtx.token}`,
-            'Content-Type': 'application/json',
-          },
+
+    showConfirmation(
+      async () => {
+        setDisplay(false);
+        try {
+          const response = await fetch(
+            `${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/suppliers/${supplierData._id}`,
+            {
+              method: 'DELETE',
+              headers: {
+                Authorization: `Bearer ${authCtx.token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (!response.ok) {
+            const parsedResponse = await response.json();
+            setDisplay(true);
+            setError(parsedResponse.message);
+            popupMessage(parsedResponse.message, 'danger');
+            return;
+          }
+
+          popupMessage(`Dobavljač je uspešno obrisan`, 'success');
+        } catch (error) {
+          popupMessage('Došlo je do problema prilikom brisanja dobavljača.', 'danger');
+          console.error('Error deleting supplier:', error);
         }
-      );
-
-      if (!response.ok) {
-        const parsedResponse = await response.json();
-        setDisplay(true);
-        setError(parsedResponse.message);
-        popupMessage(parsedResponse.message, 'danger');
-        return;
-      }
-
-      popupMessage(`Dobavljač je uspesno obrisan`, 'success');
-    } catch (error) {
-      console.error('Error deleting supplier:', error);
-    }
+      },
+      `Da li sigurno želite da obrišete dobavljača ${supplierData.name}?`,
+      () => {}
+    );
   }
 
   if (display === false) {

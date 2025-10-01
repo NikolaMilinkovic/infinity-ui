@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../../constants/colors';
-import { useExpandAnimation } from '../../../hooks/useExpand';
+import { useExpandAnimationFromExpandedState } from '../../../hooks/useExpand';
 import { AuthContext } from '../../../store/auth-context';
 import { useUser } from '../../../store/user-context';
 import { OrderTypes } from '../../../types/allTsTypes';
@@ -28,7 +28,12 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
     return baseHeight + (lines - 1) * extraHeightPerLine;
   }
   const [noteHeight] = useState(getNoteHeight(order.orderNotes));
-  const expandHeight = useExpandAnimation(isExpanded, 160, order.products.length * 88 + 184 + noteHeight, 180);
+  const expandHeight = useExpandAnimationFromExpandedState(
+    isExpanded,
+    160,
+    order.products.length * 88 + 184 + noteHeight,
+    180
+  );
   const styles = getStyles(isPacked);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;

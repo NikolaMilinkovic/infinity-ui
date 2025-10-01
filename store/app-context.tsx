@@ -42,15 +42,10 @@ function AppContextProvider({ children }: AppContextProviderTypes) {
           setAppSettings(response.settings);
           setVersion(response?.version || '');
           setBuildLink(response?.buildLink || '');
-          update_startup_log('app_context', {
-            text: '> App Context: SUCCESS',
-            success: true,
-          });
+
+          console.log('%c[app-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
         } catch (error) {
-          update_startup_log('app_context', {
-            text: '> App Context: FAIL',
-            success: false,
-          });
+          console.log('%c[app-context] Initial fetch: false', 'color: red; font-weight: bold;');
           betterErrorLog('> Error in method getAppSettings', error);
         }
       }
@@ -62,6 +57,20 @@ function AppContextProvider({ children }: AppContextProviderTypes) {
       getAppSettings(token);
     }
   }, [token]);
+
+  /**
+   * BACI OKO NA OVO, MOZDA JE BOLJI NACIN ZA INITIAL FETCH
+   */
+  //   useEffect(() => {
+  //   if (!socket) return;
+
+  //   const fetchOnConnect = () => getAppSettings(token);
+  //   socket.on('connect', fetchOnConnect);
+
+  //   return () => {
+  //     socket.off('connect', fetchOnConnect);
+  //   };
+  // }, [socket, token]);
 
   function handleUpdateAppSettings(updatedAppSettings: any) {
     betterConsoleLog('> updatedAppSettings', updatedAppSettings);

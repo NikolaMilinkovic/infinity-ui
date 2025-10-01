@@ -25,6 +25,28 @@ export const useExpandAnimation = (
   return toggleExpandAnimation;
 };
 
+import { useRef } from 'react';
+
+export const useExpandAnimationFromExpandedState = (
+  isExpanded: boolean,
+  minHeight: number = 50,
+  maxHeight: number = 100,
+  duration: number = 180
+) => {
+  // Create once
+  const animatedValue = useRef(new Animated.Value(isExpanded ? maxHeight : minHeight)).current;
+
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: isExpanded ? maxHeight : minHeight,
+      duration,
+      useNativeDriver: false,
+    }).start();
+  }, [isExpanded, minHeight, maxHeight, duration]);
+
+  return animatedValue;
+};
+
 export const useExpandAnimationWithContentVisibility = (
   isExpanded: boolean,
   setIsContentVisible: (isVisible: boolean) => void,

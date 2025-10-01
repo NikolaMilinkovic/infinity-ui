@@ -60,7 +60,9 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
         try {
           const response = await fetchData(token, 'last-updated/get-last-updated-data');
           setLastUpdatedData(response.data);
+          console.log('%c[last-updated-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
         } catch (error) {
+          console.log('%c[last-updated-context] Initial fetch: false', 'color: red; font-weight: bold;');
           popupMessage(`Neuspešno preuzimanje podataka o vremenima ažuriranja`, 'danger');
           console.error(error);
         }
