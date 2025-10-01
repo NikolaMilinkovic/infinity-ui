@@ -36,9 +36,10 @@ yarn-error.*
 .vscode/
 /.vscode
 
-app.config.js
+# app.config.js
 
 # google-services
 # google-services.json
 
 .expo/
+.expo
