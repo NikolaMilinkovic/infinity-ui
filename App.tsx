@@ -31,7 +31,9 @@ function Root() {
   /**
    * Makes the native splash screen remain visible until hideAsync is called.
    */
-  SplashScreen.preventAutoHideAsync();
+  useEffect(() => {
+    SplashScreen.preventAutoHideAsync();
+  }, []);
 
   const [isCheckingToken, setIsCheckingToken] = useState(true);
   const authCtx = useContext(AuthContext);
@@ -43,18 +45,19 @@ function Root() {
    */
   useEffect(() => {
     async function getToken() {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        authCtx.authenticate(token);
-        // if(authCtx.verifyToken(token)){
-        // } else {
-        // authCtx.logout();
-        // }
-      } else {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          authCtx.authenticate(token);
+        } else {
+          authCtx.logout();
+        }
+      } catch (err) {
+        console.error('Error while checking token:', err);
         authCtx.logout();
+      } finally {
+        setIsCheckingToken(false);
       }
-
-      setIsCheckingToken(false);
     }
 
     getToken();
@@ -65,12 +68,24 @@ function Root() {
    */
   const onLayoutRootView = useCallback(async () => {
     if (!isCheckingToken) {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout.
-      await SplashScreen.hideAsync();
+      try {
+        // This tells the splash screen to hide immediately! If we call this after
+        // `setAppIsReady`, then we may see a blank screen while the app is
+        // loading its initial state and rendering its first pixels. So instead,
+        // we hide the splash screen once we know the root view has already
+        // performed layout.
+        console.log('> Hiding splash screen..');
+        console.log(`> isCheckingToken is ${isCheckingToken}`);
+        await SplashScreen.hideAsync();
+
+        setTimeout(() => {
+          console.log('> Hiding splash screen via set timeout');
+          console.log(`> isCheckingToken is ${isCheckingToken}`);
+          SplashScreen.hideAsync();
+        }, 5000);
+      } catch (err) {
+        console.error('Error hiding splash screen:', err);
+      }
     }
   }, [isCheckingToken]);
 

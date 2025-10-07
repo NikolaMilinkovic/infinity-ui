@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useMemo, useState } from 'react';
+import { useGetDefaultCourierData } from '../hooks/couriers/useGetDefaultCourierData';
 import {
   BuyerTypes,
   ColorSizeTypes,
@@ -12,6 +13,7 @@ import {
 } from '../types/allTsTypes';
 import { popupMessage } from '../util-components/PopupMessage';
 import { getMimeType } from '../util-methods/ImageMethods';
+import { betterConsoleLog } from '../util-methods/LogMethods';
 interface ContextChildrenTypes {
   children: ReactNode;
 }
@@ -83,6 +85,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
   const [orderNotes, setOrderNotes] = useState('');
   const [reservationDate, setReservationDate] = useState<Date>(new Date());
   // const [description, setDescription] = useState('');
+  const [defaultCourierData] = useState(useGetDefaultCourierData());
 
   // Check to see if all products have selectedColor & selectedSize where applicable
   function validateProductData() {
@@ -255,6 +258,9 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
     setDeliveryRemark('');
     setInternalRemark('');
     setOrderNotes('');
+
+    betterConsoleLog('> settings the default courier data in the new order context reset method', defaultCourierData);
+    setCourierData(defaultCourierData);
   };
 
   // COURIER

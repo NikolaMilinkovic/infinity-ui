@@ -232,7 +232,7 @@ function DisplayProducts({ setEditItem, showAddBtn = true }: DisplayProductsProp
           data={filteredData}
           renderItem={({ item }) => (
             <Pressable
-              delayLongPress={100}
+              delayLongPress={200}
               onLongPress={batchMode ? null : () => handleLongPress(item._id, item.stockType)}
               onPress={batchMode ? () => handlePress(item._id, item.stockType) : null}
             >

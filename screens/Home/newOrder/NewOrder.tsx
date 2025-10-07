@@ -11,7 +11,6 @@ import { AuthContext } from '../../../store/auth-context';
 import { useConfirmationModal } from '../../../store/modals/confirmation-modal-context';
 import { NewOrderContext } from '../../../store/new-order-context';
 import { OrdersContext } from '../../../store/orders-context';
-import { UserContext } from '../../../store/user-context';
 import Button from '../../../util-components/Button';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { addNewOrder } from '../../../util-methods/FetchMethods';
@@ -22,14 +21,12 @@ function NewOrder() {
   const newOrderCtx = useContext(NewOrderContext);
   const orderCtx = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
-  const userCtx = useContext(UserContext);
   const token = authCtx.token;
   const orderPreviewRef = useRef<NewOrderPreviewRef>(null);
   const { showConfirmation } = useConfirmationModal();
   const courierSelectorRef = useRef<any>(null);
   const resetCourierToDefault = () => {
-    courierSelectorRef.current?.reset();
-    courierSelectorRef.current?.selectCourier(userCtx?.settings?.defaults?.courier || 'Bex');
+    courierSelectorRef.current?.resetDropdown();
   };
 
   // ARTICLE LIST
@@ -101,7 +98,7 @@ function NewOrder() {
     // Issue, ne rerender se na default value
     // Takodje mozemo opet da set default value kurira kada resetujemo sve
     // Ali to i dalje nece rerender dropdown da prikazuje value Bex
-    // resetCourierToDefault();
+    resetCourierToDefault();
 
     // BUYER INFORMATION SECTION
     setBuyerInfo('');
@@ -231,7 +228,7 @@ function NewOrder() {
           isExpanded={isCourierPreviewOpen}
           setIsExpanded={setIsCourierPreviewOpen}
           onNext={handleCourierSelectorOk}
-          courierSelectorRef={courierSelectorRef}
+          ref={courierSelectorRef}
         />
         <NewOrderPreview
           isExpanded={isOrderPreviewOpen}

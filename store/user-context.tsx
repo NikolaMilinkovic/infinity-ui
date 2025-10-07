@@ -57,9 +57,9 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
       if (expoPushToken && expoPushToken !== userData.pushToken) {
         await updateUserExpoPushToken(token, expoPushToken);
       }
-      console.log('%c[user-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+      console.log('[2][user-context] Initial fetch: true');
     } catch (error) {
-      console.log('%c[user-context] Initial fetch: false', 'color: red; font-weight: bold;');
+      console.log('[2][user-context] Initial fetch: false');
       betterErrorLog('> Došlo je do problema unutar UserContextProvider > getUserData metodi', error);
       popupMessage('Došlo je do problema unutar UserContextProvider > getUserData metodi', 'danger');
     }
@@ -68,20 +68,13 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
   // HANDLE NOTIFICATION PUSH TOKEN
   useEffect(() => {
     if (token && expoPushToken?.data) {
-      console.log('> Push token ready, checking if update needed');
-      console.log('> expoPushToken.data:', expoPushToken.data);
-
       async function checkAndUpdateToken() {
         try {
           const userData = await fetchData(token, 'user/data');
-          console.log('> userData.pushToken:', userData.pushToken);
 
           if (expoPushToken?.data !== userData.pushToken) {
-            console.log('> Token mismatch, updating...');
             popupMessage('Updating expo push token', 'info');
             await updateUserExpoPushToken(token, expoPushToken?.data);
-          } else {
-            console.log('> Push token already up to date');
           }
         } catch (error) {
           betterErrorLog('> Error checking/updating push token', error);
@@ -89,10 +82,6 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
       }
 
       checkAndUpdateToken();
-    } else {
-      console.log('> No token found huh');
-      console.log(`> Token: ${token}`);
-      console.log(`> Expo Push Token: ${expoPushToken?.data}`);
     }
   }, [token, expoPushToken?.data]);
 

@@ -43,9 +43,9 @@ function AppContextProvider({ children }: AppContextProviderTypes) {
           setVersion(response?.version || '');
           setBuildLink(response?.buildLink || '');
 
-          console.log('%c[app-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+          console.log('[1][app-context] Initial fetch: true');
         } catch (error) {
-          console.log('%c[app-context] Initial fetch: false', 'color: red; font-weight: bold;');
+          console.log('[1][app-context] Initial fetch: false');
           betterErrorLog('> Error in method getAppSettings', error);
         }
       }

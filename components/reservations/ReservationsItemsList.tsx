@@ -6,6 +6,7 @@ import { Colors } from '../../constants/colors';
 import useBatchSelectBackHandler from '../../hooks/useBatchSelectBackHandler';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
 import { useFadeTransition } from '../../hooks/useFadeTransition';
+import { useHighlightAnimation } from '../../hooks/useHighlightAnimation';
 import { AuthContext } from '../../store/auth-context';
 import { OrderTypes } from '../../types/allTsTypes';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
@@ -15,13 +16,6 @@ import { handleFetchingWithBodyData } from '../../util-methods/FetchMethods';
 import BatchModeReservationsControlls from './BatchModeReservationsControlls';
 import ReservationItem from './ReservationItem';
 
-import { MaterialIcons } from '@expo/vector-icons';
-import { useHighlightAnimation } from '../../hooks/useHighlightAnimation';
-type MaterialIconNames = keyof typeof MaterialIcons.glyphMap;
-
-interface RenderPropType {
-  item: OrderTypes;
-}
 interface DataTypes {
   date: Date;
   reservations: OrderTypes[];
@@ -199,15 +193,7 @@ function ReservationsGroup({
     <>
       <Pressable
         onPress={() => setIsExpanded(!isExpanded)}
-        style={[
-          ResGroupStyles.headerContainer,
-          allSelected &&
-            {
-              // borderWidth: 4,
-              // borderColor: Colors.highlight,
-              // padding: 6,
-            },
-        ]}
+        style={[ResGroupStyles.headerContainer]}
         delayLongPress={200}
         onLongPress={toggleSelectAll}
       >
@@ -235,7 +221,7 @@ function ReservationsGroup({
               style={ResGroupStyles.list}
               keyExtractor={(item, index) => `list-${index}`}
               renderItem={({ item }) => (
-                <Pressable delayLongPress={100}>
+                <Pressable delayLongPress={200}>
                   <ReservationItem
                     order={item}
                     setEditedOrder={setEditedReservation}
@@ -323,7 +309,6 @@ const ResGroupStyles = StyleSheet.create({
   },
   highlightBox: {
     position: 'absolute',
-    // flex: 1,
     backgroundColor: '#A3B9CC',
     zIndex: 2,
     top: 0,

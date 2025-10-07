@@ -37,8 +37,7 @@ function CouriersContextProvider({ children }: CouriersContextProviderType) {
   };
   async function fetchCouriers(token: string) {
     const fetchedCouriers = await fetchData(token, 'couriers');
-    console.log('%c[couriers-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
-    // console.log('%c[categories-context] Initial fetch: false', 'color: red; font-weight: bold;');
+    console.log('[6][couriers-context] Initial fetch: true');
 
     if (fetchedCouriers !== false) setCouriers(fetchedCouriers);
   }

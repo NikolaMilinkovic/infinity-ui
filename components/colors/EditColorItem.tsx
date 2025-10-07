@@ -105,16 +105,13 @@ function EditColorItem({ data }: { data: ColorTypes }) {
       async () => {
         try {
           setDisplay(false);
-          const response = await fetch(
-            `${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colorsss/${colorData._id}`,
-            {
-              method: 'DELETE',
-              headers: {
-                Authorization: `Bearer ${authCtx.token}`,
-                'Content-Type': 'application/json',
-              },
-            }
-          );
+          const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colors/${colorData._id}`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${authCtx.token}`,
+              'Content-Type': 'application/json',
+            },
+          });
 
           if (!response.ok) {
             const parsedResponse = await response.json();

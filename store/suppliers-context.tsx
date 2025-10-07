@@ -45,9 +45,9 @@ function SuppliersContextProvider({ children }: SuppliersContextProviderType) {
       if (data.length > 0) {
         setSuppliers(data);
       }
-      console.log('%c[suppliers-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+      console.log('[7][suppliers-context] Initial fetch: true');
     } catch (error) {
-      console.log('%c[suppliers-context] Initial fetch: false', 'color: red; font-weight: bold;');
+      console.log('[7][suppliers-context] Initial fetch: false');
       console.error('Error fetching suppliers:', error);
     }
   }

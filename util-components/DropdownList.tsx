@@ -41,23 +41,46 @@ const DropdownList = ({
   const [defaultVal, setDefaultVal] = useState(['']);
   const Colors = useGetAppColors();
 
+  // useEffect(() => {
+  //   setDropdownData(data || []);
+  //   if (!isDefaultValueOn) return setDefaultVal([]);
+  //   // Looks for value from the data
+  //   // If value is found > set that object as default & give onSelect that object
+  //   let defaultDataObject;
+  //   data.forEach((element) => {
+  //     if (element?.name === defaultValue) {
+  //       defaultDataObject = element;
+  //       onSelect(element);
+  //     }
+  //     if (element?.value === defaultValue) {
+  //       defaultDataObject = element;
+  //       onSelect(element);
+  //     }
+  //   });
+  //   setDefaultVal(defaultDataObject || []);
+  // }, [data, defaultValue]);
+
   useEffect(() => {
     setDropdownData(data || []);
     if (!isDefaultValueOn) return setDefaultVal([]);
-    // Looks for value from the data
-    // If value is found > set that object as default & give onSelect that object
-    let defaultDataObject;
-    data.forEach((element) => {
-      if (element?.name === defaultValue) {
-        defaultDataObject = element;
-        onSelect(element);
+
+    let defaultDataObject = data.find((el) => el.name === defaultValue || el.value === defaultValue);
+
+    if (!defaultDataObject && data.length > 0) {
+      if (defaultValueByIndex) {
+        defaultDataObject = data[defaultValueByIndex];
+      } else {
+        defaultDataObject = data[0];
       }
-      if (element?.value === defaultValue) {
-        defaultDataObject = element;
-        onSelect(element);
-      }
-    });
+    }
+
     setDefaultVal(defaultDataObject || []);
+    if (defaultDataObject) {
+      // Defer calling onSelect to next tick so dropdown mounts first
+      setTimeout(() => {
+        onSelect(defaultDataObject);
+      }, 0);
+    }
   }, [data, defaultValue]);
 
   if (dropdownData.length > 0) {
@@ -69,7 +92,7 @@ const DropdownList = ({
         defaultValue={defaultVal} // use default value by index or default value
         dropdownOverlayColor={'rgba(0, 0, 0, 0.8)'}
         // WHEN SELECTED
-        onSelect={(selectedItem, index) => {
+        onSelect={(selectedItem) => {
           onSelect(selectedItem);
         }}
         // BUTTON

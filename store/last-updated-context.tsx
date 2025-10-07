@@ -60,9 +60,9 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
         try {
           const response = await fetchData(token, 'last-updated/get-last-updated-data');
           setLastUpdatedData(response.data);
-          console.log('%c[last-updated-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+          console.log('[11][last-updated-context] Initial fetch: true');
         } catch (error) {
-          console.log('%c[last-updated-context] Initial fetch: false', 'color: red; font-weight: bold;');
+          console.log('[11][last-updated-context] Initial fetch: false');
           popupMessage(`Neuspešno preuzimanje podataka o vremenima ažuriranja`, 'danger');
           console.error(error);
         }
@@ -81,29 +81,38 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
   useEffect(() => {
     if (socket) {
       const handleConnect = () => {
-        if (lastUpdatedData) {
-          socket.emit('lastUpdated', lastUpdatedData);
-        } else {
-          if (firstConnect) {
-            setFirstConnect(false);
+        try {
+          if (lastUpdatedData) {
+            socket.emit('lastUpdated', lastUpdatedData);
           } else {
-            popupMessage('LastUpdated data is missing', 'danger');
+            if (firstConnect) {
+              setFirstConnect(false);
+            } else {
+              popupMessage('LastUpdated data is missing', 'danger');
+            }
           }
+        } catch (error) {
+          betterErrorLog('> Error in last updated context -> handleConnect method', error);
         }
       };
 
       const handleLastUpdatedResponse = async (responseData: lastUpdatedResponseDataType) => {
-        if (responseData.isSynced) {
-          popupMessage(responseData.message, 'success');
-        } else {
-          popupMessage(responseData.message, 'success');
-          const sortSuccess = await sortDataOnClientSync(responseData.updatedData);
-          if (sortSuccess) {
-            popupMessage('Ažuriranje svih podataka uspešno izvršeno', 'success');
-            if (responseData.lastUpdated) handleSyncLastUpdated(responseData.lastUpdated);
+        try {
+          if (responseData.isSynced) {
+            popupMessage(responseData.message, 'success');
           } else {
-            popupMessage('Došlo je do problema prilikom ažuriranja podataka', 'danger');
+            popupMessage(responseData.message, 'success');
+            const sortSuccess = await sortDataOnClientSync(responseData.updatedData);
+            if (sortSuccess) {
+              popupMessage('Ažuriranje svih podataka uspešno izvršeno', 'success');
+              if (responseData.lastUpdated) handleSyncLastUpdated(responseData.lastUpdated);
+            } else {
+              popupMessage('Došlo je do problema prilikom ažuriranja podataka', 'danger');
+            }
           }
+        } catch (error) {
+          betterErrorLog('> Error in last updated context -> handleLastUpdatedResponse method', error);
+          popupMessage('Greška pri obradi odgovora o ažuriranju', 'danger');
         }
       };
 
@@ -118,66 +127,80 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
         socket.off('syncLastUpdated', handleSyncLastUpdated);
       };
     }
-  }, [socket, lastUpdatedData, firstConnect]);
+  }, [socket, lastUpdatedData]);
+
+  // Ovo sam remove u pokusaju da fixam starting freeze issue
+  // }, [socket, lastUpdatedData, firstConnect]);
 
   /**
    * @param data
    * @returns Boolean value - true [All data is updated] | false [There was an issue while updating data]
    */
   async function sortDataOnClientSync(data: any) {
-    let isAllSorted = true;
-    let productsAlreadyUpdated = false;
-    for (const dataType of data) {
-      switch (dataType.key) {
-        case 'color':
-          updateColorContext(dataType.data);
-          break;
-        case 'category':
-          updateCategoriesContext(dataType.data);
-          break;
-        case 'courier':
-          updateCouriersContext(dataType.data);
-          break;
-        case 'dress':
-          if (productsAlreadyUpdated) break;
-          productsAlreadyUpdated = true;
-          await fetchAllProducts();
-          break;
-        case 'dressColor':
-          if (productsAlreadyUpdated) break;
-          productsAlreadyUpdated = true;
-          await fetchAllProducts();
-          break;
-        case 'purse':
-          if (productsAlreadyUpdated) break;
-          productsAlreadyUpdated = true;
-          await fetchAllProducts();
-          break;
-        case 'purseColor':
-          if (productsAlreadyUpdated) break;
-          productsAlreadyUpdated = true;
-          await fetchAllProducts();
-          break;
-        case 'supplier':
-          updateSuppliersContext(dataType.data);
-          break;
-        case 'order':
-          updateOrdersContext(dataType.data);
-          await updateProcessedOrdersForPeriod();
-          if (productsAlreadyUpdated) break;
-          await fetchAllProducts();
-          popupMessage('FETCHED ALL', 'info');
-          productsAlreadyUpdated = true;
-          break;
+    try {
+      let isAllSorted = true;
+      let productsAlreadyUpdated = false;
+      for (const dataType of data) {
+        try {
+          switch (dataType.key) {
+            case 'color':
+              updateColorContext(dataType.data);
+              break;
+            case 'category':
+              updateCategoriesContext(dataType.data);
+              break;
+            case 'courier':
+              updateCouriersContext(dataType.data);
+              break;
+            case 'dress':
+              if (productsAlreadyUpdated) break;
+              productsAlreadyUpdated = true;
+              await fetchAllProducts();
+              break;
+            case 'dressColor':
+              if (productsAlreadyUpdated) break;
+              productsAlreadyUpdated = true;
+              await fetchAllProducts();
+              break;
+            case 'purse':
+              if (productsAlreadyUpdated) break;
+              productsAlreadyUpdated = true;
+              await fetchAllProducts();
+              break;
+            case 'purseColor':
+              if (productsAlreadyUpdated) break;
+              productsAlreadyUpdated = true;
+              await fetchAllProducts();
+              break;
+            case 'supplier':
+              updateSuppliersContext(dataType.data);
+              break;
+            case 'order':
+              updateOrdersContext(dataType.data);
+              await updateProcessedOrdersForPeriod();
+              if (productsAlreadyUpdated) break;
+              await fetchAllProducts();
+              popupMessage('FETCHED ALL', 'info');
+              productsAlreadyUpdated = true;
+              break;
 
-        default:
+            default:
+              isAllSorted = false;
+              popupMessage(`> Došlo je do problema prilikom razvrstavanja podataka za ${dataType.key}`, 'danger');
+              betterErrorLog(`> Unhandled case in sortDataOnClientSync for key ${dataType.key}`, dataType);
+          }
+        } catch (innerError) {
+          betterErrorLog(`Error in sortDataOnClientSync for ${dataType.key}`, innerError);
           isAllSorted = false;
-          popupMessage(`> Došlo je do problema prilikom razvrstavanja podataka za ${dataType.key}`, 'danger');
-          betterErrorLog(`> Unhandled case in sortDataOnClientSync for key ${dataType.key}`, dataType);
+        }
       }
-    }
 
-    return isAllSorted;
+      return isAllSorted;
+    } catch (error) {
+      betterErrorLog('Fatal error in sortDataOnClientSync', error);
+      popupMessage('Greška prilikom ažuriranja podataka', 'danger');
+      return false;
+    }
   }
 
   // Color

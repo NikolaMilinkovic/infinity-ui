@@ -18,8 +18,6 @@ interface PropTypes {
   onNext: () => void;
   buyerInfo: string;
   setBuyerInfo: (info: string) => void;
-  prevBuyerInfo: string;
-  setPrevBuyerInfo: (info: string) => void;
 }
 
 function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo, setBuyerInfo }: PropTypes) {

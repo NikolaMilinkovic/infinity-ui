@@ -56,9 +56,9 @@ function PursesContextProvider({ children }: PurseContextProviderType) {
 
           const fetchInactivePurses = await fetchData(token, 'products/inactive-purses');
           if (fetchInactivePurses !== false) setInactivePurses(fetchInactivePurses);
-          console.log('%c[purses-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+          console.log('[9][purses-context] Initial fetch: true');
         } catch (error) {
-          console.log('%c[purses-context] Initial fetch: false', 'color: red; font-weight: bold;');
+          console.log('[9][purses-context] Initial fetch: false');
         }
       }
       getPursesData(token);

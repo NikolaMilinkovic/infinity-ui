@@ -88,7 +88,7 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
 
   if (!order) return <></>;
   return (
-    <Pressable delayLongPress={100} onPress={handleOnPress}>
+    <Pressable delayLongPress={200} onPress={handleOnPress}>
       <Animated.View style={[styles.container, { height: expandHeight }]}>
         <Text style={styles.timestamp}>{getFormattedDate(order.createdAt)}</Text>
 

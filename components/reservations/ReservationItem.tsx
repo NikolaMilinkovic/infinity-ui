@@ -74,7 +74,7 @@ function ReservationItem({
 
   if (!order) return <></>;
   return (
-    <Pressable delayLongPress={100} onPress={() => handleOnPress(order._id)} onLongPress={() => onLongPress(order._id)}>
+    <Pressable delayLongPress={200} onPress={() => handleOnPress(order._id)} onLongPress={() => onLongPress(order._id)}>
       <Animated.View style={[styles.container, { height: expandHeight, backgroundColor: backgroundColor }]}>
         <Text style={styles.timestamp}>{getFormattedDate(order.createdAt)}</Text>
 

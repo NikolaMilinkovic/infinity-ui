@@ -56,9 +56,9 @@ function DressesContextProvider({ children }: DressContextProviderType) {
 
           const fetchInactiveDresses = await fetchData(token, 'products/inactive-dresses');
           if (fetchInactiveDresses !== false) setInactiveDresses(fetchInactiveDresses);
-          console.log('%c[dresses-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+          console.log('[8][dresses-context] Initial fetch: true');
         } catch (error) {
-          console.log('%c[dresses-context] Initial fetch: false', 'color: red; font-weight: bold;');
+          console.log('[8][dresses-context] Initial fetch: false');
         }
       }
       getDressesData(token);

@@ -85,7 +85,7 @@ function OrderItem({
 
   if (!order) return <></>;
   return (
-    <Pressable delayLongPress={100} onPress={() => handleOnPress(order)} onLongPress={() => onLongPress(order)}>
+    <Pressable delayLongPress={200} onPress={() => handleOnPress(order)} onLongPress={() => onLongPress(order)}>
       {/* {isHighlighted && (
         <View style={styles.itemHighlightedOverlay}/>
       )} */}

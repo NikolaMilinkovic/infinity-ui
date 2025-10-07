@@ -17,7 +17,7 @@ function PackOrdersItemsList({ selectedCourier, data }: PackOrderItemsListPropTy
       data={data}
       keyExtractor={(item) => item._id}
       renderItem={({ item, index }) => (
-        <Pressable delayLongPress={100}>
+        <Pressable delayLongPress={200}>
           <PackOrderItem order={item} />
         </Pressable>
       )}

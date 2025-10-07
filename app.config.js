@@ -3,7 +3,7 @@ module.exports = {
     name: 'Infinity Boutique App',
     slug: 'infinity-boutique-app',
     backgroundColor: '#ffffff',
-    version: '1.0.9',
+    version: '1.0.10',
     jsEngine: 'hermes',
     orientation: 'portrait',
     icon: './assets/icon.png',

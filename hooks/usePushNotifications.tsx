@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { Colors } from '../constants/colors';
 import { popupMessage } from '../util-components/PopupMessage';
-import { betterConsoleLog } from '../util-methods/LogMethods';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -28,9 +27,6 @@ export const usePushNotifications = (): PushNotificationState => {
    * Registers for push notifications
    */
   async function registerForPushNotificationsAsync(): Promise<Notifications.ExpoPushToken | null> {
-    console.log('> [PUSH] Starting registration...');
-    console.log('> [PUSH] Is device?', Device.isDevice);
-
     // Settings for Android platform
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
@@ -43,38 +39,29 @@ export const usePushNotifications = (): PushNotificationState => {
 
     if (Device.isDevice) {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      console.log('> [PUSH] Existing permission status:', existingStatus);
       let finalStatus = existingStatus;
 
       // Request permission if not provided
       if (existingStatus !== 'granted') {
-        console.log('> [PUSH] Requesting permissions...');
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
-        console.log('> [PUSH] New permission status:', finalStatus);
       }
 
       if (finalStatus !== 'granted') {
-        console.log('> [PUSH] Permission denied!');
-        popupMessage('Notification permission denied :(', 'info');
         return null;
       }
 
-      console.log('> [PUSH] Getting Expo push token...');
-      console.log('> [PUSH] Project ID:', Constants.expoConfig?.extra?.eas?.projectId);
       const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
 
       try {
         const pushTokenString = await Notifications.getExpoPushTokenAsync({ projectId });
-        console.log(`> [PUSH TOKEN BY OTHER WAY]: ${pushTokenString}`);
         setExpoPushToken(pushTokenString);
         return pushTokenString;
       } catch (error) {
-        console.error('> [PUSH] Error getting token:', error);
+        popupMessage('Došlo je do problema prilikom preuzimanja push tokena', 'danger');
         return null;
       }
     } else {
-      console.error('> [PUSH] Not a physical device!');
       return null;
     }
   }
@@ -82,23 +69,21 @@ export const usePushNotifications = (): PushNotificationState => {
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => setExpoPushToken(token ?? null))
-      .catch((error: any) => betterConsoleLog('> Error while registering for push token', error));
+      .catch((error: any) => {
+        popupMessage('Došlo je do problema prilikom registrovanja push tokena', 'danger');
+      });
 
     const notificationListener = Notifications.addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });
 
-    const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log(`> [PUSH] Response listener:`, response);
-    });
+    const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {});
 
     return () => {
       notificationListener.remove();
       responseListener.remove();
     };
   }, []);
-
-  console.log('> [PUSH] Hook returning, current token:', expoPushToken);
 
   return {
     expoPushToken: expoPushToken || null,

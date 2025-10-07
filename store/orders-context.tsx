@@ -56,18 +56,18 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes) {
       try {
         const unprocessedOrdersData = await fetchData(token, 'orders/unprocessed');
         setUnprocessedOrders(unprocessedOrdersData.orders);
-        console.log('%c[orders-unprocessed-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+        console.log('[10][orders-unprocessed-context] Initial fetch: true');
       } catch (error) {
-        console.log('%c[orders-unprocessed-context] Initial fetch: false', 'color: red; font-weight: bold;');
+        console.log('[10][orders-unprocessed-context] Initial fetch: false');
       }
     }
     async function fetchProcessedOrdersData() {
       try {
         const processedOrdersData = await fetchData(token, 'orders/processed');
         setProcessedOrders(processedOrdersData.orders);
-        console.log('%c[orders-processed-context] Initial fetch: true', 'color: lightblue; font-weight: bold;');
+        console.log('[10][orders-processed-context] Initial fetch: true');
       } catch (error) {
-        console.log('%c[orders-processed-context] Initial fetch: false', 'color: red; font-weight: bold;');
+        console.log('[10][orders-processed-context] Initial fetch: false');
       }
     }
     if (token) {

@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { forwardRef, useContext, useImperativeHandle, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
+import { useGetCourierDropdownData } from '../../hooks/couriers/useGetCourierDropdownItems';
+import { useGetDefaultCourierData } from '../../hooks/couriers/useGetDefaultCourierData';
 import { useExpandAnimation } from '../../hooks/useExpand';
-import { CouriersContext } from '../../store/couriers-context';
 import { NewOrderContext } from '../../store/new-order-context';
-import { UserContext } from '../../store/user-context';
 import Button from '../../util-components/Button';
 import DropdownList from '../../util-components/DropdownList';
 
@@ -14,7 +14,7 @@ interface PropTypes {
   setIsExpanded: (expanded: boolean) => void;
   onNext: () => void;
   defaultValueByMatch?: string;
-  courierSelectorRef: any;
+  courierSelectorRef?: any;
 }
 interface DropdownTypes {
   _id: string;
@@ -22,63 +22,67 @@ interface DropdownTypes {
   deliveryPrice: number;
 }
 
-function CourierSelector({
-  isExpanded,
-  setIsExpanded,
-  onNext,
-  defaultValueByMatch = 'Bex',
-  courierSelectorRef,
-}: PropTypes) {
-  const userCtx = useContext(UserContext);
-  const couriersCtx = useContext(CouriersContext);
-  const orderCtx = useContext(NewOrderContext);
-  const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([]);
-  const toggleExpandAnimation = useExpandAnimation(isExpanded, 0, 107, 180);
+const CourierSelector = forwardRef(
+  ({ isExpanded, setIsExpanded, onNext, defaultValueByMatch = 'Bex', courierSelectorRef }: PropTypes, ref) => {
+    const orderCtx = useContext(NewOrderContext);
+    const [dropdownData] = useState<DropdownTypes[]>(useGetCourierDropdownData());
+    const toggleExpandAnimation = useExpandAnimation(isExpanded, 0, 107, 180);
+    const [defaultCourierData] = useState(useGetDefaultCourierData());
+    const [resetDropdownCounter, setResetDropdownCounter] = useState(0);
 
-  useEffect(() => {
-    const dropdownData = couriersCtx.couriers.map((courier) => ({
-      _id: courier._id,
-      name: courier.name,
-      deliveryPrice: courier.deliveryPrice,
+    // useEffect(() => {
+    //   if (defaultCourierData && !orderCtx.courierData) {
+    //     orderCtx.setCourierData(defaultCourierData);
+    //   }
+    // }, [defaultCourierData]);
+
+    // Expose reset method to parent
+    useImperativeHandle(ref, () => ({
+      resetDropdown: () => {
+        setResetDropdownCounter((prev) => prev + 1);
+
+        if (defaultCourierData) {
+          orderCtx.setCourierData(defaultCourierData);
+        }
+      },
     }));
-    setDropdownData(dropdownData);
-  }, [couriersCtx.couriers, setDropdownData]);
 
-  return (
-    <Animated.ScrollView>
-      {/* TOGGLE BUTTON */}
-      <Pressable onPress={() => setIsExpanded(!isExpanded)} style={styles.headerContainer}>
-        <Text style={styles.header}>Izbor Kurira</Text>
-        <Icon
-          name={isExpanded ? 'chevron-up' : 'chevron-down'}
-          style={styles.iconStyle}
-          size={26}
-          color={Colors.white}
-        />
-      </Pressable>
+    return (
+      <Animated.ScrollView>
+        {/* TOGGLE BUTTON */}
+        <Pressable onPress={() => setIsExpanded(!isExpanded)} style={styles.headerContainer}>
+          <Text style={styles.header}>Izbor Kurira</Text>
+          <Icon
+            name={isExpanded ? 'chevron-up' : 'chevron-down'}
+            style={styles.iconStyle}
+            size={26}
+            color={Colors.white}
+          />
+        </Pressable>
 
-      <Animated.ScrollView style={[styles.container, { height: toggleExpandAnimation }]}>
-        <DropdownList
-          data={dropdownData}
-          onSelect={orderCtx.setCourierData}
-          isDefaultValueOn={true}
-          placeholder="Izaberite kurira za dostavu"
-          defaultValue={userCtx?.settings?.defaults?.courier || defaultValueByMatch}
-          reference={courierSelectorRef}
-        />
-        {/* ON NEXT BUTTON */}
-        <Button
-          backColor={Colors.highlight}
-          textColor={Colors.white}
-          containerStyles={{ marginBottom: 6, marginTop: 6 }}
-          onPress={onNext}
-        >
-          Dalje
-        </Button>
+        <Animated.ScrollView style={[styles.container, { height: toggleExpandAnimation }]}>
+          <DropdownList
+            data={dropdownData}
+            onSelect={orderCtx.setCourierData}
+            isDefaultValueOn={true}
+            placeholder="Izaberite kurira za dostavu"
+            defaultValue={defaultCourierData?.name || ''}
+            reference={courierSelectorRef}
+            key={resetDropdownCounter}
+          />
+          <Button
+            backColor={Colors.highlight}
+            textColor={Colors.white}
+            containerStyles={{ marginBottom: 6, marginTop: 6 }}
+            onPress={onNext}
+          >
+            Dalje
+          </Button>
+        </Animated.ScrollView>
       </Animated.ScrollView>
-    </Animated.ScrollView>
-  );
-}
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -90,17 +94,9 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     flexDirection: 'row',
   },
-  iconStyle: {
-    marginLeft: 'auto',
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.white,
-  },
-  container: {
-    paddingHorizontal: 8,
-  },
+  iconStyle: { marginLeft: 'auto' },
+  header: { fontSize: 20, fontWeight: 'bold', color: Colors.white },
+  container: { paddingHorizontal: 8 },
 });
 
 export default CourierSelector;

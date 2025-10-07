@@ -54,6 +54,15 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
   const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>(item.colors);
   const [supplier, setSupplier] = useState<SupplierTypes | string>(item?.supplier || '');
 
+  const supplierData = useMemo(
+    () => [{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers],
+    [suppliersCtx.suppliers]
+  );
+  const supplierDefaultValue = useMemo(
+    () => (typeof supplier === 'string' ? supplier : supplier?.name || ''),
+    [supplier]
+  );
+
   function verifyInputsData() {
     if (!name) {
       popupMessage('Proizvod mora imati ime', 'danger');
@@ -95,7 +104,11 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
       formData.append('stockType', category?.stockType);
       formData.append('colors', JSON.stringify(newColors));
       formData.append('description', description);
-      formData.append('supplier', supplier?.name || '');
+      if (supplier?.name === 'Resetuj izbor') {
+        formData.append('supplier', '');
+      } else {
+        formData.append('supplier', supplier?.name || '');
+      }
 
       if (productImage) {
         formData.append('image', {
@@ -189,7 +202,6 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
   const [resetKey, setResetKey] = useState(0);
   function resetDropdown() {
     setResetKey((prevKey) => prevKey + 1);
-    setSupplier('');
   }
 
   return (
@@ -306,11 +318,11 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
             <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</Text>
             <DropdownList
               key={resetKey}
-              data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
+              data={supplierData}
               placeholder="Izaberite dobavljača"
               onSelect={setSupplier}
               buttonContainerStyles={{ marginTop: 4 }}
-              defaultValue={supplier}
+              defaultValue={supplierDefaultValue}
             />
           </View>
 

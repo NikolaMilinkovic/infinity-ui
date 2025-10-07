@@ -140,7 +140,7 @@ function DisplayProduct({
     <Pressable
       key={item._id}
       onPress={toggleExpand}
-      delayLongPress={100}
+      delayLongPress={200}
       onLongPress={() => handleLongPress(item._id, item.stockType)}
     >
       <Animated.View

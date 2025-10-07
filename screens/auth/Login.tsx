@@ -7,6 +7,7 @@ import { AuthContext } from '../../store/auth-context';
 import Button from '../../util-components/Button';
 import InputField from '../../util-components/InputField';
 import { loginUser } from '../../util-methods/auth/AuthMethods';
+import { betterErrorLog } from '../../util-methods/LogMethods';
 
 function Login() {
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -14,6 +15,7 @@ function Login() {
   const [password, setPassword] = useState<string>('');
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
   const { expoPushToken } = usePushNotifications();
+
   const authCtx = useContext(AuthContext);
   useEffect(() => {
     if (username && password) setErrorMessage('');
@@ -54,12 +56,21 @@ function Login() {
     try {
       const result: LoginResultType = await loginUser({ username, password, expoPushToken });
 
-      if (result.isAuthenticated === false) failAuthHandler(result);
-      if (result.token === '') failAuthHandler(result);
+      if (!result.isAuthenticated || !result.token) {
+        failAuthHandler(result);
+        return;
+      }
 
-      authCtx.authenticate(result.token);
+      try {
+        authCtx.authenticate(result.token);
+      } catch (ctxErr) {
+        betterErrorLog('Error authenticating user:', ctxErr);
+        setErrorMessage('Failed to save login session.');
+      }
     } catch (err) {
+      betterErrorLog('Login error:', err);
       setErrorMessage(`Issue logging in user: ${err}`);
+    } finally {
       setIsAuthenticating(false);
     }
   }
