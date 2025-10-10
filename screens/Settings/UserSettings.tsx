@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import SafeView from '../../components/layout/SafeView';
 import CheckForUpdates from '../../components/settings/CheckForUpdates';
 import CouriersSettings from '../../components/settings/CouriersSettings';
 import ListProductsByDropdown from '../../components/settings/ListProductsByDropdown';
@@ -59,54 +60,56 @@ function UserSettings() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.card}>
-        {/* UPDATES */}
-        <Text style={[styles.h1, { marginTop: 0 }]}>Ažuriranje | Updates:</Text>
-        <View style={styles.sectionOutline}>
-          <CheckForUpdates appCtx={appCtx} />
-        </View>
+    <SafeView>
+      <ScrollView style={styles.container}>
+        <View style={styles.card}>
+          {/* UPDATES */}
+          <Text style={[styles.h1, { marginTop: 0 }]}>Ažuriranje | Updates:</Text>
+          <View style={styles.sectionOutline}>
+            <CheckForUpdates appCtx={appCtx} />
+          </View>
 
-        {/* LIST PRODUCTS BY */}
-        <Text style={styles.h1}>{text.listProductsBy_header}</Text>
-        <View style={styles.sectionOutline}>
-          <ListProductsByDropdown updateDefault={updateDefault} />
-        </View>
+          {/* LIST PRODUCTS BY */}
+          <Text style={styles.h1}>{text.listProductsBy_header}</Text>
+          <View style={styles.sectionOutline}>
+            <ListProductsByDropdown updateDefault={updateDefault} />
+          </View>
 
-        {/* DEFAULT COURIER */}
-        <Text style={styles.h1}>Kuriri</Text>
-        <View style={styles.sectionOutline}>
-          <CouriersSettings updateDefault={updateDefault} />
-        </View>
+          {/* DEFAULT COURIER */}
+          <Text style={styles.h1}>Kuriri</Text>
+          <View style={styles.sectionOutline}>
+            <CouriersSettings updateDefault={updateDefault} />
+          </View>
 
-        {/* NOVA PORUDZBINA */}
-        {/* <Text style={styles.h1}>Nova Porudžbina:</Text>
+          {/* NOVA PORUDZBINA */}
+          {/* <Text style={styles.h1}>Nova Porudžbina:</Text>
         <View style={styles.sectionOutline}>
           <DefaultCourier updateDefault={updateDefault} />
         </View> */}
 
-        {/* THEME SELECTOR */}
-        <Text style={styles.h1}>{text.theme_header}</Text>
-        <View style={styles.sectionOutline}>
-          <ThemeSelector updateDefault={updateDefault} />
-        </View>
+          {/* THEME SELECTOR */}
+          <Text style={styles.h1}>{text.theme_header}</Text>
+          <View style={styles.sectionOutline}>
+            <ThemeSelector updateDefault={updateDefault} />
+          </View>
 
-        {/* LANGUAGE SELECTOR */}
-        {/* <Text style={styles.h1}>{text.language_header}</Text>
+          {/* LANGUAGE SELECTOR */}
+          {/* <Text style={styles.h1}>{text.language_header}</Text>
         <View style={styles.sectionOutline}>
         <LanguageSelector updateUserSetting={updateUserSetting} />
         </View> */}
 
-        {/* SAVE BTN */}
-        <Button
-          containerStyles={styles.saveButton}
-          onPress={saveAndUpdateUserSettings}
-          textStyles={styles.saveButtonText}
-        >
-          Sačuvaj
-        </Button>
-      </View>
-    </ScrollView>
+          {/* SAVE BTN */}
+          <Button
+            containerStyles={styles.saveButton}
+            onPress={saveAndUpdateUserSettings}
+            textStyles={styles.saveButtonText}
+          >
+            Sačuvaj
+          </Button>
+        </View>
+      </ScrollView>
+    </SafeView>
   );
 }
 

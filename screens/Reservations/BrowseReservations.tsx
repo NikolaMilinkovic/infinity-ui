@@ -1,6 +1,7 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Modal, SafeAreaView, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
+import SafeView from '../../components/layout/SafeView';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import filterReservations from '../../components/reservations/filterReservations';
 import ReservationsItemsList from '../../components/reservations/ReservationsItemsList';
@@ -53,7 +54,7 @@ function BrowseReservations() {
   const editReservationFade = useFadeTransition(editedReservation !== null);
 
   return (
-    <>
+    <SafeView>
       <Animated.View style={styles.reservationsContainer}>
         <SafeAreaView>
           <SearchReservations
@@ -70,22 +71,19 @@ function BrowseReservations() {
         </SafeAreaView>
       </Animated.View>
 
-      {/* Neophodan view, nece da render modal kako treba ukoliko ga ne wrapujemo */}
-      <View style={{ backgroundColor: 'transparent' }}>
-        <Modal
-          animationType="slide"
-          presentationStyle="overFullScreen"
-          visible={editedReservation !== null}
-          onRequestClose={removeEditedReservation}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            <Animated.View style={[editReservationFade, { flex: 1 }]}>
-              <EditOrder editedOrder={editedReservation} setEditedOrder={setEditedReservation} />
-            </Animated.View>
-          </SafeAreaView>
-        </Modal>
-      </View>
-    </>
+      <Modal
+        animationType="fade"
+        presentationStyle="overFullScreen"
+        visible={editedReservation !== null}
+        onRequestClose={removeEditedReservation}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <Animated.View style={[editReservationFade, { flex: 1 }]}>
+            <EditOrder editedOrder={editedReservation} setEditedOrder={setEditedReservation} />
+          </Animated.View>
+        </SafeAreaView>
+      </Modal>
+    </SafeView>
   );
 }
 

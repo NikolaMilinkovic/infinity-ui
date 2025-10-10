@@ -25,9 +25,9 @@ interface DropdownTypes {
 const CourierSelector = forwardRef(
   ({ isExpanded, setIsExpanded, onNext, defaultValueByMatch = 'Bex', courierSelectorRef }: PropTypes, ref) => {
     const orderCtx = useContext(NewOrderContext);
-    const [dropdownData] = useState<DropdownTypes[]>(useGetCourierDropdownData());
+    const dropdownData = useGetCourierDropdownData();
     const toggleExpandAnimation = useExpandAnimation(isExpanded, 0, 117, 180);
-    const [defaultCourierData] = useState(useGetDefaultCourierData());
+    const defaultCourierData = useGetDefaultCourierData();
     const [resetDropdownCounter, setResetDropdownCounter] = useState(0);
 
     // useEffect(() => {
@@ -61,15 +61,17 @@ const CourierSelector = forwardRef(
         </Pressable>
 
         <Animated.ScrollView style={[styles.container, { height: toggleExpandAnimation }]}>
-          <DropdownList
-            data={dropdownData}
-            onSelect={orderCtx.setCourierData}
-            isDefaultValueOn={true}
-            placeholder="Izaberite kurira za dostavu"
-            defaultValue={defaultCourierData?.name || ''}
-            reference={courierSelectorRef}
-            key={resetDropdownCounter}
-          />
+          {dropdownData && (
+            <DropdownList
+              data={dropdownData}
+              onSelect={orderCtx.setCourierData}
+              isDefaultValueOn={true}
+              placeholder="Izaberite kurira za dostavu"
+              defaultValue={defaultCourierData?.name || ''}
+              reference={courierSelectorRef}
+              key={resetDropdownCounter}
+            />
+          )}
           {/* <DropdownList2
             key={resetDropdownCounter}
             data={dropdownData}

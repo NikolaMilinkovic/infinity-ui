@@ -1,6 +1,7 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Modal, SafeAreaView } from 'react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
+import SafeView from '../../components/layout/SafeView';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
 import SearchOrders from '../../components/orders/browseOrders/SearchOrders';
@@ -72,8 +73,8 @@ function BrowseOrders() {
   const editOrderFade = useFadeTransition(editedOrder !== null);
 
   return (
-    <>
-      <Animated.View entering={FadeIn.duration(400)} style={{ flex: 1 }}>
+    <SafeView>
+      <Animated.View style={{ flex: 1 }}>
         <SearchOrders
           searchData={searchData}
           setSearchData={setSearchData}
@@ -94,9 +95,10 @@ function BrowseOrders() {
           isDateForPeriodPicked={isDateForPeriodPicked}
         />
       </Animated.View>
+
       <Modal
         presentationStyle="overFullScreen"
-        animationType="slide"
+        animationType="fade"
         visible={editedOrder !== null}
         onRequestClose={removeEditedOrder}
       >
@@ -106,7 +108,7 @@ function BrowseOrders() {
           </Animated.View>
         </SafeAreaView>
       </Modal>
-    </>
+    </SafeView>
   );
 }
 

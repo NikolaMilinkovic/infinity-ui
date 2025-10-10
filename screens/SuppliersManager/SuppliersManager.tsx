@@ -1,30 +1,33 @@
-import React from 'react'
+import React from 'react';
 // import AddColor from '../../components/colors/AddColor'
 // import EditColors from '../../components/colors/EditColors'
-import { StyleSheet, Animated } from 'react-native';
-import { useFadeAnimation } from '../../hooks/useFadeAnimation';
+import { Animated, StyleSheet } from 'react-native';
+import SafeView from '../../components/layout/SafeView';
 import AddSupplier from '../../components/suppliers/AddSupplier';
 import EditSuppliers from '../../components/suppliers/EditSuppliers';
+import { useFadeAnimation } from '../../hooks/useFadeAnimation';
 
 function SuppliersManager() {
   // Fade in animation
   const fadeAnimation = useFadeAnimation();
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
-      <AddSupplier/>
-      <EditSuppliers/>
-    </Animated.View>
-  )
+    <SafeView>
+      <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
+        <AddSupplier />
+        <EditSuppliers />
+      </Animated.View>
+    </SafeView>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
-  tempText:{
-    fontSize: 34
-  }
+  tempText: {
+    fontSize: 34,
+  },
 });
 
-export default SuppliersManager
+export default SuppliersManager;

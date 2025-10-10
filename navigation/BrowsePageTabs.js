@@ -44,15 +44,15 @@ export default function BrowsePageTabs() {
           title: 'Lista Proizvoda',
         }}
       />
-      {user && user?.permissions?.orders?.create && (
-        <Tab.Screen
-          name="NewOrder"
-          component={NewOrder}
-          options={{
-            title: 'Nova Porudžbina',
-          }}
-        />
-      )}
+      {/* {user && user?.permissions?.orders?.create && ( */}
+      <Tab.Screen
+        name="NewOrder"
+        component={NewOrder}
+        options={{
+          title: 'Nova Porudžbina',
+        }}
+      />
+      {/* )} */}
     </Tab.Navigator>
   );
 }

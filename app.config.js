@@ -11,7 +11,7 @@ module.exports = {
     platforms: ['android', 'ios'],
     newArchEnabled: true,
     splash: {
-      image: './assets/splash.png',
+      // image: './assets/splash.png',
       resizeMode: 'contain',
       backgroundColor: '#ffffff',
     },
@@ -84,7 +84,6 @@ module.exports = {
         'react-native-safe-area-context@~4.12.0',
         'react-native-webview@~13.12.5',
         'react-native-fs',
-        '@react-native-community/masked-view',
         'react-native-dropdown-select-list',
         'react-native-select-dropdown',
         'react-native-vector-icons',

@@ -1,12 +1,12 @@
 import React from 'react';
-import { View } from 'react-native';
+import SafeView from '../../components/layout/SafeView';
 import AddUser from '../../components/userManager/AddUser';
 
 function UserManager() {
   return (
-    <View>
+    <SafeView>
       <AddUser />
-    </View>
+    </SafeView>
   );
 }
 

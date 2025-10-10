@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
     right: 0,
     left: 0,
     zIndex: 2,
-    height: 50,
+    height: 60,
     backgroundColor: Colors.primaryDark,
     paddingHorizontal: 10,
     alignItems: 'center',
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primaryLight,
   },
   card: {
-    marginTop: 60,
+    marginTop: 70,
     backgroundColor: Colors.white,
     padding: 10,
     borderRadius: 4,

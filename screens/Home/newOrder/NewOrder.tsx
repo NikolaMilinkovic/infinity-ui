@@ -1,5 +1,6 @@
 import React, { useContext, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
+import SafeView from '../../../components/layout/SafeView';
 import ColorSizeSelectorsList from '../../../components/orders/ColorSizeSelectorsList';
 import CourierSelector from '../../../components/orders/CourierSelector';
 import NewOrderPreview, { NewOrderPreviewRef } from '../../../components/orders/NewOrderPreview';
@@ -10,6 +11,7 @@ import { AuthContext } from '../../../store/auth-context';
 import { useConfirmationModal } from '../../../store/modals/confirmation-modal-context';
 import { NewOrderContext } from '../../../store/new-order-context';
 import { OrdersContext } from '../../../store/orders-context';
+import { useUser } from '../../../store/user-context';
 import Button from '../../../util-components/Button';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { addNewOrder } from '../../../util-methods/FetchMethods';
@@ -19,6 +21,7 @@ function NewOrder() {
   const newOrderCtx = useContext(NewOrderContext);
   const orderCtx = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
+  const user = useUser();
   const token = authCtx.token;
   const orderPreviewRef = useRef<NewOrderPreviewRef>(null);
   const { showConfirmation } = useConfirmationModal();
@@ -146,6 +149,8 @@ function NewOrder() {
   }
 
   async function submitOrder(order: any, token: string) {
+    if (!user && !user?.permissions?.orders?.create)
+      return popupMessage('Nemate dozvolu za dodavanje nove porudžbine', 'danger');
     const response = await addNewOrder(order, token, 'orders');
     setIsAddingOrder(false);
     if (response) {
@@ -202,61 +207,63 @@ function NewOrder() {
   }
 
   return (
-    <Animated.ScrollView
-      style={styles.scrollViewContainer}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-    >
-      <SelectedProductsDisplay
-        setIsExpanded={setIsArticleListOpen}
-        isExpanded={isArticleListOpen}
-        onNext={handleArticleListOk}
-        ordersCtx={newOrderCtx}
-      />
-      <ColorSizeSelectorsList
-        ordersCtx={newOrderCtx}
-        isExpanded={isColorSizeSelectorsOpen}
-        setIsExpanded={setIsColorSizeSelectorsOpen}
-        onNext={handleColorSizeSelectorsOk}
-      />
-      <SortUserInformationField
-        setIsExpanded={setIsBuyerInfoOpen}
-        isExpanded={isBuyerInfoOpen}
-        onNext={handleBuyerInfoOk}
-        buyerInfo={buyerInfo}
-        setBuyerInfo={setBuyerInfo}
-      />
-      <CourierSelector
-        isExpanded={isCourierPreviewOpen}
-        setIsExpanded={setIsCourierPreviewOpen}
-        onNext={handleCourierSelectorOk}
-        ref={courierSelectorRef}
-      />
-      <NewOrderPreview
-        isExpanded={isOrderPreviewOpen}
-        setIsExpanded={setIsOrderPreviewOpen}
-        setCustomPrice={newOrderCtx.setCustomPrice}
-        ref={orderPreviewRef}
-      />
-      <View style={styles.buttonsContainer}>
-        <Button
-          backColor={Colors.error}
-          textColor={Colors.white}
-          containerStyles={[styles.button, { marginBottom: 6 }]}
-          onPress={handleResetOrderData}
-        >
-          Odustani i resetuj
-        </Button>
-        <Button
-          backColor={Colors.secondaryDark}
-          textColor={Colors.white}
-          containerStyles={[styles.button, { marginBottom: 6 }]}
-          onPress={handleSubmitOrder}
-        >
-          Dodaj porudžbinu
-        </Button>
-      </View>
-    </Animated.ScrollView>
+    <SafeView>
+      <Animated.ScrollView
+        style={styles.scrollViewContainer}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
+        <SelectedProductsDisplay
+          setIsExpanded={setIsArticleListOpen}
+          isExpanded={isArticleListOpen}
+          onNext={handleArticleListOk}
+          ordersCtx={newOrderCtx}
+        />
+        <ColorSizeSelectorsList
+          ordersCtx={newOrderCtx}
+          isExpanded={isColorSizeSelectorsOpen}
+          setIsExpanded={setIsColorSizeSelectorsOpen}
+          onNext={handleColorSizeSelectorsOk}
+        />
+        <SortUserInformationField
+          setIsExpanded={setIsBuyerInfoOpen}
+          isExpanded={isBuyerInfoOpen}
+          onNext={handleBuyerInfoOk}
+          buyerInfo={buyerInfo}
+          setBuyerInfo={setBuyerInfo}
+        />
+        <CourierSelector
+          isExpanded={isCourierPreviewOpen}
+          setIsExpanded={setIsCourierPreviewOpen}
+          onNext={handleCourierSelectorOk}
+          ref={courierSelectorRef}
+        />
+        <NewOrderPreview
+          isExpanded={isOrderPreviewOpen}
+          setIsExpanded={setIsOrderPreviewOpen}
+          setCustomPrice={newOrderCtx.setCustomPrice}
+          ref={orderPreviewRef}
+        />
+        <View style={styles.buttonsContainer}>
+          <Button
+            backColor={Colors.error}
+            textColor={Colors.white}
+            containerStyles={[styles.button, { marginBottom: 6 }]}
+            onPress={handleResetOrderData}
+          >
+            Odustani i resetuj
+          </Button>
+          <Button
+            backColor={Colors.secondaryDark}
+            textColor={Colors.white}
+            containerStyles={[styles.button, { marginBottom: 6 }]}
+            onPress={handleSubmitOrder}
+          >
+            Dodaj porudžbinu
+          </Button>
+        </View>
+      </Animated.ScrollView>
+    </SafeView>
   );
 }
 const styles = StyleSheet.create({

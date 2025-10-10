@@ -94,7 +94,7 @@ function EditUser() {
       </View>
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         visible={editedUser !== null}
         onRequestClose={handleRemoveEditedUser}
         presentationStyle="overFullScreen"

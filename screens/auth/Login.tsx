@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
+import SafeView from '../../components/layout/SafeView';
 import LoadingOverlay from '../../components/loading/LoadingOverlay';
 import { Colors } from '../../constants/colors';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
@@ -82,38 +83,40 @@ function Login() {
   }
 
   return (
-    <Animated.View entering={FadeIn.duration(600)} style={styles.container}>
-      <Image source={require('../../assets/infinity.png')} style={styles.image} />
-      <View style={styles.inputsContainer}>
-        <View style={styles.inputWrapper}>
-          <InputField
-            label="Username"
-            inputText={username}
-            setInputText={setUsername}
-            capitalize="none"
-            labelBorders={false}
-          />
+    <SafeView>
+      <Animated.View entering={FadeIn.duration(600)} style={styles.container}>
+        <Image source={require('../../assets/infinity.png')} style={styles.image} />
+        <View style={styles.inputsContainer}>
+          <View style={styles.inputWrapper}>
+            <InputField
+              label="Username"
+              inputText={username}
+              setInputText={setUsername}
+              capitalize="none"
+              labelBorders={false}
+            />
+          </View>
+          <View style={styles.inputWrapper}>
+            <InputField
+              label="Password"
+              isSecure={true}
+              inputText={password}
+              setInputText={setPassword}
+              capitalize="none"
+              labelBorders={false}
+            />
+          </View>
+          <Text style={styles.errorMessage}>{errorMessage}</Text>
         </View>
-        <View style={styles.inputWrapper}>
-          <InputField
-            label="Password"
-            isSecure={true}
-            inputText={password}
-            setInputText={setPassword}
-            capitalize="none"
-            labelBorders={false}
-          />
-        </View>
-        <Text style={styles.errorMessage}>{errorMessage}</Text>
-      </View>
-      <Button
-        onPress={() => loginUserHandler(username, password, expoPushToken?.data || '')}
-        textColor={Colors.whiteText}
-        backColor={Colors.primaryDark}
-      >
-        Login
-      </Button>
-    </Animated.View>
+        <Button
+          onPress={() => loginUserHandler(username, password, expoPushToken?.data || '')}
+          textColor={Colors.whiteText}
+          backColor={Colors.primaryDark}
+        >
+          Login
+        </Button>
+      </Animated.View>
+    </SafeView>
   );
 }
 

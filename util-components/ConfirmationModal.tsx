@@ -22,7 +22,7 @@ function ConfirmationModal({
   message,
 }: ConfirmModalTypes) {
   return (
-    <Modal animationType="slide" transparent={true} visible={isVisible} onRequestClose={onCancel}>
+    <Modal animationType="fade" transparent={true} visible={isVisible} onRequestClose={onCancel}>
       <TouchableWithoutFeedback onPress={onCancel}>
         <Animated.View style={styles.modalContainer}>
           <TouchableWithoutFeedback onPress={() => {}}>

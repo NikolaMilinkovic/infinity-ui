@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, SafeAreaView, View } from 'react-native';
 import Animated from 'react-native-reanimated';
+import SafeView from '../../../components/layout/SafeView';
 import DisplayProducts from '../../../components/products/DisplayProducts';
 import EditProductComponent from '../../../components/products/edit_product/EditProductComponent';
 import useBackClickHandler from '../../../hooks/useBackClickHandler';
@@ -17,26 +18,28 @@ function BrowseProducts() {
   }
 
   return (
-    <Animated.View style={{ flex: 1 }}>
-      <View>
-        {/* <Button onPress={fetchAllProducts}>FETCH PRODUCTS</Button> */}
-        {/* <SocketDcRc /> */}
-        <AppUpadteModal />
-        <DisplayProducts setEditItem={setEditedProduct} />
-      </View>
-      <Modal
-        animationType="slide"
-        visible={editedProduct !== null}
-        onRequestClose={handleRemoveEditedProduct}
-        presentationStyle="overFullScreen"
-      >
-        <SafeAreaView style={{ flex: 1 }}>
-          <Animated.ScrollView contentContainerStyle={[editProductFade]}>
-            <EditProductComponent item={editedProduct as any} setItem={setEditedProduct} />
-          </Animated.ScrollView>
-        </SafeAreaView>
-      </Modal>
-    </Animated.View>
+    <SafeView>
+      <Animated.View style={{ flex: 1 }}>
+        <View>
+          {/* <Button onPress={fetchAllProducts}>FETCH PRODUCTS</Button> */}
+          {/* <SocketDcRc /> */}
+          <AppUpadteModal />
+          <DisplayProducts setEditItem={setEditedProduct} />
+        </View>
+        <Modal
+          animationType="fade"
+          visible={editedProduct !== null}
+          onRequestClose={handleRemoveEditedProduct}
+          presentationStyle="overFullScreen"
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <Animated.ScrollView contentContainerStyle={[editProductFade]}>
+              <EditProductComponent item={editedProduct as any} setItem={setEditedProduct} />
+            </Animated.ScrollView>
+          </SafeAreaView>
+        </Modal>
+      </Animated.View>
+    </SafeView>
   );
 }
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, SafeAreaView } from 'react-native';
 import Animated from 'react-native-reanimated';
+import SafeView from '../../../components/layout/SafeView';
 import DisplayProducts from '../../../components/products/DisplayProducts';
 import EditProductComponent from '../../../components/products/edit_product/EditProductComponent';
 import useBackClickHandler from '../../../hooks/useBackClickHandler';
@@ -17,13 +18,13 @@ function EditItem() {
   }
 
   return (
-    <>
+    <SafeView>
       <Animated.View>
         <DisplayProducts setEditItem={setEditedProduct} showAddBtn={false} />
       </Animated.View>
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         visible={editedProduct !== null}
         onRequestClose={handleRemoveEditedProduct}
         presentationStyle="overFullScreen"
@@ -34,7 +35,7 @@ function EditItem() {
           </Animated.ScrollView>
         </SafeAreaView>
       </Modal>
-    </>
+    </SafeView>
   );
 }
 

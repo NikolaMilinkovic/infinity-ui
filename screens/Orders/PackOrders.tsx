@@ -1,4 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
+import SafeView from '../../components/layout/SafeView';
 import { filterPackOrders } from '../../components/orders/packOrders/packOrderFilterMethod';
 import PackOrdersControlls from '../../components/orders/packOrders/PackOrdersControlls';
 import PackOrdersItemsList from '../../components/orders/packOrders/PackOrdersItemsList';
@@ -21,10 +22,10 @@ function PackOrders() {
   }, [orderCtx.unpackedOrders, searchParams]);
 
   return (
-    <>
+    <SafeView>
       <PackOrdersControlls searchParams={searchParams} setSearchParams={setSearchParams} orders={filteredOrders} />
       <PackOrdersItemsList selectedCourier={selectedCourier} data={filteredOrders} />
-    </>
+    </SafeView>
   );
 }
 

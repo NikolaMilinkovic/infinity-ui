@@ -1,7 +1,8 @@
-import React from 'react'
-import AddColor from '../../components/colors/AddColor'
-import EditColors from '../../components/colors/EditColors'
-import { StyleSheet, Animated } from 'react-native';
+import React from 'react';
+import { Animated, StyleSheet } from 'react-native';
+import AddColor from '../../components/colors/AddColor';
+import EditColors from '../../components/colors/EditColors';
+import SafeView from '../../components/layout/SafeView';
 import { useFadeAnimation } from '../../hooks/useFadeAnimation';
 
 function ColorsManager() {
@@ -9,20 +10,22 @@ function ColorsManager() {
   const fadeAnimation = useFadeAnimation();
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
-      <AddColor/>
-      <EditColors/>
-    </Animated.View>
-  )
+    <SafeView>
+      <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
+        <AddColor />
+        <EditColors />
+      </Animated.View>
+    </SafeView>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
-  tempText:{
-    fontSize: 34
-  }
+  tempText: {
+    fontSize: 34,
+  },
 });
 
-export default ColorsManager
+export default ColorsManager;

@@ -47,7 +47,7 @@ export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: 
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       visible={isVisible}
       transparent={true}
       onRequestClose={() => {

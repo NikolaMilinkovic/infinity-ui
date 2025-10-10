@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Animated as RNAnimated, ScrollView, StyleSheet, View } from 'react-native';
+import SafeView from '../../components/layout/SafeView';
 import EndOfDayStatistics from '../../components/statistics/EndOfDayStatistics';
 import { Colors } from '../../constants/colors';
 import { useFadeAnimation } from '../../hooks/useFadeAnimation';
@@ -52,18 +53,20 @@ function EndOfDay() {
   const overlayView = useFadeTransitionReversed(orders.processedOrdersStats !== null, 500, 150);
 
   return (
-    <RNAnimated.View style={[styles.container, { opacity: fade }]}>
-      <View style={styles.controllsContainer}>
-        <CourierSelector setSelectedCourier={setSelectedCourier} defaultValueByMatch="Bex" />
-        <Button onPress={handleOnDayEnd} backColor={Colors.highlight} textColor={Colors.white}>
-          Završi dan i izvuci porudžbine
-        </Button>
-      </View>
-      <ScrollView style={styles.statisticsContainer}>
-        {/* <Animated.View style={[overlayView, styles.overlay]}/> */}
-        {orders.processedOrdersStats === null ? null : <EndOfDayStatistics stats={orders.processedOrdersStats} />}
-      </ScrollView>
-    </RNAnimated.View>
+    <SafeView>
+      <RNAnimated.View style={[styles.container, { opacity: fade }]}>
+        <View style={styles.controllsContainer}>
+          <CourierSelector setSelectedCourier={setSelectedCourier} defaultValueByMatch="Bex" />
+          <Button onPress={handleOnDayEnd} backColor={Colors.highlight} textColor={Colors.white}>
+            Završi dan i izvuci porudžbine
+          </Button>
+        </View>
+        <ScrollView style={styles.statisticsContainer}>
+          {/* <Animated.View style={[overlayView, styles.overlay]}/> */}
+          {orders.processedOrdersStats === null ? null : <EndOfDayStatistics stats={orders.processedOrdersStats} />}
+        </ScrollView>
+      </RNAnimated.View>
+    </SafeView>
   );
 }
 

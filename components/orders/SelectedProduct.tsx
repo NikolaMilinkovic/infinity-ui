@@ -20,8 +20,8 @@ function SelectedProduct({ item, orderCtx, index }: PropTypes) {
       style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
       key={`${index}-${item._id}`}
     >
-      <Text style={styles.text}>
-        [{index + 1}] {item.name}
+      <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
+        {index + 1} {item.name}
       </Text>
     </Pressable>
   );
@@ -30,10 +30,11 @@ const styles = StyleSheet.create({
   pressable: {
     width: '100%',
     padding: 10,
-    backgroundColor: Colors.secondaryLight,
-    elevation: 2,
+    backgroundColor: Colors.white,
+    elevation: 1,
     borderRadius: 4,
     marginBottom: 6,
+    borderColor: Colors.secondaryLight,
   },
   pressed: {
     opacity: 0.7,

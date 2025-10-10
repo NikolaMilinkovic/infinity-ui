@@ -43,7 +43,7 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
     <View style={styles.container}>
       {/* TOGGLE BUTTON */}
       <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
-        <Text style={styles.header}>Izabrani artikli</Text>
+        <Text style={styles.header}>Izabrani artikli ({ordersCtx.productReferences.length})</Text>
         <Icon
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={styles.iconStyle}

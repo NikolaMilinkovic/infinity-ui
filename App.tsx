@@ -6,6 +6,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { LogBox, View } from 'react-native';
 import 'react-native-reanimated';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+import StartupOverlay from './components/loading/StartupOverlay';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import AuthStack from './navigation/AuthStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
@@ -82,28 +83,27 @@ function Root() {
         // we hide the splash screen once we know the root view has already
         // performed layout.
         await SplashScreen.hideAsync();
-
-        setTimeout(() => {
-          SplashScreen.hideAsync();
-        }, 5000);
       } catch (err) {
         console.error('Error hiding splash screen:', err);
       }
     }
   }, [isCheckingToken]);
 
-  return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      {/* ✅ Show this always, even before splash hides */}
-      {/* <LoadingLogDisplay /> */}
+  const [showFakeSplash, setShowFakeSplash] = useState(true);
 
-      {/* ⛔️ Only show navigation once splash is hidden */}
+  return (
+    // <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      {/* App content renders in the background */}
       {!isCheckingToken && (
         <>
           <PopupMessagesComponent />
           <Navigation />
         </>
       )}
+
+      {/* Fake splash overlays the whole screen and fades out */}
+      {showFakeSplash && <StartupOverlay onFinish={() => setShowFakeSplash(false)} />}
     </View>
   );
 }

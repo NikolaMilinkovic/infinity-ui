@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import SafeView from '../../components/layout/SafeView';
 import SetAppIcon from '../../components/settings/SetAppIcon';
 import { useGetAppColors } from '../../constants/useGetAppColors';
 import useTextForActiveLanguage from '../../hooks/useTextForActiveLanguage';
@@ -37,24 +38,26 @@ function GlobalAppSettings() {
     }
   }
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.card}>
-        {/* UPLOAD APP ICON */}
-        <Text style={[styles.h1, { marginTop: 0 }]}>{text.app_icon}</Text>
-        <View style={styles.sectionOutline}>
-          <Text>{text.app_icon_description}</Text>
-          <SetAppIcon appIcon={appIcon} setAppIcon={setAppIcon} />
-        </View>
+    <SafeView>
+      <ScrollView style={styles.container}>
+        <View style={styles.card}>
+          {/* UPLOAD APP ICON */}
+          <Text style={[styles.h1, { marginTop: 0 }]}>{text.app_icon}</Text>
+          <View style={styles.sectionOutline}>
+            <Text>{text.app_icon_description}</Text>
+            <SetAppIcon appIcon={appIcon} setAppIcon={setAppIcon} />
+          </View>
 
-        <Button
-          containerStyles={styles.saveButton}
-          onPress={handleUpdateAppSettings}
-          textStyles={styles.saveButtonText}
-        >
-          Sačuvaj
-        </Button>
-      </View>
-    </ScrollView>
+          <Button
+            containerStyles={styles.saveButton}
+            onPress={handleUpdateAppSettings}
+            textStyles={styles.saveButtonText}
+          >
+            Sačuvaj
+          </Button>
+        </View>
+      </ScrollView>
+    </SafeView>
   );
 }
 
