@@ -152,13 +152,13 @@ function getStyles(Colors: AppColors) {
     },
     dropdownButtonTxtStyle: {
       flex: 1,
-      fontSize: 16,
+      fontSize: 14,
       color: Colors.primaryDark,
     },
     dropdownMenuStyle: {
       backgroundColor: Colors.primaryLight,
-      borderRadius: 4,
       maxHeight: 250,
+      borderRadius: 4,
     },
     dropdownSearchInputStyle: {
       backgroundColor: Colors.primaryDark,
@@ -173,13 +173,14 @@ function getStyles(Colors: AppColors) {
       justifyContent: 'center',
       alignItems: 'center',
       paddingVertical: 12,
-      borderBottomWidth: 1,
+      borderBottomWidth: 0.5,
       borderBottomColor: Colors.secondaryLight,
       backgroundColor: Colors.primaryLight,
+      marginBottom: 2,
     },
     dropdownItemTxtStyle: {
       flex: 1,
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: '400',
       color: Colors.defaultText,
       textAlign: 'center',

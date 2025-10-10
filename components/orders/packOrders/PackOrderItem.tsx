@@ -17,17 +17,11 @@ interface PackOrderItemPropTypes {
 function PackOrderItem({ order }: PackOrderItemPropTypes) {
   const [isExpanded, setIsExpanded] = useState(!order.packedIndicator);
   const [isPacked, setIsPacked] = useState(order.packedIndicator || false);
-  function getNoteHeight(orderNotes: string) {
-    if (!orderNotes) return 0;
-
-    const baseHeight = 40; // minimal height for one line
-    const charsPerLine = 40; // tweak until it fits your font/width
-    const extraHeightPerLine = 20; // pixels per extra line
-
-    const lines = Math.ceil(orderNotes.length / charsPerLine);
-    return baseHeight + (lines - 1) * extraHeightPerLine;
-  }
-  const [noteHeight] = useState(getNoteHeight(order.orderNotes));
+  const [noteHeight, setNoteHeight] = useState(0);
+  const onNoteLayout = (event: any) => {
+    const { height } = event.nativeEvent.layout;
+    setNoteHeight(height);
+  };
   const expandHeight = useExpandAnimationFromExpandedState(
     isExpanded,
     160,
@@ -151,7 +145,7 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
         {isExpanded && (
           <Animated.View style={styles.productsContainer}>
             {order.orderNotes && (
-              <View style={styles.orderNoteContainer}>
+              <View style={styles.orderNoteContainer} onLayout={onNoteLayout}>
                 <Text style={styles.orderNoteLabel}>Napomena:</Text>
                 <Text style={styles.orderNoteText}>{order.orderNotes}</Text>
               </View>
@@ -178,6 +172,7 @@ function getStyles(isPacked: boolean) {
       paddingVertical: 14,
       gap: 10,
       elevation: 2,
+      overflow: 'hidden',
     },
     orderNoteIndicator: {
       position: 'absolute',
@@ -277,4 +272,4 @@ function getStyles(isPacked: boolean) {
   });
 }
 
-export default PackOrderItem;
+export default React.memo(PackOrderItem, (prev, next) => prev.order === next.order);

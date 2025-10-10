@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   KeyboardTypeOptions,
   Pressable,
   StyleProp,
   StyleSheet,
+  Text,
   TextInput,
   TextStyle,
   View,
@@ -16,24 +17,25 @@ import { Colors } from '../constants/colors';
 interface InputFieldProps {
   label?: string | null;
   isSecure?: boolean;
-  inputText: any;
-  setInputText: (text: any) => void;
+  inputText: string;
+  setInputText: (text: string) => void;
   capitalize?: 'sentences' | 'none' | 'words' | 'characters';
   background?: string;
   color?: string;
   activeColor?: string;
-  keyboard?: KeyboardTypeOptions; // Use React Native's `KeyboardTypeOptions` for better type checking
+  keyboard?: KeyboardTypeOptions;
   labelBorders?: boolean;
-  containerStyles?: StyleProp<ViewStyle>; // For styling containers
-  labelStyles?: StyleProp<TextStyle>; // For text-specific styles
+  containerStyles?: StyleProp<ViewStyle>;
+  labelStyles?: StyleProp<TextStyle>;
   selectTextOnFocus?: boolean;
   multiline?: boolean;
   numberOfLines?: number;
   displayClearInputButton?: boolean;
   onManualInput?: () => void;
+  placeholder?: string;
 }
 
-function InputField({
+const InputField = ({
   label,
   isSecure = false,
   inputText,
@@ -49,43 +51,98 @@ function InputField({
   multiline = false,
   numberOfLines = 1,
   labelStyles,
+  placeholder = '',
   displayClearInputButton = false,
   onManualInput,
-}: InputFieldProps) {
-  const [isActive, setIsActive] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const styles = getStyles(isActive, inputText, background, color, activeColor, labelBorders, multiline);
-  const inputRef = useRef(null);
+}: InputFieldProps) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const inputRef = useRef<TextInput>(null);
 
-  // Fade in / out animation
-  const translateY = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.timing(translateY, {
-      toValue: inputText !== '' ? -20 : isActive ? -20 : 4,
-      duration: inputText !== '' ? 0 : 150,
+  // Label animation value
+  const labelAnim = useRef(new Animated.Value(inputText !== '' ? 1 : 0)).current;
+
+  // Animate only on focus/blur
+  const handleFocus = () => {
+    setIsActive(true);
+    Animated.timing(labelAnim, {
+      toValue: 1,
+      duration: 150,
       useNativeDriver: true,
     }).start();
-  }, [isActive, inputText, translateY]);
+  };
 
-  function handleInput(text: string) {
-    setInputText(text);
+  const handleBlur = () => {
+    setIsActive(false);
+    if (!inputText) {
+      Animated.timing(labelAnim, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  useEffect(() => {
+    Animated.timing(labelAnim, {
+      toValue: inputText !== '' ? 1 : 0,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
+  }, [inputText]);
+
+  const handleInput = (text: string) => {
+    setInputText(text.toString());
     if (onManualInput) onManualInput();
-  }
+  };
+
+  const labelStyle = {
+    position: 'absolute' as const,
+    left: 18,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+    backgroundColor: background,
+    zIndex: 1,
+    pointerEvents: 'none',
+    transform: [
+      {
+        translateY: labelAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -26],
+        }),
+      },
+    ],
+  };
+
+  const labelTextColor = isActive || inputText ? activeColor : Colors.secondaryDark;
 
   return (
-    <View style={[styles.container, containerStyles]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: background, borderColor: isActive ? activeColor : Colors.secondaryLight },
+        containerStyles,
+      ]}
+    >
       {label && (
-        <Animated.View style={[styles.labelContainer, { transform: [{ translateY }] }, labelStyles]}>
-          <Animated.Text style={[styles.label, labelStyles]}>{label}</Animated.Text>
+        <Animated.View style={[labelStyle as any, labelStyles]}>
+          <Text style={{ color: labelTextColor }}>{label}</Text>
         </Animated.View>
       )}
       <TextInput
         ref={inputRef}
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            color,
+            borderColor: isActive ? activeColor : Colors.secondaryLight,
+            textAlignVertical: multiline ? 'top' : 'center',
+          },
+        ]}
         value={inputText}
-        onFocus={() => setIsActive(true)}
-        onBlur={() => setIsActive(false)}
-        onChangeText={(text) => handleInput(text)}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onChangeText={handleInput}
         autoCapitalize={capitalize}
         autoComplete="off"
         secureTextEntry={isSecure && !showPassword}
@@ -93,8 +150,9 @@ function InputField({
         selectTextOnFocus={selectTextOnFocus}
         multiline={multiline}
         numberOfLines={numberOfLines}
+        placeholder={placeholder}
       />
-      {isSecure && isSecure === true && (
+      {isSecure && (
         <Pressable
           onPress={() => setShowPassword(!showPassword)}
           style={({ pressed }) => [styles.showHideText, pressed && styles.pressed]}
@@ -102,78 +160,43 @@ function InputField({
           <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color="#333" />
         </Pressable>
       )}
-      {displayClearInputButton && displayClearInputButton === true && (
+      {displayClearInputButton && (
         <Pressable
           onPress={() => setInputText('')}
           style={({ pressed }) => [styles.showHideText, pressed && styles.pressed]}
         >
-          <Ionicons name={'close'} size={24} color="#333" />
+          <Ionicons name="close" size={24} color="#333" />
         </Pressable>
       )}
     </View>
   );
-}
+};
 
-function getStyles(
-  isActive: boolean,
-  inputText: string,
-  background: string,
-  color: string,
-  activeColor: string,
-  labelBorders: string,
-  multiline: boolean
-) {
-  const styles = StyleSheet.create({
-    touchable: {
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      zIndex: 10,
-    },
-    container: {
-      justifyContent: 'center',
-      width: '100%',
-      position: 'relative',
-      backgroundColor: background,
-      borderRadius: 4,
-    },
-    labelContainer: {
-      position: 'absolute',
-      left: 18,
-      top: 8,
-      backgroundColor: isActive ? background : inputText !== '' ? background : 'transparent',
-      borderColor: isActive ? activeColor : Colors.secondaryLight,
-      borderWidth: labelBorders ? (inputText !== '' ? 0.5 : 0) || (isActive ? 0.5 : 0) : 0,
-      zIndex: isActive ? 1 : inputText !== '' ? 1 : 0,
-      paddingHorizontal: 4,
-      borderRadius: 4,
-    },
-    label: {
-      fontSize: 16,
-      color: isActive ? activeColor : color,
-    },
-    input: {
-      padding: 8,
-      fontSize: 16,
-      borderColor: isActive ? activeColor : Colors.secondaryLight,
-      borderWidth: 0.5,
-      borderRadius: 4,
-      paddingHorizontal: 22,
-      color: color,
-      textAlignVertical: multiline ? 'top' : 'center',
-    },
-    showHideText: {
-      position: 'absolute',
-      right: 20,
-      opacity: 0.7,
-    },
-    pressed: {
-      opacity: 0.5,
-    },
-  });
-  return styles;
-}
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    borderRadius: 4,
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  input: {
+    minHeight: 44,
+    padding: 8,
+    fontSize: 16,
+    borderRadius: 4,
+    paddingHorizontal: 22,
+    textAlignVertical: 'center',
+    borderWidth: 0.5,
+  },
+  showHideText: {
+    position: 'absolute',
+    right: 20,
+    opacity: 0.7,
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+});
 
-export default InputField;
+// Memo to prevent unnecessary re-renders
+export default memo(InputField);

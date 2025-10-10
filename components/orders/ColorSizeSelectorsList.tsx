@@ -1,7 +1,8 @@
-import React from 'react';
-import { Animated, Pressable, StyleSheet, Text } from 'react-native';
+import React, { useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
+import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { NewOrderContextTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
@@ -14,8 +15,15 @@ interface PropTypes {
   onNext: () => void;
 }
 function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }: PropTypes) {
-  // const [isContentVisible, setIsContentVisible] = useState(false);
-  // const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 0, 128, 180);
+  const [isContentVisible, setIsContentVisible] = useState(false);
+  const [contentHeight, setContentHeight] = useState(0);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(
+    isExpanded,
+    setIsContentVisible,
+    0,
+    contentHeight,
+    180
+  );
   function handleToggleExpand() {
     if (isExpanded) {
       setIsExpanded(false);
@@ -38,7 +46,7 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
   }
 
   return (
-    <Animated.ScrollView>
+    <Animated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
       {/* TOGGLE BUTTON */}
       <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
         <Text style={styles.header}>Boje i Veličine</Text>
@@ -51,23 +59,34 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
       </Pressable>
 
       {/* MAIN */}
-      {isExpanded && (
-        <Animated.ScrollView style={styles.container}>
-          {ordersCtx.productData.map((product, index) => (
-            <Animated.View key={`${index}-${product._id}`}>
-              <ColorSizeSelector index={index} product={product} context={ordersCtx} />
-            </Animated.View>
-          ))}
-
-          {/* ON NEXT BUTTON */}
-          <Button
-            backColor={Colors.highlight}
-            textColor={Colors.white}
-            containerStyles={{ marginBottom: 6, marginHorizontal: 0 }}
-            onPress={handleOnNext}
+      {isContentVisible && (
+        <Animated.ScrollView
+          style={(styles.container, { height: toggleExpandAnimation })}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
+          <View
+            onLayout={(event) => {
+              const { height } = event.nativeEvent.layout;
+              if (height !== contentHeight) setContentHeight(height);
+            }}
           >
-            Dalje
-          </Button>
+            {ordersCtx.productData.map((product, index) => (
+              <Animated.View key={`${index}-${product._id}`}>
+                <ColorSizeSelector index={index} product={product} context={ordersCtx} />
+              </Animated.View>
+            ))}
+
+            {/* ON NEXT BUTTON */}
+            <Button
+              backColor={Colors.highlight}
+              textColor={Colors.white}
+              containerStyles={{ marginBottom: 6, marginHorizontal: 0 }}
+              onPress={handleOnNext}
+            >
+              Dalje
+            </Button>
+          </View>
         </Animated.ScrollView>
       )}
     </Animated.ScrollView>

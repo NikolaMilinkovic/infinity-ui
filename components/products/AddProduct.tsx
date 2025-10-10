@@ -18,10 +18,10 @@ import {
 } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
 import DropdownList from '../../util-components/DropdownList';
-import InputField from '../../util-components/InputField';
+import MultilineInput from '../../util-components/MultilineInput';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { addDress, addPurse } from '../../util-methods/FetchMethods';
-import { betterErrorLog } from '../../util-methods/LogMethods';
+import { betterConsoleLog, betterErrorLog } from '../../util-methods/LogMethods';
 import GenericProductInputComponents from './GenericProductInputComponents';
 import AddDressComponents from './unique_product_components/add/AddDressComponents';
 import AddPurseComponents from './unique_product_components/add/AddPurseComponents';
@@ -79,6 +79,10 @@ function AddProduct() {
   const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>([]);
   const [description, setDescription] = useState('');
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierTypes>();
+
+  useEffect(() => {
+    betterConsoleLog('> selected supplier is: ', selectedSupplier);
+  }, [selectedSupplier]);
 
   useEffect(() => {
     setAllCategories(categoriesCtx.getCategories());
@@ -269,16 +273,13 @@ function AddProduct() {
         /> */}
           {/* )} */}
           {/* <Text style={[styles.sectionText, styles.dodatneInfo]}>Dodatne informacije:</Text> */}
-          <InputField
+          <MultilineInput
             label="Opis proizvoda"
-            labelStyles={styles.inputFieldLabelStyles}
-            inputText={description}
-            setInputText={(text: string | number | undefined) => setDescription(text as string)}
+            value={description}
+            setValue={(text: string | number | undefined) => setDescription(text as string)}
             containerStyles={styles.descriptionField}
-            selectTextOnFocus={true}
-            multiline={true}
             numberOfLines={4}
-            labelBorders={false}
+            background={Colors.white}
           />
 
           <View style={styles.wrapper}>
@@ -291,6 +292,17 @@ function AddProduct() {
               buttonContainerStyles={{ marginTop: 4 }}
               isDefaultValueOn={false}
             />
+            {/* <DropdownList2
+              key={resetKey} // keeps reset working
+              data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
+              value={selectedSupplier?._id || null}
+              onChange={(item) => setSelectedSupplier(item)}
+              placeholder="Izaberite dobavljača"
+              labelField="name"
+              valueField="_id"
+              containerStyle={{ marginTop: 4 }}
+              resetValue={selectedSupplier?.name === 'Resetuj izbor'}
+            /> */}
           </View>
           <View style={styles.buttonContainer}>
             <Button

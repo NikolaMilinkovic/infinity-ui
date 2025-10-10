@@ -1,7 +1,8 @@
 import Constants from 'expo-constants';
 import React, { useContext, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../../constants/colors';
+import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { AuthContext } from '../../store/auth-context';
 import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
 import { useUser } from '../../store/user-context';
@@ -144,6 +145,15 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
     );
   }
 
+  const [contentHeight, setContentHeight] = useState(0);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(
+    showEdit as boolean,
+    setShowEdit,
+    40,
+    contentHeight,
+    280
+  );
+
   if (display === false) {
     return;
   }
@@ -154,42 +164,63 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
 
   return (
     <Pressable style={styles.courierItem} onPress={showEditCourierHandler}>
-      {showEdit ? (
-        <View style={styles.mainInputsContainer}>
-          <TextInput style={styles.input} placeholder="Ime kurira" value={newName} onChangeText={handleNameChange} />
-          <TextInput
-            style={styles.input}
-            placeholder="Cena dostave po paketu"
-            value={deliveryPrice?.toString() || ''}
-            onChangeText={handlePriceChange}
-            keyboardType="numeric"
-          />
-          <View style={styles.buttons}>
-            <Button onPress={showEditCourierHandler} textColor={Colors.primaryLight} backColor={Colors.error}>
-              Otkaži
-            </Button>
-            <Button onPress={updateCourierHandler} textColor={Colors.primaryLight} backColor={Colors.primaryDark}>
-              Sačuvaj
-            </Button>
+      <Animated.ScrollView
+        style={{ height: toggleExpandAnimation }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
+        {showEdit ? (
+          <View
+            style={styles.mainInputsContainer}
+            onLayout={(e) => {
+              setContentHeight(e.nativeEvent.layout.height);
+            }}
+          >
+            <TextInput style={styles.input} placeholder="Ime kurira" value={newName} onChangeText={handleNameChange} />
+            <TextInput
+              style={styles.input}
+              placeholder="Cena dostave po paketu"
+              value={deliveryPrice?.toString() || ''}
+              onChangeText={handlePriceChange}
+              keyboardType="numeric"
+            />
+            <View style={styles.buttons}>
+              <Button
+                onPress={showEditCourierHandler}
+                textColor={Colors.primaryLight}
+                backColor={Colors.error}
+                containerStyles={styles.buttonStyle}
+              >
+                Otkaži
+              </Button>
+              <Button
+                onPress={updateCourierHandler}
+                textColor={Colors.primaryLight}
+                backColor={Colors.primaryDark}
+                containerStyles={styles.buttonStyle}
+              >
+                Sačuvaj
+              </Button>
+            </View>
+            {error && <Text style={styles.error}>{error}</Text>}
+            {success && <Text style={styles.success}>{success}</Text>}
           </View>
-          {error && <Text style={styles.error}>{error}</Text>}
-          {success && <Text style={styles.success}>{success}</Text>}
-        </View>
-      ) : (
-        <View style={styles.displayCourier}>
-          <View style={styles.previewData}>
-            <Text style={styles.text}>{courierData.name}</Text>
-            <Text style={styles.price}>Cena dostave: {courierData.deliveryPrice} RSD</Text>
+        ) : (
+          <View style={styles.displayCourier}>
+            <View style={styles.previewData}>
+              <Text style={styles.text}>{courierData.name}</Text>
+              <Text style={styles.price}>Cena dostave: {courierData.deliveryPrice} RSD</Text>
+            </View>
+            <IconButton
+              icon="delete"
+              onPress={removeCourierHandler}
+              color={Colors.error}
+              style={styles.deleteIcon}
+              size={26}
+            />
           </View>
-          <IconButton
-            icon="delete"
-            onPress={removeCourierHandler}
-            color={Colors.error}
-            style={styles.deleteIcon}
-            size={26}
-          />
-        </View>
-      )}
+        )}
+      </Animated.ScrollView>
     </Pressable>
   );
 }
@@ -237,9 +268,10 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: 'row',
-    maxWidth: '50%',
     justifyContent: 'space-between',
     gap: 10,
+    maxWidth: 200,
+    alignSelf: 'flex-end',
   },
   error: {
     marginTop: 8,
@@ -250,6 +282,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
     color: Colors.success,
     textAlign: 'center',
+  },
+  buttonStyle: {
+    flex: 1,
   },
 });
 

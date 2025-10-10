@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, Modal, SafeAreaView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import Button from '../../util-components/Button';
 
@@ -11,28 +11,32 @@ interface AlertModalProps {
 }
 
 export const AlertModal: React.FC<AlertModalProps> = ({ isVisible, message, onClose, btnText = 'OK' }) => {
+  if (!isVisible) return null;
+
   return (
-    <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onClose}>
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback onPress={() => {}}>
-            <View style={styles.content}>
-              <Image source={require('../../assets/infinity.png')} style={styles.image} />
-              <Text style={styles.text}>{message}</Text>
-              <View style={styles.buttonContainer}>
-                <Button
-                  onPress={onClose}
-                  backColor={Colors.highlight}
-                  textColor={Colors.whiteText}
-                  textStyles={{ fontSize: 14 }}
-                >
-                  {btnText}
-                </Button>
+    <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onClose} style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <View style={styles.content}>
+                <Image source={require('../../assets/infinity.png')} style={styles.image} />
+                <Text style={styles.text}>{message}</Text>
+                <View style={styles.buttonContainer}>
+                  <Button
+                    onPress={onClose}
+                    backColor={Colors.highlight}
+                    textColor={Colors.whiteText}
+                    textStyles={{ fontSize: 14 }}
+                  >
+                    {btnText}
+                  </Button>
+                </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
     </Modal>
   );
 };

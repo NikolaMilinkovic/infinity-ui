@@ -60,7 +60,7 @@ function ColorSizeInputs({ colorsData, setColorsData }: PropTypes) {
             <TextInput
               key={`${item._id}-${sizeObj.size}`}
               placeholder="0"
-              keyboardType="numeric"
+              keyboardType="number-pad"
               style={styles.input}
               value={String(sizeObj.stock)}
               onChangeText={(value) => handleInputChange(item.color, sizeObj.size, value)}

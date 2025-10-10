@@ -94,14 +94,14 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
             <View style={{ flexDirection: 'column', width: '100%' }}>
               <View style={styles.navRow}>
                 <CustomCheckbox
-                  customColor={Colors.secondaryLightDarken}
+                  customColor={Colors.primaryDark}
                   onCheckedChange={() => toggleNavigation('lista_artikla')}
                   containerStyles={styles.cell}
                   label={'Lista Artikla'}
                   checked={data.permissions.navigation.lista_artikla}
                 />
                 <CustomCheckbox
-                  customColor={Colors.secondaryLightDarken}
+                  customColor={Colors.primaryDark}
                   onCheckedChange={() => toggleNavigation('porudzbine_rezervacije')}
                   containerStyles={styles.cell}
                   label={'Porudžbine Rezervacije'}
@@ -111,14 +111,14 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
 
               <View style={styles.navRow}>
                 <CustomCheckbox
-                  customColor={Colors.secondaryLightDarken}
+                  customColor={Colors.primaryDark}
                   onCheckedChange={() => toggleNavigation('boje_kategorije_dobavljaci')}
                   containerStyles={styles.cell}
                   label={'Boje Kategorije Dobavljači'}
                   checked={data.permissions.navigation.boje_kategorije_dobavljaci}
                 />
                 <CustomCheckbox
-                  customColor={Colors.secondaryLightDarken}
+                  customColor={Colors.primaryDark}
                   onCheckedChange={() => toggleNavigation('kuriri')}
                   containerStyles={styles.cell}
                   label={'Kuriri'}
@@ -128,14 +128,14 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
 
               <View style={styles.navRow}>
                 <CustomCheckbox
-                  customColor={Colors.secondaryLightDarken}
+                  customColor={Colors.primaryDark}
                   onCheckedChange={() => toggleNavigation('dodaj_artikal')}
                   containerStyles={styles.cell}
                   label={'Dodaj artikal'}
                   checked={data.permissions.navigation.dodaj_artikal}
                 />
                 <CustomCheckbox
-                  customColor={Colors.secondaryLightDarken}
+                  customColor={Colors.primaryDark}
                   onCheckedChange={() => toggleNavigation('upravljanje_korisnicima')}
                   containerStyles={styles.cell}
                   label={'Upravljanje korisnicima'}
@@ -145,14 +145,14 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
 
               <View style={styles.navRow}>
                 <CustomCheckbox
-                  customColor={Colors.secondaryLightDarken}
+                  customColor={Colors.primaryDark}
                   onCheckedChange={() => toggleNavigation('podesavanja')}
                   containerStyles={styles.cell}
                   label={'Podešavanja'}
                   checked={data.permissions.navigation.podesavanja}
                 />
                 <CustomCheckbox
-                  customColor={Colors.secondaryLightDarken}
+                  customColor={Colors.primaryDark}
                   onCheckedChange={() => toggleNavigation('zavrsi_dan')}
                   containerStyles={styles.cell}
                   label={'Završi dan'}
@@ -162,7 +162,7 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
 
               <View style={styles.navRow}>
                 <CustomCheckbox
-                  customColor={Colors.secondaryLightDarken}
+                  customColor={Colors.primaryDark}
                   onCheckedChange={() => toggleNavigation('admin_dashboard')}
                   containerStyles={styles.cell}
                   label={'Admin Dashboard'}
@@ -176,21 +176,21 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
           <PermissionsRow header="Artikal" useCheckAll={true}>
             <View style={styles.permissionWrapper}>
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Kreiraj'}
                 onCheckedChange={() => togglePermission('products', 'create')}
                 checked={data.permissions.products.create}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Menjaj'}
                 onCheckedChange={() => togglePermission('products', 'update')}
                 checked={data.permissions.products.update}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Briši'}
                 onCheckedChange={() => togglePermission('products', 'delete')}
@@ -203,21 +203,21 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
           <PermissionsRow header="Porudžbine" useCheckAll={true}>
             <View style={styles.permissionWrapper}>
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Kreiraj'}
                 onCheckedChange={() => togglePermission('orders', 'create')}
                 checked={data.permissions.orders.create}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Menjaj'}
                 onCheckedChange={() => togglePermission('orders', 'update')}
                 checked={data.permissions.orders.update}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Briši'}
                 onCheckedChange={() => togglePermission('orders', 'delete')}
@@ -234,14 +234,14 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
           >
             <View style={styles.permissionWrapper}>
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Štikliranje pakovanja'}
                 onCheckedChange={() => togglePermission('packaging', 'check')}
                 checked={data.permissions.packaging.check}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Završi pakovanje'}
                 onCheckedChange={() => togglePermission('packaging', 'finish_packaging')}
@@ -258,21 +258,21 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
           >
             <View style={styles.permissionWrapper}>
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Kreiraj'}
                 onCheckedChange={() => togglePermission('colors', 'create')}
                 checked={data.permissions.colors.create}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Menjaj'}
                 onCheckedChange={() => togglePermission('colors', 'update')}
                 checked={data.permissions.colors.update}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Briši'}
                 onCheckedChange={() => togglePermission('colors', 'delete')}
@@ -289,21 +289,21 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
           >
             <View style={styles.permissionWrapper}>
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Kreiraj'}
                 onCheckedChange={() => togglePermission('categories', 'create')}
                 checked={data.permissions.categories.create}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Menjaj'}
                 onCheckedChange={() => togglePermission('categories', 'update')}
                 checked={data.permissions.categories.update}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Briši'}
                 onCheckedChange={() => togglePermission('categories', 'delete')}
@@ -320,21 +320,21 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
           >
             <View style={styles.permissionWrapper}>
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Kreiraj'}
                 onCheckedChange={() => togglePermission('suppliers', 'create')}
                 checked={data.permissions.suppliers.create}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Menjaj'}
                 onCheckedChange={() => togglePermission('suppliers', 'update')}
                 checked={data.permissions.suppliers.update}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Briši'}
                 onCheckedChange={() => togglePermission('suppliers', 'delete')}
@@ -351,21 +351,21 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
           >
             <View style={styles.permissionWrapper}>
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Kreiraj'}
                 onCheckedChange={() => togglePermission('couriers', 'create')}
                 checked={data.permissions.couriers.create}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Menjaj'}
                 onCheckedChange={() => togglePermission('couriers', 'update')}
                 checked={data.permissions.couriers.update}
               />
               <CustomCheckbox
-                customColor={Colors.secondaryLightDarken}
+                customColor={Colors.primaryDark}
                 containerStyles={styles.permissionsItem}
                 label={'Briši'}
                 onCheckedChange={() => togglePermission('couriers', 'delete')}

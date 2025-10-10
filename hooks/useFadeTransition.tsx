@@ -17,24 +17,43 @@ export const useFadeTransition = (isVisible: boolean, duration = 500) => {
   return animatedStyle;
 };
 
+// export const useFadeTransitionReversed = (isVisible: boolean, duration = 500, delay = 500) => {
+//   const opacity = useSharedValue(1);
+
+//   useEffect(() => {
+//     const timeout = setTimeout(() => {
+//       opacity.value = withTiming(isVisible ? 0 : 1, { duration });
+//     }, delay);
+
+//     return () => {
+//       clearTimeout(timeout);
+//     };
+//   }, [isVisible, duration]);
+
+//   const animatedStyle = useAnimatedStyle(() => {
+//     return {
+//       opacity: opacity.value,
+//     };
+//   });
+
+//   return animatedStyle;
+// };
+
+import { withDelay } from 'react-native-reanimated';
+
 export const useFadeTransitionReversed = (isVisible: boolean, duration = 500, delay = 500) => {
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      opacity.value = withTiming(isVisible ? 0 : 1, { duration });
-    }, delay);
+    const animation = withDelay(delay, withTiming(isVisible ? 0 : 1, { duration }));
+    opacity.value = animation;
 
     return () => {
-      clearTimeout(timeout);
+      opacity.value = 1; // Reset opacity on cleanup
     };
-  }, [isVisible, duration]);
+  }, [isVisible, duration, delay]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-    };
-  });
-
-  return animatedStyle;
+  return {
+    opacity: opacity.value,
+  };
 };

@@ -237,6 +237,17 @@ function SearchProducts({
             placeholder="Izaberite kategoriju"
             isDefaultValueOn={false}
           />
+          {/* <DropdownList2
+            key={resetKey}
+            data={[{ _id: '', name: 'Resetuj izbor' }, ...categoriesCtx.categories]}
+            value={selectedCategory ? selectedCategory._id : null}
+            labelField="name"
+            valueField="_id"
+            placeholder="Izaberite kategoriju"
+            onChange={(item) => setSelectedCategory(item)}
+            containerStyle={{ marginTop: 8 }}
+            resetValue={selectedCategory === null}
+          /> */}
           {/* SUPPLIER */}
           <View style={{ marginTop: 8 }}>
             <DropdownList
@@ -246,6 +257,17 @@ function SearchProducts({
               placeholder="Izaberite dobavljača"
               isDefaultValueOn={false}
             />
+            {/* <DropdownList2
+              key={supplierResetKey}
+              data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
+              value={selectedSupplier ? selectedSupplier._id : null}
+              labelField="name"
+              valueField="_id"
+              placeholder="Izaberite dobavljača"
+              onChange={(item) => setSelectedSupplier(item)}
+              containerStyle={{ marginTop: 8 }}
+              resetValue={selectedSupplier === null}
+            /> */}
           </View>
           {/* SIZES FILTER INPUT */}
           {(!selectedCategory || selectedCategory?.stockType === 'Boja-Veličina-Količina') && (

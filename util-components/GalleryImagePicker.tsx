@@ -13,6 +13,7 @@ interface PropTypes {
   quality: number;
   crop: boolean;
   customStyles?: any;
+  textStyles?: any;
 }
 
 function GalleryImagePicker({
@@ -22,6 +23,7 @@ function GalleryImagePicker({
   quality = 0.6,
   crop = false,
   customStyles,
+  textStyles,
 }: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(true);
   const toggledHeight = useExpandAnimation(isExpanded, 50, 100, 180);
@@ -39,7 +41,7 @@ function GalleryImagePicker({
     event.stopPropagation();
   }
 
-  let imagePreview = <Text style={styles.text}>{placeholder}</Text>;
+  let imagePreview = <Text style={[styles.text, textStyles]}>{placeholder}</Text>;
   if (!isExpanded) {
     imagePreview = <Pressable onPress={handleToggleExpand} style={styles.collapsedArea}></Pressable>;
   }

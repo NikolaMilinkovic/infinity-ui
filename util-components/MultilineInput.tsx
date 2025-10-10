@@ -1,0 +1,130 @@
+import React, { memo, useRef, useState } from 'react';
+import { Animated, StyleProp, StyleSheet, Text, TextInput, TextStyle, View, ViewStyle } from 'react-native';
+import { Colors } from '../constants/colors';
+
+interface MultilineInputProps {
+  value: string;
+  setValue: (text: string) => void;
+  placeholder?: string;
+  background?: string;
+  color?: string;
+  activeColor?: string;
+  containerStyles?: StyleProp<ViewStyle>;
+  inputStyles?: StyleProp<TextStyle>;
+  numberOfLines?: number;
+  keyboard?: 'default' | 'numeric' | 'email-address' | 'phone-pad';
+  label?: string;
+}
+
+const MultilineInput = ({
+  value,
+  setValue,
+  placeholder = '',
+  background = Colors.primaryLight,
+  color = Colors.primaryDark,
+  activeColor = Colors.secondaryDark,
+  containerStyles,
+  inputStyles,
+  numberOfLines = 4,
+  keyboard = 'default',
+  label = '',
+}: MultilineInputProps) => {
+  const [isActive, setIsActive] = useState(false);
+  const inputRef = useRef<TextInput>(null);
+
+  const labelAnim = useRef(new Animated.Value(value !== '' ? 1 : 0)).current;
+
+  const handleFocus = () => {
+    setIsActive(true);
+    Animated.timing(labelAnim, {
+      toValue: 1,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleBlur = () => {
+    setIsActive(false);
+    if (!value) {
+      Animated.timing(labelAnim, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const handleInput = (text: string) => {
+    setValue(text);
+  };
+
+  const labelStyles = {
+    position: 'absolute' as const,
+    left: 22,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+    backgroundColor: background,
+    zIndex: 1,
+    pointerEvents: 'none',
+    transform: [
+      {
+        translateY: labelAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [12, -12],
+        }),
+      },
+    ],
+  };
+
+  const labelTextColor = isActive || value ? activeColor : Colors.secondaryDark;
+
+  return (
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: background, borderColor: isActive ? activeColor : Colors.secondaryLight },
+        containerStyles,
+      ]}
+    >
+      {label && !placeholder && (
+        <Animated.View style={[labelStyles]}>
+          <Text style={{ color: labelTextColor }}>{label}</Text>
+        </Animated.View>
+      )}
+      <TextInput
+        ref={inputRef}
+        style={[styles.input, { color, textAlignVertical: 'top' }, inputStyles]}
+        multiline
+        numberOfLines={numberOfLines}
+        value={value}
+        onChangeText={handleInput}
+        placeholder={placeholder}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        keyboardType={keyboard}
+        placeholderTextColor={Colors.secondaryDark}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    borderRadius: 4,
+    borderWidth: 0.5,
+    borderColor: Colors.secondaryLight,
+    position: 'relative',
+    paddingHorizontal: 0,
+  },
+  input: {
+    fontSize: 14,
+    padding: 8,
+    paddingHorizontal: 22,
+    borderRadius: 4,
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+});
+
+export default memo(MultilineInput);

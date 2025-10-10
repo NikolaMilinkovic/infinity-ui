@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useContext, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import useBatchSelectBackHandler from '../../../hooks/useBatchSelectBackHandler';
 import useConfirmationModal from '../../../hooks/useConfirmationMondal';
 import { AuthContext } from '../../../store/auth-context';
@@ -144,8 +144,23 @@ function OrderItemsList({
     );
   }
 
+  const renderItem = useCallback(
+    ({ item }: { item: OrderTypes }) => (
+      <OrderItem
+        order={item}
+        setEditedOrder={setEditedOrder}
+        highlightedItems={selectedOrders}
+        batchMode={batchMode}
+        onRemoveHighlight={handlePress}
+        onPress={handlePress}
+        onLongPress={handleLongPress}
+      />
+    ),
+    [selectedOrders, batchMode, handlePress, handleLongPress, setEditedOrder, data]
+  );
+
   return (
-    <View>
+    <View style={{ paddingBottom: 70 }}>
       <ConfirmationModal
         isVisible={isModalVisible}
         onConfirm={confirmAction}
@@ -172,19 +187,7 @@ function OrderItemsList({
       <FlatList
         data={data}
         keyExtractor={(item) => item._id}
-        renderItem={({ item, index }) => (
-          <Pressable delayLongPress={200}>
-            <OrderItem
-              order={item}
-              setEditedOrder={setEditedOrder}
-              highlightedItems={selectedOrders}
-              batchMode={batchMode}
-              onRemoveHighlight={handlePress}
-              onPress={handlePress}
-              onLongPress={handleLongPress}
-            />
-          </Pressable>
-        )}
+        renderItem={renderItem}
         style={styles.list}
         contentContainerStyle={styles.listContainer}
         ListHeaderComponent={() => getTotalOrdersCount()}

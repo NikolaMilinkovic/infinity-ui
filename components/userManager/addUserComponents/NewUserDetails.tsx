@@ -13,7 +13,7 @@ interface PropTypes {
   setIsExpanded: (expanded: boolean) => void;
   data: any;
   setData: any;
-  dropdownRef?: any;
+  dropdownRef: any;
 }
 function NewUserDetails({ isExpanded, setIsExpanded, data, setData, dropdownRef }: PropTypes) {
   const fadeAnimation = useToggleFadeAnimation(isExpanded, 180);
@@ -59,7 +59,6 @@ function NewUserDetails({ isExpanded, setIsExpanded, data, setData, dropdownRef 
               setInputText={(text) => setData((prev: any) => ({ ...prev, username: text }))}
               background={Colors.white}
               color={Colors.defaultText}
-              activeColor={Colors.highlight}
               labelBorders={false}
             />
             <InputField
@@ -69,8 +68,8 @@ function NewUserDetails({ isExpanded, setIsExpanded, data, setData, dropdownRef 
               setInputText={(text) => setData((prev: any) => ({ ...prev, password: text }))}
               background={Colors.white}
               color={Colors.defaultText}
-              activeColor={Colors.highlight}
               labelBorders={false}
+              selectTextOnFocus={true}
             />
             <InputField
               label="Ime korisnika"
@@ -79,7 +78,6 @@ function NewUserDetails({ isExpanded, setIsExpanded, data, setData, dropdownRef 
               setInputText={(text) => setData((prev: any) => ({ ...prev, name: text }))}
               background={Colors.white}
               color={Colors.defaultText}
-              activeColor={Colors.highlight}
               labelBorders={false}
             />
             <DropdownList
@@ -89,6 +87,16 @@ function NewUserDetails({ isExpanded, setIsExpanded, data, setData, dropdownRef 
               onSelect={(text) => setData((prev: any) => ({ ...prev, role: text.value }))}
               reference={dropdownRef}
             />
+            {/* <DropdownList2
+              data={userDropdownData}
+              value={data.role}
+              labelField="name"
+              valueField="value"
+              onChange={(item) => setData((prev: any) => ({ ...prev, role: item.value }))}
+              placeholder="Izaberite ulogu"
+              containerStyle={{ marginTop: 4 }}
+              resetValue={false}
+            /> */}
           </View>
         </Animated.View>
       )}
@@ -100,7 +108,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 4,
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryDark,
     backgroundColor: Colors.secondaryDark,
     marginBottom: 16,
     flexDirection: 'row',
@@ -116,7 +124,7 @@ const styles = StyleSheet.create({
   listContainer: {
     padding: 10,
     borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderColor: Colors.secondaryLight,
     borderRadius: 4,
     marginBottom: 6,
   },

@@ -1,14 +1,14 @@
 import React, { useContext, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
-import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
 import { AuthContext } from '../../store/auth-context';
 import { NewOrderContext } from '../../store/new-order-context';
 import Button from '../../util-components/Button';
 import GalleryImagePicker from '../../util-components/GalleryImagePicker';
 import InputField from '../../util-components/InputField';
+import MultilineInput from '../../util-components/MultilineInput';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { handleBuyerDataInputSort } from '../../util-methods/InputSortMethods';
 
@@ -21,14 +21,13 @@ interface PropTypes {
 }
 
 function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo, setBuyerInfo }: PropTypes) {
-  const toggleFade = useToggleFadeAnimation(isExpanded, 180);
   const authCtx = useContext(AuthContext);
   const orderCtx = useContext(NewOrderContext);
 
   // Expand animation that makescontent visible when expanded
   // Used to fix the padding issue when expand is collapsed
   const [isContentVisible, setIsContentVisible] = useState(false);
-  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 924, 180);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 904, 380);
 
   function handleToggleExpand() {
     if (isExpanded) {
@@ -98,15 +97,14 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
       </Pressable>
 
       {isContentVisible && (
-        <Animated.View style={[styles.container, { height: toggleExpandAnimation, opacity: toggleFade }]}>
-          <TextInput
-            style={styles.input}
-            multiline={true}
-            numberOfLines={6}
-            onChangeText={setBuyerInfo}
+        <Animated.View style={[styles.container, { height: toggleExpandAnimation }]}>
+          <MultilineInput
             value={buyerInfo}
+            setValue={setBuyerInfo}
             placeholder="Unesite puno ime, adresu i broj telefona kupca"
-            textAlignVertical="top"
+            background={Colors.white}
+            color={Colors.primaryDark}
+            containerStyles={styles.input}
           />
           <Button
             textColor={Colors.primaryDark}
@@ -119,77 +117,66 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
           <InputField
             labelStyles={{ backgroundColor: Colors.white }}
             label="Ime i Prezime"
-            inputText={orderCtx.buyerData?.name}
+            inputText={orderCtx?.buyerData?.name || ''}
             setInputText={(text: string | number | undefined) =>
               orderCtx.setBuyerData((prev) => ({ ...prev, name: text }))
             }
-            labelBorders={false}
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
             labelStyles={{ backgroundColor: Colors.white }}
             label="Adresa"
-            inputText={orderCtx.buyerData?.address}
+            inputText={orderCtx?.buyerData?.address || ''}
             setInputText={(text: string | number | undefined) =>
               orderCtx.setBuyerData((prev) => ({ ...prev, address: text }))
             }
-            labelBorders={false}
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
             labelStyles={{ backgroundColor: Colors.white }}
             label="Mesto"
-            inputText={orderCtx.buyerData?.place}
+            inputText={orderCtx?.buyerData?.place || ''}
             setInputText={(text: string | number | undefined) =>
               orderCtx.setBuyerData((prev) => ({ ...prev, place: text }))
             }
-            labelBorders={false}
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
+            keyboard="number-pad"
             labelStyles={{ backgroundColor: Colors.white }}
             label="Broj telefona"
-            inputText={orderCtx.buyerData?.phone}
+            inputText={orderCtx?.buyerData?.phone || ''}
             setInputText={(text: string | number | undefined) =>
-              orderCtx.setBuyerData((prev) => ({ ...prev, phone: Number(text) }))
+              orderCtx.setBuyerData((prev) => ({ ...prev, phone: text }))
             }
-            labelBorders={false}
             containerStyles={styles.inputFieldStyle}
-            keyboard="numeric"
           />
           <InputField
+            keyboard="number-pad"
             labelStyles={{ backgroundColor: Colors.white }}
             label="Broj drugog telefona"
-            inputText={orderCtx.buyerData?.phone2}
+            inputText={orderCtx?.buyerData?.phone2 || ''}
             setInputText={(text: string | number | undefined) =>
-              orderCtx.setBuyerData((prev) => ({ ...prev, phone2: Number(text) }))
+              orderCtx.setBuyerData((prev) => ({ ...prev, phone2: text }))
             }
-            labelBorders={false}
             containerStyles={styles.inputFieldStyle}
-            keyboard="numeric"
           />
-          <InputField
-            labelStyles={{ backgroundColor: Colors.white }}
-            label="Napomena za kurira"
-            inputText={orderCtx.deliveryRemark}
-            setInputText={orderCtx.setDeliveryRemark}
-            containerStyles={styles.deliveryRemarkInput}
-            background={Colors.primaryLight}
-            selectTextOnFocus={true}
-            multiline={true}
+          <MultilineInput
+            value={orderCtx.deliveryRemark}
+            setValue={orderCtx.setDeliveryRemark}
+            placeholder="Napomena za kurira"
             numberOfLines={4}
-            labelBorders={false}
+            background={Colors.white}
+            containerStyles={[styles.input, { marginTop: 10 }]}
           />
-          <InputField
-            labelStyles={{ backgroundColor: Colors.white }}
-            label="Naša interna napomena za porudžbinu"
-            inputText={orderCtx?.orderNotes}
-            setInputText={orderCtx.setOrderNotes}
-            containerStyles={styles.orderNotesInput}
-            selectTextOnFocus={true}
-            multiline={true}
+
+          <MultilineInput
+            value={orderCtx.orderNotes}
+            setValue={orderCtx.setOrderNotes}
+            placeholder="Naša interna napomena za porudžbinu"
             numberOfLines={4}
-            labelBorders={false}
+            containerStyles={[styles.input, { marginTop: 10 }]}
+            background={Colors.white}
           />
           <GalleryImagePicker
             image={orderCtx.profileImage}
@@ -197,6 +184,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             placeholder="Dodaj sliku profila"
             crop={false}
             customStyles={styles.imagePicker}
+            textStyles={{ color: Colors.secondaryDark }}
           />
           <Button backColor={Colors.highlight} textColor={Colors.white} onPress={handleOnNext}>
             Dalje

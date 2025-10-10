@@ -100,7 +100,7 @@ function AddCourier() {
             color={Colors.primaryDark}
             activeColor={Colors.highlight}
             labelBorders={false}
-            keyboard="numeric"
+            keyboard="number-pad"
             containerStyles={{ flex: 1 }}
           />
         </View>

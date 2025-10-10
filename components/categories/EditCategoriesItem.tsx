@@ -1,7 +1,8 @@
 import Constants from 'expo-constants';
 import React, { useContext, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../../constants/colors';
+import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { AuthContext } from '../../store/auth-context';
 import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
 import { useUser } from '../../store/user-context';
@@ -152,6 +153,16 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
     );
   }
 
+  // Expand
+  const [contentHeight, setContentHeight] = useState(0);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(
+    showEdit as boolean,
+    setShowEdit,
+    40,
+    contentHeight,
+    280
+  );
+
   if (display === false) {
     return;
   }
@@ -160,63 +171,69 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
     return <></>;
   }
 
-  // function getStockTypeName(){
-  //   if(data.stockType === 'Boja-Veličina-Količina') return 'Veličina';
-  //   if(data.stockType === 'Boja-Količina') return 'Količina';
-  //   return '';
-  // }
   return (
     <Pressable style={styles.colorItem} onPress={showEditCategoryrHandler}>
-      {showEdit ? (
-        <View style={styles.mainInputsContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Ime kategorije"
-            value={newName}
-            onChangeText={handleNameChange}
-          />
-          <DropdownList
-            data={dropdownData}
-            defaultValue={data.stockType}
-            onSelect={setStockType}
-            buttonContainerStyles={styles.dropdown}
-          />
-          <View style={styles.buttons}>
-            <Button
-              containerStyles={styles.buttonStyle}
-              onPress={showEditCategoryrHandler}
-              textColor={Colors.primaryLight}
-              backColor={Colors.error}
-            >
-              Otkaži
-            </Button>
-            <Button
-              containerStyles={styles.buttonStyle}
-              onPress={updateCategoryHandler}
-              textColor={Colors.primaryLight}
-              backColor={Colors.primaryDark}
-            >
-              Sačuvaj
-            </Button>
+      <Animated.ScrollView
+        style={{ height: toggleExpandAnimation }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
+        {showEdit ? (
+          <View
+            style={styles.mainInputsContainer}
+            onLayout={(e) => {
+              setContentHeight(e.nativeEvent.layout.height);
+            }}
+          >
+            <TextInput
+              style={styles.input}
+              placeholder="Ime kategorije"
+              value={newName}
+              onChangeText={handleNameChange}
+            />
+            <DropdownList
+              data={dropdownData}
+              defaultValue={data.stockType}
+              onSelect={setStockType}
+              buttonContainerStyles={styles.dropdown}
+            />
+            <View style={styles.buttons}>
+              <Button
+                containerStyles={styles.buttonStyle}
+                onPress={showEditCategoryrHandler}
+                textColor={Colors.primaryLight}
+                backColor={Colors.error}
+              >
+                Otkaži
+              </Button>
+              <Button
+                containerStyles={styles.buttonStyle}
+                onPress={updateCategoryHandler}
+                textColor={Colors.primaryLight}
+                backColor={Colors.primaryDark}
+              >
+                Sačuvaj
+              </Button>
+            </View>
+            {error && <Text style={styles.error}>{error}</Text>}
+            {success && <Text style={styles.success}>{success}</Text>}
           </View>
-          {error && <Text style={styles.error}>{error}</Text>}
-          {success && <Text style={styles.success}>{success}</Text>}
-        </View>
-      ) : (
-        <View style={styles.displayCategory}>
-          <View style={styles.categoryData}>
-            <Text style={[styles.text, styles.categoryName]}>{categoryData.name}</Text>
-            <Text style={styles.text}>{data.stockType}</Text>
+        ) : (
+          <View style={styles.displayCategory}>
+            <View style={styles.categoryData}>
+              <Text style={[styles.text, styles.categoryName]}>{categoryData.name}</Text>
+              <Text style={styles.text}>{data.stockType}</Text>
+            </View>
+            <IconButton
+              icon="delete"
+              onPress={removeCategoryHandler}
+              color={Colors.error}
+              style={styles.deleteIcon}
+              size={26}
+            />
           </View>
-          <IconButton
-            icon="delete"
-            onPress={removeCategoryHandler}
-            color={Colors.error}
-            style={styles.deleteIcon}
-            size={26}
-          />
-        </View>
-      )}
+        )}
+      </Animated.ScrollView>
     </Pressable>
   );
 }
@@ -245,7 +262,6 @@ const styles = StyleSheet.create({
   },
   categoryData: {
     flexDirection: 'column',
-    width: '100%',
   },
   text: {
     fontSize: 14,
@@ -272,6 +288,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 10,
+    maxWidth: 200,
+    alignSelf: 'flex-end',
   },
   error: {
     marginTop: 8,

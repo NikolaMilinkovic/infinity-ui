@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, Modal, SafeAreaView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import Button from '../../util-components/Button';
 
@@ -20,39 +20,42 @@ const ConfirmationModal: React.FC<ConfirmModalProps> = ({
   onCancelBtnText = 'Odustani',
   message,
 }) => {
+  if (!isVisible) return null;
   return (
-    <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onCancel}>
-      <TouchableWithoutFeedback onPress={onCancel}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback onPress={() => {}}>
-            <View style={styles.content}>
-              <Image source={require('../../assets/infinity.png')} style={styles.image} />
-              <Text style={styles.text}>{message || 'Are you certain you wish to continue with this action?'}</Text>
-              <View style={styles.buttonContainer}>
-                <Button
-                  textStyles={{ fontSize: 14 }}
-                  backColor={Colors.primaryDark}
-                  textColor={Colors.white}
-                  containerStyles={styles.button}
-                  onPress={onCancel}
-                >
-                  {onCancelBtnText}
-                </Button>
-                <Button
-                  textStyles={{ fontSize: 14 }}
-                  backColor={Colors.primaryDark}
-                  textColor={Colors.white}
-                  containerStyles={styles.button}
-                  onPress={onConfirm}
-                >
-                  {onConfirmBtnText}
-                </Button>
+    <SafeAreaView style={{ flex: 1, position: 'absolute' }}>
+      <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onCancel}>
+        <TouchableWithoutFeedback onPress={onCancel}>
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <View style={styles.content}>
+                <Image source={require('../../assets/infinity.png')} style={styles.image} />
+                <Text style={styles.text}>{message || 'Are you certain you wish to continue with this action?'}</Text>
+                <View style={styles.buttonContainer}>
+                  <Button
+                    textStyles={{ fontSize: 14 }}
+                    backColor={Colors.primaryDark}
+                    textColor={Colors.white}
+                    containerStyles={styles.button}
+                    onPress={onCancel}
+                  >
+                    {onCancelBtnText}
+                  </Button>
+                  <Button
+                    textStyles={{ fontSize: 14 }}
+                    backColor={Colors.primaryDark}
+                    textColor={Colors.white}
+                    containerStyles={styles.button}
+                    onPress={onConfirm}
+                  >
+                    {onConfirmBtnText}
+                  </Button>
+                </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+    </SafeAreaView>
   );
 };
 

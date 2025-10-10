@@ -293,6 +293,17 @@ function SearchOrders({
             placeholder="Izaberite kurira"
             isDefaultValueOn={false}
           />
+          {/* <DropdownList2
+            key={resetKey}
+            data={[{ _id: '', name: 'Resetuj izbor' }, ...couriersCtx.couriers]}
+            value={selectedCourier ? selectedCourier._id : null}
+            labelField="name"
+            valueField="_id"
+            placeholder="Izaberite kurira"
+            onChange={(item) => setSelectedCourier(item)}
+            containerStyle={{ marginTop: 4 }}
+            resetValue={selectedCourier === null}
+          /> */}
         </View>
 
         {/* Ascending | Descending */}

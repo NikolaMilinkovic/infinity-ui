@@ -3,7 +3,6 @@ import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
-import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
 import { NewOrderContextTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
@@ -16,7 +15,7 @@ interface PropTypes {
   setIsExpanded: (expanded: boolean) => void;
 }
 function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext }: PropTypes) {
-  const fadeAnimation = useToggleFadeAnimation(isExpanded, 180);
+  // const fadeAnimation = useToggleFadeAnimation(isExpanded, 180);
 
   // Expand animation that makescontent visible when expanded
   // Used to fix the padding issue when expand is collapsed
@@ -58,11 +57,12 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
         <View style={{ marginHorizontal: 8 }}>
           {/* LIST */}
           <Animated.FlatList
-            style={[styles.listContainer, { height: toggleExpandAnimation, opacity: fadeAnimation }]}
+            style={[styles.listContainer, { height: toggleExpandAnimation }]}
             data={ordersCtx.productReferences}
             renderItem={({ item, index }) => <SelectedProduct item={item} orderCtx={ordersCtx} index={index} />}
             keyExtractor={(item, index) => `${index}-${item._id}`}
             contentContainerStyle={{ paddingBottom: 16 }}
+            nestedScrollEnabled={true}
           />
 
           {/* NEXT BUTTON */}

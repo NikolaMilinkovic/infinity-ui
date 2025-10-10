@@ -6,7 +6,6 @@ import NewOrderPreview, { NewOrderPreviewRef } from '../../../components/orders/
 import SelectedProductsDisplay from '../../../components/orders/SelectedProductsList';
 import SortUserInformationField from '../../../components/orders/SortUserInformationField';
 import { Colors } from '../../../constants/colors';
-import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { AuthContext } from '../../../store/auth-context';
 import { useConfirmationModal } from '../../../store/modals/confirmation-modal-context';
 import { NewOrderContext } from '../../../store/new-order-context';
@@ -17,13 +16,13 @@ import { addNewOrder } from '../../../util-methods/FetchMethods';
 
 function NewOrder() {
   // Fade in animation
-  const fadeAnimation = useFadeAnimation();
   const newOrderCtx = useContext(NewOrderContext);
   const orderCtx = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const orderPreviewRef = useRef<NewOrderPreviewRef>(null);
   const { showConfirmation } = useConfirmationModal();
+  const [, forceUpdate] = useState(0);
   const courierSelectorRef = useRef<any>(null);
   const resetCourierToDefault = () => {
     courierSelectorRef.current?.resetDropdown();
@@ -106,6 +105,7 @@ function NewOrder() {
     newOrderCtx.setCustomPrice('');
     newOrderCtx.resetOrderData();
     orderPreviewRef.current?.handleRecalculatePrice();
+    forceUpdate((prev) => prev + 1);
   }
 
   const [isAddingOrder, setIsAddingOrder] = useState(false);
@@ -177,9 +177,9 @@ function NewOrder() {
           async () => {
             await submitOrder(order, token);
           },
-          `Prethodna porudžbina ima iste podatke: ${buyerConflict.matches.name ? 'Imena kupca,' : ''} ${
-            buyerConflict.matches.address ? 'Adrese,' : ''
-          } ${buyerConflict.matches.phone ? 'Broja telefona,' : ''}\n\nDa li sigurno želite da dodate ovu porudžbinu?`,
+          `Prethodna porudžbina ima iste podatke: ${buyerConflict.matches.name ? 'Ime kupca,' : ''} ${
+            buyerConflict.matches.address ? 'Adresa,' : ''
+          } ${buyerConflict.matches.phone ? 'Broj telefona,' : ''}\n\nDa li sigurno želite da dodate ovu porudžbinu?`,
           () => {
             setIsBuyerInfoOpen(true);
             setIsArticleListOpen(false);
@@ -202,60 +202,61 @@ function NewOrder() {
   }
 
   return (
-    <>
-      <Animated.View style={[styles.container, { opacity: fadeAnimation }]}></Animated.View>
-      <Animated.ScrollView style={[styles.scrollViewContainer, { opacity: fadeAnimation }]}>
-        <SelectedProductsDisplay
-          setIsExpanded={setIsArticleListOpen}
-          isExpanded={isArticleListOpen}
-          onNext={handleArticleListOk}
-          ordersCtx={newOrderCtx}
-        />
-        <ColorSizeSelectorsList
-          ordersCtx={newOrderCtx}
-          isExpanded={isColorSizeSelectorsOpen}
-          setIsExpanded={setIsColorSizeSelectorsOpen}
-          onNext={handleColorSizeSelectorsOk}
-        />
-        <SortUserInformationField
-          setIsExpanded={setIsBuyerInfoOpen}
-          isExpanded={isBuyerInfoOpen}
-          onNext={handleBuyerInfoOk}
-          buyerInfo={buyerInfo}
-          setBuyerInfo={setBuyerInfo}
-        />
-        <CourierSelector
-          isExpanded={isCourierPreviewOpen}
-          setIsExpanded={setIsCourierPreviewOpen}
-          onNext={handleCourierSelectorOk}
-          ref={courierSelectorRef}
-        />
-        <NewOrderPreview
-          isExpanded={isOrderPreviewOpen}
-          setIsExpanded={setIsOrderPreviewOpen}
-          setCustomPrice={newOrderCtx.setCustomPrice}
-          ref={orderPreviewRef}
-        />
-        <View style={styles.buttonsContainer}>
-          <Button
-            backColor={Colors.error}
-            textColor={Colors.white}
-            containerStyles={[styles.button, { marginBottom: 6 }]}
-            onPress={handleResetOrderData}
-          >
-            Odustani i resetuj
-          </Button>
-          <Button
-            backColor={Colors.secondaryDark}
-            textColor={Colors.white}
-            containerStyles={[styles.button, { marginBottom: 6 }]}
-            onPress={handleSubmitOrder}
-          >
-            Dodaj porudžbinu
-          </Button>
-        </View>
-      </Animated.ScrollView>
-    </>
+    <Animated.ScrollView
+      style={styles.scrollViewContainer}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+    >
+      <SelectedProductsDisplay
+        setIsExpanded={setIsArticleListOpen}
+        isExpanded={isArticleListOpen}
+        onNext={handleArticleListOk}
+        ordersCtx={newOrderCtx}
+      />
+      <ColorSizeSelectorsList
+        ordersCtx={newOrderCtx}
+        isExpanded={isColorSizeSelectorsOpen}
+        setIsExpanded={setIsColorSizeSelectorsOpen}
+        onNext={handleColorSizeSelectorsOk}
+      />
+      <SortUserInformationField
+        setIsExpanded={setIsBuyerInfoOpen}
+        isExpanded={isBuyerInfoOpen}
+        onNext={handleBuyerInfoOk}
+        buyerInfo={buyerInfo}
+        setBuyerInfo={setBuyerInfo}
+      />
+      <CourierSelector
+        isExpanded={isCourierPreviewOpen}
+        setIsExpanded={setIsCourierPreviewOpen}
+        onNext={handleCourierSelectorOk}
+        ref={courierSelectorRef}
+      />
+      <NewOrderPreview
+        isExpanded={isOrderPreviewOpen}
+        setIsExpanded={setIsOrderPreviewOpen}
+        setCustomPrice={newOrderCtx.setCustomPrice}
+        ref={orderPreviewRef}
+      />
+      <View style={styles.buttonsContainer}>
+        <Button
+          backColor={Colors.error}
+          textColor={Colors.white}
+          containerStyles={[styles.button, { marginBottom: 6 }]}
+          onPress={handleResetOrderData}
+        >
+          Odustani i resetuj
+        </Button>
+        <Button
+          backColor={Colors.secondaryDark}
+          textColor={Colors.white}
+          containerStyles={[styles.button, { marginBottom: 6 }]}
+          onPress={handleSubmitOrder}
+        >
+          Dodaj porudžbinu
+        </Button>
+      </View>
+    </Animated.ScrollView>
   );
 }
 const styles = StyleSheet.create({
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   scrollViewContainer: {
-    paddingHorizontal: 16,
+    padding: 16,
   },
   buttonsContainer: {
     marginTop: 'auto',
@@ -272,6 +273,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
     gap: 10,
+    marginBottom: 24,
   },
   button: {
     flex: 2,

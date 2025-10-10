@@ -15,6 +15,7 @@ import IconButton from '../../../../util-components/IconButton';
 import ImagePicker from '../../../../util-components/ImagePicker';
 import ImagePreviewModal from '../../../../util-components/ImagePreviewModal';
 import InputField from '../../../../util-components/InputField';
+import MultilineInput from '../../../../util-components/MultilineInput';
 import { popupMessage } from '../../../../util-components/PopupMessage';
 import { handleFetchingWithBodyData, handleFetchingWithFormData } from '../../../../util-methods/FetchMethods';
 import { getMimeType } from '../../../../util-methods/ImageMethods';
@@ -247,7 +248,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   };
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <View style={styles.headerContainer}>
         <Text style={styles.modalHeader} numberOfLines={2} ellipsizeMode="tail">
           Porudžbina: {editedOrder?.buyer.name}, {editedOrder?.buyer.address}
@@ -286,6 +287,15 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
               placeholder="Izaberite kurira za dostavu"
               defaultValue={courier.name}
             />
+            {/* <DropdownList2
+              data={courierDropdownData}
+              value={courier as any}
+              placeholder="Izaberite kurira za dostavu"
+              labelField="name"
+              valueField="name"
+              containerStyle={{ marginTop: 4 }}
+              onChange={(selectedCourier: CourierTypes) => setCourier(selectedCourier)}
+            /> */}
           </View>
 
           {/* Products list */}
@@ -386,7 +396,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
                 setInputText={setCustomPrice}
                 containerStyles={styles.customPriceInput}
                 background={Colors.white}
-                keyboard="numeric"
+                keyboard="number-pad"
                 selectTextOnFocus={true}
                 onManualInput={handleUserManualPriceInput}
                 labelBorders={false}
@@ -427,7 +437,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
           </View>
         </View>
       </ScrollView>
-    </>
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -573,6 +583,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     marginVertical: 8,
     backgroundColor: Colors.white,
+    borderColor: Colors.secondaryLight,
   },
   inputFieldLabelStyles: {
     backgroundColor: Colors.white,
@@ -653,7 +664,7 @@ function BuyerDataInputs({
         label="Kontakt telefon"
         inputText={phone}
         setInputText={setPhone}
-        keyboard="numeric"
+        keyboard="number-pad"
       />
       {/* Phone2 */}
       <InputField
@@ -663,31 +674,25 @@ function BuyerDataInputs({
         label="Dodatni kontakt telefon"
         inputText={phone2}
         setInputText={setPhone2}
-        keyboard="numeric"
+        keyboard="number-pad"
       />
       {/* Order Notes */}
-      <InputField
+      <MultilineInput
+        background={Colors.white}
         label="Napomena za porudžbinu"
-        labelStyles={styles.inputFieldLabelStyles}
-        inputText={orderNotes}
-        setInputText={(text: string | number | undefined) => setOrderNotes(text as string)}
+        value={orderNotes}
+        setValue={(text: string | number | undefined) => setOrderNotes(text as string)}
         containerStyles={[styles.orderNotesInput, styles.input]}
-        selectTextOnFocus={true}
-        multiline={true}
         numberOfLines={4}
-        labelBorders={false}
       />
       {/* Courier Notes */}
-      <InputField
+      <MultilineInput
+        background={Colors.white}
         label="Napomena za kurira"
-        labelStyles={styles.inputFieldLabelStyles}
-        inputText={deliveryNotes}
-        setInputText={(text: string | number | undefined) => setDeliveryNotes(text as string)}
+        value={deliveryNotes}
+        setValue={(text: string | number | undefined) => setDeliveryNotes(text as string)}
         containerStyles={[styles.orderNotesInput, styles.input]}
-        selectTextOnFocus={true}
-        multiline={true}
         numberOfLines={4}
-        labelBorders={false}
       />
       {/* Profile Image */}
       <View style={styles.imagePickerContainer}>

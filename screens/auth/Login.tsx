@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Animated, Image, StyleSheet, Text, View } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import LoadingOverlay from '../../components/loading/LoadingOverlay';
 import { Colors } from '../../constants/colors';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
@@ -20,16 +21,6 @@ function Login() {
   useEffect(() => {
     if (username && password) setErrorMessage('');
   }, [username, password]);
-
-  // Fade in animation
-  const fadeIn = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.timing(fadeIn, {
-      toValue: 1,
-      duration: 600,
-      useNativeDriver: true,
-    }).start();
-  }, []);
 
   // INTERFACES
   interface LoginResultType {
@@ -91,7 +82,7 @@ function Login() {
   }
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeIn }]}>
+    <Animated.View entering={FadeIn.duration(600)} style={styles.container}>
       <Image source={require('../../assets/infinity.png')} style={styles.image} />
       <View style={styles.inputsContainer}>
         <View style={styles.inputWrapper}>

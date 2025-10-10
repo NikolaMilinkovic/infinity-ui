@@ -227,12 +227,7 @@ function AddUser() {
           setData={setNewUserData}
         />
 
-        <Button
-          onPress={addUserHandler}
-          textColor={Colors.whiteText}
-          backColor={Colors.highlight}
-          containerStyles={styles.add_Btn}
-        >
+        <Button onPress={addUserHandler} textColor={Colors.whiteText} backColor={Colors.highlight}>
           Dodaj korisnika
         </Button>
       </View>

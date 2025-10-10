@@ -1,12 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
 import useBatchSelectBackHandler from '../../hooks/useBatchSelectBackHandler';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
-import { useFadeTransition } from '../../hooks/useFadeTransition';
-import { useHighlightAnimation } from '../../hooks/useHighlightAnimation';
 import { AuthContext } from '../../store/auth-context';
 import { OrderTypes } from '../../types/allTsTypes';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
@@ -97,6 +95,31 @@ function ReservationsItemsList({ data, setEditedReservation, isDatePicked, picke
     setNumOfReservations(count);
   }, [data]);
 
+  const renderReservationsGroup = useCallback(
+    ({ item }: { item: DataTypes }) => (
+      <ReservationsGroup
+        data={item}
+        setEditedReservation={setEditedReservation}
+        selectedReservations={selectedReservations}
+        setSelectedReservations={setSelectedReservations}
+        batchMode={batchMode}
+        setBatchMode={setBatchMode}
+        handlePress={handlePress}
+        handleLongPress={handleLongPress}
+      />
+    ),
+    [
+      selectedReservations,
+      batchMode,
+      setEditedReservation,
+      setSelectedReservations,
+      handlePress,
+      handleLongPress,
+      setBatchMode,
+      data,
+    ]
+  );
+
   return (
     <View style={{ flex: 1, minHeight: '100%' }}>
       <ConfirmationModal
@@ -116,19 +139,7 @@ function ReservationsItemsList({ data, setEditedReservation, isDatePicked, picke
       <FlatList
         data={data}
         keyExtractor={(item, index) => `item-${index}-${item.date}`}
-        renderItem={({ item, index }) => (
-          <ReservationsGroup
-            data={item}
-            setEditedReservation={setEditedReservation}
-            selectedReservations={selectedReservations}
-            setSelectedReservations={setSelectedReservations}
-            batchMode={batchMode}
-            setBatchMode={setBatchMode}
-            handlePress={handlePress}
-            handleLongPress={handleLongPress}
-            key={`${index}-${item.date}`}
-          />
-        )}
+        renderItem={renderReservationsGroup}
         style={styles.list}
         contentContainerStyle={styles.listContainer}
         ListHeaderComponent={() => {
@@ -162,7 +173,7 @@ function ReservationsGroup({
   handleLongPress,
 }: any) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const fade = useFadeTransition(isExpanded, 280);
+  // const fade = useFadeTransition(isExpanded, 280);
 
   const allSelected = data.reservations.every((r: OrderTypes) => selectedReservations.some((s) => s._id === r._id));
 
@@ -183,11 +194,20 @@ function ReservationsGroup({
     });
   }
 
-  const backgroundColorHighlighted = useHighlightAnimation({
-    batchMode,
-    duration: 120,
-    highlightColor: '#A3B9CC',
-  });
+  const renderReservationItem = useCallback(
+    ({ item }: { item: OrderTypes }) => (
+      <ReservationItem
+        order={item}
+        setEditedOrder={setEditedReservation}
+        highlightedItems={selectedReservations}
+        batchMode={batchMode}
+        onRemoveHighlight={handlePress}
+        onPress={handlePress}
+        onLongPress={handleLongPress}
+      />
+    ),
+    [selectedReservations, batchMode, setEditedReservation, handlePress, handleLongPress, data]
+  );
 
   return (
     <>
@@ -213,29 +233,17 @@ function ReservationsGroup({
           color={Colors.white}
         />
       </Pressable>
-      <Animated.View style={fade}>
+      <Animated.View>
         {isExpanded && (
-          <>
+          <View>
             <FlatList
               data={data.reservations}
               style={ResGroupStyles.list}
-              keyExtractor={(item, index) => `list-${index}`}
-              renderItem={({ item }) => (
-                <Pressable delayLongPress={200}>
-                  <ReservationItem
-                    order={item}
-                    setEditedOrder={setEditedReservation}
-                    highlightedItems={selectedReservations}
-                    batchMode={batchMode}
-                    onRemoveHighlight={handlePress}
-                    onPress={handlePress}
-                    onLongPress={handleLongPress}
-                  />
-                </Pressable>
-              )}
+              keyExtractor={(item) => `${item._id}-${item.orderNotes?.length ?? 0}`}
+              renderItem={renderReservationItem}
               initialNumToRender={10}
             />
-          </>
+          </View>
         )}
       </Animated.View>
     </>

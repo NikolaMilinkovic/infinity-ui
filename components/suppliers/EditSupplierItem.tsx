@@ -1,7 +1,8 @@
 import Constants from 'expo-constants';
 import React, { useContext, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../../constants/colors';
+import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { AuthContext } from '../../store/auth-context';
 import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
 import { useUser } from '../../store/user-context';
@@ -134,6 +135,15 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
     );
   }
 
+  const [contentHeight, setContentHeight] = useState(0);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(
+    showEdit as boolean,
+    setShowEdit,
+    28,
+    contentHeight,
+    280
+  );
+
   if (display === false) {
     return;
   }
@@ -144,37 +154,58 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
 
   return (
     <Pressable style={styles.supplierItem} onPress={showEditSupplierHandler}>
-      {showEdit ? (
-        <View style={styles.mainInputsContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Ime dobavljača"
-            value={newName}
-            onChangeText={handleNameChange}
-          />
-          <View style={styles.buttons}>
-            <Button onPress={showEditSupplierHandler} textColor={Colors.primaryLight} backColor={Colors.error}>
-              Otkaži
-            </Button>
-            <Button onPress={updateSupplierHandler} textColor={Colors.primaryLight} backColor={Colors.primaryDark}>
-              Sačuvaj
-            </Button>
+      <Animated.ScrollView
+        style={{ height: toggleExpandAnimation }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
+        {showEdit ? (
+          <View
+            style={styles.mainInputsContainer}
+            onLayout={(e) => {
+              setContentHeight(e.nativeEvent.layout.height);
+            }}
+          >
+            <TextInput
+              style={styles.input}
+              placeholder="Ime dobavljača"
+              value={newName}
+              onChangeText={handleNameChange}
+            />
+            <View style={styles.buttons}>
+              <Button
+                onPress={showEditSupplierHandler}
+                textColor={Colors.primaryLight}
+                backColor={Colors.error}
+                containerStyles={styles.buttonStyle}
+              >
+                Otkaži
+              </Button>
+              <Button
+                onPress={updateSupplierHandler}
+                textColor={Colors.primaryLight}
+                backColor={Colors.primaryDark}
+                containerStyles={styles.buttonStyle}
+              >
+                Sačuvaj
+              </Button>
+            </View>
+            {error && <Text style={styles.error}>{error}</Text>}
+            {success && <Text style={styles.success}>{success}</Text>}
           </View>
-          {error && <Text style={styles.error}>{error}</Text>}
-          {success && <Text style={styles.success}>{success}</Text>}
-        </View>
-      ) : (
-        <View style={styles.displayItem}>
-          <Text style={styles.supplierText}>{supplierData.name}</Text>
-          <IconButton
-            icon="delete"
-            onPress={removeSupplierHandler}
-            color={Colors.error}
-            style={styles.deleteIcon}
-            size={26}
-          />
-        </View>
-      )}
+        ) : (
+          <View style={styles.displayItem}>
+            <Text style={styles.supplierText}>{supplierData.name}</Text>
+            <IconButton
+              icon="delete"
+              onPress={removeSupplierHandler}
+              color={Colors.error}
+              style={styles.deleteIcon}
+              size={26}
+            />
+          </View>
+        )}
+      </Animated.ScrollView>
     </Pressable>
   );
 }
@@ -216,9 +247,10 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: 'row',
-    maxWidth: '50%',
     justifyContent: 'space-between',
     gap: 10,
+    maxWidth: 200,
+    alignSelf: 'flex-end',
   },
   error: {
     marginTop: 8,
@@ -229,6 +261,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
     color: Colors.success,
     textAlign: 'center',
+  },
+  buttonStyle: {
+    flex: 1,
   },
 });
 

@@ -3,6 +3,7 @@ import React, { forwardRef, useContext, useEffect, useImperativeHandle, useState
 import { Animated, NativeSyntheticEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
+import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { NewOrderContext } from '../../store/new-order-context';
 import Button from '../../util-components/Button';
 import CustomCheckbox from '../../util-components/CustomCheckbox';
@@ -23,6 +24,15 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
     const orderCtx = useContext(NewOrderContext);
     const [itemsPrice, setItemsPrice] = useState<string | number>('N/A');
     const [calculateItemsPrice, setCalculateItemsPrice] = useState(true);
+    const [isContentVisible, setIsContentVisible] = useState(false);
+    const [contentHeight, setContentHeight] = useState(0);
+    const toggleExpandAnimation = useExpandAnimationWithContentVisibility(
+      isExpanded,
+      setIsContentVisible,
+      0,
+      contentHeight,
+      280
+    );
 
     // Calculate total article price
     function recalculatePrice() {
@@ -110,174 +120,180 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
           />
         </Pressable>
 
-        {isExpanded && (
-          <View style={styles.container}>
-            {/* BUYER INFORMATION */}
-            <View style={styles.buyerInfoContainer}>
-              <Text style={styles.header2}>Informacije o kupcu</Text>
+        {isContentVisible && (
+          <Animated.ScrollView style={{ height: toggleExpandAnimation }}>
+            <View
+              style={styles.container}
+              onLayout={(e) => {
+                setContentHeight(e.nativeEvent.layout.height);
+              }}
+            >
+              {/* BUYER INFORMATION */}
+              <View style={styles.buyerInfoContainer}>
+                <Text style={styles.header2}>Informacije o kupcu</Text>
 
-              {/* NAME */}
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>Ime:</Text>
-                <Text style={styles.information}>{orderCtx.buyerData?.name || 'N/A'}</Text>
-              </View>
-
-              {/* ADDRESS */}
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>Adresa:</Text>
-                <Text style={styles.information}>{orderCtx.buyerData?.address || 'N/A'}</Text>
-              </View>
-
-              {/* PLACE */}
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>Mesto:</Text>
-                <Text style={styles.information}>{orderCtx.buyerData?.place || 'N/A'}</Text>
-              </View>
-
-              {/* PHONE */}
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>Telefon:</Text>
-                <Text style={styles.information}>{orderCtx.buyerData?.phone || 'N/A'}</Text>
-              </View>
-
-              {/* PHONE2 */}
-              {orderCtx.buyerData?.phone2 !== '' && (
+                {/* NAME */}
                 <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Dodatni telefon:</Text>
-                  <Text style={styles.information}>{orderCtx.buyerData?.phone2 || 'N/A'}</Text>
+                  <Text style={styles.label}>Ime:</Text>
+                  <Text style={styles.information}>{orderCtx.buyerData?.name || 'N/A'}</Text>
                 </View>
-              )}
-            </View>
 
-            {/* SELECTED PRODUCTS */}
-            <View style={styles.selectedItemsContainer}>
-              <Text style={styles.header2}>Izabrani proizvodi ({orderCtx.productData.length}) :</Text>
-              {orderCtx?.productData.map((item, index) => (
-                <View
-                  style={[styles.selectedItem, index === orderCtx.productData.length - 1 ? styles.lastItemStyle : null]}
-                  key={index}
-                >
-                  <View style={styles.rowContainer}>
-                    <Text style={styles.label}>Artikal:</Text>
-                    <Text style={styles.information}>{item.itemReference.name || 'N/A'}</Text>
-                  </View>
-                  <View style={styles.rowContainer}>
-                    <Text style={styles.label}>Kategorija:</Text>
-                    <Text style={styles.information}>{item.itemReference.category || 'N/A'}</Text>
-                  </View>
-                  <View style={styles.rowContainer}>
-                    <Text style={styles.label}>Boja:</Text>
-                    <Text style={styles.information}>{item.selectedColor || 'N/A'}</Text>
-                  </View>
-                  {item.hasOwnProperty('selectedSize') && (
-                    <View style={styles.rowContainer}>
-                      <Text style={styles.label}>Veličina:</Text>
-                      <Text style={styles.information}>{item.selectedSize || 'N/A'}</Text>
-                    </View>
-                  )}
-                  <View style={styles.rowContainer}>
-                    <Text style={styles.label}>Cena:</Text>
-                    <Text style={styles.information}>{`${item.itemReference.price} din` || 'N/A'}</Text>
-                  </View>
+                {/* ADDRESS */}
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Adresa:</Text>
+                  <Text style={styles.information}>{orderCtx.buyerData?.address || 'N/A'}</Text>
                 </View>
-              ))}
-            </View>
 
-            <View style={styles.otherInfoContainer}>
-              {/* EDIT FIELDS BUTTON */}
-              {/* <Pressable onPress={() => setShowEdit(!showEdit)} style={styles.editButton}>
-              <Icon name={showEdit ? 'file-edit-outline' : 'cancel'} style={styles.editIcon} size={28} color={Colors.primaryDark}/>
-            </Pressable> */}
-              <Text style={styles.header2}>Rezervacija:</Text>
-              <View style={styles.rowContainer}>
-                <CustomCheckbox
-                  label={'Da'}
-                  checked={orderCtx.isReservation === true}
-                  onCheckedChange={() => orderCtx.setIsReservation(true)}
-                />
-                <CustomCheckbox
-                  label={'Ne'}
-                  checked={orderCtx.isReservation === false}
-                  onCheckedChange={() => orderCtx.setIsReservation(false)}
-                />
-              </View>
-
-              {/* DATE PICKER */}
-              {orderCtx.isReservation === true && (
-                <View style={styles.radioGroupContainer}>
-                  {orderCtx.reservationDate && pickedDateDisplay && (
-                    <View style={styles.dateDisplayContainer}>
-                      {/* <Text style={styles.dateLabel}>Izabrani datum:</Text> */}
-                      <Text style={styles.dateText}>{formatDateHandler(orderCtx.reservationDate)}</Text>
-                    </View>
-                  )}
-                  <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
-                  <View style={styles.dateButtonsContainer}>
-                    <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
-                      Izaberi datum
-                    </Button>
-                  </View>
-
-                  {showDatePicker && (
-                    <DateTimePicker
-                      value={orderCtx.reservationDate}
-                      mode="date"
-                      is24Hour={true}
-                      onChange={handleDatePick}
-                      onTouchCancel={handleDateReset}
-                    />
-                  )}
+                {/* PLACE */}
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Mesto:</Text>
+                  <Text style={styles.information}>{orderCtx.buyerData?.place || 'N/A'}</Text>
                 </View>
-              )}
 
-              <Text style={styles.header2}>Ostale informacije:</Text>
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>Težina:</Text>
-                <Text style={styles.information}>{orderCtx?.weight} kg</Text>
-              </View>
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>Kurir:</Text>
-                <Text style={styles.information}>{orderCtx.courierData?.name}</Text>
-              </View>
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>Cena dostave:</Text>
-                <Text style={styles.information}>{Number(orderCtx.courierData?.deliveryPrice) | 0} din</Text>
-              </View>
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>Ukupna cena artikala:</Text>
-                <Text style={styles.information}>{Number(itemsPrice) || 0} din</Text>
-              </View>
-              {/* Final price */}
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>Ukupno:</Text>
-                <Text style={styles.information}>
-                  {Number(itemsPrice) + Number(orderCtx.courierData?.deliveryPrice) || 0} din
-                </Text>
-              </View>
-              <View style={styles.priceContainer}>
-                <InputField
-                  label="Finalna cena"
-                  inputText={orderCtx.customPrice}
-                  setInputText={orderCtx.setCustomPrice}
-                  containerStyles={styles.customPriceInput}
-                  background={Colors.white}
-                  keyboard="numeric"
-                  selectTextOnFocus={true}
-                  onManualInput={handleUserManualPriceInput}
-                  labelBorders={false}
-                />
-                {!calculateItemsPrice && (
-                  <Button
-                    containerStyles={styles.recalculatePriceBtn}
-                    textStyles={{ color: Colors.primaryDark }}
-                    onPress={() => setCalculateItemsPrice(true)}
-                  >
-                    Preračunaj cenu
-                  </Button>
+                {/* PHONE */}
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Telefon:</Text>
+                  <Text style={styles.information}>{orderCtx.buyerData?.phone || 'N/A'}</Text>
+                </View>
+
+                {/* PHONE2 */}
+                {orderCtx.buyerData?.phone2 !== '' && (
+                  <View style={styles.rowContainer}>
+                    <Text style={styles.label}>Dodatni telefon:</Text>
+                    <Text style={styles.information}>{orderCtx.buyerData?.phone2 || 'N/A'}</Text>
+                  </View>
                 )}
               </View>
+
+              {/* SELECTED PRODUCTS */}
+              <View style={styles.selectedItemsContainer}>
+                <Text style={styles.header2}>Izabrani proizvodi ({orderCtx.productData.length}) :</Text>
+                {orderCtx?.productData.map((item, index) => (
+                  <View
+                    style={[
+                      styles.selectedItem,
+                      index === orderCtx.productData.length - 1 ? styles.lastItemStyle : null,
+                    ]}
+                    key={index}
+                  >
+                    <View style={styles.rowContainer}>
+                      <Text style={styles.label}>Artikal:</Text>
+                      <Text style={styles.information}>{item.itemReference.name || 'N/A'}</Text>
+                    </View>
+                    <View style={styles.rowContainer}>
+                      <Text style={styles.label}>Kategorija:</Text>
+                      <Text style={styles.information}>{item.itemReference.category || 'N/A'}</Text>
+                    </View>
+                    <View style={styles.rowContainer}>
+                      <Text style={styles.label}>Boja:</Text>
+                      <Text style={styles.information}>{item.selectedColor || 'N/A'}</Text>
+                    </View>
+                    {item.hasOwnProperty('selectedSize') && (
+                      <View style={styles.rowContainer}>
+                        <Text style={styles.label}>Veličina:</Text>
+                        <Text style={styles.information}>{item.selectedSize || 'N/A'}</Text>
+                      </View>
+                    )}
+                    <View style={styles.rowContainer}>
+                      <Text style={styles.label}>Cena:</Text>
+                      <Text style={styles.information}>{`${item.itemReference.price} din` || 'N/A'}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+
+              <View style={styles.otherInfoContainer}>
+                <Text style={styles.header2}>Rezervacija:</Text>
+                <View style={styles.rowContainer}>
+                  <CustomCheckbox
+                    label={'Da'}
+                    checked={orderCtx.isReservation === true}
+                    onCheckedChange={() => orderCtx.setIsReservation(true)}
+                  />
+                  <CustomCheckbox
+                    label={'Ne'}
+                    checked={orderCtx.isReservation === false}
+                    onCheckedChange={() => orderCtx.setIsReservation(false)}
+                  />
+                </View>
+
+                {/* DATE PICKER */}
+                {orderCtx.isReservation === true && (
+                  <View style={styles.radioGroupContainer}>
+                    {orderCtx.reservationDate && pickedDateDisplay && (
+                      <View style={styles.dateDisplayContainer}>
+                        {/* <Text style={styles.dateLabel}>Izabrani datum:</Text> */}
+                        <Text style={styles.dateText}>{formatDateHandler(orderCtx.reservationDate)}</Text>
+                      </View>
+                    )}
+                    <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+                    <View style={styles.dateButtonsContainer}>
+                      <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+                        Izaberi datum
+                      </Button>
+                    </View>
+
+                    {showDatePicker && (
+                      <DateTimePicker
+                        value={orderCtx.reservationDate}
+                        mode="date"
+                        is24Hour={true}
+                        onChange={handleDatePick}
+                        onTouchCancel={handleDateReset}
+                      />
+                    )}
+                  </View>
+                )}
+
+                <Text style={styles.header2}>Ostale informacije:</Text>
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Težina:</Text>
+                  <Text style={styles.information}>{orderCtx?.weight} kg</Text>
+                </View>
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Kurir:</Text>
+                  <Text style={styles.information}>{orderCtx.courierData?.name}</Text>
+                </View>
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Cena dostave:</Text>
+                  <Text style={styles.information}>{Number(orderCtx.courierData?.deliveryPrice) | 0} din</Text>
+                </View>
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Ukupna cena artikala:</Text>
+                  <Text style={styles.information}>{Number(itemsPrice) || 0} din</Text>
+                </View>
+                {/* Final price */}
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Ukupno:</Text>
+                  <Text style={styles.information}>
+                    {Number(itemsPrice) + Number(orderCtx.courierData?.deliveryPrice) || 0} din
+                  </Text>
+                </View>
+                <View style={styles.priceContainer}>
+                  <InputField
+                    label="Finalna cena"
+                    inputText={orderCtx.customPrice}
+                    setInputText={orderCtx.setCustomPrice}
+                    containerStyles={styles.customPriceInput}
+                    background={Colors.white}
+                    keyboard="numeric"
+                    selectTextOnFocus={true}
+                    onManualInput={handleUserManualPriceInput}
+                    labelBorders={false}
+                  />
+                  {!calculateItemsPrice && (
+                    <Button
+                      containerStyles={styles.recalculatePriceBtn}
+                      textStyles={{ color: Colors.primaryDark }}
+                      onPress={() => setCalculateItemsPrice(true)}
+                    >
+                      Preračunaj cenu
+                    </Button>
+                  )}
+                </View>
+              </View>
             </View>
-          </View>
+          </Animated.ScrollView>
         )}
       </Animated.ScrollView>
     );
@@ -406,7 +422,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 10,
     top: -12,
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: Colors.white,
     borderRadius: 4,
     paddingHorizontal: 4,
   },

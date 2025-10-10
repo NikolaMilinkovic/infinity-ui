@@ -26,7 +26,7 @@ const CourierSelector = forwardRef(
   ({ isExpanded, setIsExpanded, onNext, defaultValueByMatch = 'Bex', courierSelectorRef }: PropTypes, ref) => {
     const orderCtx = useContext(NewOrderContext);
     const [dropdownData] = useState<DropdownTypes[]>(useGetCourierDropdownData());
-    const toggleExpandAnimation = useExpandAnimation(isExpanded, 0, 107, 180);
+    const toggleExpandAnimation = useExpandAnimation(isExpanded, 0, 117, 180);
     const [defaultCourierData] = useState(useGetDefaultCourierData());
     const [resetDropdownCounter, setResetDropdownCounter] = useState(0);
 
@@ -70,6 +70,17 @@ const CourierSelector = forwardRef(
             reference={courierSelectorRef}
             key={resetDropdownCounter}
           />
+          {/* <DropdownList2
+            key={resetDropdownCounter}
+            data={dropdownData}
+            value={orderCtx.courierData || defaultCourierData || null}
+            placeholder="Izaberite kurira za dostavu"
+            onChange={orderCtx.setCourierData}
+            labelField="name"
+            valueField="name"
+            containerStyle={{ marginTop: 4 }}
+            reference={courierSelectorRef}
+          /> */}
           <Button
             backColor={Colors.highlight}
             textColor={Colors.white}

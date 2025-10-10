@@ -1,5 +1,5 @@
-import React from 'react';
-import { FlatList, Pressable, StyleSheet } from 'react-native';
+import React, { useCallback } from 'react';
+import { FlatList, StyleSheet } from 'react-native';
 import { OrderTypes } from '../../../types/allTsTypes';
 import PackOrderItem from './PackOrderItem';
 
@@ -12,15 +12,13 @@ interface PackOrderItemsListPropTypes {
   data: OrderTypes[];
 }
 function PackOrdersItemsList({ selectedCourier, data }: PackOrderItemsListPropTypes) {
+  const renderItem = useCallback(({ item }: any) => <PackOrderItem order={item} />, []);
+
   return (
     <FlatList
       data={data}
       keyExtractor={(item) => item._id}
-      renderItem={({ item, index }) => (
-        <Pressable delayLongPress={200}>
-          <PackOrderItem order={item} />
-        </Pressable>
-      )}
+      renderItem={renderItem}
       style={styles.list}
       contentContainerStyle={styles.listContainer}
       initialNumToRender={10}

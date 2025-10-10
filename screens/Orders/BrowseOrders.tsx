@@ -1,11 +1,11 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Modal, SafeAreaView } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
 import SearchOrders from '../../components/orders/browseOrders/SearchOrders';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
-import { useFadeTransition, useFadeTransitionReversed } from '../../hooks/useFadeTransition';
+import { useFadeTransition } from '../../hooks/useFadeTransition';
 import { OrdersContext } from '../../store/orders-context';
 import { searchOrders } from '../../util-methods/OrderFilterMethods';
 
@@ -70,12 +70,10 @@ function BrowseOrders() {
   ]);
 
   const editOrderFade = useFadeTransition(editedOrder !== null);
-  const overlayView = useFadeTransitionReversed(editedOrder === null, 500, 150);
 
   return (
     <>
-      <View style={styles.ordersListContainer}>
-        <Animated.View style={[overlayView, styles.overlayView]} />
+      <Animated.View entering={FadeIn.duration(400)} style={{ flex: 1 }}>
         <SearchOrders
           searchData={searchData}
           setSearchData={setSearchData}
@@ -95,31 +93,21 @@ function BrowseOrders() {
           pickedDateForPeriod={pickedDateForPeriod}
           isDateForPeriodPicked={isDateForPeriodPicked}
         />
-      </View>
-      <Modal animationType="slide" visible={editedOrder !== null} onRequestClose={removeEditedOrder}>
-        <Animated.View style={editOrderFade}>
-          <EditOrder editedOrder={editedOrder} setEditedOrder={setEditedOrder} />
-        </Animated.View>
+      </Animated.View>
+      <Modal
+        presentationStyle="overFullScreen"
+        animationType="slide"
+        visible={editedOrder !== null}
+        onRequestClose={removeEditedOrder}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <Animated.View style={[editOrderFade, { flex: 1 }]}>
+            <EditOrder editedOrder={editedOrder} setEditedOrder={setEditedOrder} />
+          </Animated.View>
+        </SafeAreaView>
       </Modal>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  overlayView: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1,
-    backgroundColor: 'white',
-    pointerEvents: 'none',
-  },
-  ordersListContainer: {
-    flex: 1,
-    paddingBottom: 70,
-  },
-});
 
 export default BrowseOrders;

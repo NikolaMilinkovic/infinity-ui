@@ -38,6 +38,16 @@ function UserFilter({ searchQuery, setSearchQuery, selectedRole, setSelectedRole
         onSelect={(text) => setSelectedRole(text.value)}
         buttonContainerStyles={{ flex: 1 }}
       />
+      {/* <DropdownList2
+        data={roleDropdownFilter}
+        value={selectedRole || null}
+        labelField="name"
+        valueField="value"
+        onChange={(item) => setSelectedRole(item.value)}
+        containerStyle={{ flex: 1 }}
+        resetValue={!selectedRole}
+        placeholder="Izaberite ulogu"
+      /> */}
     </View>
   );
 }

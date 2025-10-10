@@ -30,8 +30,8 @@ function PermissionsRow({ children, header, isDisabled, useCheckAll }: Permissio
 
 const styles = StyleSheet.create({
   permissionsContainer: {
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
+    borderWidth: 1,
+    borderColor: Colors.secondaryLight,
     paddingHorizontal: 8,
     flexDirection: 'column',
     borderRadius: 4,
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
   permissionHeader: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: Colors.secondaryDark,
   },
   permissionsItem: {
     flex: 1,
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
-    justifyContent: 'center', // centers vertically between top and bottom
+    justifyContent: 'center',
     left: -16,
   },
 });

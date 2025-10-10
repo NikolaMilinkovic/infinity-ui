@@ -49,7 +49,7 @@ function ColorStockInputs({ colorsData, setColorsData }) {
           <TextInput
             key={`${item._id}-${item.color}`}
             placeholder="0"
-            keyboardType="numeric"
+            keyboardType="number-pad"
             style={styles.input}
             value={String(item.stock)}
             onChangeText={(value) => handleInputChange(item.color, value)}

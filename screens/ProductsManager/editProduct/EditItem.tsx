@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Modal, SafeAreaView } from 'react-native';
 import Animated from 'react-native-reanimated';
 import DisplayProducts from '../../../components/products/DisplayProducts';
 import EditProductComponent from '../../../components/products/edit_product/EditProductComponent';
@@ -18,31 +18,24 @@ function EditItem() {
 
   return (
     <>
-      {editedProduct === null ? (
-        <Animated.View>
-          <Animated.View style={[overlayView, styles.overlayView]} />
-          <DisplayProducts setEditItem={setEditedProduct} showAddBtn={false} />
-        </Animated.View>
-      ) : (
-        <Animated.View style={editProductFade}>
-          <EditProductComponent item={editedProduct} setItem={setEditedProduct} showHeader={false} />
-        </Animated.View>
-      )}
+      <Animated.View>
+        <DisplayProducts setEditItem={setEditedProduct} showAddBtn={false} />
+      </Animated.View>
+
+      <Modal
+        animationType="slide"
+        visible={editedProduct !== null}
+        onRequestClose={handleRemoveEditedProduct}
+        presentationStyle="overFullScreen"
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <Animated.ScrollView contentContainerStyle={[editProductFade]}>
+            <EditProductComponent item={editedProduct as any} setItem={setEditedProduct} showHeader={false} />
+          </Animated.ScrollView>
+        </SafeAreaView>
+      </Modal>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  overlayView: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1,
-    backgroundColor: 'white',
-    pointerEvents: 'none',
-  },
-});
 
 export default EditItem;

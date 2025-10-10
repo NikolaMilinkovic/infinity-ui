@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { FlatList, Modal, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Modal, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
@@ -63,7 +63,6 @@ function EditUser() {
   return (
     <>
       <View style={{ minHeight: '100%' }}>
-        <Animated.View style={[overlayView, styles.overlayView]} />
         <ConfirmationModal
           isVisible={isModalVisible}
           onConfirm={confirmAction}
@@ -93,10 +92,18 @@ function EditUser() {
           removeClippedSubviews={true}
         />
       </View>
-      <Modal animationType="slide" visible={editedUser !== null} onRequestClose={handleRemoveEditedUser}>
-        <Animated.View style={editProductFade}>
-          <EditUserModal user={editedUser} setUser={setEditedUser} />
-        </Animated.View>
+
+      <Modal
+        animationType="slide"
+        visible={editedUser !== null}
+        onRequestClose={handleRemoveEditedUser}
+        presentationStyle="overFullScreen"
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <Animated.ScrollView contentContainerStyle={editProductFade}>
+            <EditUserModal user={editedUser} setUser={setEditedUser} />
+          </Animated.ScrollView>
+        </SafeAreaView>
       </Modal>
     </>
   );
@@ -112,16 +119,6 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 150,
-  },
-  overlayView: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1,
-    backgroundColor: 'white',
-    pointerEvents: 'none',
   },
 });
 

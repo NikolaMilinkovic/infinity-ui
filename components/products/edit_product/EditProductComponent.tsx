@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../../constants/colors';
 import DressColor from '../../../models/DressColor';
 import PurseColor from '../../../models/PurseColor';
@@ -21,10 +22,11 @@ import DropdownList from '../../../util-components/DropdownList';
 import ImagePicker from '../../../util-components/ImagePicker';
 import InputField from '../../../util-components/InputField';
 import MultiDropdownList from '../../../util-components/MultiDropdownList';
+import MultilineInput from '../../../util-components/MultilineInput';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { handleFetchingWithFormData } from '../../../util-methods/FetchMethods';
 import { getMimeType } from '../../../util-methods/ImageMethods';
-import { betterErrorLog } from '../../../util-methods/LogMethods';
+import { betterConsoleLog, betterErrorLog } from '../../../util-methods/LogMethods';
 import AddDressComponents from '../unique_product_components/add/AddDressComponents';
 import AddPurseComponents from '../unique_product_components/add/AddPurseComponents';
 
@@ -46,7 +48,11 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
   const [productImage, setProductImage] = useState<ProductImageTypes>(item.image);
   const [previewImage, setPreviewImage] = useState(item.image);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [category, setCategory] = useState<CategoryTypes>(item.category);
+
+  // Note - item.category je string "Torbica" tako da moramo da pronadjemo ceo objekat prvo
+  const initialCategory = categoryCtx.categories.find((cat) => cat.name === item.category);
+  if (!initialCategory) return;
+  const [category, setCategory] = useState<CategoryTypes>(initialCategory);
   const [isActive, setIsActive] = useState(item.active);
   const [allColors, setAllColors] = useState(colorsCtx.colors);
   const [description, setDescription] = useState(item.description);
@@ -137,6 +143,7 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
   // Changes category and resets selected colors and default options if
   // new stockType is different then previous
   function setCategoryHandler(newCategory: CategoryTypes) {
+    betterConsoleLog('> new category is', newCategory);
     if (item.stockType === newCategory.stockType) {
       setCategory(newCategory);
     } else {
@@ -205,7 +212,7 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
   }
 
   return (
-    <>
+    <Animated.View entering={FadeIn.duration(400)} style={{ flex: 1 }}>
       {showHeader && (
         <View style={styles.headerContainer}>
           <Text style={styles.modalHeader} numberOfLines={2} ellipsizeMode="tail">
@@ -213,7 +220,7 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
           </Text>
         </View>
       )}
-      <ScrollView style={styles.container}>
+      <Animated.View style={styles.container}>
         <View style={[styles.card, !showHeader && { marginTop: 10 }]}>
           {/* ACTIVE | INACTIVE */}
           <View>
@@ -274,6 +281,15 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
               defaultValue={item.category}
               buttonContainerStyles={{ marginTop: 4 }}
             />
+            {/* <DropdownList2
+              data={categoryCtx.categories}
+              value={initialCategory as any}
+              placeholder="Kategorija Proizvoda"
+              onChange={setCategoryHandler}
+              labelField="name"
+              valueField="name"
+              containerStyle={{ marginTop: 4 }}
+            /> */}
           </View>
 
           {/* COLORS */}
@@ -301,16 +317,13 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
           )}
 
           <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Dodatne informacije:</Text>
-          <InputField
-            labelBorders={false}
+          <MultilineInput
             label="Opis proizvoda"
-            labelStyles={styles.inputFieldLabelStyles}
-            inputText={description}
-            setInputText={(text: string | number | undefined) => setDescription(text as string)}
+            value={description}
+            setValue={(text: string | number | undefined) => setDescription(text as string)}
             containerStyles={styles.descriptionField}
-            selectTextOnFocus={true}
-            multiline={true}
             numberOfLines={4}
+            background={Colors.white}
           />
 
           {/* SUPPLIER */}
@@ -324,6 +337,16 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
               buttonContainerStyles={{ marginTop: 4 }}
               defaultValue={supplierDefaultValue}
             />
+            {/* <DropdownList2
+              key={resetKey}
+              data={supplierData}
+              value={typeof supplier === 'string' ? supplier : supplier?.name || null}
+              placeholder="Izaberite dobavljača"
+              onChange={setSupplier}
+              labelField="name"
+              valueField="name"
+              containerStyle={{ marginTop: 4 }}
+            /> */}
           </View>
 
           {/* BUTTONS */}
@@ -348,8 +371,8 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
             </Button>
           </View>
         </View>
-      </ScrollView>
-    </>
+      </Animated.View>
+    </Animated.View>
   );
 }
 

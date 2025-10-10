@@ -160,6 +160,7 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
       paddingHorizontal: 16,
       paddingVertical: 14,
       gap: 10,
+      overflow: 'hidden',
     },
     orderNoteIndicator: {
       position: 'absolute',

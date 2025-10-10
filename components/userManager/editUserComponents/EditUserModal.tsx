@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: Colors.white,
-    paddingBottom: 0,
     minHeight: '100%',
   },
   header: {
@@ -111,7 +110,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   btn: {
-    marginBottom: 150,
     flex: 1,
   },
   buttonsContainer: {

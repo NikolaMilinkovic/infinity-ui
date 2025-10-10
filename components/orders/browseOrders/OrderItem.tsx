@@ -38,15 +38,14 @@ function OrderItem({
   const [isHighlighted, setIsHighlighted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const user = useUser();
-
-  const noteHeight = useMemo(() => {
-    if (!order.orderNotes) return 0;
-    const baseHeight = 40;
-    const charsPerLine = 40;
-    const extraHeightPerLine = 20;
-    const lines = Math.ceil(order.orderNotes.length / charsPerLine);
-    return baseHeight + (lines - 1) * extraHeightPerLine;
+  const [noteHeight, setNoteHeight] = useState(0);
+  useEffect(() => {
+    if (!order.orderNotes) setNoteHeight(0);
   }, [order.orderNotes]);
+  const onNoteLayout = (event: any) => {
+    const { height } = event.nativeEvent.layout;
+    setNoteHeight(height);
+  };
   const expandedHeight = useMemo(() => {
     return order.products.length * 88 + 184 + noteHeight;
   }, [order.products.length, noteHeight]);
@@ -145,7 +144,7 @@ function OrderItem({
         {isExpanded && (
           <Animated.View style={styles.productsContainer}>
             {order.orderNotes && (
-              <View style={styles.orderNoteContainer}>
+              <View style={styles.orderNoteContainer} onLayout={onNoteLayout}>
                 <Text style={styles.orderNoteLabel}>Napomena:</Text>
                 <Text style={styles.orderNoteText}>{order.orderNotes}</Text>
               </View>
@@ -172,6 +171,7 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
       paddingHorizontal: 16,
       paddingVertical: 14,
       gap: 10,
+      overflow: 'hidden',
     },
     orderNoteIndicator: {
       position: 'absolute',
@@ -266,4 +266,4 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
   });
 }
 
-export default OrderItem;
+export default React.memo(OrderItem);

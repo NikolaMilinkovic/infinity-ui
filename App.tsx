@@ -4,6 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { LogBox, View } from 'react-native';
+import 'react-native-reanimated';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import AuthStack from './navigation/AuthStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
@@ -13,6 +15,10 @@ import { PopupMessagesComponent } from './util-components/PopupMessage';
 
 // Suppresses the VirtualizedList nesting warning
 LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.error,
+  strict: false,
+});
 
 /**
  * Handles different Navigation Stack based on isAuthenticated flag in the context
@@ -28,12 +34,13 @@ function Navigation() {
   );
 }
 function Root() {
+  console.log('> Root rendering..');
   /**
    * Makes the native splash screen remain visible until hideAsync is called.
    */
-  useEffect(() => {
-    SplashScreen.preventAutoHideAsync();
-  }, []);
+  // useEffect(() => {
+  //   SplashScreen.preventAutoHideAsync();
+  // }, []);
 
   const [isCheckingToken, setIsCheckingToken] = useState(true);
   const authCtx = useContext(AuthContext);
@@ -74,13 +81,9 @@ function Root() {
         // loading its initial state and rendering its first pixels. So instead,
         // we hide the splash screen once we know the root view has already
         // performed layout.
-        console.log('> Hiding splash screen..');
-        console.log(`> isCheckingToken is ${isCheckingToken}`);
         await SplashScreen.hideAsync();
 
         setTimeout(() => {
-          console.log('> Hiding splash screen via set timeout');
-          console.log(`> isCheckingToken is ${isCheckingToken}`);
           SplashScreen.hideAsync();
         }, 5000);
       } catch (err) {

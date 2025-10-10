@@ -70,7 +70,7 @@ function GenericProductInputComponents({
           background={Colors.white}
           color={Colors.primaryDark}
           activeColor={Colors.secondaryDark}
-          keyboard="numeric"
+          keyboard="number-pad"
           containerStyles={{ marginTop: 18 }}
         />
       </View>
@@ -87,6 +87,15 @@ function GenericProductInputComponents({
           defaultValue="Haljina"
           buttonContainerStyles={{ marginTop: 4 }}
         />
+        {/* <DropdownList2
+          data={allCategories}
+          value={allCategories.find((c) => c.name === 'Haljina')?._id || null}
+          placeholder="Kategorija Proizvoda"
+          onChange={setSelectedCategory}
+          labelField="name"
+          valueField="_id"
+          containerStyle={{ marginTop: 4 }}
+        /> */}
       </View>
       <View style={styles.wrapper}>
         <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Boje, veličine i količina lagera</Text>
