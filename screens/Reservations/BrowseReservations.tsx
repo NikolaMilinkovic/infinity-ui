@@ -1,7 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
-import SafeView from '../../components/layout/SafeView';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import filterReservations from '../../components/reservations/filterReservations';
 import ReservationsItemsList from '../../components/reservations/ReservationsItemsList';
@@ -54,21 +53,19 @@ function BrowseReservations() {
   const editReservationFade = useFadeTransition(editedReservation !== null);
 
   return (
-    <SafeView>
+    <>
       <Animated.View style={styles.reservationsContainer}>
-        <SafeAreaView>
-          <SearchReservations
-            searchParams={searchParams}
-            setSearchParams={setSearchParams}
-            updateSearchParam={updateSearchParam}
-          />
-          <ReservationsItemsList
-            data={filteredData}
-            setEditedReservation={setEditedReservation}
-            isDatePicked={searchParams.pickedDateFormatted ? true : false}
-            pickedDate={searchParams.pickedDateFormatted}
-          />
-        </SafeAreaView>
+        <SearchReservations
+          searchParams={searchParams}
+          setSearchParams={setSearchParams}
+          updateSearchParam={updateSearchParam}
+        />
+        <ReservationsItemsList
+          data={filteredData}
+          setEditedReservation={setEditedReservation}
+          isDatePicked={searchParams.pickedDateFormatted ? true : false}
+          pickedDate={searchParams.pickedDateFormatted}
+        />
       </Animated.View>
 
       <Modal
@@ -83,14 +80,13 @@ function BrowseReservations() {
           </Animated.View>
         </SafeAreaView>
       </Modal>
-    </SafeView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   reservationsContainer: {
     flex: 1,
-    paddingBottom: 70,
   },
 });
 

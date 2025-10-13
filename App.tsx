@@ -7,12 +7,12 @@ import { LogBox, View } from 'react-native';
 import 'react-native-reanimated';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import StartupOverlay from './components/loading/StartupOverlay';
-import { useNetworkStatus } from './hooks/useNetworkStatus';
 import AuthStack from './navigation/AuthStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
 import ContextProvider from './store/ContextProvider';
 import { AuthContext } from './store/auth-context';
 import { PopupMessagesComponent } from './util-components/PopupMessage';
+SplashScreen.preventAutoHideAsync();
 
 // Suppresses the VirtualizedList nesting warning
 LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
@@ -34,15 +34,12 @@ function Navigation() {
     </NavigationContainer>
   );
 }
+
 function Root() {
   console.log('> Root rendering..');
   /**
    * Makes the native splash screen remain visible until hideAsync is called.
    */
-  // useEffect(() => {
-  //   SplashScreen.preventAutoHideAsync();
-  // }, []);
-
   const [isCheckingToken, setIsCheckingToken] = useState(true);
   const authCtx = useContext(AuthContext);
 
@@ -65,6 +62,7 @@ function Root() {
         authCtx.logout();
       } finally {
         setIsCheckingToken(false);
+        await SplashScreen.hideAsync();
       }
     }
 
@@ -109,15 +107,12 @@ function Root() {
 }
 
 export default function App() {
-  const networkStatus = useNetworkStatus();
   return (
-    // <React.StrictMode>
     <>
-      <StatusBar style="light" />
+      <StatusBar style="light" translucent={true} />
       <ContextProvider>
         <Root />
       </ContextProvider>
     </>
-    // </React.StrictMode>
   );
 }

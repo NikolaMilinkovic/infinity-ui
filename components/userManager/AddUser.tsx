@@ -226,7 +226,6 @@ function AddUser() {
           data={newUserData}
           setData={setNewUserData}
         />
-
         <Button onPress={addUserHandler} textColor={Colors.whiteText} backColor={Colors.highlight}>
           Dodaj korisnika
         </Button>
@@ -248,8 +247,8 @@ function getStyles(Colors: AppColors) {
       borderRadius: 4,
       borderWidth: 1,
       borderColor: Colors.secondaryLight,
-      marginBottom: 16,
       margin: 10,
+      marginBottom: 50,
     },
     success: {
       color: Colors.success,

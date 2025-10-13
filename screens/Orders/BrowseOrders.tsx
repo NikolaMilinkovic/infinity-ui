@@ -1,7 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Modal, SafeAreaView } from 'react-native';
 import Animated from 'react-native-reanimated';
-import SafeView from '../../components/layout/SafeView';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
 import SearchOrders from '../../components/orders/browseOrders/SearchOrders';
@@ -73,28 +72,26 @@ function BrowseOrders() {
   const editOrderFade = useFadeTransition(editedOrder !== null);
 
   return (
-    <SafeView>
-      <Animated.View style={{ flex: 1 }}>
-        <SearchOrders
-          searchData={searchData}
-          setSearchData={setSearchData}
-          updateSearchParam={updateSearchParam}
-          isDatePicked={isDatePicked}
-          setIsDatePicked={setIsDatePicked}
-          setPickedDate={setPickedDate}
-          isDateForPeriodPicked={isDateForPeriodPicked}
-          setIsDateForPeriodPicked={setIsDateForPeriodPicked}
-          setPickedDateForPeriod={setPickedDateForPeriod}
-        />
-        <OrderItemsList
-          data={filteredData}
-          setEditedOrder={setEditedOrder}
-          isDatePicked={isDatePicked}
-          pickedDate={pickedDate}
-          pickedDateForPeriod={pickedDateForPeriod}
-          isDateForPeriodPicked={isDateForPeriodPicked}
-        />
-      </Animated.View>
+    <Animated.View style={{ flex: 1 }}>
+      <SearchOrders
+        searchData={searchData}
+        setSearchData={setSearchData}
+        updateSearchParam={updateSearchParam}
+        isDatePicked={isDatePicked}
+        setIsDatePicked={setIsDatePicked}
+        setPickedDate={setPickedDate}
+        isDateForPeriodPicked={isDateForPeriodPicked}
+        setIsDateForPeriodPicked={setIsDateForPeriodPicked}
+        setPickedDateForPeriod={setPickedDateForPeriod}
+      />
+      <OrderItemsList
+        data={filteredData}
+        setEditedOrder={setEditedOrder}
+        isDatePicked={isDatePicked}
+        pickedDate={pickedDate}
+        pickedDateForPeriod={pickedDateForPeriod}
+        isDateForPeriodPicked={isDateForPeriodPicked}
+      />
 
       <Modal
         presentationStyle="overFullScreen"
@@ -108,7 +105,7 @@ function BrowseOrders() {
           </Animated.View>
         </SafeAreaView>
       </Modal>
-    </SafeView>
+    </Animated.View>
   );
 }
 

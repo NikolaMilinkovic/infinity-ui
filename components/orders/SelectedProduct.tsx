@@ -21,7 +21,7 @@ function SelectedProduct({ item, orderCtx, index }: PropTypes) {
       key={`${index}-${item._id}`}
     >
       <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-        {index + 1} {item.name}
+        {index + 1}. {item.name}
       </Text>
     </Pressable>
   );

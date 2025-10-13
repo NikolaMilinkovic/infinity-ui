@@ -1,26 +1,21 @@
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import React, { useContext, useEffect, useState } from 'react';
-import { Image, NativeSyntheticEvent, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { NativeSyntheticEvent, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../../../constants/colors';
-import useConfirmationModal from '../../../../hooks/useConfirmationMondal';
-import useImagePreviewModal from '../../../../hooks/useImagePreviewModal';
 import { AuthContext } from '../../../../store/auth-context';
 import { CouriersContext } from '../../../../store/couriers-context';
-import { CourierTypesWithNoId, OrderProductTypes, OrderTypes } from '../../../../types/allTsTypes';
+import { CourierTypesWithNoId, OrderTypes, ProductTypes } from '../../../../types/allTsTypes';
 import Button from '../../../../util-components/Button';
-import ConfirmationModal from '../../../../util-components/ConfirmationModal';
 import CustomCheckbox from '../../../../util-components/CustomCheckbox';
 import DropdownList from '../../../../util-components/DropdownList';
-import IconButton from '../../../../util-components/IconButton';
-import ImagePicker from '../../../../util-components/ImagePicker';
-import ImagePreviewModal from '../../../../util-components/ImagePreviewModal';
 import InputField from '../../../../util-components/InputField';
-import MultilineInput from '../../../../util-components/MultilineInput';
 import { popupMessage } from '../../../../util-components/PopupMessage';
 import { handleFetchingWithBodyData, handleFetchingWithFormData } from '../../../../util-methods/FetchMethods';
 import { getMimeType } from '../../../../util-methods/ImageMethods';
 import { betterErrorLog } from '../../../../util-methods/LogMethods';
 import AddItemsModal from './addItemsModal/AddItemsModal';
+import BuyerDataInputs from './BuyerDataInputs';
+import ProductDisplay from './ProductDisplay';
 
 interface PropTypes {
   editedOrder: OrderTypes | null;
@@ -42,12 +37,21 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   const [phone, setPhone] = useState<string | number | undefined>(editedOrder?.buyer.phone || '');
   const [phone2, setPhone2] = useState<string | number | undefined>(editedOrder?.buyer.phone2 || '');
   const [profileImage, setProfileImage] = useState(editedOrder?.buyer.profileImage || '');
-  const [originalImage] = useState(editedOrder?.buyer.profileImage.uri);
+  const [originalImage] = useState(editedOrder?.buyer?.profileImage?.uri || '');
+
+  // const [buyer, setBuyer] = useState({
+  //   name: editedOrder?.buyer.name || '',
+  //   address: editedOrder?.buyer.address || '',
+  //   place: editedOrder?.buyer.place || '',
+  //   phone: editedOrder?.buyer.phone || '',
+  //   phone2: editedOrder?.buyer.phone2 || '',
+  //   profileImage: editedOrder?.buyer.profileImage || '',
+  // });
 
   const [courier, setCourier] = useState<CourierTypesWithNoId>(editedOrder?.courier as CourierTypesWithNoId);
   const [courierDropdownData, setCourierDropdownData] = useState<CourierTypes[]>([]);
 
-  const [products, setProducts] = useState(editedOrder?.products);
+  const [products, setProducts] = useState<any>(editedOrder?.products);
 
   const [isReservation, setIsReservation] = useState(editedOrder?.reservation);
   const [reservationDate, setReservationDate] = useState(
@@ -59,15 +63,21 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
 
   const [productsPrice, setProductsPrice] = useState(editedOrder?.productsPrice);
   const [deliveryPrice, setDeliveryPrice] = useState(editedOrder?.courier?.deliveryPrice);
-  const [totalPrice, setTotalPrice] = useState(editedOrder?.totalPrice);
-  const [customPrice, setCustomPrice] = useState(editedOrder?.totalPrice);
+  const [totalPrice, setTotalPrice] = useState(
+    (editedOrder?.courier?.deliveryPrice || 0) + sumProductPrices(editedOrder?.products || [])
+  );
+  const [customPrice, setCustomPrice] = useState(editedOrder?.totalPrice.toString() ?? '');
+
+  function sumProductPrices(products: ProductTypes[]) {
+    return products.reduce((total, product) => total + product.price, 0);
+  }
 
   const authCtx = useContext(AuthContext);
   const token = authCtx.token || '';
 
   async function handleUpdateMethod() {
     try {
-      if (profileImage.uri === originalImage) {
+      if (profileImage?.uri === originalImage) {
         await handleUpdateOrderWithBodyData();
       } else {
         await handleUpdateOrderWithFormData();
@@ -97,7 +107,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
       data.append('isReservation', isReservation ? 'true' : 'false');
       data.append('isPacked', isPacked ? 'true' : 'false');
       data.append('productsPrice', productsPrice);
-      data.append('customPrice', customPrice ? customPrice : totalPrice);
+      data.append('customPrice', customPrice !== '' ? customPrice : totalPrice);
       if (isReservation === true) data.append('reservationDate', reservationDate.toISOString());
       data.append('orderNotes', orderNotes || '');
       data.append('deliveryNotes', deliveryNotes || '');
@@ -130,7 +140,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         isReservation,
         isPacked,
         productsPrice,
-        customPrice: customPrice ? customPrice : totalPrice,
+        customPrice: customPrice !== '' ? customPrice : totalPrice,
         orderNotes,
         reservationDate,
         deliveryNotes,
@@ -152,28 +162,48 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   }
 
   // TOTAL PRICE CALCULATIONS AND LOGIC
-  const [calculateItemsPrice, setCalculateItemsPrice] = useState(false);
+  // Ako imamo custom cenu palimo automatsko preracunavanje cene
+  const [calculateItemsPrice, setCalculateItemsPrice] = useState(customPrice.toString() === totalPrice.toString());
+
   // reCalculate total price
-  function recalculatePrice() {
+  const recalculatePrice = useCallback(() => {
     if (products && products.length > 0) {
-      const calc = products
+      const productsCalc = products
         .map((item) => item.price)
         .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-      setCustomPrice(calc);
+      setCustomPrice(productsCalc);
       if (calculateItemsPrice) {
-        if (deliveryPrice) setCustomPrice(Number(calc) + Number(deliveryPrice));
+        if (deliveryPrice) {
+          setCustomPrice((Number(productsCalc) + Number(deliveryPrice)).toString());
+        }
       }
     } else {
-      setCustomPrice(0);
-      setCustomPrice(deliveryPrice || 0);
+      // setCustomPrice(0);
+      setCustomPrice(deliveryPrice?.toString() || '0');
     }
-  }
+  }, [products, calculateItemsPrice, deliveryPrice]);
+
+  // Updates the Ukupno i Cena proizvoda texts
+  // Preskacemo prvi render kako ne bi opet calc cenu u input field
+  const isFirstRender = useRef(true);
   useEffect(() => {
-    if (calculateItemsPrice) {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (calculateItemsPrice && customPrice !== '0') {
       recalculatePrice();
     }
-  }, [products, recalculatePrice]);
+    let newVal = 0;
+    products.forEach((product: ProductTypes) => {
+      newVal += product.price;
+    });
+    setProductsPrice(newVal);
+    setTotalPrice(newVal + courier.deliveryPrice);
+  }, [products, courier.deliveryPrice, recalculatePrice]);
+
   function handleUserManualPriceInput() {
     if (calculateItemsPrice === false) return;
     setCalculateItemsPrice(false);
@@ -185,19 +215,12 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
     let dp = deliveryPrice ? deliveryPrice : 0;
     let pp = productsPrice ? productsPrice : 0;
     let price = dp + pp;
-    if (editedOrder?.totalPrice === price) {
+    if (Number(editedOrder?.totalPrice) === Number(price)) {
       setCustomPrice(price);
     } else {
       setCustomPrice(editedOrder?.totalPrice);
     }
   }, []);
-
-  // Handles price update for courier change
-  useEffect(() => {
-    if (courier) {
-      setDeliveryPrice(courier.deliveryPrice);
-    }
-  }, [courier]);
 
   // Courier update handler
   useEffect(() => {
@@ -282,7 +305,10 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
           <View style={styles.sectionContainer}>
             <DropdownList
               data={courierDropdownData}
-              onSelect={setCourier}
+              onSelect={(courier) => {
+                setCourier(courier);
+                setDeliveryPrice(courier.deliveryPrice);
+              }}
               isDefaultValueOn={true}
               placeholder="Izaberite kurira za dostavu"
               defaultValue={courier.name}
@@ -392,12 +418,11 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             <View style={styles.priceContainer}>
               <InputField
                 label="Finalna cena"
-                inputText={customPrice ? customPrice.toString() : '0'}
-                setInputText={setCustomPrice}
+                inputText={customPrice.toString()}
+                setInputText={setCustomPrice as any}
                 containerStyles={styles.customPriceInput}
                 background={Colors.white}
                 keyboard="number-pad"
-                selectTextOnFocus={true}
                 onManualInput={handleUserManualPriceInput}
                 labelBorders={false}
               />
@@ -480,12 +505,6 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 18,
   },
-  input: {
-    marginTop: 20,
-  },
-  imagePickerContainer: {
-    marginTop: 10,
-  },
   buttonsContainer: {
     display: 'flex',
     flexDirection: 'row',
@@ -539,9 +558,6 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderColor: Colors.secondaryLight,
   },
-  checkbox: {
-    flex: 2,
-  },
   dateButtonsContainer: {
     flexDirection: 'column',
     gap: 10,
@@ -578,16 +594,6 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     paddingHorizontal: 4,
   },
-  orderNotesInput: {
-    justifyContent: 'flex-start',
-    textAlignVertical: 'top',
-    marginVertical: 8,
-    backgroundColor: Colors.white,
-    borderColor: Colors.secondaryLight,
-  },
-  inputFieldLabelStyles: {
-    backgroundColor: Colors.white,
-  },
   priceContainer: {
     flexDirection: 'row',
     flex: 1,
@@ -609,292 +615,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function BuyerDataInputs({
-  name,
-  setName,
-  address,
-  place,
-  setPlace,
-  setAddress,
-  phone,
-  setPhone,
-  phone2,
-  setPhone2,
-  profileImage,
-  setProfileImage,
-  orderNotes,
-  setOrderNotes,
-  deliveryNotes,
-  setDeliveryNotes,
-}: any) {
-  return (
-    <View style={styles.sectionContainer}>
-      {/* Name */}
-      <InputField
-        labelBorders={false}
-        containerStyles={styles.input}
-        background={Colors.white}
-        label="Ime i prezime"
-        inputText={name}
-        setInputText={setName}
-      />
-      {/* Address */}
-      <InputField
-        labelBorders={false}
-        containerStyles={styles.input}
-        background={Colors.white}
-        label="Adresa"
-        inputText={address}
-        setInputText={setAddress}
-      />
-      {/* Place */}
-      <InputField
-        labelBorders={false}
-        containerStyles={styles.input}
-        background={Colors.white}
-        label="Mesto"
-        inputText={place}
-        setInputText={setPlace}
-      />
-      {/* Phone */}
-      <InputField
-        labelBorders={false}
-        containerStyles={styles.input}
-        background={Colors.white}
-        label="Kontakt telefon"
-        inputText={phone}
-        setInputText={setPhone}
-        keyboard="number-pad"
-      />
-      {/* Phone2 */}
-      <InputField
-        labelBorders={false}
-        containerStyles={styles.input}
-        background={Colors.white}
-        label="Dodatni kontakt telefon"
-        inputText={phone2}
-        setInputText={setPhone2}
-        keyboard="number-pad"
-      />
-      {/* Order Notes */}
-      <MultilineInput
-        background={Colors.white}
-        label="Napomena za porudžbinu"
-        value={orderNotes}
-        setValue={(text: string | number | undefined) => setOrderNotes(text as string)}
-        containerStyles={[styles.orderNotesInput, styles.input]}
-        numberOfLines={4}
-      />
-      {/* Courier Notes */}
-      <MultilineInput
-        background={Colors.white}
-        label="Napomena za kurira"
-        value={deliveryNotes}
-        setValue={(text: string | number | undefined) => setDeliveryNotes(text as string)}
-        containerStyles={[styles.orderNotesInput, styles.input]}
-        numberOfLines={4}
-      />
-      {/* Profile Image */}
-      <View style={styles.imagePickerContainer}>
-        <ImagePicker
-          onTakeImage={setProfileImage}
-          previewImage={profileImage}
-          setPreviewImage={setProfileImage}
-          height={200}
-          resizeMode="none"
-        />
-      </View>
-    </View>
-  );
-}
-
-interface ProductDisplayTypes {
-  product: OrderProductTypes;
-  index: number;
-  setProducts: (product: OrderProductTypes) => void;
-}
-function ProductDisplay({ product, index, setProducts }: ProductDisplayTypes) {
-  const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
-  const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
-  const [previewImage, setPreviewImage] = useState(product?.image);
-  function handleImagePreview() {
-    showImageModal();
-  }
-
-  // REMOVE PRODUCTS HANDLER
-  async function handleOnRemovePress() {
-    showModal(async () => {
-      setProducts((prevProducts: OrderProductTypes) => [
-        ...prevProducts.slice(0, index),
-        ...prevProducts.slice(index + 1),
-      ]);
-    });
-  }
-  return (
-    <>
-      <ConfirmationModal
-        isVisible={isModalVisible}
-        onConfirm={confirmAction}
-        onCancel={hideModal}
-        message="Da li sigurno želiš da obrišeš selektovani proizvod iz porudžbine?"
-      />
-      {previewImage && (
-        <ImagePreviewModal image={previewImage} isVisible={isImageModalVisible} onCancel={hideImageModal} />
-      )}
-
-      <View key={index} style={productDisplayStyles.container}>
-        <View style={productDisplayStyles.subContainer}>
-          {/* Image */}
-          <View style={productDisplayStyles.imageContainer}>
-            <Pressable onPress={handleImagePreview}>
-              <Image source={{ uri: product.image.uri }} style={productDisplayStyles.image} resizeMode="contain" />
-            </Pressable>
-          </View>
-
-          {/* Main data */}
-          <View style={productDisplayStyles.infoContainer}>
-            <Text style={productDisplayStyles.header}>{product.name}</Text>
-
-            {/* Category */}
-            <View style={productDisplayStyles.infoRow}>
-              <Text style={productDisplayStyles.infoLabel}>Kategorija:</Text>
-              <Text style={productDisplayStyles.infoText}>{product.category}</Text>
-            </View>
-
-            {/* Price */}
-            <View style={productDisplayStyles.infoRow}>
-              <Text style={productDisplayStyles.infoLabel}>Cena:</Text>
-              <Text style={productDisplayStyles.infoText}>{product.price} din.</Text>
-            </View>
-
-            {/* Color */}
-            <View style={productDisplayStyles.infoRow}>
-              <Text style={productDisplayStyles.infoLabel}>Boja:</Text>
-              <Text style={productDisplayStyles.infoText}>{product.selectedColor}</Text>
-            </View>
-
-            {/* Size */}
-            {product.selectedSize && (
-              <View style={productDisplayStyles.infoRow}>
-                <Text style={productDisplayStyles.infoLabel}>Veličina:</Text>
-                <Text style={productDisplayStyles.infoText}>{product.selectedSize}</Text>
-              </View>
-            )}
-
-            {/* Delete button */}
-            <IconButton
-              size={26}
-              color={Colors.highlight}
-              onPress={handleOnRemovePress}
-              key={`key-${index}-remove-button`}
-              icon="delete"
-              style={productDisplayStyles.removeButtonContainer}
-              pressedStyles={productDisplayStyles.buttonContainerPressed}
-            />
-          </View>
-        </View>
-      </View>
-    </>
-  );
-}
-
-const productDisplayStyles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.white,
-    padding: 10,
-    borderRadius: 4,
-    elevation: 2,
-  },
-  subContainer: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  imageContainer: {
-    flex: 1.5,
-  },
-  infoContainer: {
-    flex: 3,
-    position: 'relative',
-  },
-  header: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  image: {
-    height: 140,
-    borderRadius: 4,
-  },
-  removeButtonContainer: {
-    position: 'absolute',
-    right: 8,
-    bottom: 0,
-    borderRadius: 100,
-    overflow: 'hidden',
-    backgroundColor: Colors.white,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonContainerPressed: {
-    opacity: 0.7,
-    elevation: 1,
-  },
-  infoRow: {
-    maxWidth: '75%',
-    flexDirection: 'row',
-  },
-  infoLabel: {
-    width: 75,
-  },
-  infoText: {
-    width: '55%',
-  },
-});
-
 export default EditOrder;
-
-const modalStyles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 999,
-  },
-  modal: {
-    width: '90%',
-    height: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  contentContainer: {
-    padding: 10,
-    width: '100%',
-    height: '100%',
-  },
-  header: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    backgroundColor: Colors.secondaryLight,
-    width: '100%',
-    textAlign: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: Colors.highlight,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: '13%',
-    paddingTop: 10,
-  },
-  button: {
-    flex: 2,
-  },
-});

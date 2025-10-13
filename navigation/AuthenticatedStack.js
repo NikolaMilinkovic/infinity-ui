@@ -3,7 +3,7 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { CustomDrawerContent } from './DrawerNavigation';
 // import { Colors } from '../constants/colors';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useGetAppColors } from '../constants/useGetAppColors';
 import { useAuthContext } from '../hooks/useAuthContext';
 import Profile from '../screens/Profile/Profile';
@@ -72,8 +72,10 @@ export default function AuthenticatedStack() {
    * Uzima CustomDrawerContent > To su dugmici unutar ove DrawerNavigation.js
    * Ovde se stavljaju Tabovi
    */
+  const drawerContent = useMemo(() => (props) => <CustomDrawerContent {...props} />, []);
   return (
-    <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />} screenOptions={drawerScreenOptions}>
+    // <Drawer.Navigator drawerContent={drawerContent} screenOptions={drawerScreenOptions}>
+    <Drawer.Navigator drawerContent={drawerContent} screenOptions={drawerScreenOptions}>
       {/* Profile Settings UserManager */}
       {/* HOME SCREEN / LANDING SCREEN WITH TAB NAVIGATION */}
       <Drawer.Screen name="Home" component={BrowsePageTabs} />

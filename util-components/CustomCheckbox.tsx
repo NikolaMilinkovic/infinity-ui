@@ -2,10 +2,18 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../constants/colors';
 
-const CustomCheckbox = ({ label, checked, onCheckedChange, containerStyles, customColor }) => {
+interface CustomCheckboxPropTypes {
+  label: string;
+  checked: boolean;
+  onCheckedChange: (newState: boolean) => void;
+  containerStyles?: object | object[];
+  customColor?: string;
+}
+
+const CustomCheckbox = ({ label, checked, onCheckedChange, containerStyles, customColor }: CustomCheckboxPropTypes) => {
   function onPressHandler() {
-    const newCheckedState = !checked; // Toggle the checked state
-    onCheckedChange(newCheckedState); // Call the onCheckedChange function
+    const newCheckedState = !checked;
+    onCheckedChange(newCheckedState);
   }
 
   // Custom color but ligter for check

@@ -3,7 +3,7 @@ module.exports = {
     name: 'Infinity Boutique App',
     slug: 'infinity-boutique-app',
     backgroundColor: '#ffffff',
-    version: '1.0.10',
+    version: '1.1.0',
     jsEngine: 'hermes',
     orientation: 'portrait',
     icon: './assets/icon.png',
@@ -11,8 +11,8 @@ module.exports = {
     platforms: ['android', 'ios'],
     newArchEnabled: true,
     splash: {
-      // image: './assets/splash.png',
       resizeMode: 'contain',
+      image: './assets/splash.png',
       backgroundColor: '#ffffff',
     },
     notification: {

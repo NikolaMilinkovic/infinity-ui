@@ -380,7 +380,7 @@ function SearchOrders({
           setPickedDate={setPickedDateForPeriod}
           resetOtherDatePickers={handleDateReset}
         />
-        <View style={styles.radioGroupContainer}>
+        <View style={[styles.radioGroupContainer, { marginBottom: 70 }]}>
           <Text style={styles.filtersH2absolute}>Pretrazi po datumu</Text>
           <View style={styles.dateButtonsContainer}>
             <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
@@ -608,6 +608,7 @@ const styles = StyleSheet.create({
     gap: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 10,
   },
   dateLabel: {},
   dateText: {

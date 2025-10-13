@@ -11,6 +11,7 @@ import ConfirmationModal from '../../util-components/ConfirmationModal';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { getFormattedDateWithoutTime } from '../../util-methods/DateFormatters';
 import { handleFetchingWithBodyData } from '../../util-methods/FetchMethods';
+import SafeView from '../layout/SafeView';
 import BatchModeReservationsControlls from './BatchModeReservationsControlls';
 import ReservationItem from './ReservationItem';
 
@@ -121,7 +122,7 @@ function ReservationsItemsList({ data, setEditedReservation, isDatePicked, picke
   );
 
   return (
-    <View style={{ flex: 1, minHeight: '100%' }}>
+    <>
       <ConfirmationModal
         isVisible={isModalVisible}
         onConfirm={confirmAction}
@@ -136,24 +137,26 @@ function ReservationsItemsList({ data, setEditedReservation, isDatePicked, picke
           resetBatchMode={resetBatch}
         />
       )}
-      <FlatList
-        data={data}
-        keyExtractor={(item, index) => `item-${index}-${item.date}`}
-        renderItem={renderReservationsGroup}
-        style={styles.list}
-        contentContainerStyle={styles.listContainer}
-        ListHeaderComponent={() => {
-          return isDatePicked ? (
-            <Text style={styles.listHeader}>
-              Ukupno Rezervacija za {pickedDate}: {numOfReservations}
-            </Text>
-          ) : (
-            <Text style={styles.listHeader}>Ukupno Rezervacija: {numOfReservations}</Text>
-          );
-        }}
-        initialNumToRender={10}
-      />
-    </View>
+      <SafeView>
+        <FlatList
+          data={data}
+          keyExtractor={(item, index) => `item-${index}-${item.date}`}
+          renderItem={renderReservationsGroup}
+          style={styles.list}
+          contentContainerStyle={styles.listContainer}
+          ListHeaderComponent={() => {
+            return isDatePicked ? (
+              <Text style={styles.listHeader}>
+                Ukupno Rezervacija za {pickedDate}: {numOfReservations}
+              </Text>
+            ) : (
+              <Text style={styles.listHeader}>Ukupno Rezervacija: {numOfReservations}</Text>
+            );
+          }}
+          initialNumToRender={10}
+        />
+      </SafeView>
+    </>
   );
 }
 
@@ -262,7 +265,7 @@ function getStyles(batchMode: boolean) {
     },
     listContainer: {
       gap: 6,
-      paddingBottom: batchMode ? 82 : 22,
+      // paddingBottom: batchMode ? 82 : 22,
       backgroundColor: Colors.primaryLight,
       overflow: 'hidden',
     },

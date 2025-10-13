@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import useBatchSelectBackHandler from '../../../hooks/useBatchSelectBackHandler';
 import useConfirmationModal from '../../../hooks/useConfirmationMondal';
 import { AuthContext } from '../../../store/auth-context';
@@ -160,7 +161,7 @@ function OrderItemsList({
   );
 
   return (
-    <View style={{ paddingBottom: 70 }}>
+    <>
       <ConfirmationModal
         isVisible={isModalVisible}
         onConfirm={confirmAction}
@@ -184,19 +185,21 @@ function OrderItemsList({
           isAllSelected={isAllSelected}
         />
       )}
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item._id}
-        renderItem={renderItem}
-        style={styles.list}
-        contentContainerStyle={styles.listContainer}
-        ListHeaderComponent={() => getTotalOrdersCount()}
-        initialNumToRender={20}
-        maxToRenderPerBatch={10}
-        windowSize={20}
-        removeClippedSubviews={true}
-      />
-    </View>
+      <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item._id}
+          renderItem={renderItem}
+          style={styles.list}
+          contentContainerStyle={styles.listContainer}
+          ListHeaderComponent={() => getTotalOrdersCount()}
+          initialNumToRender={20}
+          maxToRenderPerBatch={10}
+          windowSize={20}
+          removeClippedSubviews={true}
+        />
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -210,7 +213,7 @@ function getStyles(batchMode: boolean) {
     },
     listContainer: {
       gap: 6,
-      paddingBottom: batchMode ? 82 : 22,
+      paddingBottom: 6,
     },
   });
 }

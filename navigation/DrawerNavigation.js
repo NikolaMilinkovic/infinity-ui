@@ -1,4 +1,3 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
 import { View } from 'react-native';
 // import { Colors } from '../constants/colors';
@@ -7,8 +6,6 @@ import { useGetAppColors } from '../constants/useGetAppColors';
 import { AuthContext } from '../store/auth-context';
 import { UserContext } from '../store/user-context';
 import NavigationButton from '../util-components/NavigationButton';
-
-const Drawer = createDrawerNavigator();
 
 /**
  * Handles display of icons / screens in the drawer menu

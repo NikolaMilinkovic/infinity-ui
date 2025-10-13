@@ -82,7 +82,7 @@ function ImagePicker({
     );
   }
   if (previewImage && isExpanded) {
-    imagePreview = <Image resizeMode={resizeMode} source={{ uri: previewImage.uri }} style={styles.image} />;
+    imagePreview = <Image source={{ uri: previewImage.uri }} style={styles.image} resizeMode="contain" />;
   }
 
   return (
@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+    alignSelf: 'center',
     backgroundColor: Colors.white,
   },
   text: {

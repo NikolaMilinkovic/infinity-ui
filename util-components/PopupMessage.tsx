@@ -1,37 +1,36 @@
-import { StyleSheet, View } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
-import { showMessage } from "react-native-flash-message";
-import FlashMessage from "react-native-flash-message";
-import { Colors } from "../constants/colors";
-import { useRef } from "react";
+import { useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
+import { Colors } from '../constants/colors';
 
 interface PopupMessageTypes {
   type: 'success' | 'warning' | 'info' | 'danger';
 }
-export function popupMessage(message:string, type:PopupMessageTypes['type']){
+export function popupMessage(message: string, type: PopupMessageTypes['type']) {
   let iconType = '';
   let backgroundColor = '';
-  switch(type){
+  switch (type) {
     case 'success':
       backgroundColor = Colors.success;
-      iconType = 'checkcircleo'
-    break;
+      iconType = 'checkcircleo';
+      break;
     case 'warning':
       backgroundColor = Colors.warning;
-      iconType = 'warning'
-    break;
+      iconType = 'warning';
+      break;
     case 'info':
       backgroundColor = Colors.info;
-      iconType = 'infocirlceo'
-    break;
+      iconType = 'infocirlceo';
+      break;
     case 'danger':
       backgroundColor = Colors.error;
-      iconType = 'closecircleo'
-    break;
+      iconType = 'closecircleo';
+      break;
   }
   const styles = StyleSheet.create({
     text: {
-      fontSize: 16
+      fontSize: 16,
     },
     container: {
       backgroundColor: backgroundColor,
@@ -39,33 +38,33 @@ export function popupMessage(message:string, type:PopupMessageTypes['type']){
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
-      zIndex: 10,
-    }
-  })
+      zIndex: 999999,
+    },
+  });
 
   showMessage({
     animationDuration: 225,
     duration: 2000,
-    style: styles.container, 
+    style: styles.container,
     titleStyle: styles.text,
     textStyle: styles.text,
     message: `${message}`,
     type: type,
-    icon: props => <AntDesign size={20} color={Colors.whiteText} name={iconType} {...props}/>
+    icon: (props) => <AntDesign size={20} color={Colors.whiteText} name={iconType} {...props} />,
   });
 }
 
-export function PopupMessagesComponent(){
+export function PopupMessagesComponent() {
   const otherView1Ref = useRef(null);
   const otherView2Ref = useRef(null);
   const otherView3Ref = useRef(null);
 
-  return(
+  return (
     <>
-      <View ref={otherView1Ref}/>
-      <View ref={otherView2Ref}/>
-      <View ref={otherView3Ref}/>
-      <FlashMessage position="top"/>
+      <View ref={otherView1Ref} />
+      <View ref={otherView2Ref} />
+      <View ref={otherView3Ref} />
+      <FlashMessage position="top" />
     </>
-  )
+  );
 }
