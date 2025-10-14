@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { useExpandAnimation } from '../../hooks/useExpand';
@@ -237,8 +237,9 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
       position: 'absolute',
       color: Colors.success,
       bottom: 10,
-      right: -10,
+      right: -8,
       width: 100,
+      fontWeight: 'bold',
     },
   });
 }

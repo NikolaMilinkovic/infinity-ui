@@ -243,9 +243,10 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
     },
     packedText: {
       position: 'absolute',
+      fontWeight: 'bold',
       color: Colors.success,
       bottom: 10,
-      right: -10,
+      right: -8,
       width: 100,
     },
     orderNoteContainer: {
