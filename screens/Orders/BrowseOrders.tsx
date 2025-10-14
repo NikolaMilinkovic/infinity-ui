@@ -1,9 +1,12 @@
-import React, { useContext, useMemo, useState } from 'react';
-import { Modal, SafeAreaView } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useContext, useMemo, useState } from 'react';
+import { Modal } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
 import SearchOrders from '../../components/orders/browseOrders/SearchOrders';
+import { Colors } from '../../constants/colors';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useFadeTransition } from '../../hooks/useFadeTransition';
 import { OrdersContext } from '../../store/orders-context';
@@ -99,7 +102,8 @@ function BrowseOrders() {
         visible={editedOrder !== null}
         onRequestClose={removeEditedOrder}
       >
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
+          <StatusBar style="light" />
           <Animated.View style={[editOrderFade, { flex: 1 }]}>
             <EditOrder editedOrder={editedOrder} setEditedOrder={setEditedOrder} />
           </Animated.View>

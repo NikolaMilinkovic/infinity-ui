@@ -1,5 +1,5 @@
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { NativeSyntheticEvent, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../../../constants/colors';
 import { AuthContext } from '../../../../store/auth-context';
@@ -9,6 +9,7 @@ import Button from '../../../../util-components/Button';
 import CustomCheckbox from '../../../../util-components/CustomCheckbox';
 import DropdownList from '../../../../util-components/DropdownList';
 import InputField from '../../../../util-components/InputField';
+import KeyboardAvoidingWrapper from '../../../../util-components/KeyboardAvoidingWrapper';
 import { popupMessage } from '../../../../util-components/PopupMessage';
 import { handleFetchingWithBodyData, handleFetchingWithFormData } from '../../../../util-methods/FetchMethods';
 import { getMimeType } from '../../../../util-methods/ImageMethods';
@@ -271,49 +272,50 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.modalHeader} numberOfLines={2} ellipsizeMode="tail">
-          Porudžbina: {editedOrder?.buyer.name}, {editedOrder?.buyer.address}
-        </Text>
-      </View>
-      <ScrollView style={styles.container}>
-        <View style={styles.card}>
-          {/* Buyer data */}
-          <Text style={styles.sectionLabel}>Podaci o kupcu</Text>
-          <BuyerDataInputs
-            name={name}
-            setName={setName}
-            address={address}
-            setAddress={setAddress}
-            place={place}
-            setPlace={setPlace}
-            phone={phone}
-            phone2={phone2}
-            setPhone2={setPhone2}
-            setPhone={setPhone}
-            orderNotes={orderNotes}
-            setOrderNotes={setOrderNotes}
-            deliveryNotes={deliveryNotes}
-            setDeliveryNotes={setDeliveryNotes}
-            profileImage={profileImage}
-            setProfileImage={setProfileImage}
-          />
-
-          {/* Courier data */}
-          <Text style={styles.sectionLabel}>Izabrani kurir</Text>
-          <View style={styles.sectionContainer}>
-            <DropdownList
-              data={courierDropdownData}
-              onSelect={(courier) => {
-                setCourier(courier);
-                setDeliveryPrice(courier.deliveryPrice);
-              }}
-              isDefaultValueOn={true}
-              placeholder="Izaberite kurira za dostavu"
-              defaultValue={courier.name}
+    <KeyboardAvoidingWrapper style={{ backgroundColor: 'red' }}>
+      <View style={{ flex: 1 }}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.modalHeader} numberOfLines={2} ellipsizeMode="tail">
+            Porudžbina: {editedOrder?.buyer.name}, {editedOrder?.buyer.address}
+          </Text>
+        </View>
+        <ScrollView style={styles.container}>
+          <View style={styles.card}>
+            {/* Buyer data */}
+            <Text style={styles.sectionLabel}>Podaci o kupcu</Text>
+            <BuyerDataInputs
+              name={name}
+              setName={setName}
+              address={address}
+              setAddress={setAddress}
+              place={place}
+              setPlace={setPlace}
+              phone={phone}
+              phone2={phone2}
+              setPhone2={setPhone2}
+              setPhone={setPhone}
+              orderNotes={orderNotes}
+              setOrderNotes={setOrderNotes}
+              deliveryNotes={deliveryNotes}
+              setDeliveryNotes={setDeliveryNotes}
+              profileImage={profileImage}
+              setProfileImage={setProfileImage}
             />
-            {/* <DropdownList2
+
+            {/* Courier data */}
+            <Text style={styles.sectionLabel}>Izabrani kurir</Text>
+            <View style={styles.sectionContainer}>
+              <DropdownList
+                data={courierDropdownData}
+                onSelect={(courier) => {
+                  setCourier(courier);
+                  setDeliveryPrice(courier.deliveryPrice);
+                }}
+                isDefaultValueOn={true}
+                placeholder="Izaberite kurira za dostavu"
+                defaultValue={courier.name}
+              />
+              {/* <DropdownList2
               data={courierDropdownData}
               value={courier as any}
               placeholder="Izaberite kurira za dostavu"
@@ -322,147 +324,148 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
               containerStyle={{ marginTop: 4 }}
               onChange={(selectedCourier: CourierTypes) => setCourier(selectedCourier)}
             /> */}
-          </View>
-
-          {/* Products list */}
-          <Text style={styles.sectionLabel}>Lista artikla: ({products.length} kom.)</Text>
-          <AddItemsModal isVisible={showAddItemModal} setIsVisible={setShowAddItemModal} setProducts={setProducts} />
-          <View style={[styles.sectionContainer, styles.productListContainer]}>
-            {products &&
-              products.map((product, index) => (
-                <ProductDisplay key={`product-${index}`} product={product} index={index} setProducts={setProducts} />
-              ))}
-            {/* Add new product btn */}
-            <Button
-              backColor={Colors.secondaryLight}
-              textColor={Colors.primaryDark}
-              onPress={handleShowAddItemComponent}
-            >
-              Dodaj Artikal
-            </Button>
-          </View>
-
-          {/* Reservation | Packed */}
-          <Text style={styles.sectionLabel}>Rezervacija | Spakovano:</Text>
-          <View style={styles.sectionContainer}>
-            {/* Reservation */}
-            <View style={styles.radioGroupContainer}>
-              <Text style={styles.radioGroupHeader}>Rezervacija:</Text>
-              <CustomCheckbox
-                label={'Da'}
-                checked={isReservation === true}
-                onCheckedChange={() => setIsReservation(true)}
-              />
-              <CustomCheckbox
-                label={'Ne'}
-                checked={isReservation === false}
-                onCheckedChange={() => setIsReservation(false)}
-              />
             </View>
-            {/* DATE PICKER */}
-            {isReservation === true && (
-              <View style={styles.radioGroupContainer}>
-                {reservationDate && pickedDateDisplay && (
-                  <View style={styles.dateDisplayContainer}>
-                    <Text style={styles.dateLabel}>Izabrani datum:</Text>
-                    <Text style={styles.dateText}>{formatDateHandler(reservationDate)}</Text>
-                  </View>
-                )}
-                <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
-                <View style={styles.dateButtonsContainer}>
-                  <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
-                    Izaberi datum
-                  </Button>
-                </View>
 
-                {showDatePicker && (
-                  <DateTimePicker
-                    value={reservationDate}
-                    mode="date"
-                    is24Hour={true}
-                    onChange={handleDatePick}
-                    onTouchCancel={handleDateReset}
-                  />
+            {/* Products list */}
+            <Text style={styles.sectionLabel}>Lista artikla: ({products.length} kom.)</Text>
+            <AddItemsModal isVisible={showAddItemModal} setIsVisible={setShowAddItemModal} setProducts={setProducts} />
+            <View style={[styles.sectionContainer, styles.productListContainer]}>
+              {products &&
+                products.map((product, index) => (
+                  <ProductDisplay key={`product-${index}`} product={product} index={index} setProducts={setProducts} />
+                ))}
+              {/* Add new product btn */}
+              <Button
+                backColor={Colors.secondaryLight}
+                textColor={Colors.primaryDark}
+                onPress={handleShowAddItemComponent}
+              >
+                Dodaj Artikal
+              </Button>
+            </View>
+
+            {/* Reservation | Packed */}
+            <Text style={styles.sectionLabel}>Rezervacija | Spakovano:</Text>
+            <View style={styles.sectionContainer}>
+              {/* Reservation */}
+              <View style={styles.radioGroupContainer}>
+                <Text style={styles.radioGroupHeader}>Rezervacija:</Text>
+                <CustomCheckbox
+                  label={'Da'}
+                  checked={isReservation === true}
+                  onCheckedChange={() => setIsReservation(true)}
+                />
+                <CustomCheckbox
+                  label={'Ne'}
+                  checked={isReservation === false}
+                  onCheckedChange={() => setIsReservation(false)}
+                />
+              </View>
+              {/* DATE PICKER */}
+              {isReservation === true && (
+                <View style={styles.radioGroupContainer}>
+                  {reservationDate && pickedDateDisplay && (
+                    <View style={styles.dateDisplayContainer}>
+                      <Text style={styles.dateLabel}>Izabrani datum:</Text>
+                      <Text style={styles.dateText}>{formatDateHandler(reservationDate)}</Text>
+                    </View>
+                  )}
+                  <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+                  <View style={styles.dateButtonsContainer}>
+                    <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+                      Izaberi datum
+                    </Button>
+                  </View>
+
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={reservationDate}
+                      mode="date"
+                      is24Hour={true}
+                      onChange={handleDatePick}
+                      onTouchCancel={handleDateReset}
+                    />
+                  )}
+                </View>
+              )}
+
+              {/* Packed */}
+              <View style={styles.radioGroupContainer}>
+                <Text style={styles.radioGroupHeader}>Spakovano:</Text>
+                <CustomCheckbox label={'Da'} checked={isPacked === true} onCheckedChange={() => setIsPacked(true)} />
+                <CustomCheckbox label={'Ne'} checked={isPacked === false} onCheckedChange={() => setIsPacked(false)} />
+              </View>
+            </View>
+
+            {/* Prices */}
+            <Text style={styles.sectionLabel}>Cene:</Text>
+            <View style={[styles.sectionContainer, styles.pricesContainer]}>
+              {/* Products prices */}
+              <View style={styles.row}>
+                <Text style={styles.rowItem}>Cena proizvoda:</Text>
+                <Text style={styles.rowItem}>{productsPrice} din.</Text>
+              </View>
+              {/* Courier Price */}
+              <View style={styles.row}>
+                <Text style={styles.rowItem}>Cena kurira:</Text>
+                <Text style={styles.rowItem}>{deliveryPrice} din.</Text>
+              </View>
+              {/* Total Price */}
+              <View style={styles.row}>
+                <Text style={styles.rowItem}>Ukupno:</Text>
+                <Text style={styles.rowItem}>{totalPrice} din.</Text>
+              </View>
+
+              {/* Custom Price */}
+              <View style={styles.priceContainer}>
+                <InputField
+                  label="Finalna cena"
+                  inputText={customPrice.toString()}
+                  setInputText={setCustomPrice as any}
+                  containerStyles={styles.customPriceInput}
+                  background={Colors.white}
+                  keyboard="number-pad"
+                  onManualInput={handleUserManualPriceInput}
+                  labelBorders={false}
+                />
+                {!calculateItemsPrice && (
+                  <Button
+                    containerStyles={styles.recalculatePriceBtn}
+                    textStyles={{ color: Colors.primaryDark }}
+                    onPress={() => setCalculateItemsPrice(true)}
+                  >
+                    Preračunaj cenu
+                  </Button>
                 )}
               </View>
-            )}
+            </View>
 
-            {/* Packed */}
-            <View style={styles.radioGroupContainer}>
-              <Text style={styles.radioGroupHeader}>Spakovano:</Text>
-              <CustomCheckbox label={'Da'} checked={isPacked === true} onCheckedChange={() => setIsPacked(true)} />
-              <CustomCheckbox label={'Ne'} checked={isPacked === false} onCheckedChange={() => setIsPacked(false)} />
+            {/* Buttons */}
+            <View style={styles.buttonsContainer}>
+              {/* CANCEL */}
+              <Button
+                containerStyles={styles.button}
+                onPress={() => setEditedOrder(null)}
+                backColor={Colors.error}
+                textColor={Colors.white}
+              >
+                Nazad
+              </Button>
+
+              {/* SAVE */}
+              <Button
+                containerStyles={styles.button}
+                onPress={handleUpdateMethod}
+                backColor={Colors.secondaryDark}
+                textColor={Colors.white}
+              >
+                Sačuvaj
+              </Button>
             </View>
           </View>
-
-          {/* Prices */}
-          <Text style={styles.sectionLabel}>Cene:</Text>
-          <View style={[styles.sectionContainer, styles.pricesContainer]}>
-            {/* Products prices */}
-            <View style={styles.row}>
-              <Text style={styles.rowItem}>Cena proizvoda:</Text>
-              <Text style={styles.rowItem}>{productsPrice} din.</Text>
-            </View>
-            {/* Courier Price */}
-            <View style={styles.row}>
-              <Text style={styles.rowItem}>Cena kurira:</Text>
-              <Text style={styles.rowItem}>{deliveryPrice} din.</Text>
-            </View>
-            {/* Total Price */}
-            <View style={styles.row}>
-              <Text style={styles.rowItem}>Ukupno:</Text>
-              <Text style={styles.rowItem}>{totalPrice} din.</Text>
-            </View>
-
-            {/* Custom Price */}
-            <View style={styles.priceContainer}>
-              <InputField
-                label="Finalna cena"
-                inputText={customPrice.toString()}
-                setInputText={setCustomPrice as any}
-                containerStyles={styles.customPriceInput}
-                background={Colors.white}
-                keyboard="number-pad"
-                onManualInput={handleUserManualPriceInput}
-                labelBorders={false}
-              />
-              {!calculateItemsPrice && (
-                <Button
-                  containerStyles={styles.recalculatePriceBtn}
-                  textStyles={{ color: Colors.primaryDark }}
-                  onPress={() => setCalculateItemsPrice(true)}
-                >
-                  Preračunaj cenu
-                </Button>
-              )}
-            </View>
-          </View>
-
-          {/* Buttons */}
-          <View style={styles.buttonsContainer}>
-            {/* CANCEL */}
-            <Button
-              containerStyles={styles.button}
-              onPress={() => setEditedOrder(null)}
-              backColor={Colors.error}
-              textColor={Colors.white}
-            >
-              Nazad
-            </Button>
-
-            {/* SAVE */}
-            <Button
-              containerStyles={styles.button}
-              onPress={handleUpdateMethod}
-              backColor={Colors.secondaryDark}
-              textColor={Colors.white}
-            >
-              Sačuvaj
-            </Button>
-          </View>
-        </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingWrapper>
   );
 }
 const styles = StyleSheet.create({

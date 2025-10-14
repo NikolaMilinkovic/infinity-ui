@@ -2,11 +2,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { LogBox, View } from 'react-native';
-import 'react-native-reanimated';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import StartupOverlay from './components/loading/StartupOverlay';
+import { Colors } from './constants/colors';
 import AuthStack from './navigation/AuthStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
 import ContextProvider from './store/ContextProvider';
@@ -108,11 +109,13 @@ function Root() {
 
 export default function App() {
   return (
-    <>
-      <StatusBar style="light" translucent={true} />
-      <ContextProvider>
-        <Root />
-      </ContextProvider>
-    </>
+    <SafeAreaProvider>
+      <View style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
+        <StatusBar style="light" translucent={true} />
+        <ContextProvider>
+          <Root />
+        </ContextProvider>
+      </View>
+    </SafeAreaProvider>
   );
 }

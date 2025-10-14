@@ -1,19 +1,18 @@
-import React from 'react';
 import { Animated, StyleSheet } from 'react-native';
-import SafeView from '../../../components/layout/SafeView';
 import AddProduct from '../../../components/products/AddProduct';
 import { useFadeAnimation } from '../../../hooks/useFadeAnimation';
+import KeyboardAvoidingWrapper from '../../../util-components/KeyboardAvoidingWrapper';
 
 function AddItem() {
   // ANIMATIONS
   const fadeAnimation = useFadeAnimation();
 
   return (
-    <SafeView>
+    <KeyboardAvoidingWrapper>
       <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
         <AddProduct />
       </Animated.View>
-    </SafeView>
+    </KeyboardAvoidingWrapper>
   );
 }
 

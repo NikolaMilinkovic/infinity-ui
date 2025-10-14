@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useContext, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../constants/colors';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
@@ -85,7 +85,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
   }
 
   return (
-    <View>
+    <>
       <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
         <Text style={styles.header}>Informacije o kupcu</Text>
         <Icon
@@ -191,7 +191,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
           </Button>
         </Animated.View>
       )}
-    </View>
+    </>
   );
 }
 const styles = StyleSheet.create({

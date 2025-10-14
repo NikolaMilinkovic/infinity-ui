@@ -1,5 +1,4 @@
 // ConfirmationModal.js
-import React from 'react';
 import { Animated, Image, Modal, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Colors } from '../constants/colors';
 import { useShareMessage } from '../hooks/useShareMessage';
@@ -36,13 +35,6 @@ function ImagePreviewModal({ isVisible, onCancel, image }: ImageModalPropTypes) 
                   pressedStyles={styles.shareButtonPressed}
                 />
               </View>
-              {/* <Button
-                  backColor={Colors.highlight}
-                  textColor={Colors.white}
-                  onPress={onCancel}
-                >
-                  Zatvori
-                </Button> */}
             </View>
           </TouchableWithoutFeedback>
         </Animated.View>

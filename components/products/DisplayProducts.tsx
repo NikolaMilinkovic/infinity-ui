@@ -1,7 +1,6 @@
 import Constants from 'expo-constants';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import useBatchSelectBackHandler from '../../hooks/useBatchSelectBackHandler';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
 import useImagePreviewModal from '../../hooks/useImagePreviewModal';
@@ -14,7 +13,7 @@ import ConfirmationModal from '../../util-components/ConfirmationModal';
 import ImagePreviewModal from '../../util-components/ImagePreviewModal';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { fetchWithBodyData } from '../../util-methods/FetchMethods';
-import { betterConsoleLog, betterErrorLog } from '../../util-methods/LogMethods';
+import { betterErrorLog } from '../../util-methods/LogMethods';
 import { serachProducts } from '../../util-methods/ProductFilterMethods';
 import { handleRemoveBatch } from '../../util-methods/ProductsBatchRemove';
 import ProductListSelector from '../products/ProductListSelector';
@@ -174,7 +173,6 @@ function DisplayProducts({ setEditItem, showAddBtn = true }: DisplayProductsProp
 
   async function handleSortProducts(position: string) {
     try {
-      betterConsoleLog('> selected items', selectedItems);
       const purses = selectedItems.filter((purse) => purse.stockType === 'Boja-Količina').map((purse) => purse._id);
       const dresses = selectedItems
         .filter((dress) => dress.stockType === 'Boja-Veličina-Količina')

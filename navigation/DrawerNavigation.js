@@ -1,4 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 // import { Colors } from '../constants/colors';
 import { useContext, useState } from 'react';
@@ -13,6 +14,11 @@ import NavigationButton from '../util-components/NavigationButton';
  */
 export function CustomDrawerContent(props) {
   const [isActive, setIsActive] = useState('Home');
+
+  useEffect(() => {
+    setIsActive('Home');
+  }, []);
+
   const authCtx = useContext(AuthContext);
   const navigation = useNavigation();
   const Colors = useGetAppColors();
@@ -51,7 +57,7 @@ export function CustomDrawerContent(props) {
       {userCtx.permissions.navigation.porudzbine_rezervacije && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('Orders')}
-          icon="filetext1"
+          icon="ordered-list"
           onPress={() => setActiveAndNavigate('Orders')}
           size={18}
           color={handleActiveColorChange('Orders')}
@@ -98,7 +104,7 @@ export function CustomDrawerContent(props) {
       {userCtx.permissions.navigation.dodaj_artikal && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('ProductsManager')}
-          icon="profile"
+          icon="product"
           onPress={() => setActiveAndNavigate('ProductsManager')}
           size={18}
           color={handleActiveColorChange('ProductsManager')}
@@ -110,7 +116,7 @@ export function CustomDrawerContent(props) {
       {userCtx.permissions.navigation.upravljanje_korisnicima && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('UserManagerTabs')}
-          icon="addusergroup"
+          icon="usergroup-add"
           onPress={() => setActiveAndNavigate('UserManagerTabs')}
           size={18}
           color={handleActiveColorChange('UserManagerTabs')}

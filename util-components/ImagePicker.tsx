@@ -1,8 +1,9 @@
 import { launchCameraAsync, PermissionStatus, useCameraPermissions } from 'expo-image-picker';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../constants/colors';
+import { globalStyles } from '../constants/globalStyles';
 import { useExpandAnimation } from '../hooks/useExpand';
 import { pickImage } from '../util-methods/GalleryPickImage';
 import Button from './Button';
@@ -89,7 +90,7 @@ function ImagePicker({
     <View>
       <Pressable onPress={takeImageHandler}>
         <Animated.View style={[styles.imagePreview, { height: toggleExpandAnimation }, containerStyles]}>
-          <Pressable style={styles.toggleExpand} onPress={handleToggleExpand}>
+          <Pressable style={[styles.toggleExpand, globalStyles.border]} onPress={handleToggleExpand}>
             <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} size={24} />
           </Pressable>
           {imagePreview}
@@ -97,12 +98,20 @@ function ImagePicker({
       </Pressable>
       <View style={styles.buttonsContainer}>
         {showCamera && (
-          <Button onPress={takeImageHandler} containerStyles={styles.button} textStyles={styles.buttonText}>
+          <Button
+            onPress={takeImageHandler}
+            containerStyles={[styles.button, globalStyles.elevation_1, globalStyles.border]}
+            textStyles={styles.buttonText}
+          >
             <Icon name="camera" size={24} color={Colors.primaryDark} />
           </Button>
         )}
         {showGallery && (
-          <Button onPress={openGalleryHandler} containerStyles={styles.button} textStyles={styles.buttonText}>
+          <Button
+            onPress={openGalleryHandler}
+            containerStyles={[styles.button, globalStyles.elevation_1, globalStyles.border]}
+            textStyles={styles.buttonText}
+          >
             <Icon name="image" size={24} color={Colors.primaryDark} />
           </Button>
         )}
@@ -139,10 +148,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   button: {
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
     flex: 1,
-    elevation: 1,
   },
   buttonText: {
     fontWeight: 400,
@@ -151,8 +157,6 @@ const styles = StyleSheet.create({
   toggleExpand: {
     backgroundColor: Colors.white,
     borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     width: 30,
@@ -161,7 +165,6 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
     zIndex: 1,
-    elevation: 1,
   },
   collapsedArea: {
     width: '100%',

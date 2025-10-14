@@ -1,9 +1,12 @@
-import React, { useContext, useMemo, useState } from 'react';
-import { FlatList, Modal, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useContext, useMemo, useState } from 'react';
+import { FlatList, Modal, StyleSheet, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '../../constants/colors';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
-import { useFadeTransition, useFadeTransitionReversed } from '../../hooks/useFadeTransition';
+import { useFadeTransition } from '../../hooks/useFadeTransition';
 import { AuthContext } from '../../store/auth-context';
 import { useUser } from '../../store/user-context';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
@@ -21,7 +24,6 @@ function EditUser() {
   const [selectedRole, setSelectedRole] = useState('all');
   const [editedUser, setEditedUser] = useState(null);
   const editProductFade = useFadeTransition(editedUser !== null);
-  const overlayView = useFadeTransitionReversed(editedUser === null, 500, 150);
   useBackClickHandler(!!editedUser, handleRemoveEditedUser);
   function handleRemoveEditedUser() {
     setEditedUser(null);
@@ -99,9 +101,10 @@ function EditUser() {
         onRequestClose={handleRemoveEditedUser}
         presentationStyle="overFullScreen"
       >
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
+          <StatusBar style="light" translucent />
           <Animated.ScrollView contentContainerStyle={editProductFade}>
-            <EditUserModal user={editedUser} setUser={setEditedUser} />
+            {editedUser && <EditUserModal user={editedUser} setUser={setEditedUser} />}
           </Animated.ScrollView>
         </SafeAreaView>
       </Modal>

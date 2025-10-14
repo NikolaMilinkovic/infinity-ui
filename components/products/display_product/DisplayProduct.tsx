@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../../constants/colors';
+import { globalStyles } from '../../../constants/globalStyles';
 import useCheckStockAvailability from '../../../hooks/useCheckStockAvailability';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useHighlightAnimation } from '../../../hooks/useHighlightAnimation';
@@ -190,7 +191,7 @@ function DisplayProduct({
                   onPress={handleOnAddPress}
                   key={`key-${item._id}-add-button`}
                   icon="add"
-                  style={styles.addButtonContainer}
+                  style={[styles.addButtonContainer, globalStyles.elevation_1]}
                   pressedStyles={styles.buttonContainerPressed}
                 />
               )}
@@ -201,7 +202,7 @@ function DisplayProduct({
                   onPress={handleOnEditPress}
                   key={`key-${item._id}-edit-button`}
                   icon="edit"
-                  style={styles.editButtonContainer}
+                  style={[styles.editButtonContainer, globalStyles.elevation_1]}
                   pressedStyles={styles.buttonContainerPressed}
                 />
               )}

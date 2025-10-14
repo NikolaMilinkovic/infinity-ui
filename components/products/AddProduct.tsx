@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Keyboard, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import DressColor from '../../models/DressColor';
@@ -21,7 +21,7 @@ import DropdownList from '../../util-components/DropdownList';
 import MultilineInput from '../../util-components/MultilineInput';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { addDress, addPurse } from '../../util-methods/FetchMethods';
-import { betterConsoleLog, betterErrorLog } from '../../util-methods/LogMethods';
+import { betterErrorLog } from '../../util-methods/LogMethods';
 import GenericProductInputComponents from './GenericProductInputComponents';
 import AddDressComponents from './unique_product_components/add/AddDressComponents';
 import AddPurseComponents from './unique_product_components/add/AddPurseComponents';
@@ -79,10 +79,6 @@ function AddProduct() {
   const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>([]);
   const [description, setDescription] = useState('');
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierTypes>();
-
-  useEffect(() => {
-    betterConsoleLog('> selected supplier is: ', selectedSupplier);
-  }, [selectedSupplier]);
 
   useEffect(() => {
     setAllCategories(categoriesCtx.getCategories());

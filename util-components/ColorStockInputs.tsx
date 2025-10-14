@@ -1,6 +1,5 @@
 import React from 'react';
-import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../constants/colors';
 import { PurseColorTypes } from '../types/allTsTypes';
 

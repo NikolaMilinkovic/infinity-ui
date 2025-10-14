@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text } from 'react-native';
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../constants/colors';
@@ -31,7 +31,7 @@ function GalleryImagePicker({
   async function handlePickImage() {
     const pickedImage = await pickImage(quality, crop);
     if (pickedImage) {
-      setImage(pickedImage);
+      setImage(pickedImage as any);
       setIsExpanded(true);
     }
   }
@@ -55,7 +55,7 @@ function GalleryImagePicker({
         <Icon name="image" size={24} color={Colors.primaryDark} />
       </Button> */}
 
-      <Pressable onPress={handlePickImage}>
+      <Pressable onPress={() => handlePickImage()}>
         <Animated.View style={[styles.imagePreview, customStyles, { height: toggledHeight }]}>
           {/* <Pressable style={styles.toggleExpand} onPress={handleToggleExpand}>
             <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} size={24} />

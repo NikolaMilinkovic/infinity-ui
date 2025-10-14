@@ -1,8 +1,8 @@
 import Constants from 'expo-constants';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { popupMessage } from '../util-components/PopupMessage';
-import { betterErrorLog } from './LogMethods';
+import { betterConsoleLog, betterErrorLog } from './LogMethods';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 let authContextInstance: any;
@@ -139,6 +139,8 @@ export async function addPurse(purseData: any, authToken: string): Promise<boole
 // NEW ORDER ADD METHOD
 export async function addNewOrder(formData: any, authToken: string, uri: string) {
   try {
+    console.log('Fetching with form data now');
+    betterConsoleLog('> formData', formData);
     const response = await handleFetchingWithFormData(formData, authToken, uri, 'POST');
 
     if (!response) {
@@ -258,11 +260,16 @@ export async function downloadAndShareFileViaLink(name: string, link: string) {
   try {
     const fileName = name || 'default.xlsx';
     const targetPath = `${FileSystem.documentDirectory}${fileName}`;
+
+    // Download file using legacy API
     await FileSystem.downloadAsync(link, targetPath);
 
-    // Open share dialog
+    // Share using expo-sharing (works for files)
     if (await Sharing.isAvailableAsync()) {
-      await Sharing.shareAsync(targetPath);
+      await Sharing.shareAsync(targetPath, {
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        dialogTitle: 'Share File',
+      });
     } else {
       console.error('Sharing not supported on this platform.');
     }

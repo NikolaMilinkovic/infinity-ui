@@ -13,7 +13,7 @@ export function popupMessage(message: string, type: PopupMessageTypes['type']) {
   switch (type) {
     case 'success':
       backgroundColor = Colors.success;
-      iconType = 'checkcircleo';
+      iconType = 'check-circle';
       break;
     case 'warning':
       backgroundColor = Colors.warning;
@@ -21,11 +21,11 @@ export function popupMessage(message: string, type: PopupMessageTypes['type']) {
       break;
     case 'info':
       backgroundColor = Colors.info;
-      iconType = 'infocirlceo';
+      iconType = 'info-circle';
       break;
     case 'danger':
       backgroundColor = Colors.error;
-      iconType = 'closecircleo';
+      iconType = 'close-circle';
       break;
   }
   const styles = StyleSheet.create({

@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Modal, SafeAreaView } from 'react-native';
+import { useState } from 'react';
+import { Modal } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import SafeView from '../../../components/layout/SafeView';
 import DisplayProducts from '../../../components/products/DisplayProducts';
 import EditProductComponent from '../../../components/products/edit_product/EditProductComponent';
 import useBackClickHandler from '../../../hooks/useBackClickHandler';
-import { useFadeTransition, useFadeTransitionReversed } from '../../../hooks/useFadeTransition';
+import { useFadeTransition } from '../../../hooks/useFadeTransition';
 import { ProductTypes } from '../../../types/allTsTypes';
 
 function EditItem() {
   const [editedProduct, setEditedProduct] = useState<ProductTypes | null>(null);
   const editProductFade = useFadeTransition(editedProduct !== null);
-  const overlayView = useFadeTransitionReversed(editedProduct === null, 500, 150);
   useBackClickHandler(!!editedProduct, handleRemoveEditedProduct);
   function handleRemoveEditedProduct() {
     setEditedProduct(null);
@@ -31,7 +31,9 @@ function EditItem() {
       >
         <SafeAreaView style={{ flex: 1 }}>
           <Animated.ScrollView contentContainerStyle={[editProductFade]}>
-            <EditProductComponent item={editedProduct as any} setItem={setEditedProduct} showHeader={false} />
+            {editedProduct && (
+              <EditProductComponent item={editedProduct as any} setItem={setEditedProduct} showHeader={false} />
+            )}
           </Animated.ScrollView>
         </SafeAreaView>
       </Modal>

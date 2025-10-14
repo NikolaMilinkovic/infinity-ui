@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { fetchData } from '../util-methods/FetchMethods';
-import { betterConsoleLog, betterErrorLog } from '../util-methods/LogMethods';
+import { betterErrorLog } from '../util-methods/LogMethods';
 import { AuthContext } from './auth-context';
 import { LogContext } from './log-context';
 import { SocketContext } from './socket-context';
@@ -73,7 +73,6 @@ function AppContextProvider({ children }: AppContextProviderTypes) {
   // }, [socket, token]);
 
   function handleUpdateAppSettings(updatedAppSettings: any) {
-    betterConsoleLog('> updatedAppSettings', updatedAppSettings);
     setAppSettings(updatedAppSettings.settings);
   }
 

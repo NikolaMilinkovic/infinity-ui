@@ -45,6 +45,10 @@ module.exports = {
       backgroundColor: '#ffffff',
       buildNumber: '1.0.0',
       bundleIdentifier: 'com.infinity.infinityboutiqueapp',
+      infoPlist: {
+        NSPhotoLibraryUsageDescription: 'This app requires access to your photos to share images.',
+        NSPhotoLibraryAddUsageDescription: 'This app needs permission to save photos.',
+      },
     },
     android: {
       backgroundColor: '#ffffff',
@@ -74,22 +78,6 @@ module.exports = {
         projectId: '426b99c7-d15c-4c36-bce4-daf8890090a4',
       },
       EXPO_PUBLIC_BACKEND_URI: 'https://infinity-server-b8ecd56d9909.herokuapp.com',
-    },
-    install: {
-      exclude: [
-        'react-native@~0.76.6',
-        'react-native-reanimated@~3.16.1',
-        'react-native-gesture-handler@~2.20.0',
-        'react-native-screens@~4.4.0',
-        'react-native-safe-area-context@~4.12.0',
-        'react-native-webview@~13.12.5',
-        'react-native-fs',
-        'react-native-dropdown-select-list',
-        'react-native-select-dropdown',
-        'react-native-vector-icons',
-        'socket.io-client',
-        'xlsx',
-      ],
     },
   },
 };

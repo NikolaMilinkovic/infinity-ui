@@ -1,37 +1,32 @@
-import React from 'react'
-import { ScrollView, ScrollViewBase, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
-import { Colors } from '../../../../../../constants/colors'
-import Animated from 'react-native-reanimated'
-import SelectedItem from './SelectedItem'
-import ColorSizeStockSelectorModalComponent from './ColorSizeStockSelectorModalComponent'
+import React from 'react';
+import { ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { Colors } from '../../../../../../constants/colors';
+import ColorSizeStockSelectorModalComponent from './ColorSizeStockSelectorModalComponent';
+import SelectedItem from './SelectedItem';
 
 function SelectedItemsModalComponent({ selectedItems, setSelectedItems }: any) {
   return (
     <TouchableWithoutFeedback>
       <ScrollView style={styles.container}>
         <TouchableWithoutFeedback>
-          <View style={{marginHorizontal: 8}}>
-
+          <View style={{ marginHorizontal: 8 }}>
             <Text style={styles.header}>Izabrani artikli</Text>
             {/* LIST */}
-            <Animated.FlatList 
+            <Animated.FlatList
               style={styles.listContainer}
               data={selectedItems}
-              renderItem={({item, index}) => (          
-                  <SelectedItem 
-                    item={item}
-                    setSelectedItems={setSelectedItems}
-                    index={index}
-                  />
+              renderItem={({ item, index }) => (
+                <SelectedItem item={item} setSelectedItems={setSelectedItems} index={index} />
               )}
               keyExtractor={(item, index) => `${index}-${item._id}`}
               contentContainerStyle={{ paddingBottom: 16 }}
             />
             <Text style={styles.header}>Boje | Veličine</Text>
-            <Animated.FlatList 
+            <Animated.FlatList
               style={styles.colorSizePickers}
               data={selectedItems}
-              renderItem={({item, index}) => (          
+              renderItem={({ item, index }) => (
                 <ColorSizeStockSelectorModalComponent
                   product={item}
                   setSelectedItems={setSelectedItems}
@@ -41,17 +36,17 @@ function SelectedItemsModalComponent({ selectedItems, setSelectedItems }: any) {
               keyExtractor={(item, index) => `${index}-${item._id}`}
               contentContainerStyle={{ paddingBottom: 16 }}
             />
-        </View>
-      </TouchableWithoutFeedback>
-    </ScrollView>
-  </TouchableWithoutFeedback>
-  )
+          </View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+    </TouchableWithoutFeedback>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.white,
-    padding: 8
+    padding: 8,
   },
   headerContainer: {
     padding: 10,
@@ -60,15 +55,15 @@ const styles = StyleSheet.create({
     borderColor: Colors.primaryDark,
     backgroundColor: Colors.secondaryDark,
     marginBottom: 6,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   iconStyle: {
-    marginLeft:'auto'
+    marginLeft: 'auto',
   },
   header: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.primaryDark
+    color: Colors.primaryDark,
   },
   listContainer: {
     padding: 10,
@@ -78,10 +73,10 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     minHeight: 250,
   },
-  colorSizePickers:{
+  colorSizePickers: {
     marginBottom: 6,
     minHeight: 250,
-  }
-})
+  },
+});
 
-export default SelectedItemsModalComponent
+export default SelectedItemsModalComponent;

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { globalStyles } from '../constants/globalStyles';
 import { useGetAppColors } from '../constants/useGetAppColors';
 import { AppColors } from '../types/allTsTypes';
 
@@ -98,7 +99,9 @@ const DropdownList = ({
         // BUTTON
         renderButton={(selectedItem, isOpen) => {
           return (
-            <View style={[styles.dropdownButtonStyle, buttonContainerStyles]}>
+            <View
+              style={[styles.dropdownButtonStyle, buttonContainerStyles, globalStyles.elevation_1, globalStyles.border]}
+            >
               <Text style={[styles.dropdownButtonTxtStyle, buttonTextStyles]} numberOfLines={1}>
                 {selectedItem?.name || selectedItem?.value || placeholder || 'No placeholder value provided'}
               </Text>
@@ -140,13 +143,10 @@ function getStyles(Colors: AppColors) {
   return StyleSheet.create({
     dropdownButtonStyle: {
       height: 50,
-      borderRadius: 4,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: 22,
-      borderWidth: 2,
-      borderColor: Colors.primaryLight,
       marginTop: 0,
       backgroundColor: Colors.white,
     },

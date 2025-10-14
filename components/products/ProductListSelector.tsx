@@ -1,6 +1,7 @@
-import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/colors';
+import { globalStyles } from '../../constants/globalStyles';
 import { CategoriesContext } from '../../store/categories-context';
 import { SuppliersContext } from '../../store/suppliers-context';
 import { UserContext } from '../../store/user-context';
@@ -49,19 +50,17 @@ function ListButton({ text, activeBtn, onPress }: ListButtonPropTypes) {
 
   return (
     <TouchableOpacity
-      style={{
-        padding: 10,
-        backgroundColor: isActive ? Colors.secondaryDark : Colors.secondaryLight,
-        borderRadius: 5,
-        minWidth: 60,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        elevation: 3,
-      }}
+      style={[
+        {
+          padding: 10,
+          backgroundColor: isActive ? Colors.secondaryDark : Colors.secondaryLight,
+          minWidth: 60,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        globalStyles.border,
+        globalStyles.elevation_2,
+      ]}
       onPress={() => onPress(text)}
     >
       <Text style={{ color: isActive ? Colors.white : Colors.primaryDark }}>{text}</Text>

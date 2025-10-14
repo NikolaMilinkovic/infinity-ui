@@ -1,37 +1,37 @@
-import React, { useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { popupMessage } from '../../util-components/PopupMessage';
-import Button from '../../util-components/Button';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../constants/colors';
+import { ProcessedOrderStatisticsFileTypes } from '../../types/allTsTypes';
+import IconButton from '../../util-components/IconButton';
+import { createdAtIntoDateFormatter } from '../../util-methods/DateFormatters';
 import { downloadAndShareFileViaLink } from '../../util-methods/FetchMethods';
-import SalesPerStockType from './statsDisplays/SalesPerStockType';
-import TopAndLeastSellingProducts from './statsDisplays/TopAndLeastSellingProducts';
-import PerColorSold from './statsDisplays/PerColorSold';
+import BasicInformationsForEndOfDay from './statsDisplays/BasicInformations';
 import OrdersByCategory from './statsDisplays/OrdersByCategory';
+import PerColorSold from './statsDisplays/PerColorSold';
 import PerLocationStats from './statsDisplays/PerLocationStats';
 import PerProductStats from './statsDisplays/PerProductStats';
-import BasicInformationsForEndOfDay from './statsDisplays/BasicInformations';
-import IconButton from '../../util-components/IconButton';
-import { ProcessedOrderStatisticsFileTypes } from '../../types/allTsTypes';
-import { createdAtIntoDateFormatter } from '../../util-methods/DateFormatters';
+import SalesPerStockType from './statsDisplays/SalesPerStockType';
+import TopAndLeastSellingProducts from './statsDisplays/TopAndLeastSellingProducts';
 
 interface PropTypes {
-  stats: ProcessedOrderStatisticsFileTypes
+  stats: ProcessedOrderStatisticsFileTypes;
 }
 function OrdersStatisticsForDay({ stats }: PropTypes) {
   const [isExpanded, setIsExpanded] = useState(false);
-  function handleExpandToggle(){
+  function handleExpandToggle() {
     setIsExpanded(!isExpanded);
   }
-  createdAtIntoDateFormatter
+  createdAtIntoDateFormatter;
   return (
     <ScrollView style={styles.container}>
       <Pressable onPress={handleExpandToggle} style={styles.controllsContainer}>
-        <Text style={styles.header}>{stats.courierName} - {createdAtIntoDateFormatter(stats.createdAt)}</Text>
+        <Text style={styles.header}>
+          {stats.courierName} - {createdAtIntoDateFormatter(stats.createdAt)}
+        </Text>
         <IconButton
-          icon = 'share'
+          icon="share"
           size={20}
-          color ={Colors.white}
+          color={Colors.white}
           onPress={() => downloadAndShareFileViaLink(stats.fileName, stats.excellLink)}
           style={styles.shareBtn}
         />
@@ -39,7 +39,7 @@ function OrdersStatisticsForDay({ stats }: PropTypes) {
       {isExpanded && (
         <View style={styles.informationOutlineContainer}>
           <BasicInformationsForEndOfDay
-            data = {{
+            data={{
               fileName: stats.fileName,
               excellLink: stats.excellLink,
               courierName: stats.courierName,
@@ -48,31 +48,21 @@ function OrdersStatisticsForDay({ stats }: PropTypes) {
               averageOrderValue: stats.averageOrderValue,
             }}
           />
-          <PerProductStats
-            data={stats.perProductStats}
-          />
-          <TopAndLeastSellingProducts 
-            data = {{
+          <PerProductStats data={stats.perProductStats} />
+          <TopAndLeastSellingProducts
+            data={{
               top: stats.topSellingProducts,
               least: stats.leastSellingProducts,
             }}
           />
-          <SalesPerStockType
-            data={stats.salesPerStockType}
-          />
-          <OrdersByCategory
-            data={stats.numOfOrdersByCategory}
-          />
-          <PerColorSold
-            data={stats.perColorSold}
-          />
-          <PerLocationStats
-            data={stats.perLocationSales}
-          />
+          <SalesPerStockType data={stats.salesPerStockType} />
+          <OrdersByCategory data={stats.numOfOrdersByCategory} />
+          <PerColorSold data={stats.perColorSold} />
+          <PerLocationStats data={stats.perLocationSales} />
         </View>
       )}
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -118,8 +108,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     flexDirection: 'column',
     margin: 10,
-    backgroundColor: Colors.primaryLight
-  }
-})
+    backgroundColor: Colors.primaryLight,
+  },
+});
 
-export default OrdersStatisticsForDay
+export default OrdersStatisticsForDay;

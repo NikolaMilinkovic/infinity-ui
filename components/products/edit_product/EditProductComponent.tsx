@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -26,7 +26,7 @@ import MultilineInput from '../../../util-components/MultilineInput';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { handleFetchingWithFormData } from '../../../util-methods/FetchMethods';
 import { getMimeType } from '../../../util-methods/ImageMethods';
-import { betterConsoleLog, betterErrorLog } from '../../../util-methods/LogMethods';
+import { betterErrorLog } from '../../../util-methods/LogMethods';
 import AddDressComponents from '../unique_product_components/add/AddDressComponents';
 import AddPurseComponents from '../unique_product_components/add/AddPurseComponents';
 
@@ -143,7 +143,6 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
   // Changes category and resets selected colors and default options if
   // new stockType is different then previous
   function setCategoryHandler(newCategory: CategoryTypes) {
-    betterConsoleLog('> new category is', newCategory);
     if (item.stockType === newCategory.stockType) {
       setCategory(newCategory);
     } else {

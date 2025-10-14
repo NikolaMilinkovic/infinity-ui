@@ -13,7 +13,6 @@ import {
 } from '../types/allTsTypes';
 import { popupMessage } from '../util-components/PopupMessage';
 import { getMimeType } from '../util-methods/ImageMethods';
-import { betterConsoleLog } from '../util-methods/LogMethods';
 interface ContextChildrenTypes {
   children: ReactNode;
 }
@@ -259,7 +258,6 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
     setInternalRemark('');
     setOrderNotes('');
 
-    betterConsoleLog('> settings the default courier data in the new order context reset method', defaultCourierData);
     setCourierData(defaultCourierData);
   };
 

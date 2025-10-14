@@ -1,23 +1,18 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 interface ButtonTypes {
-  children?: any,
-  onPress?: any,
-  textColor?: string,
-  backColor?: string
-  containerStyles?: {},
-  textStyles?: {}
+  children?: any;
+  onPress?: any;
+  textColor?: string;
+  backColor?: string;
+  containerStyles?: {};
+  textStyles?: {};
 }
 
-function Button({ children, onPress, textColor, backColor, containerStyles, textStyles } :ButtonTypes) {
-
-
-  const styles = getStyles(textColor, backColor)
+function Button({ children, onPress, textColor, backColor, containerStyles, textStyles }: ButtonTypes) {
+  const styles = getStyles(textColor, backColor);
 
   return (
-    <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.pressed, containerStyles]}
-      onPress={onPress}
-    >
+    <Pressable style={({ pressed }) => [styles.button, pressed && styles.pressed, containerStyles]} onPress={onPress}>
       <View>
         <Text style={[styles.buttonText, textStyles]}>{children}</Text>
       </View>
@@ -27,32 +22,28 @@ function Button({ children, onPress, textColor, backColor, containerStyles, text
 
 export default Button;
 
-function getStyles(
-  textColor = 'black', 
-  backColor = 'white'
-){
-  return(
-    StyleSheet.create({
-      button: {
-        borderRadius: 4,
-        paddingVertical: 12,
-        paddingHorizontal: 12,
-        backgroundColor: backColor,
-        elevation: 2,
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        width: '100%',
-      },
-      pressed: {
-        opacity: 0.7,
-      },
-      buttonText: {
-        textAlign: 'center',
-        color: textColor,
-        fontSize: 16,
-        fontWeight: 'bold'
-      },
-    })
-  )
+function getStyles(textColor = 'black', backColor = 'white') {
+  return StyleSheet.create({
+    button: {
+      borderRadius: 4,
+      paddingVertical: 12,
+      paddingHorizontal: 12,
+      backgroundColor: backColor,
+      elevation: 2,
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      width: '100%',
+    },
+    pressed: {
+      opacity: 0.7,
+    },
+    buttonText: {
+      textAlign: 'center',
+      justifyContent: 'center',
+      color: textColor,
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+  });
 }

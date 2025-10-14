@@ -1,5 +1,4 @@
 import { FontAwesome6, MaterialIcons } from '@expo/vector-icons';
-import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 type MaterialIconNames = keyof typeof MaterialIcons.glyphMap;
 type FontAwesomeIconNames = keyof typeof FontAwesome6.glyphMap;
@@ -31,15 +30,17 @@ function IconButton({
   iconsLibrary = 'MaterialIcons',
 }: IconButtonProps) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [style, pressed && (pressedStyles || styles.pressed)]}>
-      {icon && iconsLibrary === 'MaterialIcons' && (
-        <MaterialIcons style={iconStyle} name={icon as MaterialIconNames} color={color} size={size} />
-      )}
-      {icon && iconsLibrary === 'FontAwesome6' && (
-        <FontAwesome6 style={iconStyle} name={icon as FontAwesomeIconNames} color={color} size={size} />
-      )}
-      {text && <Text style={textStyle}>{text}</Text>}
-    </Pressable>
+    <>
+      <Pressable onPress={onPress} style={({ pressed }) => [style, pressed && (pressedStyles || styles.pressed)]}>
+        {icon && iconsLibrary === 'MaterialIcons' && (
+          <MaterialIcons style={iconStyle} name={icon as MaterialIconNames} color={color} size={size} />
+        )}
+        {icon && iconsLibrary === 'FontAwesome6' && (
+          <FontAwesome6 style={iconStyle} name={icon as FontAwesomeIconNames} color={color} size={size} />
+        )}
+        {text && <Text style={textStyle}>{text}</Text>}
+      </Pressable>
+    </>
   );
 }
 const styles = StyleSheet.create({

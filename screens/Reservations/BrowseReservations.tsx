@@ -1,6 +1,7 @@
-import React, { useContext, useMemo, useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet } from 'react-native';
+import { useContext, useMemo, useState } from 'react';
+import { Modal, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import filterReservations from '../../components/reservations/filterReservations';
 import ReservationsItemsList from '../../components/reservations/ReservationsItemsList';

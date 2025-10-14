@@ -1,6 +1,6 @@
-import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { Colors } from '../../constants/colors';
+import { globalStyles } from '../../constants/globalStyles';
 import { NewOrderContextTypes, ProductTypes } from '../../types/allTsTypes';
 
 interface PropTypes {
@@ -17,7 +17,7 @@ function SelectedProduct({ item, orderCtx, index }: PropTypes) {
   return (
     <Pressable
       onPress={onPressHandler}
-      style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.pressable, pressed && styles.pressed, globalStyles.elevation_1]}
       key={`${index}-${item._id}`}
     >
       <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">

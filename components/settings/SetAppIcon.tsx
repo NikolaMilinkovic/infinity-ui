@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ImagePicker from '../../util-components/ImagePicker';
-import { betterConsoleLog } from '../../util-methods/LogMethods';
 
 interface SetAppIconPropTypes {
   appIcon: any;
@@ -11,7 +10,6 @@ function SetAppIcon({ appIcon, setAppIcon }: SetAppIconPropTypes) {
   const [previewImage, setPreviewImage] = useState(appIcon);
 
   async function onTakeImageHandler(img: any) {
-    betterConsoleLog('img is:', img);
     setAppIcon(img);
   }
 

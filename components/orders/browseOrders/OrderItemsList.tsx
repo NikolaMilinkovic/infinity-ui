@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { FlatList, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useBatchSelectBackHandler from '../../../hooks/useBatchSelectBackHandler';
@@ -12,9 +12,6 @@ import { downloadAndShareFile, handleFetchingWithBodyData } from '../../../util-
 import BatchModeOrderControlls from './BatchModeOrderControlls';
 import OrderItem from './OrderItem';
 
-interface RenderPropType {
-  item: OrderTypes;
-}
 interface PropTypes {
   data: OrderTypes[];
   setEditedOrder: (order: OrderTypes | null) => void;
