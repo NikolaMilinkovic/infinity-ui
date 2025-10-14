@@ -1,4 +1,3 @@
-import { NavigationContainer } from '@react-navigation/native';
 import { useState } from 'react';
 import { Modal, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Colors } from '../../../../../constants/colors';
@@ -59,9 +58,9 @@ export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: 
           <TouchableWithoutFeedback>
             <View style={modalStyles.modal}>
               <View style={modalStyles.contentContainer}>
-                <NavigationContainer independent={true}>
-                  <NewArticleTabs setNewProducts={setNewProducts} newProducts={newProducts} />
-                </NavigationContainer>
+                {/* <NavigationContainer independent={true}> */}
+                <NewArticleTabs setNewProducts={setNewProducts} newProducts={newProducts} />
+                {/* </NavigationContainer> */}
                 <View style={modalStyles.buttonsContainer}>
                   <Button
                     containerStyles={modalStyles.button}

@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
+import { globalStyles } from '../constants/globalStyles';
 import { CouriersContext } from '../store/couriers-context';
 import { CourierTypes } from '../types/allTsTypes';
 import DropdownList from './DropdownList';
@@ -12,7 +13,7 @@ interface DropdownTypes {
 interface CourierSelectorPropTypes {
   setSelectedCourier: (courier: CourierTypes) => void;
   style?: StyleProp<ViewStyle>;
-  defaultValueByMatch: string;
+  defaultValueByMatch?: string;
 }
 /**
  *
@@ -40,7 +41,7 @@ function CourierSelector({ setSelectedCourier, style, defaultValueByMatch }: Cou
       isDefaultValueOn={true}
       placeholder="Izaberite kurira za dostavu"
       defaultValueByIndex={1}
-      buttonContainerStyles={style}
+      buttonContainerStyles={[style, globalStyles.border, globalStyles.elevation_1]}
       defaultValue={defaultValueByMatch}
     />
   );

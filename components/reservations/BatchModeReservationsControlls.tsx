@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { Colors } from '../../constants/colors';
+import { globalStyles } from '../../constants/globalStyles';
 import useAuthToken from '../../hooks/useAuthToken';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
@@ -70,7 +71,7 @@ function BatchModeReservationsControlls({
               onPress={saveReservationsAsOrders}
               key={`key-remove-batch-button`}
               icon="check"
-              style={styles.saveToCourrierButton}
+              style={[styles.saveToCourrierButton, globalStyles.border, globalStyles.elevation_1]}
               pressedStyles={styles.removeBatchItemsButtonPressed}
             />
           </View>
@@ -80,7 +81,7 @@ function BatchModeReservationsControlls({
             onPress={onRemoveBatchPress}
             key={`key-remove-batch-button`}
             icon="delete"
-            style={styles.removeBatchItemsButton}
+            style={[styles.removeBatchItemsButton, globalStyles.border, globalStyles.elevation_1]}
             pressedStyles={styles.removeBatchItemsButtonPressed}
           />
         </Animated.View>
@@ -102,20 +103,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   courierSelector: {
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
     backgroundColor: Colors.white,
-    borderRadius: 4,
-    elevation: 2,
     height: 40,
     flex: 1,
   },
   saveToCourrierButton: {
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
     backgroundColor: Colors.white,
-    borderRadius: 4,
-    elevation: 2,
     width: 50,
     height: 40,
     alignItems: 'center',
@@ -124,11 +117,7 @@ const styles = StyleSheet.create({
   },
   removeBatchItemsButton: {
     margin: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
     backgroundColor: Colors.white,
-    borderRadius: 4,
-    elevation: 2,
     width: 50,
     height: 40,
     alignItems: 'center',

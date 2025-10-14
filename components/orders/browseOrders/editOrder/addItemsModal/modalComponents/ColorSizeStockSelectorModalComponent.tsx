@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import RadioButtonsGroup from 'react-native-radio-buttons-group';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../../../../../constants/colors';
+import { globalStyles } from '../../../../../../constants/globalStyles';
 import { DressColorTypes, DressTypes, OrderProductTypes, PurseColorTypes } from '../../../../../../types/allTsTypes';
 
 interface ButtonTypes {
@@ -85,10 +86,10 @@ function ColorSizeStockSelectorModalComponent({ product, index, setSelectedItems
     // Update the order object & cache selected color obj
     setSelectedColor(colorObj);
     setSelectedItems((prev: any) => {
-      const updatedProducts = [...prev]; // Clone the array
+      const updatedProducts = [...prev];
       if (updatedProducts[index]) {
         updatedProducts[index] = {
-          ...updatedProducts[index], // Keep other product fields
+          ...updatedProducts[index],
           selectedColor: colorObj.color,
           selectedColorId: colorObj._id,
         };
@@ -98,10 +99,10 @@ function ColorSizeStockSelectorModalComponent({ product, index, setSelectedItems
     if (product.hasOwnProperty('selectedSize')) {
       const sizeObj = { _id: '', size: '' };
       setSelectedItems((prev: any) => {
-        const updatedProducts = [...prev]; // Clone the array
+        const updatedProducts = [...prev];
         if (updatedProducts[index]) {
           updatedProducts[index] = {
-            ...updatedProducts[index], // Keep other product fields
+            ...updatedProducts[index],
             selectedSize: sizeObj.size,
             selectedSizeId: sizeObj._id,
           };
@@ -118,10 +119,10 @@ function ColorSizeStockSelectorModalComponent({ product, index, setSelectedItems
     if (product.hasOwnProperty('selectedSize')) {
       const sizeObj = selectedColor.sizes.find((obj) => obj.size === size);
       setSelectedItems((prev: any) => {
-        const updatedProducts = [...prev]; // Clone the array
+        const updatedProducts = [...prev];
         if (updatedProducts[index]) {
           updatedProducts[index] = {
-            ...updatedProducts[index], // Keep other product fields
+            ...updatedProducts[index],
             selectedSize: sizeObj.size,
             selectedSizeId: sizeObj._id,
           };
@@ -135,10 +136,12 @@ function ColorSizeStockSelectorModalComponent({ product, index, setSelectedItems
   if (!product) return;
 
   return (
-    <Animated.ScrollView style={styles.container}>
+    <Animated.ScrollView style={[styles.container, globalStyles.border, globalStyles.elevation_1]}>
       {/* TOGGLE  BUTTON */}
       <Pressable onPress={() => setIsExpanded(!isExpanded)} style={styles.headerContainer}>
-        <Text style={styles.header}>{product?.itemReference?.name}</Text>
+        <Text style={styles.header} ellipsizeMode="tail" numberOfLines={1}>
+          {product?.itemReference?.name}
+        </Text>
         <Icon
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={styles.iconStyle}
@@ -186,6 +189,7 @@ function getStyles(selectedColor: string, selectedSize: string) {
     headerContainer: {
       padding: 10,
       flexDirection: 'row',
+      backgroundColor: Colors.primaryLight,
     },
     iconStyle: {
       marginLeft: 'auto',
@@ -195,18 +199,16 @@ function getStyles(selectedColor: string, selectedSize: string) {
       fontSize: 20,
       fontWeight: 'bold',
       color: Colors.primaryDark,
+      maxWidth: '88%',
     },
     container: {
-      borderWidth: 0.5,
-      borderColor: Colors.primaryDark,
-      borderRadius: 4,
       marginBottom: 8,
     },
     colorsContainer: {
-      backgroundColor: selectedColor ? 'transparent' : Colors.secondaryHighlight,
+      backgroundColor: selectedColor ? Colors.white : Colors.secondaryHighlight,
     },
     sizeContainer: {
-      backgroundColor: selectedSize ? 'transparent' : Colors.secondaryHighlight,
+      backgroundColor: selectedSize ? Colors.white : Colors.secondaryHighlight,
     },
     radioButtonsContainer: {
       flexDirection: 'row',
@@ -218,8 +220,6 @@ function getStyles(selectedColor: string, selectedSize: string) {
       color: Colors.primaryDark,
     },
     colorHeader: {
-      borderTopWidth: 0.5,
-      borderTopColor: Colors.primaryDark,
       color: Colors.primaryDark,
       fontSize: 16,
       fontWeight: 'bold',

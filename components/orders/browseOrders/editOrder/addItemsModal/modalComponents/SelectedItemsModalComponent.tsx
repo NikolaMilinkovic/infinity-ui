@@ -1,7 +1,7 @@
-import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Colors } from '../../../../../../constants/colors';
+import { globalStyles } from '../../../../../../constants/globalStyles';
 import ColorSizeStockSelectorModalComponent from './ColorSizeStockSelectorModalComponent';
 import SelectedItem from './SelectedItem';
 
@@ -14,7 +14,7 @@ function SelectedItemsModalComponent({ selectedItems, setSelectedItems }: any) {
             <Text style={styles.header}>Izabrani artikli</Text>
             {/* LIST */}
             <Animated.FlatList
-              style={styles.listContainer}
+              style={[styles.listContainer, globalStyles.border]}
               data={selectedItems}
               renderItem={({ item, index }) => (
                 <SelectedItem item={item} setSelectedItems={setSelectedItems} index={index} />
@@ -48,15 +48,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     padding: 8,
   },
-  headerContainer: {
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    backgroundColor: Colors.secondaryDark,
-    marginBottom: 6,
-    flexDirection: 'row',
-  },
   iconStyle: {
     marginLeft: 'auto',
   },
@@ -64,12 +55,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.primaryDark,
+    marginBottom: 6,
+    marginTop: 10,
   },
   listContainer: {
     padding: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    borderRadius: 4,
     marginBottom: 6,
     minHeight: 250,
   },

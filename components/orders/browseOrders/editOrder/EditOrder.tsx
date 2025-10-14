@@ -2,6 +2,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { NativeSyntheticEvent, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../../../constants/colors';
+import { globalStyles } from '../../../../constants/globalStyles';
 import { AuthContext } from '../../../../store/auth-context';
 import { CouriersContext } from '../../../../store/couriers-context';
 import { CourierTypesWithNoId, OrderTypes, ProductTypes } from '../../../../types/allTsTypes';
@@ -339,6 +340,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
                 backColor={Colors.secondaryLight}
                 textColor={Colors.primaryDark}
                 onPress={handleShowAddItemComponent}
+                containerStyles={(globalStyles.border, globalStyles.elevation_1)}
               >
                 Dodaj Artikal
               </Button>

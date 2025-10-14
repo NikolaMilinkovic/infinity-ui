@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { globalStyles } from '../constants/globalStyles';
 interface ButtonTypes {
   children?: any;
   onPress?: any;
@@ -12,7 +13,10 @@ function Button({ children, onPress, textColor, backColor, containerStyles, text
   const styles = getStyles(textColor, backColor);
 
   return (
-    <Pressable style={({ pressed }) => [styles.button, pressed && styles.pressed, containerStyles]} onPress={onPress}>
+    <Pressable
+      style={({ pressed }) => [globalStyles.elevation_1, styles.button, pressed && styles.pressed, containerStyles]}
+      onPress={onPress}
+    >
       <View>
         <Text style={[styles.buttonText, textStyles]}>{children}</Text>
       </View>
@@ -29,10 +33,6 @@ function getStyles(textColor = 'black', backColor = 'white') {
       paddingVertical: 12,
       paddingHorizontal: 12,
       backgroundColor: backColor,
-      elevation: 2,
-      shadowOffset: { width: 1, height: 1 },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
       width: '100%',
     },
     pressed: {

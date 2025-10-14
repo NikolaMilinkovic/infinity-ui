@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import { useContext, useMemo, useState } from 'react';
 import { Modal, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -6,6 +7,7 @@ import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder'
 import filterReservations from '../../components/reservations/filterReservations';
 import ReservationsItemsList from '../../components/reservations/ReservationsItemsList';
 import SearchReservations from '../../components/reservations/SearchReservations';
+import { Colors } from '../../constants/colors';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useFadeTransition } from '../../hooks/useFadeTransition';
 import { OrdersContext } from '../../store/orders-context';
@@ -75,7 +77,8 @@ function BrowseReservations() {
         visible={editedReservation !== null}
         onRequestClose={removeEditedReservation}
       >
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
+          <StatusBar style="light" />
           <Animated.View style={[editReservationFade, { flex: 1 }]}>
             <EditOrder editedOrder={editedReservation} setEditedOrder={setEditedReservation} />
           </Animated.View>

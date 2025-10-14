@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { Colors } from '../../constants/colors';
+import { globalStyles } from '../../constants/globalStyles';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
 import { useUser } from '../../store/user-context';
@@ -28,13 +29,22 @@ function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }: 
         <Animated.View style={[styles.container, { height: toggleExpandAnimation, opacity: toggleFade }]}>
           {/* Product sorting buttons */}
           <View style={styles.sortProductsContainer}>
-            <Button containerStyles={styles.button} onPress={() => handleSortProducts('top')}>
+            <Button
+              containerStyles={[styles.button, globalStyles.elevation_1]}
+              onPress={() => handleSortProducts('top')}
+            >
               Top
             </Button>
-            <Button containerStyles={styles.button} onPress={() => handleSortProducts('mid')}>
+            <Button
+              containerStyles={[styles.button, globalStyles.elevation_1]}
+              onPress={() => handleSortProducts('mid')}
+            >
               Mid
             </Button>
-            <Button containerStyles={styles.button} onPress={() => handleSortProducts('bot')}>
+            <Button
+              containerStyles={[styles.button, globalStyles.elevation_1]}
+              onPress={() => handleSortProducts('bot')}
+            >
               Bot
             </Button>
           </View>
@@ -46,7 +56,7 @@ function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }: 
             onPress={onRemoveBatchPress}
             key={`key-remove-batch-button`}
             icon="delete"
-            style={styles.removeBatchItemsButton}
+            style={[styles.removeBatchItemsButton, globalStyles.elevation_1]}
             pressedStyles={styles.removeBatchItemsButtonPressed}
           />
         </Animated.View>
@@ -89,11 +99,7 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: 60,
     height: 40,
-    // borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
     backgroundColor: Colors.white,
-    borderRadius: 4,
-    elevation: 2,
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 10,

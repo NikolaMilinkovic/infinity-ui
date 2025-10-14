@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: Colors.secondaryDark,
     backgroundColor: Colors.secondaryDark,
-    marginBottom: 8,
+    marginBottom: 16,
     flexDirection: 'row',
   },
   iconStyle: {

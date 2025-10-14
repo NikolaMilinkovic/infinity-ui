@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Colors } from '../../../constants/colors';
+import { globalStyles } from '../../../constants/globalStyles';
 import { DropdownTypes } from '../../../types/allTsTypes';
 import DropdownList from '../../../util-components/DropdownList';
 import InputField from '../../../util-components/InputField';
@@ -36,7 +37,7 @@ function UserFilter({ searchQuery, setSearchQuery, selectedRole, setSelectedRole
         isDefaultValueOn={true}
         defaultValue={selectedRole}
         onSelect={(text) => setSelectedRole(text.value)}
-        buttonContainerStyles={{ flex: 1 }}
+        buttonContainerStyles={[{ flex: 1, height: 44 }, globalStyles.border, globalStyles.elevation_1]}
       />
       {/* <DropdownList2
         data={roleDropdownFilter}

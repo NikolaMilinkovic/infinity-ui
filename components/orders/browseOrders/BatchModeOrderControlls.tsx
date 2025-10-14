@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { Colors } from '../../../constants/colors';
+import { globalStyles } from '../../../constants/globalStyles';
 import { useExpandAnimationWithContentVisibility } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { useUser } from '../../../store/user-context';
@@ -40,7 +41,12 @@ function BatchModeOrderControlls({
               onPress={onRemoveBatchPress}
               key={`key-remove-batch-button`}
               icon="delete"
-              style={[styles.generalButtonStyle, styles.removeBatchItemsButton]}
+              style={[
+                styles.generalButtonStyle,
+                styles.removeBatchItemsButton,
+                globalStyles.border,
+                globalStyles.elevation_1,
+              ]}
               pressedStyles={styles.removeBatchItemsButtonPressed}
             />
           )}
@@ -50,7 +56,12 @@ function BatchModeOrderControlls({
             onPress={onExcellExportPress}
             key={`key-excell-export-batch-button`}
             icon="file-export"
-            style={[styles.generalButtonStyle, styles.exportExcellButton]}
+            style={[
+              styles.generalButtonStyle,
+              styles.exportExcellButton,
+              globalStyles.border,
+              globalStyles.elevation_1,
+            ]}
             pressedStyles={styles.removeBatchItemsButtonPressed}
             iconsLibrary="FontAwesome6"
             text="Excell"
@@ -62,7 +73,7 @@ function BatchModeOrderControlls({
               onPress={onSelectAllOrders}
               key={`key-select-all-orders-button`}
               icon="close"
-              style={[styles.generalButtonStyle, styles.highlightAll]}
+              style={[styles.generalButtonStyle, styles.highlightAll, globalStyles.border, globalStyles.elevation_1]}
               pressedStyles={styles.removeBatchItemsButtonPressed}
               iconsLibrary="MaterialIcons"
               text="Odštikliraj"
@@ -74,7 +85,7 @@ function BatchModeOrderControlls({
               onPress={onSelectAllOrders}
               key={`key-select-all-orders-button`}
               icon="done-all"
-              style={[styles.generalButtonStyle, styles.highlightAll]}
+              style={[styles.generalButtonStyle, styles.highlightAll, globalStyles.border, globalStyles.elevation_1]}
               pressedStyles={styles.removeBatchItemsButtonPressed}
               iconsLibrary="MaterialIcons"
               text="Oznaci sve"
@@ -106,11 +117,7 @@ const styles = StyleSheet.create({
   generalButtonStyle: {
     marginVertical: 10,
     marginHorizontal: 5,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
     backgroundColor: Colors.white,
-    borderRadius: 4,
-    elevation: 2,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',

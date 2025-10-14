@@ -1,5 +1,6 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../../../constants/colors';
+import { globalStyles } from '../../../../constants/globalStyles';
 import useConfirmationModal from '../../../../hooks/useConfirmationMondal';
 import useImagePreviewModal from '../../../../hooks/useImagePreviewModal';
 import { OrderProductTypes } from '../../../../types/allTsTypes';
@@ -41,7 +42,7 @@ function ProductDisplay({ product, index, setProducts }: ProductDisplayTypes) {
         <ImagePreviewModal image={previewImage} isVisible={isImageModalVisible} onCancel={hideImageModal} />
       )}
 
-      <View key={index} style={productDisplayStyles.container}>
+      <View key={index} style={[productDisplayStyles.container, globalStyles.border, globalStyles.elevation_1]}>
         <View style={productDisplayStyles.subContainer}>
           {/* Image */}
           <View style={productDisplayStyles.imageContainer}>
@@ -87,7 +88,7 @@ function ProductDisplay({ product, index, setProducts }: ProductDisplayTypes) {
               onPress={handleOnRemovePress}
               key={`key-${index}-remove-button`}
               icon="delete"
-              style={productDisplayStyles.removeButtonContainer}
+              style={[globalStyles.border, globalStyles.elevation_1, productDisplayStyles.removeButtonContainer]}
               pressedStyles={productDisplayStyles.buttonContainerPressed}
             />
           </View>
@@ -101,8 +102,6 @@ const productDisplayStyles = StyleSheet.create({
   container: {
     backgroundColor: Colors.white,
     padding: 10,
-    borderRadius: 4,
-    elevation: 2,
   },
   subContainer: {
     flexDirection: 'row',
@@ -131,7 +130,6 @@ const productDisplayStyles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: Colors.white,
     padding: 10,
-    elevation: 2,
   },
   buttonContainerPressed: {
     opacity: 0.7,

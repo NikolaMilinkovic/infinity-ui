@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../../constants/colors';
+import { globalStyles } from '../../../constants/globalStyles';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { AuthContext } from '../../../store/auth-context';
@@ -31,8 +32,8 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
     if (!user?.permissions?.packaging?.finish_packaging) {
       return popupMessage('Nemate dozvolu za završavanje pakovanja.', 'danger');
     }
-    if (orders.length === 0) return popupMessage('Ne postoje porudžbine za pakovanje.', 'info');
     const packedIds = orders.filter((order) => order.packedIndicator === true).map((order) => order._id);
+    if (packedIds.length === 0) return popupMessage('Ne postoje porudžbine označene za pakovanje.', 'info');
     const response = await fetchWithBodyData(token, 'orders/pack-orders', { packedIds }, 'POST');
     if (response?.status === 200) {
       const data = await response?.json();
@@ -60,27 +61,10 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
     setToBePackedCounter(toBePacked);
   }, [orders]);
 
-  // Category Dropdown Reset
-  const [resetKey, setResetKey] = useState(0);
-  function resetDropdown() {
-    setResetKey((prevKey) => prevKey + 1);
-    setSearchParams((prev: any) => ({ ...prev, courier: '' }));
-  }
-
   return (
-    <Animated.View style={[styles.container, { height: height }]}>
+    <Animated.View style={[styles.container, { height: height }, globalStyles.border, globalStyles.elevation_1]}>
       <View style={styles.counterContainer}>
         <Text style={styles.counterText}>Spakovano: {packedCounter}</Text>
-        {/* <Pressable style={styles.counterContainer} onPress={() => setIsExpanded(true)}>
-          {!isExpanded && (
-            <Icon
-              name={isExpanded ? 'chevron-up' : 'chevron-down'}
-              style={styles.iconStyle}
-              size={26}
-              color={Colors.primaryDark}
-            />
-          )}
-        </Pressable> */}
         <Text style={styles.counterText}>Za pakovanje: {toBePackedCounter}</Text>
       </View>
       {!isExpanded && (
