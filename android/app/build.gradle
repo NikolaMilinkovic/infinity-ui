@@ -81,6 +81,13 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+            version "3.22.1"
+        }
+    }
+
     ndkVersion rootProject.ext.ndkVersion
 
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -92,7 +99,13 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.10"
+        versionName "1.1.0"
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared", "-DCMAKE_CXX_FLAGS=-std=c++17"
+            }
+        }
     }
     signingConfigs {
         debug {
@@ -149,6 +162,26 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+
+    // Manual linking
+    implementation project(':react-native-gesture-handler')
+    // implementation project(':react-native-worklets-core')
+    implementation project(':react-native-worklets')
+    implementation project(':react-native-reanimated')
+    implementation project(':react-native-fs')
+    implementation project(':react-native-pager-view')
+    implementation project(':react-native-async-storage_async-storage')
+    implementation project(':react-native-community_datetimepicker')
+    implementation project(':react-native-community_netinfo')
+    implementation project(':react-native-firebase_app')
+    implementation project(':react-native-firebase_messaging')
+    implementation project(':react-native-safe-area-context')
+    implementation project(':react-native-vector-icons')
+    implementation project(':react-native-screens')
+    implementation project(':react-native-webview')
+
+
+
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

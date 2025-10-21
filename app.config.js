@@ -33,10 +33,33 @@ module.exports = {
         },
       ],
       [
+        'expo-build-properties',
+        {
+          android: {
+            agpVersion: '8.7.3',
+          },
+        },
+      ],
+      [
         'expo-notifications',
         {
           icon: './assets/notification.png',
           color: '#ffffff',
+        },
+      ],
+      [
+        'expo-build-properties',
+        {
+          android: {
+            ndkVersion: '26.1.10909125',
+            extraCmakeArgs: ['-DANDROID_STL=c++_shared'],
+          },
+        },
+      ],
+      [
+        'expo-custom-agp',
+        {
+          version: '8.7.3',
         },
       ],
     ],

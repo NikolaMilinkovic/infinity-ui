@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-pager-view/android/build.gradle b/node_modules/react-native-pager-view/android/build.gradle
+index b46c366..a7d58b5 100644
+--- a/node_modules/react-native-pager-view/android/build.gradle
++++ b/node_modules/react-native-pager-view/android/build.gradle
+@@ -106,7 +106,7 @@ android {
+                     "REACT_ANDROID_BUILD_DIR=${reactAndroidProject.buildDir}",
+                     "CODEGEN_MODULE_NAME=$codegenViewModuleName"
+           cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
+-          cppFlags "-std=c++17"
++          cppFlags "-std=c++20"
+           targets "${codegenViewModuleName}_registration"
+         }
+       }

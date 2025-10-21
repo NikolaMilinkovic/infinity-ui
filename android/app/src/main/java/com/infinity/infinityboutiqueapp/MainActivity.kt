@@ -8,8 +8,6 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
-import com.facebook.react.bridge.JSIModulePackage
-import com.swmansion.reanimated.ReanimatedJSIModulePackage
 
 import expo.modules.ReactActivityDelegateWrapper
 
@@ -63,9 +61,5 @@ class MainActivity : ReactActivity() {
       // Use the default back button implementation on Android S
       // because it's doing more than [Activity.moveTaskToBack] in fact.
       super.invokeDefaultOnBackPressed()
-  }
-
-  override fun getJSIModulePackage(): JSIModulePackage? {
-    return ReanimatedJSIModulePackage()
   }
 }

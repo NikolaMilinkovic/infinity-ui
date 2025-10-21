@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { popupMessage } from '../util-components/PopupMessage';
-import { betterConsoleLog, betterErrorLog } from './LogMethods';
+import { betterErrorLog } from './LogMethods';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 let authContextInstance: any;
@@ -139,8 +139,6 @@ export async function addPurse(purseData: any, authToken: string): Promise<boole
 // NEW ORDER ADD METHOD
 export async function addNewOrder(formData: any, authToken: string, uri: string) {
   try {
-    console.log('Fetching with form data now');
-    betterConsoleLog('> formData', formData);
     const response = await handleFetchingWithFormData(formData, authToken, uri, 'POST');
 
     if (!response) {

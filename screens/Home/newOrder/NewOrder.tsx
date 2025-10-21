@@ -153,7 +153,6 @@ function NewOrder() {
   async function submitOrder(order: any, token: string) {
     if (!user && !user?.permissions?.orders?.create)
       return popupMessage('Nemate dozvolu za dodavanje nove porudžbine', 'danger');
-    console.log('AddNewOrder is being called');
     const response = await addNewOrder(order, token, 'orders');
     setIsAddingOrder(false);
     if (response) {
