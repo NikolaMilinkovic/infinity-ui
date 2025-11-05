@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Colors } from '../constants/colors';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 import CustomCheckbox from './CustomCheckbox';
 
 interface PropTypes {
@@ -10,6 +10,8 @@ interface PropTypes {
   borders?: boolean;
 }
 function SizePickerCheckboxes({ selectedSizes, setSelectedSizes, sizes = [], borders = true }: PropTypes) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const [sizeData, setSizeData] = useState<string[]>([]);
   useEffect(() => {
     setSizeData(sizes);
@@ -59,20 +61,22 @@ function SizePickerCheckboxes({ selectedSizes, setSelectedSizes, sizes = [], bor
   );
 }
 
-const styles = StyleSheet.create({
-  checkboxesContainer: {
-    borderWidth: 2,
-    borderColor: Colors.primaryLight,
-    marginTop: 8,
-    borderRadius: 4,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-  },
-  checkboxWrapper: {
-    alignItems: 'center',
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    checkboxesContainer: {
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      marginTop: 8,
+      borderRadius: 4,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+    },
+    checkboxWrapper: {
+      alignItems: 'center',
+    },
+  });
+}
 
 export default SizePickerCheckboxes;

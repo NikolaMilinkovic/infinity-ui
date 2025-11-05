@@ -1,34 +1,35 @@
-import { useState } from "react";
-import { DressTypes, ImageTypes, ProductTypes, PurseTypes } from "../../../../../../types/allTsTypes";
-import useImagePreviewModal from "../../../../../../hooks/useImagePreviewModal";
-import useCheckStockAvailability from "../../../../../../hooks/useCheckStockAvailability";
-import { Image, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
-import ImagePreviewModal from "../../../../../../util-components/ImagePreviewModal";
-import ExpandButton from "../../../../../../util-components/ExpandButton";
-import IconButton from "../../../../../../util-components/IconButton";
-import { Colors } from "../../../../../../constants/colors";
-import DisplayDressStock from "../../../../../products/unique_product_components/display_stock/DisplayDressStock";
-import DisplayPurseStock from "../../../../../products/unique_product_components/display_stock/DisplayPurseStock";
+import { useState } from 'react';
+import { Image, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import useCheckStockAvailability from '../../../../../../hooks/useCheckStockAvailability';
+import useImagePreviewModal from '../../../../../../hooks/useImagePreviewModal';
+import { ThemeColors, useThemeColors } from '../../../../../../store/theme-context';
+import { DressTypes, ImageTypes, ProductTypes, PurseTypes } from '../../../../../../types/allTsTypes';
+import ExpandButton from '../../../../../../util-components/ExpandButton';
+import IconButton from '../../../../../../util-components/IconButton';
+import ImagePreviewModal from '../../../../../../util-components/ImagePreviewModal';
+import DisplayDressStock from '../../../../../products/unique_product_components/display_stock/DisplayDressStock';
+import DisplayPurseStock from '../../../../../products/unique_product_components/display_stock/DisplayPurseStock';
 
 // DISPLAYS A SINGLE PRODUCT IN THE LIST
 interface DisplayProductModalComponentPropTypes {
-  item: ProductTypes
-  addNewProduct: (item: any) => void
+  item: ProductTypes;
+  addNewProduct: (item: any) => void;
 }
-export default function DisplayProductModalComponent({ item, addNewProduct }: DisplayProductModalComponentPropTypes){
+export default function DisplayProductModalComponent({ item, addNewProduct }: DisplayProductModalComponentPropTypes) {
   const [previewImage, setPreviewImage] = useState(item.image);
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const [isExpanded, setIsExpanded] = useState(false);
   const [onStock, setOnStock] = useState(false);
-  if(item) useCheckStockAvailability(item, setOnStock);
-  const styles = getProductStyles(onStock);
+  if (item) useCheckStockAvailability(item, setOnStock);
+  const colors = useThemeColors();
+  const styles = getStyles(colors, onStock);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
   const handleOnAddPress = () => {
     let productObj;
-    if(item.stockType === 'Boja-Veličina-Količina'){
+    if (item.stockType === 'Boja-Veličina-Količina') {
       productObj = {
         itemReference: item,
         name: item.name,
@@ -37,14 +38,14 @@ export default function DisplayProductModalComponent({ item, addNewProduct }: Di
         stockType: item.stockType,
         image: {
           uri: item.image.uri,
-          imageName: item.image.imageName
+          imageName: item.image.imageName,
         },
         mongoDB_type: 'Dress',
         selectedColor: '',
         selectedColorId: '',
         selectedSize: '',
         selectedSizeId: '',
-      }
+      };
     } else {
       productObj = {
         itemReference: item,
@@ -54,29 +55,24 @@ export default function DisplayProductModalComponent({ item, addNewProduct }: Di
         stockType: item.stockType,
         image: {
           uri: item.image.uri,
-          imageName: item.image.imageName
+          imageName: item.image.imageName,
         },
         mongoDB_type: 'Purse',
         selectedColor: '',
         selectedColorId: '',
-      }
+      };
     }
     addNewProduct(productObj);
-  }
+  };
   function handleImagePreview(image: ImageTypes) {
     setPreviewImage(image);
     showImageModal();
   }
-  return(
+  return (
     <View style={styles.itemContainer}>
-
       {/* IMAGE PREVIEW MODAL */}
       {previewImage && (
-        <ImagePreviewModal
-          image={previewImage}
-          isVisible={isImageModalVisible}
-          onCancel={hideImageModal}
-        />
+        <ImagePreviewModal image={previewImage} isVisible={isImageModalVisible} onCancel={hideImageModal} />
       )}
 
       {/* IMAGE AND INFORMATIONS */}
@@ -87,32 +83,30 @@ export default function DisplayProductModalComponent({ item, addNewProduct }: Di
 
         <TouchableWithoutFeedback>
           <View style={styles.info}>
-            <Text style={styles.headerText}>{item.name}</Text>
+            <Text style={styles.headerText} numberOfLines={2} ellipsizeMode="tail">
+              {item.name}
+            </Text>
             <Text>Kategorija: {item.category}</Text>
             <Text>Cena: {item.price} RSD</Text>
 
-            {!onStock && (
-            <Text style={styles.soldText}>RASPRODATO</Text>
-            )}
-            {onStock && (
-              <Text style={styles.onStockText}>DOSTUPNO</Text>
-            )}
-              <ExpandButton
-                isExpanded={isExpanded}
-                handleToggleExpand={toggleExpand}
-                containerStyles={styles.expandButton}
-                iconStyles={styles.expandButtonIcon}
-              />
+            {!onStock && <Text style={styles.soldText}>RASPRODATO</Text>}
+            {onStock && <Text style={styles.onStockText}>DOSTUPNO ({item.totalStock})</Text>}
+            <ExpandButton
+              isExpanded={isExpanded}
+              handleToggleExpand={toggleExpand}
+              containerStyles={styles.expandButton}
+              iconStyles={styles.expandButtonIcon}
+            />
           </View>
         </TouchableWithoutFeedback>
         {onStock && (
           <IconButton
             size={26}
-            color={Colors.secondaryDark}
+            color={colors.secondaryDark}
             onPress={handleOnAddPress}
             key={`key-${item._id}-add-button`}
-            icon='add'
-            style={styles.addButtonContainer} 
+            icon="add"
+            style={styles.addButtonContainer}
             pressedStyles={styles.buttonContainerPressed}
           />
         )}
@@ -122,26 +116,19 @@ export default function DisplayProductModalComponent({ item, addNewProduct }: Di
       <View style={styles.stockDataContainer}>
         {/* DISPLAY DRESSES STOCK */}
         {item && item.stockType === 'Boja-Veličina-Količina' && (
-          <DisplayDressStock
-            isExpanded={isExpanded}
-            item={item as DressTypes}
-          />
+          <DisplayDressStock isExpanded={isExpanded} item={item as DressTypes} />
         )}
 
         {/* DISPLAY PURSES STOCK */}
         {item && item.stockType === 'Boja-Količina' && (
-          <DisplayPurseStock
-            isExpanded={isExpanded}
-            item={item as PurseTypes}
-          />
+          <DisplayPurseStock isExpanded={isExpanded} item={item as PurseTypes} />
         )}
       </View>
     </View>
-  )
+  );
 }
 
-function getProductStyles(onStock: boolean){
-
+function getStyles(colors: ThemeColors, onStock: boolean) {
   return StyleSheet.create({
     itemContainer: {
       minHeight: 160,
@@ -149,12 +136,12 @@ function getProductStyles(onStock: boolean){
       paddingVertical: 10,
       width: '100%',
       borderBottomWidth: 0.5,
-      borderColor: Colors.highlight,
+      borderColor: colors.highlight,
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      backgroundColor: (onStock ? Colors.white : Colors.secondaryHighlight),
+      backgroundColor: onStock ? colors.white : colors.secondaryHighlight,
       marginBottom: 4,
       elevation: 2,
       position: 'relative',
@@ -171,26 +158,27 @@ function getProductStyles(onStock: boolean){
       flex: 8,
       height: '100%',
       marginLeft: 16,
+      marginRight: 40,
       position: 'relative',
     },
     imageContainer: {
-      position: 'relative', 
-      height: 140, 
+      position: 'relative',
+      height: 140,
       borderRadius: 8,
-      overflow: 'hidden'
+      overflow: 'hidden',
     },
     image: {
       flex: 4,
       width: 120,
     },
     headerText: {
-      fontSize: 16, 
+      fontSize: 16,
       fontWeight: 'bold',
-      color: Colors.primaryDark,
+      color: colors.primaryDark,
       maxHeight: 40,
     },
     soldText: {
-      color: Colors.error,
+      color: colors.error,
       fontWeight: 'bold',
     },
     expandButton: {
@@ -201,20 +189,20 @@ function getProductStyles(onStock: boolean){
       bottom: -10,
       right: 0,
       marginLeft: 'auto',
-      backgroundColor: onStock ? Colors.white : Colors.secondaryHighlight,
-      borderColor: onStock ? Colors.success : Colors.error,
+      backgroundColor: onStock ? colors.white : colors.secondaryHighlight,
+      borderColor: onStock ? colors.success : colors.error,
       borderWidth: 0,
       width: '100%',
     },
     expandButtonIcon: {
-      color: onStock ? Colors.success : Colors.error,
+      color: onStock ? colors.success : colors.error,
     },
-    stockDataContainer:{
+    stockDataContainer: {
       width: '100%',
-      paddingHorizontal: 6
+      paddingHorizontal: 6,
     },
     onStockText: {
-      color: Colors.success,
+      color: colors.success,
       fontWeight: 'bold',
     },
     addButtonContainer: {
@@ -223,9 +211,9 @@ function getProductStyles(onStock: boolean){
       top: 0,
       borderRadius: 100,
       overflow: 'hidden',
-      backgroundColor: onStock ? Colors.white : Colors.secondaryHighlight,
+      backgroundColor: onStock ? colors.white : colors.secondaryHighlight,
       padding: 10,
-      elevation: 2
+      elevation: 2,
     },
-  })
+  });
 }

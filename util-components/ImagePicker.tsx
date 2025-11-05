@@ -1,12 +1,13 @@
 import { launchCameraAsync, PermissionStatus, useCameraPermissions } from 'expo-image-picker';
 import { useState } from 'react';
-import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, Pressable, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../constants/colors';
-import { globalStyles } from '../constants/globalStyles';
+import { useGlobalStyles } from '../constants/globalStyles';
 import { useExpandAnimation } from '../hooks/useExpand';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 import { pickImage } from '../util-methods/GalleryPickImage';
 import Button from './Button';
+import CustomText from './CustomText';
 import { popupMessage } from './PopupMessage';
 
 interface PropTypes {
@@ -29,6 +30,9 @@ function ImagePicker({
   showGallery = true,
   containerStyles,
 }: PropTypes) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
   const [permissionInfo, requestPermission] = useCameraPermissions();
   const [isExpanded, setIsExpanded] = useState(previewImage ? true : false);
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 50, height, 180);
@@ -74,7 +78,7 @@ function ImagePicker({
     event.stopPropagation();
   }
 
-  let imagePreview = <Text style={styles.text}>Dodaj sliku proizvoda</Text>;
+  let imagePreview = <CustomText style={styles.text}>Dodaj sliku proizvoda</CustomText>;
   if (!isExpanded) {
     imagePreview = (
       <Pressable onPress={handleToggleExpand} style={styles.collapsedArea}>
@@ -91,7 +95,7 @@ function ImagePicker({
       <Pressable onPress={takeImageHandler}>
         <Animated.View style={[styles.imagePreview, { height: toggleExpandAnimation }, containerStyles]}>
           <Pressable style={[styles.toggleExpand, globalStyles.border]} onPress={handleToggleExpand}>
-            <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} size={24} />
+            <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} size={24} color={colors.defaultText} />
           </Pressable>
           {imagePreview}
         </Animated.View>
@@ -100,19 +104,23 @@ function ImagePicker({
         {showCamera && (
           <Button
             onPress={takeImageHandler}
-            containerStyles={[styles.button, globalStyles.elevation_1, globalStyles.border]}
+            containerStyles={[styles.button, globalStyles.border]}
             textStyles={styles.buttonText}
+            backColor={colors.buttonNormal1}
+            backColor1={colors.buttonNormal2}
           >
-            <Icon name="camera" size={24} color={Colors.primaryDark} />
+            <Icon name="camera" size={24} color={colors.defaultText} />
           </Button>
         )}
         {showGallery && (
           <Button
             onPress={openGalleryHandler}
-            containerStyles={[styles.button, globalStyles.elevation_1, globalStyles.border]}
+            containerStyles={[styles.button, globalStyles.border]}
             textStyles={styles.buttonText}
+            backColor={colors.buttonNormal1}
+            backColor1={colors.buttonNormal2}
           >
-            <Icon name="image" size={24} color={Colors.primaryDark} />
+            <Icon name="image" size={24} color={colors.defaultText} />
           </Button>
         )}
       </View>
@@ -120,61 +128,66 @@ function ImagePicker({
   );
 }
 
-const styles = StyleSheet.create({
-  imagePreview: {
-    width: '100%',
-    marginVertical: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    borderRadius: 4,
-    overflow: 'hidden',
-    position: 'relative',
-    marginTop: 4,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    alignSelf: 'center',
-    backgroundColor: Colors.white,
-  },
-  text: {
-    fontSize: 16,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  button: {
-    flex: 1,
-  },
-  buttonText: {
-    fontWeight: 400,
-    fontSize: 16,
-  },
-  toggleExpand: {
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 30,
-    height: 30,
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
-  },
-  collapsedArea: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  collapsedText: {
-    fontSize: 16,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    imagePreview: {
+      width: '100%',
+      marginVertical: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.background,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      borderRadius: 4,
+      overflow: 'hidden',
+      position: 'relative',
+      marginTop: 4,
+      padding: 10,
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+      alignSelf: 'center',
+      backgroundColor: colors.background1,
+    },
+    text: {
+      fontSize: 16,
+    },
+    buttonsContainer: {
+      flexDirection: 'row',
+      gap: 10,
+      flex: 1,
+    },
+    button: {
+      padding: 0.5,
+      flex: 2,
+    },
+    buttonText: {
+      fontWeight: 400,
+      fontSize: 14,
+    },
+    toggleExpand: {
+      backgroundColor: colors.background,
+      borderRadius: 4,
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 30,
+      height: 30,
+      position: 'absolute',
+      top: 10,
+      right: 10,
+      zIndex: 1,
+    },
+    collapsedArea: {
+      width: '100%',
+      height: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    collapsedText: {
+      fontSize: 16,
+    },
+  });
+}
 
 export default ImagePicker;

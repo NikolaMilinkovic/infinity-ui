@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Modal, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import { Colors } from '../../../../../constants/colors';
+import { Modal, Platform, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import NewArticleTabs from '../../../../../navigation/NewArticleTabs';
+import { ThemeColors, useThemeColors } from '../../../../../store/theme-context';
 import { OrderProductTypes } from '../../../../../types/allTsTypes';
 import Button from '../../../../../util-components/Button';
 import { popupMessage } from '../../../../../util-components/PopupMessage';
@@ -13,6 +14,8 @@ interface AddItemsModalPropTypes {
 }
 export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: AddItemsModalPropTypes) {
   const [newProducts, setNewProducts] = useState<OrderProductTypes[]>([]);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   function handleCancel() {
     setIsVisible(false);
@@ -48,86 +51,91 @@ export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: 
     <Modal
       animationType="fade"
       visible={isVisible}
-      transparent={true}
+      presentationStyle={Platform.OS === 'android' ? 'overFullScreen' : 'pageSheet'}
       onRequestClose={() => {
         setIsVisible(false);
       }}
     >
-      <TouchableWithoutFeedback onPress={handleCancel}>
-        <View style={modalStyles.modalContainer}>
-          <TouchableWithoutFeedback>
-            <View style={modalStyles.modal}>
-              <View style={modalStyles.contentContainer}>
-                {/* <NavigationContainer independent={true}> */}
-                <NewArticleTabs setNewProducts={setNewProducts} newProducts={newProducts} />
-                {/* </NavigationContainer> */}
-                <View style={modalStyles.buttonsContainer}>
-                  <Button
-                    containerStyles={modalStyles.button}
-                    backColor={Colors.error}
-                    textColor={Colors.white}
-                    onPress={handleCancel}
-                  >
-                    Odustani
-                  </Button>
-                  <Button
-                    containerStyles={modalStyles.button}
-                    backColor={Colors.secondaryDark}
-                    textColor={Colors.white}
-                    onPress={handleSaveItems}
-                  >
-                    Sačuvaj
-                  </Button>
+      <SafeAreaView style={{ flex: 1 }}>
+        <TouchableWithoutFeedback onPress={handleCancel}>
+          <View style={styles.modalContainer}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modal}>
+                <View style={styles.contentContainer}>
+                  {/* <NavigationContainer independent={true}> */}
+                  <NewArticleTabs setNewProducts={setNewProducts} newProducts={newProducts} />
+                  {/* </NavigationContainer> */}
+                  <View style={styles.buttonsContainer}>
+                    <Button
+                      containerStyles={styles.button}
+                      backColor={colors.error}
+                      textColor={colors.white}
+                      onPress={handleCancel}
+                    >
+                      Odustani
+                    </Button>
+                    <Button
+                      containerStyles={styles.button}
+                      backColor={colors.secondaryDark}
+                      textColor={colors.white}
+                      onPress={handleSaveItems}
+                    >
+                      Sačuvaj
+                    </Button>
+                  </View>
                 </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
     </Modal>
   );
 }
-const modalStyles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1,
-  },
-  modal: {
-    width: '90%',
-    height: '90%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  contentContainer: {
-    width: '100%',
-    height: '100%',
-  },
-  header: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    backgroundColor: Colors.secondaryLight,
-    width: '100%',
-    textAlign: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: Colors.highlight,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    gap: 10,
-    padding: 10,
-  },
-  button: {
-    flex: 2,
-  },
-});
+
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    modalContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 1,
+    },
+    modal: {
+      width: '95%',
+      height: '90%',
+      backgroundColor: 'white',
+      borderRadius: 10,
+      alignItems: 'center',
+      overflow: 'hidden',
+    },
+    contentContainer: {
+      width: '100%',
+      height: '100%',
+    },
+    header: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      backgroundColor: colors.secondaryLight,
+      width: '100%',
+      textAlign: 'center',
+      paddingVertical: 10,
+      borderBottomWidth: 2,
+      borderBottomColor: colors.highlight,
+    },
+    buttonsContainer: {
+      flexDirection: 'row',
+      gap: 10,
+      padding: 10,
+    },
+    button: {
+      flex: 2,
+    },
+  });
+}

@@ -1,7 +1,6 @@
-import React from 'react';
 import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../constants/colors';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 
 interface PropTypes {
   isExpanded: boolean;
@@ -12,28 +11,37 @@ interface PropTypes {
 }
 
 function ExpandButton({ isExpanded, handleToggleExpand, containerStyles, iconStyles, size = 24 }: PropTypes) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   return (
     <Pressable style={[styles.pressable, containerStyles]} onPress={handleToggleExpand}>
-      <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} style={iconStyles} size={size} />
+      <Icon
+        name={isExpanded ? 'chevron-up' : 'chevron-down'}
+        style={iconStyles}
+        size={size}
+        color={colors.defaultText}
+      />
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  pressable: {
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 30,
-    height: 30,
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    pressable: {
+      backgroundColor: colors.background,
+      borderRadius: 4,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 30,
+      height: 30,
+      position: 'absolute',
+      top: 10,
+      right: 10,
+      zIndex: 1,
+    },
+  });
+}
 
 export default ExpandButton;

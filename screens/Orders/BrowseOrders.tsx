@@ -1,15 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { useContext, useMemo, useState } from 'react';
-import { Modal } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Animated, Modal, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
 import SearchOrders from '../../components/orders/browseOrders/SearchOrders';
-import { Colors } from '../../constants/colors';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useFadeTransition } from '../../hooks/useFadeTransition';
 import { OrdersContext } from '../../store/orders-context';
+import { useThemeColors } from '../../store/theme-context';
 import { searchOrders } from '../../util-methods/OrderFilterMethods';
 
 interface SearchParamsTypes {
@@ -25,6 +24,7 @@ interface SearchParamsTypes {
   onSizeSearch: string[];
 }
 function BrowseOrders() {
+  const colors = useThemeColors();
   const ordersCtx = useContext(OrdersContext);
   const [searchData, setSearchData] = useState('');
   const [editedOrder, setEditedOrder] = useState(null);
@@ -97,16 +97,16 @@ function BrowseOrders() {
       />
 
       <Modal
-        presentationStyle="overFullScreen"
+        presentationStyle={Platform.OS === 'android' ? 'overFullScreen' : 'pageSheet'}
         animationType="fade"
         visible={editedOrder !== null}
         onRequestClose={removeEditedOrder}
       >
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
-          <StatusBar style="light" />
-          <Animated.View style={[editOrderFade, { flex: 1 }]}>
-            <EditOrder editedOrder={editedOrder} setEditedOrder={setEditedOrder} />
-          </Animated.View>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.primaryDark }}>
+          <StatusBar style="light" translucent={true} />
+          <Animated.ScrollView style={[editOrderFade, { flex: 1 }]} keyboardShouldPersistTaps="handled">
+            {editedOrder && <EditOrder editedOrder={editedOrder} setEditedOrder={setEditedOrder} />}
+          </Animated.ScrollView>
         </SafeAreaView>
       </Modal>
     </Animated.View>

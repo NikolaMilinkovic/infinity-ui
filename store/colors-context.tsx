@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import Color from '../models/Color';
 import { ColorTypes } from '../types/allTsTypes';
 import { sortByProperty } from '../util-methods/SortingMethods';
@@ -9,14 +9,10 @@ const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 interface ColorsContextType {
   colors: ColorTypes[];
-  setColors: (colors: ColorTypes[]) => void;
-  getColors: () => ColorTypes[];
   getColorItemsForDropdownList: () => any[];
 }
 export const ColorsContext = createContext<ColorsContextType>({
   colors: [],
-  setColors: () => {},
-  getColors: () => [],
   getColorItemsForDropdownList: () => [],
 });
 
@@ -34,12 +30,14 @@ function ColorsContextProvider({ children }: ColorsContextProviderType) {
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
 
-  const setColorsHandler = (colors: ColorTypes[]) => {
-    setColors(colors);
-  };
-  const getColorsHandler = () => {
-    return colors;
-  };
+  function getColorItemsForDropdownList() {
+    const items = colors.map((item) => ({
+      key: item.name,
+      value: item.name,
+    }));
+    return items;
+  }
+
   async function fetchColors(token: string) {
     try {
       const response = await fetch(`${backendURI || process.env.EXPO_PUBLIC_BACKEND_URI}/colors`, {
@@ -63,28 +61,22 @@ function ColorsContextProvider({ children }: ColorsContextProviderType) {
 
         setColors(sortedColors);
       }
-      console.log('[3][colors-context] Initial fetch: true');
     } catch (error) {
-      console.log('[3][colors-context] Initial fetch: false');
       console.error('Error fetching colors:', error);
     }
   }
 
-  function getColorItemsForDropdownList() {
-    const items = colors.map((item) => ({
-      key: item.name,
-      value: item.name,
-    }));
-    return items;
-  }
-
   useEffect(() => {
-    if (token) fetchColors(token);
+    if (token) {
+      fetchColors(token);
+    } else {
+      setColors([]);
+    }
   }, [token]);
 
   // SOCKETS
   useEffect(() => {
-    if (socket) {
+    if (socket && token) {
       const handleColorAdded = (newColor: Color) => {
         const newColorObj = new Color(newColor._id, newColor.name, newColor.colorCode);
         setColors((prevColors) => [...prevColors, newColorObj]);
@@ -109,9 +101,21 @@ function ColorsContextProvider({ children }: ColorsContextProviderType) {
         socket.off('colorUpdated', handleColorUpdated);
       };
     }
-  }, [socket]);
+  }, [socket, token]);
 
-  const value = { colors, setColors: setColorsHandler, getColors: getColorsHandler, getColorItemsForDropdownList };
+  const setColorsHandler = (colors: ColorTypes[]) => {
+    setColors(colors);
+  };
+
+  const value = useMemo(
+    () => ({
+      colors,
+      setColors: setColorsHandler,
+      getColorItemsForDropdownList,
+    }),
+    [colors]
+  );
+
   return <ColorsContext.Provider value={value}>{children}</ColorsContext.Provider>;
 }
 

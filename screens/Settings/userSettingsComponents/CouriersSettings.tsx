@@ -1,16 +1,17 @@
 import { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
-import { useGetAppColors } from '../../constants/useGetAppColors';
-import { CouriersContext } from '../../store/couriers-context';
-import { UserContext } from '../../store/user-context';
-import { AppColors } from '../../types/allTsTypes';
-import DropdownList from '../../util-components/DropdownList';
+import { StyleSheet } from 'react-native';
+import { CouriersContext } from '../../../store/couriers-context';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
+import { UserContext } from '../../../store/user-context';
+import CustomText from '../../../util-components/CustomText';
+import DropdownList from '../../../util-components/DropdownList';
 
 function CouriersSettings({ updateDefault }: { updateDefault: (field: string, value: any) => void }) {
   const userCtx = useContext(UserContext);
   const courierCtx = useContext(CouriersContext);
   const [firstRender, setFirstRender] = useState(true);
-  const styles = getStyles(useGetAppColors());
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   interface DrpodownTypes {
     _id: number;
     name: string;
@@ -44,7 +45,7 @@ function CouriersSettings({ updateDefault }: { updateDefault: (field: string, va
 
   return (
     <>
-      <Text style={styles.text}>Podešava defaultni izbor kurira prilikom kreiranja nove porudžbine </Text>
+      <CustomText style={styles.text}>Podešava defaultni izbor kurira prilikom kreiranja nove porudžbine </CustomText>
       <DropdownList
         data={listSelectorData}
         defaultValue={defaultSelection}
@@ -55,25 +56,25 @@ function CouriersSettings({ updateDefault }: { updateDefault: (field: string, va
     </>
   );
 }
-function getStyles(Colors: AppColors) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     text: {
-      fontSize: 16,
-      color: Colors.defaultText,
+      fontSize: 14,
+      color: colors.defaultText,
     },
     h2: {},
     dropdown: {
-      backgroundColor: Colors.buttonBackground,
+      backgroundColor: colors.background,
       marginTop: 10,
       elevation: 1,
       shadowOffset: { width: 1, height: 1 },
       shadowOpacity: 0.25,
       shadowRadius: 4,
       borderWidth: 0.5,
-      borderColor: Colors.secondaryLight,
+      borderColor: colors.borderColor,
     },
     dropdownText: {
-      color: Colors.defaultText,
+      color: colors.defaultText,
     },
   });
 }

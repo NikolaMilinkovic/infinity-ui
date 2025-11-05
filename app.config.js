@@ -27,6 +27,33 @@ module.exports = {
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
       [
+        'expo-font',
+        {
+          fonts: [
+            {
+              fontFamily: 'Playfair',
+              fontDefinitions: [
+                { path: './assets/fonts/playfair/PlayfairDisplay-Regular.ttf', weight: 400 },
+                { path: './assets/fonts/playfair/PlayfairDisplay-Bold.ttf', weight: 700 },
+                { path: './assets/fonts/playfair/PlayfairDisplay-Black.ttf', weight: 900 },
+              ],
+            },
+            {
+              fontFamily: 'HelveticaNeue',
+              fontDefinitions: [
+                { path: './assets/fonts/helveticaNeue/HelveticaNeueItalic.otf', style: 'italic', weight: 400 },
+                { path: './assets/fonts/helveticaNeue/HelveticaNeueMedium.otf', weight: 500 },
+                { path: './assets/fonts/helveticaNeue/HelveticaNeueBold.otf', weight: 700 },
+              ],
+            },
+            {
+              fontFamily: 'Bodoni',
+              fontDefinitions: [{ path: './assets/fonts/bodoni/bodoni.ttf', weight: 400 }],
+            },
+          ],
+        },
+      ],
+      [
         'expo-image-picker',
         {
           photosPermission: 'The app accesses your photos to add products images.',

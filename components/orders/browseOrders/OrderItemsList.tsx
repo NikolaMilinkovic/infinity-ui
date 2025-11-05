@@ -1,11 +1,13 @@
 import { useCallback, useContext, useState } from 'react';
-import { FlatList, StyleSheet, Text } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useBatchSelectBackHandler from '../../../hooks/useBatchSelectBackHandler';
 import useConfirmationModal from '../../../hooks/useConfirmationMondal';
 import { AuthContext } from '../../../store/auth-context';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { OrderTypes } from '../../../types/allTsTypes';
 import ConfirmationModal from '../../../util-components/ConfirmationModal';
+import CustomText from '../../../util-components/CustomText';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { generateExcellForOrders } from '../../../util-methods/Excell';
 import { downloadAndShareFile, handleFetchingWithBodyData } from '../../../util-methods/FetchMethods';
@@ -33,7 +35,8 @@ function OrderItemsList({
   const [selectedOrders, setSelectedOrders] = useState<OrderTypes[]>([]);
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const authCtx = useContext(AuthContext);
-  const styles = getStyles(batchMode);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const token = authCtx.token;
 
   function resetBatch() {
@@ -125,20 +128,20 @@ function OrderItemsList({
   function getTotalOrdersCount() {
     if (isDatePicked)
       return (
-        <Text style={styles.listHeader}>
+        <CustomText variant="bold" style={styles.listHeader}>
           Ukupno Porudžbina za {pickedDate}: {data.length}
-        </Text>
+        </CustomText>
       );
     if (isDateForPeriodPicked)
       return (
-        <Text style={styles.listHeader}>
+        <CustomText variant="bold" style={styles.listHeader}>
           Ukupno Porudžbina od {pickedDateForPeriod}: {data.length}
-        </Text>
+        </CustomText>
       );
     return (
-      <Text style={styles.listHeader}>
-        Ukupno Porudžbina za {pickedDate}: {data.length}
-      </Text>
+      <CustomText variant="bold" style={styles.listHeader}>
+        Ukupno Porudžbina: {data.length}
+      </CustomText>
     );
   }
 
@@ -200,13 +203,13 @@ function OrderItemsList({
   );
 }
 
-function getStyles(batchMode: boolean) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     list: {},
     listHeader: {
-      fontWeight: 'bold',
       fontSize: 14,
       textAlign: 'center',
+      marginTop: 6,
     },
     listContainer: {
       gap: 6,

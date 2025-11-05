@@ -1,6 +1,6 @@
-import React, { memo, useRef, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 import { Animated, StyleProp, StyleSheet, Text, TextInput, TextStyle, View, ViewStyle } from 'react-native';
-import { Colors } from '../constants/colors';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 
 interface MultilineInputProps {
   value: string;
@@ -20,9 +20,9 @@ const MultilineInput = ({
   value,
   setValue,
   placeholder = '',
-  background = Colors.primaryLight,
-  color = Colors.primaryDark,
-  activeColor = Colors.secondaryDark,
+  background,
+  color,
+  activeColor,
   containerStyles,
   inputStyles,
   numberOfLines = 4,
@@ -31,6 +31,8 @@ const MultilineInput = ({
 }: MultilineInputProps) => {
   const [isActive, setIsActive] = useState(false);
   const inputRef = useRef<TextInput>(null);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   const labelAnim = useRef(new Animated.Value(value !== '' ? 1 : 0)).current;
 
@@ -60,10 +62,10 @@ const MultilineInput = ({
 
   const labelStyles = {
     position: 'absolute' as const,
-    left: 22,
+    left: 18,
     paddingHorizontal: 4,
     borderRadius: 4,
-    backgroundColor: background,
+    backgroundColor: background ? background : colors.background,
     zIndex: 1,
     pointerEvents: 'none',
     transform: [
@@ -76,13 +78,16 @@ const MultilineInput = ({
     ],
   };
 
-  const labelTextColor = isActive || value ? activeColor : Colors.secondaryDark;
+  const labelTextColor = isActive || value ? (activeColor ? activeColor : colors.borderColor) : colors.defaultText;
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: background, borderColor: isActive ? activeColor : Colors.secondaryLight },
+        {
+          backgroundColor: background ? background : colors.primaryLight,
+          borderColor: isActive ? (activeColor ? activeColor : colors.borderColor) : colors.borderColor,
+        },
         containerStyles,
       ]}
     >
@@ -93,7 +98,7 @@ const MultilineInput = ({
       )}
       <TextInput
         ref={inputRef}
-        style={[styles.input, { color, textAlignVertical: 'top' }, inputStyles]}
+        style={[styles.input, { color: color ? color : colors.defaultText, textAlignVertical: 'top' }, inputStyles]}
         multiline
         numberOfLines={numberOfLines}
         value={value}
@@ -102,29 +107,31 @@ const MultilineInput = ({
         onFocus={handleFocus}
         onBlur={handleBlur}
         keyboardType={keyboard}
-        placeholderTextColor={Colors.secondaryDark}
+        placeholderTextColor={colors.defaultText}
       />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    position: 'relative',
-    paddingHorizontal: 0,
-  },
-  input: {
-    fontSize: 14,
-    padding: 8,
-    paddingHorizontal: 22,
-    borderRadius: 4,
-    minHeight: 80,
-    textAlignVertical: 'top',
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      width: '100%',
+      borderRadius: 4,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      position: 'relative',
+      paddingHorizontal: 0,
+    },
+    input: {
+      fontSize: 14,
+      padding: 8,
+      paddingHorizontal: 22,
+      borderRadius: 4,
+      minHeight: 80,
+      textAlignVertical: 'top',
+    },
+  });
+}
 
 export default memo(MultilineInput);

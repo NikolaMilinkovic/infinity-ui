@@ -1,7 +1,7 @@
 import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../constants/colors';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 
 interface ButtonChildrenTypes {
   onPress: () => void;
@@ -21,7 +21,8 @@ const NavigationButton: React.FC<ButtonChildrenTypes> = ({
   type = 'Ant',
   backgroundColor,
 }) => {
-  const styles = getStyles(size, color);
+  const colors = useThemeColors();
+  const styles = getStyles(colors, size, color);
   let Icon: any;
 
   if (type === 'Ant') {
@@ -42,7 +43,7 @@ const NavigationButton: React.FC<ButtonChildrenTypes> = ({
       key={backgroundColor}
       onPress={onPress}
       style={({ pressed }) => [styles.pressable, { backgroundColor: backgroundColor }, pressed && styles.pressed]}
-      android_ripple={{ color: Colors.secondaryLight }}
+      android_ripple={{ color: colors.secondaryLight }}
     >
       <View style={styles.container}>
         {Icon}
@@ -52,7 +53,7 @@ const NavigationButton: React.FC<ButtonChildrenTypes> = ({
   );
 };
 
-function getStyles(size: number | undefined, color: string | undefined) {
+function getStyles(colors: ThemeColors, size: number | undefined, color: string | undefined) {
   return StyleSheet.create({
     pressable: {
       padding: 10,

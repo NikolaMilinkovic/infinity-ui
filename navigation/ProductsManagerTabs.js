@@ -1,27 +1,28 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { Colors } from '../constants/colors';
 import AddItem from '../screens/ProductsManager/AddProduct/AddItem';
 import EditItem from '../screens/ProductsManager/editProduct/EditItem';
+import { useThemeColors } from '../store/theme-context';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function ProductsManagerTabs() {
+  const colors = useThemeColors();
   /**
    * PRODUCTS MANAGER Tabs
    */
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarPressColor: Colors.tabsPressEffect,
+        tabBarPressColor: colors.tabsPressEffect,
         tabBarLabelStyle: {
           fontSize: 11,
-          color: Colors.secondaryDark,
+          color: colors.secondaryDark,
         },
         tabBarStyle: {
-          backgroundColor: Colors.secondaryLight,
+          backgroundColor: colors.tabsBackground,
         },
         tabBarIndicatorStyle: {
-          backgroundColor: Colors.highlight,
+          backgroundColor: colors.highlight,
           height: 3,
         },
       }}

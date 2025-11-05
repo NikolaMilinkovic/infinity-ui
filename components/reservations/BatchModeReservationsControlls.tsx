@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import { Colors } from '../../constants/colors';
-import { globalStyles } from '../../constants/globalStyles';
+import { useGlobalStyles } from '../../constants/globalStyles';
 import useAuthToken from '../../hooks/useAuthToken';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { CourierTypes } from '../../types/allTsTypes';
 import CourierSelector from '../../util-components/CourierSelector';
 import IconButton from '../../util-components/IconButton';
@@ -32,6 +32,9 @@ function BatchModeReservationsControlls({
   const toggleFade = useToggleFadeAnimation(isExpanded, 100);
   const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 0, 60, 100);
   const token = useAuthToken();
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
 
   const [selectedCourier, setSelectedCourier] = useState<CourierTypes | null>(null);
   async function saveReservationsAsOrders() {
@@ -67,7 +70,7 @@ function BatchModeReservationsControlls({
             <CourierSelector style={styles.courierSelector} setSelectedCourier={setSelectedCourier} />
             <IconButton
               size={26}
-              color={Colors.primaryDark}
+              color={colors.primaryDark}
               onPress={saveReservationsAsOrders}
               key={`key-remove-batch-button`}
               icon="check"
@@ -77,7 +80,7 @@ function BatchModeReservationsControlls({
           </View>
           <IconButton
             size={22}
-            color={Colors.highlight}
+            color={colors.highlight}
             onPress={onRemoveBatchPress}
             key={`key-remove-batch-button`}
             icon="delete"
@@ -90,44 +93,46 @@ function BatchModeReservationsControlls({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 8,
-    backgroundColor: Colors.primaryLight,
-    flexDirection: 'row',
-  },
-  couriersContainer: {
-    padding: 10,
-    flex: 1,
-    flexDirection: 'row',
-    gap: 10,
-  },
-  courierSelector: {
-    backgroundColor: Colors.white,
-    height: 40,
-    flex: 1,
-  },
-  saveToCourrierButton: {
-    backgroundColor: Colors.white,
-    width: 50,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 'auto',
-  },
-  removeBatchItemsButton: {
-    margin: 10,
-    backgroundColor: Colors.white,
-    width: 50,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 'auto',
-  },
-  removeBatchItemsButtonPressed: {
-    opacity: 0.7,
-    elevation: 1,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      paddingHorizontal: 8,
+      backgroundColor: colors.primaryLight,
+      flexDirection: 'row',
+    },
+    couriersContainer: {
+      padding: 10,
+      flex: 1,
+      flexDirection: 'row',
+      gap: 10,
+    },
+    courierSelector: {
+      backgroundColor: colors.white,
+      height: 40,
+      flex: 1,
+    },
+    saveToCourrierButton: {
+      backgroundColor: colors.white,
+      width: 50,
+      height: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 'auto',
+    },
+    removeBatchItemsButton: {
+      margin: 10,
+      backgroundColor: colors.white,
+      width: 50,
+      height: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 'auto',
+    },
+    removeBatchItemsButtonPressed: {
+      opacity: 0.7,
+      elevation: 1,
+    },
+  });
+}
 
 export default BatchModeReservationsControlls;

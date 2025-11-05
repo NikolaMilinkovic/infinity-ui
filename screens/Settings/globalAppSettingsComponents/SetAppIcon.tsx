@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ImagePicker from '../../util-components/ImagePicker';
+import ImagePicker from '../../../util-components/ImagePicker';
 
 interface SetAppIconPropTypes {
   appIcon: any;

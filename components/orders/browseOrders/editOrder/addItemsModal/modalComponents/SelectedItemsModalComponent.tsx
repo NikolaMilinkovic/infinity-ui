@@ -1,11 +1,14 @@
 import { ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { Colors } from '../../../../../../constants/colors';
-import { globalStyles } from '../../../../../../constants/globalStyles';
+import { useGlobalStyles } from '../../../../../../constants/globalStyles';
+import { ThemeColors, useThemeColors } from '../../../../../../store/theme-context';
 import ColorSizeStockSelectorModalComponent from './ColorSizeStockSelectorModalComponent';
 import SelectedItem from './SelectedItem';
 
 function SelectedItemsModalComponent({ selectedItems, setSelectedItems }: any) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
   return (
     <TouchableWithoutFeedback>
       <ScrollView style={styles.container}>
@@ -43,30 +46,32 @@ function SelectedItemsModalComponent({ selectedItems, setSelectedItems }: any) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.white,
-    padding: 8,
-  },
-  iconStyle: {
-    marginLeft: 'auto',
-  },
-  header: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.primaryDark,
-    marginBottom: 6,
-    marginTop: 10,
-  },
-  listContainer: {
-    padding: 10,
-    marginBottom: 6,
-    minHeight: 250,
-  },
-  colorSizePickers: {
-    marginBottom: 6,
-    minHeight: 250,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      backgroundColor: colors.white,
+      padding: 8,
+    },
+    iconStyle: {
+      marginLeft: 'auto',
+    },
+    header: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.primaryDark,
+      marginBottom: 6,
+      marginTop: 10,
+    },
+    listContainer: {
+      padding: 10,
+      marginBottom: 6,
+      minHeight: 250,
+    },
+    colorSizePickers: {
+      marginBottom: 6,
+      minHeight: 250,
+    },
+  });
+}
 
 export default SelectedItemsModalComponent;

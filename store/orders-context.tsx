@@ -1,10 +1,13 @@
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CourierTypesWithNoId, OrderTypes } from '../types/allTsTypes';
 import { fetchData } from '../util-methods/FetchMethods';
+import { betterErrorLog } from '../util-methods/LogMethods';
+import { AppContext } from './app-context';
 import { AuthContext } from './auth-context';
 import { SocketContext } from './socket-context';
 
 interface OrdersContextTypes {
+  orders: OrderTypes[];
   unprocessedOrders: OrderTypes[];
   processedOrders: OrderTypes[];
   customOrderSet: OrderTypes[];
@@ -12,14 +15,13 @@ interface OrdersContextTypes {
   customReservationsSet: OrderTypes[];
   setCustomReservationsSet: (reservations: OrderTypes[]) => void;
   unpackedOrders: OrderTypes[];
-  setUnpackedOrders: (orders: OrderTypes[]) => void;
   processedOrdersStats: any;
-  setProcessedOrders: (orders: OrderTypes[]) => void;
-  setUnprocessedOrders: (orders: OrderTypes[]) => void;
-  reFetchOrdersData: () => void;
+  fetchOrders: () => Promise<void>;
+  setOrders: React.Dispatch<React.SetStateAction<OrderTypes[]>>;
 }
 
 export const OrdersContext = createContext<OrdersContextTypes>({
+  orders: [],
   unprocessedOrders: [],
   processedOrders: [],
   customOrderSet: [],
@@ -27,11 +29,9 @@ export const OrdersContext = createContext<OrdersContextTypes>({
   customReservationsSet: [],
   setCustomReservationsSet: () => {},
   unpackedOrders: [],
-  setUnpackedOrders: () => {},
   processedOrdersStats: {},
-  setProcessedOrders: () => {},
-  setUnprocessedOrders: () => {},
-  reFetchOrdersData: () => {},
+  fetchOrders: async () => {},
+  setOrders: () => {},
 });
 
 interface OrdersContextProviderTypes {
@@ -39,124 +39,86 @@ interface OrdersContextProviderTypes {
 }
 
 function OrdersContextProvider({ children }: OrdersContextProviderTypes) {
-  const [unprocessedOrders, setUnprocessedOrders] = useState<OrderTypes[]>([]);
-  const [processedOrders, setProcessedOrders] = useState<OrderTypes[]>([]);
+  const [orders, setOrders] = useState<OrderTypes[]>([]);
+  const [processedOrdersStats, setProcessedOrdersStats] = useState(null);
   const [customOrderSet, setCustomOrderSet] = useState<OrderTypes[]>([]);
   const [customReservationsSet, setCustomReservationsSet] = useState<OrderTypes[]>([]);
-  const [unpackedOrders, setUnpackedOrders] = useState<OrderTypes[]>([]);
-  const [processedOrdersStats, setProcessedOrdersStats] = useState(null);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
+  const appCtx = useContext(AppContext);
+  const boutiqueId = appCtx.data._id.toString();
 
-  // Initial orders data fetch
+  const fetchOrders = useCallback(async () => {
+    if (!token) return;
+    try {
+      const [unprocessedData, processedData] = await Promise.all([
+        fetchData(token, 'orders/unprocessed'),
+        fetchData(token, 'orders/processed'),
+      ]);
+
+      // merge both sets
+      const merged = [...unprocessedData.orders, ...processedData.orders];
+      setOrders(merged);
+      setProcessedOrdersStats(processedData.stats || null);
+    } catch (err) {
+      betterErrorLog('> Error refetching orders', err);
+    }
+  }, [token, boutiqueId]);
+
+  // ✅ initial load
   useEffect(() => {
-    async function fetchUnprocessedOrdersData() {
-      try {
-        const unprocessedOrdersData = await fetchData(token, 'orders/unprocessed');
-        setUnprocessedOrders(unprocessedOrdersData.orders);
-        console.log('[10][orders-unprocessed-context] Initial fetch: true');
-      } catch (error) {
-        console.log('[10][orders-unprocessed-context] Initial fetch: false');
-      }
-    }
-    async function fetchProcessedOrdersData() {
-      try {
-        const processedOrdersData = await fetchData(token, 'orders/processed');
-        setProcessedOrders(processedOrdersData.orders);
-        console.log('[10][orders-processed-context] Initial fetch: true');
-      } catch (error) {
-        console.log('[10][orders-processed-context] Initial fetch: false');
-      }
-    }
-    if (token) {
-      fetchUnprocessedOrdersData();
-      fetchProcessedOrdersData();
-    }
-  }, [token]);
+    fetchOrders();
+  }, [fetchOrders]);
 
   // FILTER AND SET UNPACKED ORDERS
-  useEffect(() => {
-    const unpackedUnprocessed = unprocessedOrders.filter(
-      (order) => order.packed === false && order.reservation === false
-    );
-    const unpackedProcessed = processedOrders.filter((order) => order.packed === false && order.reservation === false);
-    setUnpackedOrders([...unpackedUnprocessed, ...unpackedProcessed]);
-  }, [unprocessedOrders, processedOrders]);
+  const unprocessedOrders = useMemo(() => orders.filter((o) => !o.processed && !o.reservation), [orders]);
+  const processedOrders = useMemo(() => orders.filter((o) => o.processed && !o.reservation), [orders]);
+  const unpackedOrders = useMemo(() => orders.filter((o) => !o.packed && !o.reservation), [orders]);
 
   function handleOrderRemoved(orderId: string) {
-    setUnprocessedOrders((prevUnprocessedOrders) => prevUnprocessedOrders.filter((order) => order._id !== orderId));
-
-    setProcessedOrders((prevProcessedOrders) => prevProcessedOrders.filter((order) => order._id !== orderId));
+    setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
   }
-
   function handleBatchOrderRemoved(orderIds: string[]) {
-    setUnprocessedOrders((prevUnprocessedOrders) =>
-      prevUnprocessedOrders.filter((order) => !orderIds.includes(order._id))
-    );
-
-    setProcessedOrders((prevProcessedOrders) => prevProcessedOrders.filter((order) => !orderIds.includes(order._id)));
+    setOrders((prevOrders) => prevOrders.filter((order) => !orderIds.includes(order._id)));
   }
 
   function handleOrderAdded(newOrder: OrderTypes) {
-    setUnprocessedOrders((prev) => [newOrder, ...prev]);
+    setOrders((prev) => [newOrder, ...prev]);
   }
   function handleOrderUpdated(updatedOrder: OrderTypes) {
     const hasAllIds = updatedOrder.products.every((product) => product._id);
     if (!hasAllIds) {
       console.warn('Updated order contains products without _id fields:', updatedOrder);
     }
-    setUnprocessedOrders((prevOrders) =>
+    setOrders((prevOrders) =>
       prevOrders.map((order) => (order._id.toString() === updatedOrder._id.toString() ? updatedOrder : order))
     );
   }
 
   function handleStockIndicatorToTrue(id: string) {
-    // setUnpackedOrders((prevOrders) =>
-    //   prevOrders.map((order) => (order._id === id ? { ...order, packedIndicator: true } : order))
-    // );
-    let filterProcessed = true;
-    setUnprocessedOrders((prevOrders) =>
+    setOrders((prevOrders) =>
       prevOrders.map((order) => {
         if (order._id === id) {
-          filterProcessed = false;
           return { ...order, packedIndicator: !order.packedIndicator };
         }
         return order;
       })
     );
-    if (filterProcessed) {
-      setProcessedOrders((prevOrders) =>
-        prevOrders.map((order) => (order._id === id ? { ...order, packedIndicator: true } : order))
-      );
-    }
   }
   function handleStockIndicatorToFalse(id: string) {
-    // setUnpackedOrders((prevOrders) =>
-    //   prevOrders.map((order) => (order._id === id ? { ...order, packedIndicator: false } : order))
-    // );
-    let filterProcessed = true;
-    setUnprocessedOrders((prevOrders) =>
+    setOrders((prevOrders) =>
       prevOrders.map((order) => {
         if (order._id === id) {
-          filterProcessed = false;
           return { ...order, packedIndicator: !order.packedIndicator };
         }
         return order;
       })
     );
-    if (filterProcessed) {
-      setProcessedOrders((prevOrders) =>
-        prevOrders.map((order) => (order._id === id ? { ...order, packedIndicator: false } : order))
-      );
-    }
   }
   function handlePackOrders(orderIds: string[]) {
-    setUnprocessedOrders((prevOrders) =>
-      prevOrders.map((order) => (orderIds.includes(order._id) ? { ...order, packed: true } : order))
-    );
-    setProcessedOrders((prevOrders) =>
+    setOrders((prevOrders) =>
       prevOrders.map((order) => (orderIds.includes(order._id) ? { ...order, packed: true } : order))
     );
   }
@@ -169,7 +131,7 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes) {
   }
   function handleReservationsToOrders(data: ReservationsToOrdersDataTypes) {
     const updatedIds = data.reservations.map((data) => String(data._id));
-    setUnprocessedOrders((prevOrders) =>
+    setOrders((prevOrders) =>
       prevOrders.map((item) => {
         if (updatedIds.includes(item._id)) {
           return {
@@ -188,42 +150,14 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes) {
   }
 
   function handleProcessOrdersByIds(orderIds: string[]) {
-    const ids = orderIds.map((data) => String(data));
-    let items: OrderTypes[] = [];
-
-    // Filter and remove matching orders from setUnprocessedOrders
-    setUnprocessedOrders((prevOrders) => {
-      return prevOrders.filter((order) => {
-        if (ids.includes(String(order._id))) {
-          items.push({ ...order, processed: true });
-          return false;
-        }
-        return true;
-      });
-    });
-
-    // Add updated items to setProcessedOrders
-    setProcessedOrders((prevProcessedOrders) => {
-      return [...prevProcessedOrders, ...items];
-    });
+    setOrders((prevOrders) =>
+      prevOrders.map((order) => (orderIds.includes(order._id.toString()) ? { ...order, processed: true } : order))
+    );
   }
 
   // TO DO: Type for statistics file
   function handleGetProcessedOrdersStatistics(statisticsFile: any) {
     setProcessedOrdersStats(statisticsFile);
-  }
-
-  async function fetchUnprocessedOrdersData() {
-    const unprocessedOrdersData = await fetchData(token, 'orders/unprocessed');
-    setUnprocessedOrders(unprocessedOrdersData.orders);
-  }
-  async function fetchProcessedOrdersData() {
-    const processedOrdersData = await fetchData(token, 'orders/processed');
-    setProcessedOrders(processedOrdersData.orders);
-  }
-  async function reFetchOrdersData() {
-    fetchUnprocessedOrdersData();
-    fetchProcessedOrdersData();
   }
 
   useEffect(() => {
@@ -254,25 +188,31 @@ function OrdersContextProvider({ children }: OrdersContextProviderTypes) {
       socket.off('processOrdersByIds', handleProcessOrdersByIds);
       socket.off('getProcessedOrdersStatistics', handleGetProcessedOrdersStatistics);
     };
-  }, [socket]);
+  }, [socket, token, boutiqueId]);
 
-  // Memoizing the getters
   const value = useMemo(
     () => ({
+      orders,
+      setOrders,
+      unprocessedOrders,
+      processedOrders,
+      unpackedOrders,
+      customOrderSet,
+      customReservationsSet,
+      processedOrdersStats,
+      setCustomOrderSet,
+      setCustomReservationsSet,
+      fetchOrders,
+    }),
+    [
+      orders,
       unprocessedOrders,
       processedOrders,
       customOrderSet,
-      setCustomOrderSet,
       customReservationsSet,
-      setCustomReservationsSet,
       unpackedOrders,
-      setUnpackedOrders,
       processedOrdersStats,
-      setProcessedOrders,
-      setUnprocessedOrders,
-      reFetchOrdersData,
-    }),
-    [unprocessedOrders, processedOrders, customOrderSet, customReservationsSet, unpackedOrders, processedOrdersStats]
+    ]
   );
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;

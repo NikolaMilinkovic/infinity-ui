@@ -1,22 +1,21 @@
 import { useContext, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import SafeView from '../../../components/layout/SafeView';
+import Card from '../../../components/layout/Card';
 import ColorSizeSelectorsList from '../../../components/orders/ColorSizeSelectorsList';
 import CourierSelector from '../../../components/orders/CourierSelector';
 import NewOrderPreview, { NewOrderPreviewRef } from '../../../components/orders/NewOrderPreview';
 import SelectedProductsDisplay from '../../../components/orders/SelectedProductsList';
 import SortUserInformationField from '../../../components/orders/SortUserInformationField';
-import { Colors } from '../../../constants/colors';
 import { AuthContext } from '../../../store/auth-context';
 import { useConfirmationModal } from '../../../store/modals/confirmation-modal-context';
 import { NewOrderContext } from '../../../store/new-order-context';
 import { OrdersContext } from '../../../store/orders-context';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { useUser } from '../../../store/user-context';
 import Button from '../../../util-components/Button';
 import KeyboardAvoidingWrapper from '../../../util-components/KeyboardAvoidingWrapper';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { addNewOrder } from '../../../util-methods/FetchMethods';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
 
 function NewOrder() {
   // Fade in animation
@@ -29,6 +28,8 @@ function NewOrder() {
   const { showConfirmation } = useConfirmationModal();
   const [, forceUpdate] = useState(0);
   const courierSelectorRef = useRef<any>(null);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const resetCourierToDefault = () => {
     courierSelectorRef.current?.resetDropdown();
   };
@@ -169,9 +170,6 @@ function NewOrder() {
       // get order form with all the data from new-order-context
       const order = newOrderCtx.createOrderHandler();
 
-      betterConsoleLog('> New order is', order);
-      // return;
-
       if (!order) return;
       if (order === undefined) return;
       if (order === null) return;
@@ -212,13 +210,13 @@ function NewOrder() {
   }
 
   return (
-    <SafeView>
-      <KeyboardAvoidingWrapper>
-        <Animated.ScrollView
-          style={styles.scrollViewContainer}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-        >
+    <KeyboardAvoidingWrapper>
+      <Animated.ScrollView
+        style={styles.scrollViewContainer}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
+        <Card cardStyles={{ marginBottom: 50 }} padding={10}>
           <SelectedProductsDisplay
             setIsExpanded={setIsArticleListOpen}
             isExpanded={isArticleListOpen}
@@ -252,46 +250,50 @@ function NewOrder() {
           />
           <View style={styles.buttonsContainer}>
             <Button
-              backColor={Colors.error}
-              textColor={Colors.white}
+              backColor={colors.buttonNormal1}
+              backColor1={colors.buttonNormal2}
+              textColor={colors.defaultText}
               containerStyles={[styles.button, { marginBottom: 6 }]}
               onPress={handleResetOrderData}
             >
-              Odustani i resetuj
+              Resetuj
             </Button>
             <Button
-              backColor={Colors.secondaryDark}
-              textColor={Colors.white}
+              backColor={colors.buttonHighlight1}
+              backColor1={colors.buttonHighlight2}
+              textColor={colors.whiteText}
               containerStyles={[styles.button, { marginBottom: 6 }]}
               onPress={handleSubmitOrder}
             >
               Dodaj porudžbinu
             </Button>
           </View>
-        </Animated.ScrollView>
-      </KeyboardAvoidingWrapper>
-    </SafeView>
+        </Card>
+      </Animated.ScrollView>
+    </KeyboardAvoidingWrapper>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    paddingBottom: 0,
-  },
-  scrollViewContainer: {
-    padding: 16,
-  },
-  buttonsContainer: {
-    marginTop: 'auto',
-    display: 'flex',
-    flexDirection: 'row',
-    flex: 1,
-    gap: 10,
-    marginBottom: 24,
-  },
-  button: {
-    flex: 2,
-  },
-});
+
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      paddingBottom: 0,
+      backgroundColor: colors.containerBackground,
+    },
+    scrollViewContainer: {
+      backgroundColor: colors.containerBackground,
+    },
+    buttonsContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      flex: 1,
+      gap: 10,
+      marginTop: 2,
+    },
+    button: {
+      flex: 2,
+    },
+  });
+}
 
 export default NewOrder;

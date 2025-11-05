@@ -1,13 +1,13 @@
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { Animated, Dimensions, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { Animated, Dimensions, NativeSyntheticEvent, Platform, StyleSheet, Text, View } from 'react-native';
 import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
-import { Colors } from '../../constants/colors';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useExpandAnimation } from '../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
 import { AuthContext } from '../../store/auth-context';
 import { ColorsContext } from '../../store/colors-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 import ExpandButton from '../../util-components/ExpandButton';
 import InputField from '../../util-components/InputField';
@@ -30,6 +30,8 @@ function SearchReservations({ searchParams, setSearchParams, updateSearchParam }
     setIsExpanded((prevIsExpanded) => !prevIsExpanded);
   }
   useBackClickHandler(isExpanded, handleToggleExpand);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   // ASCENDING | DESCENDING RADIO BUTTONS
   const ascendDescendFilterButtons: RadioButtonProps[] = useMemo(
@@ -137,8 +139,8 @@ function SearchReservations({ searchParams, setSearchParams, updateSearchParam }
           label="Pretraži rezervacije"
           inputText={searchParams.query}
           setInputText={(text) => setSearchParams((prev: any) => ({ ...prev, query: text }))}
-          background={Colors.white}
-          color={Colors.primaryDark}
+          background={colors.white}
+          color={colors.primaryDark}
           labelBorders={false}
           containerStyles={styles.input}
           displayClearInputButton={true}
@@ -155,31 +157,53 @@ function SearchReservations({ searchParams, setSearchParams, updateSearchParam }
         <Text style={styles.filtersH1}>Filteri</Text>
 
         {/* Date Picker */}
-        <View style={styles.radioGroupContainer}>
-          <Text style={styles.filtersH2absolute}>Pretrazi po datumu</Text>
-          <View style={styles.dateButtonsContainer}>
-            <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
-              Izaberi datum
-            </Button>
-            <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
-              Resetuj izbor
-            </Button>
-          </View>
+        <View style={[styles.radioGroupContainer]}>
+          {Platform.OS === 'ios' ? (
+            <>
+              <Text style={styles.filtersH2absolute}>Pretraži po datumu</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ justifyContent: 'center', alignSelf: 'center', width: '50%' }}>
+                  <DateTimePicker
+                    value={searchParams.pickedDate || new Date()}
+                    mode="date"
+                    is24Hour={true}
+                    onChange={handleDatePick}
+                    onTouchCancel={handleDateReset}
+                  />
+                </View>
+                <Button containerStyles={[styles.dateButton, { width: '50%' }]} onPress={handleDateReset}>
+                  Resetuj izbor
+                </Button>
+              </View>
+            </>
+          ) : (
+            <>
+              <Text style={styles.filtersH2absolute}>Pretraži po datumu</Text>
+              <View style={styles.dateButtonsContainer}>
+                <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+                  Izaberi datum
+                </Button>
+                <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
+                  Resetuj izbor
+                </Button>
 
-          {showDatePicker && (
-            <DateTimePicker
-              value={searchParams.pickedDate || new Date()}
-              mode="date"
-              is24Hour={true}
-              onChange={handleDatePick}
-              onTouchCancel={handleDateReset}
-            />
-          )}
-          {date && searchParams.pickedDate !== '' && (
-            <View style={styles.dateDisplayContainer}>
-              <Text style={styles.dateLabel}>Izabrani datum:</Text>
-              <Text style={styles.dateText}>{formatDateHandler(searchParams.pickedDate)}</Text>
-            </View>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={searchParams.pickedDate || new Date()}
+                    mode="date"
+                    is24Hour={true}
+                    onChange={handleDatePick}
+                    onTouchCancel={handleDateReset}
+                  />
+                )}
+              </View>
+              {date && searchParams.pickedDate && (
+                <View style={styles.dateDisplayContainer}>
+                  <Text style={styles.dateLabel}>Izabrani datum:</Text>
+                  <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+                </View>
+              )}
+            </>
           )}
         </View>
 
@@ -222,103 +246,105 @@ function SearchReservations({ searchParams, setSearchParams, updateSearchParam }
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-    elevation: 2,
-    borderColor: Colors.primaryDark,
-    backgroundColor: Colors.white,
-    marginBottom: 2,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    marginBottom: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 2,
-    backgroundColor: Colors.white,
-  },
-  input: {
-    marginTop: 18,
-    backgroundColor: Colors.white,
-    flex: 7,
-    height: 50,
-  },
-  expandButton: {
-    position: 'relative',
-    flex: 1.5,
-    marginLeft: 10,
-    height: 45,
-    right: 0,
-    top: 10,
-  },
-  searchParamsContainer: {
-    position: 'relative',
-  },
-  overlay: {},
-  radioGroupContainer: {
-    padding: 10,
-    borderWidth: 2,
-    borderColor: Colors.primaryLight,
-    borderRadius: 4,
-    marginBottom: 16,
-    // paddingTop: 20,
-    marginTop: 10,
-  },
-  radioGroup: {},
-  radioComponentContainer: {
-    justifyContent: 'flex-start',
-  },
-  filtersH1: {
-    marginTop: 10,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.primaryDark,
-  },
-  filtersH2: {
-    fontSize: 14,
-    color: Colors.primaryDark,
-    marginBottom: 8,
-    backgroundColor: Colors.white,
-    paddingHorizontal: 14,
-  },
-  filtersH2absolute: {
-    fontSize: 14,
-    color: Colors.primaryDark,
-    marginBottom: 8,
-    position: 'absolute',
-    left: 10,
-    top: -12,
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    paddingHorizontal: 4,
-  },
-  dateButtonsContainer: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  dateButton: {
-    flex: 1,
-    backgroundColor: Colors.secondaryLight,
-    color: Colors.primaryDark,
-  },
-  dateDisplayContainer: {
-    flexDirection: 'column',
-    gap: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dateLabel: {},
-  dateText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.highlight,
-    lineHeight: 16,
-  },
-  courierContainer: {
-    marginBottom: 10,
-  },
-});
-
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      paddingHorizontal: 16,
+      elevation: 2,
+      borderColor: colors.primaryDark,
+      backgroundColor: colors.white,
+      marginBottom: 2,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      marginBottom: 6,
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 2,
+      backgroundColor: colors.white,
+    },
+    input: {
+      marginTop: 18,
+      backgroundColor: colors.white,
+      flex: 7,
+      height: 50,
+    },
+    expandButton: {
+      position: 'relative',
+      flex: 1.5,
+      marginLeft: 10,
+      height: 45,
+      right: 0,
+      top: 10,
+      marginBottom: 2,
+    },
+    searchParamsContainer: {
+      position: 'relative',
+    },
+    overlay: {},
+    radioGroupContainer: {
+      padding: 10,
+      borderWidth: 2,
+      borderColor: colors.primaryLight,
+      borderRadius: 4,
+      marginBottom: 16,
+      // paddingTop: 20,
+      marginTop: 10,
+    },
+    radioGroup: {},
+    radioComponentContainer: {
+      justifyContent: 'flex-start',
+    },
+    filtersH1: {
+      marginTop: 10,
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.primaryDark,
+      marginBottom: 16,
+    },
+    filtersH2: {
+      fontSize: 14,
+      color: colors.primaryDark,
+      marginBottom: 8,
+      backgroundColor: colors.white,
+      paddingHorizontal: 14,
+    },
+    filtersH2absolute: {
+      fontSize: 14,
+      color: colors.primaryDark,
+      marginBottom: 8,
+      position: 'absolute',
+      left: 10,
+      top: -12,
+      backgroundColor: colors.white,
+      borderRadius: 4,
+      paddingHorizontal: 4,
+    },
+    dateButtonsContainer: {
+      flexDirection: 'row',
+      gap: 10,
+    },
+    dateButton: {
+      flex: 1,
+      backgroundColor: colors.secondaryLight,
+      color: colors.primaryDark,
+    },
+    dateDisplayContainer: {
+      flexDirection: 'column',
+      gap: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    dateLabel: {},
+    dateText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.highlight,
+      lineHeight: 16,
+    },
+    courierContainer: {
+      marginBottom: 10,
+    },
+  });
+}
 export default SearchReservations;

@@ -1,10 +1,10 @@
 import Constants from 'expo-constants';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Colors } from '../../constants/colors';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { AuthContext } from '../../store/auth-context';
 import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import { CategoryTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
@@ -20,6 +20,8 @@ interface DropdownTypes {
 }
 
 function EditCategoriesItem({ data }: { data: CategoryTypes }) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const [categoryData, setCategoryData] = useState<CategoryTypes>({
     _id: '',
     name: '',
@@ -201,16 +203,16 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
               <Button
                 containerStyles={styles.buttonStyle}
                 onPress={showEditCategoryrHandler}
-                textColor={Colors.primaryLight}
-                backColor={Colors.error}
+                textColor={colors.primaryLight}
+                backColor={colors.error}
               >
                 Otkaži
               </Button>
               <Button
                 containerStyles={styles.buttonStyle}
                 onPress={updateCategoryHandler}
-                textColor={Colors.primaryLight}
-                backColor={Colors.primaryDark}
+                textColor={colors.primaryLight}
+                backColor={colors.primaryDark}
               >
                 Sačuvaj
               </Button>
@@ -227,7 +229,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
             <IconButton
               icon="delete"
               onPress={removeCategoryHandler}
-              color={Colors.error}
+              color={colors.error}
               style={styles.deleteIcon}
               size={26}
             />
@@ -237,73 +239,74 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  colorItem: {
-    padding: 14,
-    paddingHorizontal: 25,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    backgroundColor: 'white',
-    marginBottom: 1,
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-    elevation: 1,
-  },
-  deleteIcon: {
-    marginLeft: 'auto',
-    paddingHorizontal: 8,
-  },
-  displayCategory: {
-    flexDirection: 'row',
-    flex: 1,
-    alignItems: 'center',
-  },
-  categoryData: {
-    flexDirection: 'column',
-  },
-  text: {
-    fontSize: 14,
-  },
-  categoryName: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  mainInputsContainer: {
-    width: '100%',
-    flexDirection: 'column',
-  },
-  input: {
-    borderBottomColor: Colors.secondaryLight,
-    borderBottomWidth: 1,
-    flex: 1,
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  dropdown: {
-    marginBottom: 8,
-  },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
-    maxWidth: 200,
-    alignSelf: 'flex-end',
-  },
-  error: {
-    marginTop: 8,
-    color: Colors.error,
-    textAlign: 'center',
-  },
-  success: {
-    marginTop: 8,
-    color: Colors.success,
-    textAlign: 'center',
-  },
-  buttonStyle: {
-    flex: 1,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    colorItem: {
+      padding: 14,
+      paddingHorizontal: 25,
+      borderWidth: 0.5,
+      borderColor: colors.secondaryLight,
+      backgroundColor: 'white',
+      marginBottom: 1,
+      flexDirection: 'row',
+      gap: 20,
+      alignItems: 'center',
+      elevation: 1,
+    },
+    deleteIcon: {
+      marginLeft: 'auto',
+      paddingHorizontal: 8,
+    },
+    displayCategory: {
+      flexDirection: 'row',
+      flex: 1,
+      alignItems: 'center',
+    },
+    categoryData: {
+      flexDirection: 'column',
+    },
+    text: {
+      fontSize: 14,
+    },
+    categoryName: {
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    mainInputsContainer: {
+      width: '100%',
+      flexDirection: 'column',
+    },
+    input: {
+      borderBottomColor: colors.secondaryLight,
+      borderBottomWidth: 1,
+      flex: 1,
+      marginBottom: 10,
+      fontSize: 16,
+    },
+    dropdown: {
+      marginBottom: 8,
+    },
+    buttons: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      gap: 10,
+      maxWidth: 200,
+      alignSelf: 'flex-end',
+    },
+    error: {
+      marginTop: 8,
+      color: colors.error,
+      textAlign: 'center',
+    },
+    success: {
+      marginTop: 8,
+      color: colors.success,
+      textAlign: 'center',
+    },
+    buttonStyle: {
+      flex: 1,
+    },
+  });
+}
 
 export default EditCategoriesItem;

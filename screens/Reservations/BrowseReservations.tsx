@@ -1,16 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
 import { useContext, useMemo, useState } from 'react';
-import { Modal, StyleSheet } from 'react-native';
+import { Modal, Platform, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import filterReservations from '../../components/reservations/filterReservations';
 import ReservationsItemsList from '../../components/reservations/ReservationsItemsList';
 import SearchReservations from '../../components/reservations/SearchReservations';
-import { Colors } from '../../constants/colors';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useFadeTransition } from '../../hooks/useFadeTransition';
 import { OrdersContext } from '../../store/orders-context';
+import { useThemeColors } from '../../store/theme-context';
 import { OrderTypes } from '../../types/allTsTypes';
 
 interface SearchParamsTypes {
@@ -23,6 +23,7 @@ interface SearchParamsTypes {
   onSizeSearch: string[];
 }
 function BrowseReservations() {
+  const colors = useThemeColors();
   const ordersCtx = useContext(OrdersContext);
   const [editedReservation, setEditedReservation] = useState<OrderTypes | null>(null);
   useBackClickHandler(!!editedReservation, removeEditedReservation);
@@ -47,11 +48,9 @@ function BrowseReservations() {
   }
 
   const filteredData = useMemo(() => {
-    // if (isDatePicked) return searchReservations(searchData, ordersCtx.customReservationsSet, searchParams);
-    // return searchReservations(searchData, ordersCtx.unprocessedOrders, searchParams);
-    const filteredRes = filterReservations(ordersCtx.unprocessedOrders, searchParams);
-    return filteredRes;
-  }, [ordersCtx.customReservationsSet, ordersCtx.unprocessedOrders, searchParams]);
+    const reservations = ordersCtx.orders.filter((o) => o.reservation);
+    return filterReservations(reservations, searchParams);
+  }, [ordersCtx.orders, searchParams]);
 
   const editReservationFade = useFadeTransition(editedReservation !== null);
 
@@ -73,15 +72,15 @@ function BrowseReservations() {
 
       <Modal
         animationType="fade"
-        presentationStyle="overFullScreen"
         visible={editedReservation !== null}
         onRequestClose={removeEditedReservation}
+        presentationStyle={Platform.OS === 'android' ? 'overFullScreen' : 'pageSheet'}
       >
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.primaryDark }}>
           <StatusBar style="light" />
-          <Animated.View style={[editReservationFade, { flex: 1 }]}>
+          <Animated.ScrollView style={[editReservationFade, { flex: 1 }]}>
             <EditOrder editedOrder={editedReservation} setEditedOrder={setEditedReservation} />
-          </Animated.View>
+          </Animated.ScrollView>
         </SafeAreaView>
       </Modal>
     </>

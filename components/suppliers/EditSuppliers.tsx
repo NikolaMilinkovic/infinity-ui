@@ -1,16 +1,18 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Colors } from '../../constants/colors';
 import { SuppliersContext } from '../../store/suppliers-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import EditSupplierItem from './EditSupplierItem';
 
 function EditSuppliers() {
   const suppliersCtx = useContext(SuppliersContext);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   useEffect(() => {
-    if (suppliersCtx.suppliers.length !== 0) {
+    if (suppliersCtx.suppliers) {
       setIsLoading(false);
     }
   }, [suppliersCtx.suppliers]);
@@ -79,44 +81,46 @@ function EditSuppliers() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: Colors.primaryLight,
-  },
-  list: {
-    flex: 1,
-  },
-  listContent: {
-    paddingBottom: 10,
-    gap: 2,
-  },
-  headerWrapper: {
-    backgroundColor: Colors.white,
-    flexDirection: 'row',
-    marginBottom: 6,
-    paddingHorizontal: 10,
-    borderBottomColor: Colors.secondaryLight,
-    borderBottomWidth: 0.5,
-    elevation: 2,
-  },
-  header: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    padding: 10,
-    backgroundColor: Colors.white,
-    textAlign: 'center',
-  },
-  input: {
-    borderBottomColor: Colors.secondaryLight,
-    borderBottomWidth: 1,
-    flex: 1,
-    marginBottom: 10,
-    marginLeft: 10,
-    fontSize: 14,
-    textAlignVertical: 'bottom',
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: colors.primaryLight,
+    },
+    list: {
+      flex: 1,
+    },
+    listContent: {
+      paddingBottom: 10,
+      gap: 2,
+    },
+    headerWrapper: {
+      backgroundColor: colors.white,
+      flexDirection: 'row',
+      marginBottom: 6,
+      paddingHorizontal: 10,
+      borderBottomColor: colors.secondaryLight,
+      borderBottomWidth: 0.5,
+      elevation: 2,
+    },
+    header: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      padding: 10,
+      backgroundColor: colors.white,
+      textAlign: 'center',
+    },
+    input: {
+      borderBottomColor: colors.secondaryLight,
+      borderBottomWidth: 1,
+      flex: 1,
+      marginBottom: 10,
+      marginLeft: 10,
+      fontSize: 14,
+      textAlignVertical: 'bottom',
+    },
+  });
+}
 
 export default EditSuppliers;

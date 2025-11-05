@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../constants/colors';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { NewOrderContextTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
@@ -15,7 +15,8 @@ interface PropTypes {
   setIsExpanded: (expanded: boolean) => void;
 }
 function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext }: PropTypes) {
-  // const fadeAnimation = useToggleFadeAnimation(isExpanded, 180);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   // Expand animation that makescontent visible when expanded
   // Used to fix the padding issue when expand is collapsed
@@ -48,7 +49,7 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={styles.iconStyle}
           size={26}
-          color={Colors.white}
+          color={colors.white}
         />
       </Pressable>
 
@@ -67,10 +68,11 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
 
           {/* NEXT BUTTON */}
           <Button
-            backColor={Colors.highlight}
-            textColor={Colors.white}
+            textColor={colors.whiteText}
             containerStyles={{ marginBottom: 6 }}
             onPress={handleOnNext}
+            backColor={colors.buttonHighlight1}
+            backColor1={colors.buttonHighlight2}
           >
             Dalje
           </Button>
@@ -79,33 +81,36 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: {},
-  headerContainer: {
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    backgroundColor: Colors.secondaryDark,
-    marginBottom: 6,
-    flexDirection: 'row',
-  },
-  iconStyle: {
-    marginLeft: 'auto',
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.white,
-  },
-  listContainer: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: Colors.secondaryLight,
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    marginBottom: 6,
-  },
-});
+
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {},
+    headerContainer: {
+      padding: 10,
+      borderRadius: 4,
+      borderWidth: 0,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.secondaryDark,
+      marginBottom: 6,
+      flexDirection: 'row',
+    },
+    iconStyle: {
+      marginLeft: 'auto',
+    },
+    header: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.white,
+    },
+    listContainer: {
+      padding: 10,
+      borderWidth: 1,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.background,
+      borderRadius: 4,
+      marginBottom: 6,
+    },
+  });
+}
 
 export default SelectedProductsDisplay;

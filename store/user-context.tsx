@@ -6,6 +6,7 @@ import { fetchData } from '../util-methods/FetchMethods';
 import { betterErrorLog } from '../util-methods/LogMethods';
 import { AuthContext } from './auth-context';
 import { SocketContext } from './socket-context';
+import { useTheme } from './theme-context';
 
 interface UserContextTypes {
   permissions: any;
@@ -30,6 +31,7 @@ export const UserContext = createContext<UserContextTypes>({
 });
 
 function UserContextProvider({ children }: UserContextProviderTypes) {
+  const theme = useTheme();
   const [permissions, setPermissions] = useState(null);
   const [settings, setSettings] = useState(null);
   const [userRole, setUserRole] = useState(null);
@@ -53,13 +55,12 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
       setUserRole(userData.role || null);
       setUsersList(userData.usersList || []);
       setActiveUserId(userData.id || null);
+      theme.setTheme(userData?.settings.defaults?.theme ?? 'light');
 
       if (expoPushToken && expoPushToken !== userData.pushToken) {
         await updateUserExpoPushToken(token, expoPushToken);
       }
-      console.log('[2][user-context] Initial fetch: true');
     } catch (error) {
-      console.log('[2][user-context] Initial fetch: false');
       betterErrorLog('> Došlo je do problema unutar UserContextProvider > getUserData metodi', error);
       popupMessage('Došlo je do problema unutar UserContextProvider > getUserData metodi', 'danger');
     }
@@ -99,6 +100,7 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
           setUserRole(userData.role || null);
           setUsersList(userData.usersList || []);
           setActiveUserId(userData.id || null);
+          theme.setTheme(userData?.settings.defaults?.theme ?? 'light');
         } catch (error) {
           if (!signal.aborted) {
             betterErrorLog('> Error fetching user data', error);
@@ -154,8 +156,10 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
       userRole,
       getUserRole,
       usersList,
+      activeUserId,
+      setUsersList,
     }),
-    [permissions, settings, userRole, usersList]
+    [permissions, settings, userRole, usersList, activeUserId]
   );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

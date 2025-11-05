@@ -49,7 +49,6 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
   const contexts = useAppContexts();
-  const [firstConnect, setFirstConnect] = useState(true);
 
   /**
    * Fetches the lastUpdated data & updates lastUpdatedData
@@ -60,9 +59,7 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
         try {
           const response = await fetchData(token, 'last-updated/get-last-updated-data');
           setLastUpdatedData(response.data);
-          console.log('[11][last-updated-context] Initial fetch: true');
         } catch (error) {
-          console.log('[11][last-updated-context] Initial fetch: false');
           popupMessage(`Neuspešno preuzimanje podataka o vremenima ažuriranja`, 'danger');
           console.error(error);
         }
@@ -79,58 +76,48 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
    * Upon establishing connection send lastUpdatedData to validate if our data is up to date
    */
   useEffect(() => {
-    if (socket) {
-      const handleConnect = () => {
-        try {
-          if (lastUpdatedData) {
-            socket.emit('lastUpdated', lastUpdatedData);
+    // Don’t do anything until we have both socket and lastUpdatedData
+    if (!socket || !lastUpdatedData) return;
+
+    const handleConnect = () => {
+      try {
+        socket.emit('lastUpdated', lastUpdatedData);
+      } catch (error) {
+        betterErrorLog('> Error in last updated context -> handleConnect method', error);
+      }
+    };
+
+    const handleLastUpdatedResponse = async (responseData: lastUpdatedResponseDataType) => {
+      try {
+        if (responseData.isSynced) {
+          popupMessage(responseData.message, 'success');
+        } else {
+          popupMessage(responseData.message, 'success');
+          const sortSuccess = await sortDataOnClientSync(responseData.updatedData);
+          if (sortSuccess) {
+            popupMessage('Ažuriranje svih podataka uspešno izvršeno', 'success');
+            if (responseData.lastUpdated) handleSyncLastUpdated(responseData.lastUpdated);
           } else {
-            if (firstConnect) {
-              setFirstConnect(false);
-            } else {
-              popupMessage('LastUpdated data is missing', 'danger');
-            }
+            popupMessage('Došlo je do problema prilikom ažuriranja podataka', 'danger');
           }
-        } catch (error) {
-          betterErrorLog('> Error in last updated context -> handleConnect method', error);
         }
-      };
+      } catch (error) {
+        betterErrorLog('> Error in last updated context -> handleLastUpdatedResponse method', error);
+        popupMessage('Greška pri obradi odgovora o ažuriranju', 'danger');
+      }
+    };
 
-      const handleLastUpdatedResponse = async (responseData: lastUpdatedResponseDataType) => {
-        try {
-          if (responseData.isSynced) {
-            popupMessage(responseData.message, 'success');
-          } else {
-            popupMessage(responseData.message, 'success');
-            const sortSuccess = await sortDataOnClientSync(responseData.updatedData);
-            if (sortSuccess) {
-              popupMessage('Ažuriranje svih podataka uspešno izvršeno', 'success');
-              if (responseData.lastUpdated) handleSyncLastUpdated(responseData.lastUpdated);
-            } else {
-              popupMessage('Došlo je do problema prilikom ažuriranja podataka', 'danger');
-            }
-          }
-        } catch (error) {
-          betterErrorLog('> Error in last updated context -> handleLastUpdatedResponse method', error);
-          popupMessage('Greška pri obradi odgovora o ažuriranju', 'danger');
-        }
-      };
+    socket.on('connect', handleConnect);
+    socket.on('lastUpdatedResponse', handleLastUpdatedResponse);
+    socket.on('syncLastUpdated', handleSyncLastUpdated);
 
-      socket.on('connect', handleConnect);
-      socket.on('lastUpdatedResponse', handleLastUpdatedResponse);
-      socket.on('syncLastUpdated', handleSyncLastUpdated);
-
-      // Cleanup
-      return () => {
-        socket.off('connect', handleConnect);
-        socket.off('lastUpdatedResponse', handleLastUpdatedResponse);
-        socket.off('syncLastUpdated', handleSyncLastUpdated);
-      };
-    }
+    // Cleanup
+    return () => {
+      socket.off('connect', handleConnect);
+      socket.off('lastUpdatedResponse', handleLastUpdatedResponse);
+      socket.off('syncLastUpdated', handleSyncLastUpdated);
+    };
   }, [socket, lastUpdatedData]);
-
-  // Ovo sam remove u pokusaju da fixam starting freeze issue
-  // }, [socket, lastUpdatedData, firstConnect]);
 
   /**
    * @param data
@@ -143,6 +130,12 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
       for (const dataType of data) {
         try {
           switch (dataType.key) {
+            case 'appSchema':
+              updateAppContext(dataType.data);
+              break;
+            case 'user':
+              updateUserContext(dataType.data);
+              break;
             case 'color':
               updateColorContext(dataType.data);
               break;
@@ -203,6 +196,14 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
     }
   }
 
+  // App
+  function updateAppContext(newData: any[]) {
+    contexts.app.setAppData(newData);
+  }
+  // User
+  function updateUserContext(newData: any[]) {
+    contexts.user.setUsersList(newData);
+  }
   // Color
   function updateColorContext(newData: ColorTypes[]) {
     contexts.colors.setColors(newData);
@@ -229,8 +230,7 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
   }
   // Order
   function updateOrdersContext(newData: any) {
-    contexts.orders.setProcessedOrders(newData.processed);
-    contexts.orders.setUnprocessedOrders(newData.unprocessed);
+    contexts.orders.setOrders([...newData.processed, ...newData.unprocessed]);
   }
 
   const value = useMemo(

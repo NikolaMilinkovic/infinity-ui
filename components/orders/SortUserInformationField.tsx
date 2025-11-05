@@ -1,10 +1,10 @@
 import { useContext, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../constants/colors';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { AuthContext } from '../../store/auth-context';
 import { NewOrderContext } from '../../store/new-order-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 import GalleryImagePicker from '../../util-components/GalleryImagePicker';
 import InputField from '../../util-components/InputField';
@@ -21,6 +21,8 @@ interface PropTypes {
 }
 
 function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo, setBuyerInfo }: PropTypes) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const authCtx = useContext(AuthContext);
   const orderCtx = useContext(NewOrderContext);
 
@@ -84,6 +86,21 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
     }
   }
 
+  function insertTestData() {
+    orderCtx.setBuyerData({
+      name: 'Nikola Milinkovic',
+      address: 'Krajiska 52',
+      place: 'Zemun',
+      phone: '0631202585',
+      phone2: '',
+      bankNumber: '',
+      profileImage: {
+        uri: 'https://infinity-boutique.s3.eu-central-1.amazonaws.com/clients/infinity_boutique/images/profiles/bb5c1b5434e4d05ed3e7fd9f07ef16b371d4dd9504c462175a971044240f1cb3.jpeg',
+        imageName: 'bb5c1b5434e4d05ed3e7fd9f07ef16b371d4dd9504c462175a971044240f1cb3.jpeg',
+      },
+    });
+  }
+
   return (
     <>
       <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
@@ -92,7 +109,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={styles.iconStyle}
           size={26}
-          color={Colors.white}
+          color={colors.whiteText}
         />
       </Pressable>
 
@@ -102,20 +119,33 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             value={buyerInfo}
             setValue={setBuyerInfo}
             placeholder="Unesite puno ime, adresu i broj telefona kupca"
-            background={Colors.white}
-            color={Colors.primaryDark}
+            background={colors.background}
+            color={colors.defaultText}
             containerStyles={styles.input}
           />
           <Button
-            textColor={Colors.primaryDark}
-            backColor={Colors.secondaryLight}
+            textColor={colors.defaultText}
+            backColor={colors.buttonNormal1}
+            backColor1={colors.buttonNormal2}
             onPress={handleInputSort}
             containerStyles={styles.sortButton}
           >
             Sortiraj podatke
           </Button>
+          {/* <View style={styles.testButtonContainer}>
+            <Button
+              textColor={colors.primaryDark}
+              backColor={colors.buttonNormal1}
+              backColor1={colors.buttonNormal2}
+              onPress={insertTestData}
+              containerStyles={styles.sortButton}
+            >
+              Insert Test Data
+            </Button>
+          </View> */}
           <InputField
-            labelStyles={{ backgroundColor: Colors.white }}
+            activeColor={colors.borderColor}
+            labelStyles={{ backgroundColor: colors.background }}
             label="Ime i Prezime"
             inputText={orderCtx?.buyerData?.name || ''}
             setInputText={(text: string | number | undefined) =>
@@ -124,7 +154,8 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
-            labelStyles={{ backgroundColor: Colors.white }}
+            activeColor={colors.borderColor}
+            labelStyles={{ backgroundColor: colors.background }}
             label="Adresa"
             inputText={orderCtx?.buyerData?.address || ''}
             setInputText={(text: string | number | undefined) =>
@@ -133,7 +164,8 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
-            labelStyles={{ backgroundColor: Colors.white }}
+            activeColor={colors.borderColor}
+            labelStyles={{ backgroundColor: colors.background }}
             label="Mesto"
             inputText={orderCtx?.buyerData?.place || ''}
             setInputText={(text: string | number | undefined) =>
@@ -142,8 +174,9 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
+            activeColor={colors.borderColor}
             keyboard="number-pad"
-            labelStyles={{ backgroundColor: Colors.white }}
+            labelStyles={{ backgroundColor: colors.background }}
             label="Broj telefona"
             inputText={orderCtx?.buyerData?.phone || ''}
             setInputText={(text: string | number | undefined) =>
@@ -152,8 +185,9 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
+            activeColor={colors.borderColor}
             keyboard="number-pad"
-            labelStyles={{ backgroundColor: Colors.white }}
+            labelStyles={{ backgroundColor: colors.background }}
             label="Broj drugog telefona"
             inputText={orderCtx?.buyerData?.phone2 || ''}
             setInputText={(text: string | number | undefined) =>
@@ -166,7 +200,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             setValue={orderCtx.setDeliveryRemark}
             placeholder="Napomena za kurira"
             numberOfLines={4}
-            background={Colors.white}
+            background={colors.background}
             containerStyles={[styles.input, { marginTop: 10 }]}
           />
 
@@ -176,7 +210,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             placeholder="Naša interna napomena za porudžbinu"
             numberOfLines={4}
             containerStyles={[styles.input, { marginTop: 10 }]}
-            background={Colors.white}
+            background={colors.background}
           />
           <GalleryImagePicker
             image={orderCtx.profileImage}
@@ -184,9 +218,14 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             placeholder="Dodaj sliku profila"
             crop={false}
             customStyles={styles.imagePicker}
-            textStyles={{ color: Colors.secondaryDark }}
+            textStyles={{ color: colors.defaultText, fontSize: 14 }}
           />
-          <Button backColor={Colors.highlight} textColor={Colors.white} onPress={handleOnNext}>
+          <Button
+            textColor={colors.whiteText}
+            onPress={handleOnNext}
+            backColor={colors.buttonHighlight1}
+            backColor1={colors.buttonHighlight2}
+          >
             Dalje
           </Button>
         </Animated.View>
@@ -194,65 +233,75 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
     </>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-    backgroundColor: Colors.white,
-    borderWidth: 1,
-    borderColor: Colors.secondaryLight,
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginBottom: 10,
-  },
-  headerContainer: {
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    backgroundColor: Colors.secondaryDark,
-    marginBottom: 6,
-    flexDirection: 'row',
-  },
-  iconStyle: {
-    marginLeft: 'auto',
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.white,
-  },
-  input: {
-    borderWidth: 0.5,
-    borderRadius: 4,
-    borderColor: Colors.secondaryLight,
-    marginBottom: 8,
-    padding: 10,
-    fontSize: 16,
-    maxHeight: 135,
-    backgroundColor: Colors.white,
-  },
-  sortButton: {
-    marginBottom: 30,
-  },
-  inputFieldStyle: {
-    marginVertical: 8,
-    backgroundColor: Colors.white,
-  },
-  orderNotesInput: {
-    justifyContent: 'flex-start',
-    textAlignVertical: 'top',
-    marginVertical: 8,
-    backgroundColor: Colors.white,
-  },
-  deliveryRemarkInput: {
-    justifyContent: 'flex-start',
-    textAlignVertical: 'top',
-    marginVertical: 8,
-    backgroundColor: Colors.white,
-  },
-  imagePicker: {
-    backgroundColor: Colors.white,
-  },
-});
+
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      backgroundColor: 'transparent',
+      borderWidth: 0,
+      borderColor: colors.borderColor,
+      borderRadius: 4,
+      overflow: 'hidden',
+      marginHorizontal: 8,
+      position: 'relative',
+    },
+    headerContainer: {
+      padding: 10,
+      borderRadius: 4,
+      borderWidth: 0,
+      borderColor: colors.primaryDark,
+      backgroundColor: colors.secondaryDark,
+      marginBottom: 6,
+      flexDirection: 'row',
+    },
+    iconStyle: {
+      marginLeft: 'auto',
+    },
+    header: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.white,
+    },
+    input: {
+      borderWidth: 0.5,
+      borderRadius: 4,
+      borderColor: colors.borderColor,
+      marginBottom: 8,
+      padding: 10,
+      fontSize: 16,
+      maxHeight: 135,
+      backgroundColor: colors.background,
+    },
+    sortButton: {
+      marginBottom: 30,
+    },
+    inputFieldStyle: {
+      marginVertical: 8,
+      backgroundColor: colors.background,
+    },
+    orderNotesInput: {
+      justifyContent: 'flex-start',
+      textAlignVertical: 'top',
+      marginVertical: 8,
+      backgroundColor: colors.background,
+    },
+    deliveryRemarkInput: {
+      justifyContent: 'flex-start',
+      textAlignVertical: 'top',
+      marginVertical: 8,
+      backgroundColor: colors.background,
+    },
+    imagePicker: {
+      backgroundColor: colors.background,
+    },
+
+    // TEST BUTTON
+    testButtonContainer: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+    },
+  });
+}
 
 export default SortUserInformationField;

@@ -1,13 +1,14 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Dimensions } from 'react-native';
-import { Colors } from '../constants/colors';
 import BrowseOrders from '../screens/Orders/BrowseOrders';
 import PackOrders from '../screens/Orders/PackOrders';
 import BrowseReservations from '../screens/Reservations/BrowseReservations';
+import { useThemeColors } from '../store/theme-context';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function OrdersManagerTabs() {
+  const colors = useThemeColors();
   /**
    * Main TAB navigation | The sliding windows
    */
@@ -17,16 +18,16 @@ export default function OrdersManagerTabs() {
         width: Dimensions.get('window').width,
       }}
       screenOptions={{
-        tabBarPressColor: Colors.tabsPressEffect,
+        tabBarPressColor: colors.tabsPressEffect,
         tabBarLabelStyle: {
           fontSize: 11,
-          color: Colors.secondaryDark,
+          color: colors.secondaryDark,
         },
         tabBarStyle: {
-          backgroundColor: Colors.secondaryLight,
+          backgroundColor: colors.secondaryLight,
         },
         tabBarIndicatorStyle: {
-          backgroundColor: Colors.highlight,
+          backgroundColor: colors.highlight,
           height: 3,
         },
         lazy: false,

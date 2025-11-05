@@ -1,20 +1,20 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
-import { CustomDrawerContent } from './DrawerNavigation';
-// import { Colors } from '../constants/colors';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect } from 'react';
-import { useGetAppColors } from '../constants/useGetAppColors';
+import { useEffect, useRef } from 'react';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useAuthContext } from '../hooks/useAuthContext';
 import Profile from '../screens/Profile/Profile';
-import { useGetAppContexts } from '../store/app-context';
+import { useBoutique } from '../store/app-context';
 import EndOfDayStatisticsContextProvider from '../store/end-of-day-statistics';
+import { useThemeColors } from '../store/theme-context';
 import { initializeAuthContext } from '../util-methods/FetchMethods';
 import AdminDashboardTabs from './AdminDashboardTabs';
 import BrowsePageTabs from './BrowsePageTabs';
 import ColorsCategoriesTabs from './ColorsCategoriesTabs';
 import CouriersTabs from './CouriersTabs';
+import { CustomDrawerContent } from './DrawerNavigation';
 import EndOfDayTabs from './EndOfDayTabs';
+import GlobalDashboardTabs from './GlobalDashboardTabs';
 import OrdersManagerTabs from './OrdersManagerTabs';
 import ProductsManagerTabs from './ProductsManagerTabs';
 import SettingsTabs from './SettingsTabs';
@@ -23,47 +23,52 @@ import UserManagerTabs from './userManagerTabs';
 const Drawer = createDrawerNavigator();
 
 export default function AuthenticatedStack() {
+  const drawerRef = useRef();
   const navigation = useNavigation();
   const authCtx = useAuthContext();
-  const appCtx = useGetAppContexts();
-  const Colors = useGetAppColors();
+  const boutique = useBoutique();
+  const colors = useThemeColors();
+
   useEffect(() => {
     initializeAuthContext(authCtx);
   }, [authCtx]);
 
   function logoOnPressNavigator() {
-    navigation.navigate('BrowseProducts');
+    navigation.navigate('Home', { screen: 'BrowseProducts' });
+    drawerRef.current?.setActive('Home');
   }
 
   const drawerScreenOptions = {
     title: '',
     headerTitle: () => (
       <View style={styles.headerTitleContainer}>
-        <Pressable
-          onPress={logoOnPressNavigator}
-          style={({ pressed }) => [pressed && styles.pressed, { marginBottom: 10 }]}
-        >
-          {/* <Image source={require('../assets/infinity-white.png')} style={styles.headerImage} resizeMode="contain" /> */}
-          <Image
-            source={{ uri: appCtx?.appSettings?.appIcon?.appIconUri }}
-            style={styles.headerImage}
-            resizeMode="contain"
-          />
-        </Pressable>
+        {boutique?.data.settings?.appIcon?.appIconUri && (
+          <Pressable
+            onPress={logoOnPressNavigator}
+            style={({ pressed }) => [pressed && styles.pressed, { marginBottom: 10 }]}
+          >
+            <Image
+              source={{ uri: boutique?.data.settings?.appIcon?.appIconUri }}
+              style={styles.headerImage}
+              resizeMode="contain"
+            />
+          </Pressable>
+        )}
       </View>
     ),
     headerTitleAlign: 'center',
-    headerTintColor: Colors.whiteText,
+    headerTintColor: colors.navText,
     drawerStyle: {
-      backgroundColor: Colors.primaryLight,
+      backgroundColor: colors.primaryLight,
       width: '80%',
     },
     headerStyle: {
-      backgroundColor: Colors.primaryDark,
+      backgroundColor: colors.navBackground,
+      height: 100,
     },
-    drawerActiveTintColor: Colors.defaultText,
-    drawerInactiveTintColor: Colors.defaultText,
-    tabBarPressColor: Colors.tabsPressEffect,
+    drawerActiveTintColor: colors.defaultText,
+    drawerInactiveTintColor: colors.defaultText,
+    tabBarPressColor: colors.tabsPressEffect,
   };
 
   /**
@@ -74,7 +79,10 @@ export default function AuthenticatedStack() {
    */
   return (
     // <></>
-    <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />} screenOptions={drawerScreenOptions}>
+    <Drawer.Navigator
+      drawerContent={(props) => <CustomDrawerContent ref={drawerRef} {...props} />}
+      screenOptions={drawerScreenOptions}
+    >
       {/* Profile Settings UserManager */}
       {/* HOME SCREEN / LANDING SCREEN WITH TAB NAVIGATION */}
       <Drawer.Screen name="Home" component={BrowsePageTabs} />
@@ -98,8 +106,10 @@ export default function AuthenticatedStack() {
       </Drawer.Screen>
 
       {/* ADMIN DASHBOARD */}
-      {/* {authCtx.} */}
       <Drawer.Screen name="AdminDashboardTabs" component={AdminDashboardTabs} />
+
+      {/* GLOBAL DASHBOARD */}
+      <Drawer.Screen name="GlobalDashboardTabs" component={GlobalDashboardTabs} />
 
       {/* USERMANAGER */}
       <Drawer.Screen name="UserManagerTabs" component={UserManagerTabs} />
@@ -124,10 +134,6 @@ export default function AuthenticatedStack() {
   );
 }
 
-// Navbar Logo Styles
-// function getStyles(Colors: AppColors){
-//   return
-// }
 const styles = StyleSheet.create({
   headerTitleContainer: {
     flex: 1,
@@ -137,7 +143,7 @@ const styles = StyleSheet.create({
   },
   headerImage: {
     width: 150,
-    height: 45,
+    height: 40,
   },
   pressed: {
     opacity: 0.7,

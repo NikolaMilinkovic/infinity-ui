@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { globalStyles } from '../constants/globalStyles';
+import { useGlobalStyles } from '../constants/globalStyles';
 import { CouriersContext } from '../store/couriers-context';
 import { CourierTypes } from '../types/allTsTypes';
 import DropdownList from './DropdownList';
@@ -25,6 +25,7 @@ interface CourierSelectorPropTypes {
 function CourierSelector({ setSelectedCourier, style, defaultValueByMatch }: CourierSelectorPropTypes) {
   const couriersCtx = useContext(CouriersContext);
   const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([]);
+  const globalStyles = useGlobalStyles();
   useEffect(() => {
     const dropdownData = couriersCtx.couriers.map((courier) => ({
       _id: courier._id,

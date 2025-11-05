@@ -1,10 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import { useEffect } from 'react';
+import { forwardRef, useContext, useEffect, useImperativeHandle, useState } from 'react';
 import { View } from 'react-native';
-// import { Colors } from '../constants/colors';
-import { useContext, useState } from 'react';
-import { useGetAppColors } from '../constants/useGetAppColors';
 import { AuthContext } from '../store/auth-context';
+import { useThemeColors } from '../store/theme-context';
 import { UserContext } from '../store/user-context';
 import NavigationButton from '../util-components/NavigationButton';
 
@@ -12,7 +10,7 @@ import NavigationButton from '../util-components/NavigationButton';
  * Handles display of icons / screens in the drawer menu
  * Buttons inside the drawer navigation, handles displaying the screens
  */
-export function CustomDrawerContent(props) {
+export const CustomDrawerContent = forwardRef((props, ref) => {
   const [isActive, setIsActive] = useState('Home');
 
   useEffect(() => {
@@ -21,8 +19,13 @@ export function CustomDrawerContent(props) {
 
   const authCtx = useContext(AuthContext);
   const navigation = useNavigation();
-  const Colors = useGetAppColors();
   const userCtx = useContext(UserContext);
+  const colors = useThemeColors();
+
+  // Expose setIsActive to parent
+  useImperativeHandle(ref, () => ({
+    setActive: (pageName) => setIsActive(pageName),
+  }));
 
   function navigatePages(pageName) {
     navigation.navigate(pageName);
@@ -32,10 +35,10 @@ export function CustomDrawerContent(props) {
     navigatePages(pageName);
   }
   function handleActiveColorChange(pageName) {
-    return isActive === pageName ? Colors.selectedNavText : Colors.navTextNormal;
+    return isActive === pageName ? colors.selectedNavText : colors.navTextNormal;
   }
   function handleBackgroundChange(pageName) {
-    return isActive === pageName ? Colors.selectedNavBackground : 'transparent';
+    return isActive === pageName ? colors.selectedNavBackground : 'transparent';
   }
   if (!userCtx.permissions) return;
 
@@ -162,14 +165,27 @@ export function CustomDrawerContent(props) {
         />
       )}
 
+      {/* GLOBAL DASHBOARD */}
+      {userCtx.userRole === 'admin' && userCtx.permissions.navigation.global_dashboard && (
+        <NavigationButton
+          backgroundColor={handleBackgroundChange('GlobalDashboardTabs')}
+          icon="equalizer"
+          onPress={() => setActiveAndNavigate('GlobalDashboardTabs')}
+          size={18}
+          color={handleActiveColorChange('GlobalDashboardTabs')}
+          text="Global Dashboard"
+          type="MaterialCommunityIcons"
+        />
+      )}
+
       {/* Bottom Buttons */}
       <View
         style={{
           marginTop: 'auto',
         }}
       >
-        <NavigationButton icon="logout" onPress={authCtx.logout} size={18} color={Colors.error} text="Logout" />
+        <NavigationButton icon="logout" onPress={authCtx.logout} size={18} color={colors.error} text="Logout" />
       </View>
     </View>
   );
-}
+});

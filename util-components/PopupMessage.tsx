@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
 import { useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
 import { Colors } from '../constants/colors';
 
@@ -34,7 +34,7 @@ export function popupMessage(message: string, type: PopupMessageTypes['type']) {
     },
     container: {
       backgroundColor: backgroundColor,
-      paddingTop: 55,
+      paddingTop: 0,
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
@@ -45,7 +45,7 @@ export function popupMessage(message: string, type: PopupMessageTypes['type']) {
   showMessage({
     animationDuration: 225,
     duration: 2000,
-    style: styles.container,
+    style: [styles.container, Platform.OS === 'android' ? { paddingTop: 60 } : { paddingTop: 10 }],
     titleStyle: styles.text,
     textStyle: styles.text,
     message: `${message}`,

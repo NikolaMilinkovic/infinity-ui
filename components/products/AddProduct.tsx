@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
-import { Keyboard, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import DressColor from '../../models/DressColor';
 import PurseColor from '../../models/PurseColor';
 import { AuthContext } from '../../store/auth-context';
 import { CategoriesContext } from '../../store/categories-context';
 import { ColorsContext } from '../../store/colors-context';
 import { SuppliersContext } from '../../store/suppliers-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import {
   CategoryTypes,
@@ -17,11 +17,13 @@ import {
   SupplierTypes,
 } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
+import CustomText from '../../util-components/CustomText';
 import DropdownList from '../../util-components/DropdownList';
 import MultilineInput from '../../util-components/MultilineInput';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { addDress, addPurse } from '../../util-methods/FetchMethods';
 import { betterErrorLog } from '../../util-methods/LogMethods';
+import Card from '../layout/Card';
 import GenericProductInputComponents from './GenericProductInputComponents';
 import AddDressComponents from './unique_product_components/add/AddDressComponents';
 import AddPurseComponents from './unique_product_components/add/AddPurseComponents';
@@ -31,6 +33,8 @@ function AddProduct() {
   const categoriesCtx = useContext(CategoriesContext);
   const colorsCtx = useContext(ColorsContext);
   const suppliersCtx = useContext(SuppliersContext);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const user = useUser();
 
   // Other data
@@ -82,7 +86,7 @@ function AddProduct() {
 
   useEffect(() => {
     setAllCategories(categoriesCtx.getCategories());
-    setAllColors(colorsCtx.getColors());
+    setAllColors(colorsCtx.colors);
   }, [categoriesCtx, colorsCtx]);
 
   function handleOutsideClick() {
@@ -214,7 +218,7 @@ function AddProduct() {
   useEffect(() => {
     if (allColors.length > 0 && allCategories.length > 0) return;
     if (allColors.length === 0) {
-      setAllColors(colorsCtx.getColors());
+      setAllColors(colorsCtx.colors);
     }
     if (allCategories.length === 0) {
       setAllCategories(categoriesCtx.getCategories());
@@ -237,7 +241,7 @@ function AddProduct() {
   return (
     <TouchableWithoutFeedback onPress={handleOutsideClick} style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
-        <View style={styles.card}>
+        <Card cardStyles={{ marginBottom: 40 }}>
           <GenericProductInputComponents
             productName={productName}
             setProductName={setProductName}
@@ -250,16 +254,15 @@ function AddProduct() {
             setSelectedCategory={setSelectedCategory}
             allColors={allColors}
             setSelectedColors={setSelectedColors}
-            isMultiDropdownOpen={isMultiDropdownOpen}
           />
 
           {/* DRESES */}
           {selectedCategory && selectedCategory.stockType === 'Boja-Veličina-Količina' && (
-            <AddDressComponents dressColors={itemColors} setDressColors={setItemColors} />
+            <AddDressComponents dressColors={itemColors as any} setDressColors={setItemColors} />
           )}
           {/* PURSES */}
           {selectedCategory && selectedCategory.stockType === 'Boja-Količina' && (
-            <AddPurseComponents purseColors={itemColors} setPurseColors={setItemColors} />
+            <AddPurseComponents purseColors={itemColors as any} setPurseColors={setItemColors} />
           )}
           {/* GENERIC */}
           {/* {selectedCategory && selectedCategory.stockType !== 'Boja-Veličina-Količina' && selectedCategory.stockType !== 'Boja-Veličina' && (
@@ -275,11 +278,12 @@ function AddProduct() {
             setValue={(text: string | number | undefined) => setDescription(text as string)}
             containerStyles={styles.descriptionField}
             numberOfLines={4}
-            background={Colors.white}
+            background={colors.background}
+            color={colors.defaultText}
           />
 
           <View style={styles.wrapper}>
-            <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</Text>
+            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</CustomText>
             <DropdownList
               key={resetKey}
               data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
@@ -303,54 +307,58 @@ function AddProduct() {
           <View style={styles.buttonContainer}>
             <Button
               onPress={handleAddProduct}
-              backColor={Colors.highlight}
-              textColor={Colors.whiteText}
+              textColor={colors.whiteText}
+              backColor={colors.buttonHighlight1}
+              backColor1={colors.buttonHighlight2}
               containerStyles={{ marginTop: 16 }}
             >
               Sačuvaj Proizvod
             </Button>
           </View>
-        </View>
+        </Card>
       </ScrollView>
     </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    position: 'relative',
-    backgroundColor: Colors.primaryLight,
-  },
-  card: {
-    backgroundColor: Colors.white,
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: Colors.secondaryLight,
-    marginBottom: 16,
-    margin: 10,
-  },
-  wrapper: {
-    marginBottom: 0,
-  },
-  buttonContainer: {},
-  sectionText: {
-    fontSize: 18,
-  },
-  sectionTextTopMargin: {
-    marginTop: 16,
-  },
-  descriptionField: {
-    justifyContent: 'flex-start',
-    textAlignVertical: 'top',
-    marginTop: 18,
-    marginBottom: 8,
-    backgroundColor: Colors.white,
-  },
-  inputFieldLabelStyles: {
-    backgroundColor: Colors.white,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      display: 'flex',
+      position: 'relative',
+      backgroundColor: colors.background2,
+    },
+    card: {
+      backgroundColor: colors.background1,
+      padding: 10,
+      borderRadius: 4,
+      borderWidth: 1,
+      borderColor: colors.borderColor,
+      marginBottom: 16,
+      margin: 10,
+    },
+    wrapper: {
+      marginBottom: 0,
+    },
+    buttonContainer: {},
+    sectionText: {
+      fontSize: 18,
+    },
+    sectionTextTopMargin: {
+      marginTop: 16,
+      color: colors.highlightText,
+    },
+    descriptionField: {
+      justifyContent: 'flex-start',
+      textAlignVertical: 'top',
+      marginTop: 18,
+      marginBottom: 8,
+      backgroundColor: colors.background,
+      color: colors.defaultText,
+    },
+    inputFieldLabelStyles: {
+      backgroundColor: colors.background,
+    },
+  });
+}
 
 export default AddProduct;

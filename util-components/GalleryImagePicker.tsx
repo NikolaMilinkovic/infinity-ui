@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text } from 'react-native';
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../constants/colors';
 import { useExpandAnimation } from '../hooks/useExpand';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 import { ProductImageTypes } from '../types/allTsTypes';
 import { pickImage } from '../util-methods/GalleryPickImage';
 
@@ -25,6 +25,8 @@ function GalleryImagePicker({
   customStyles,
   textStyles,
 }: PropTypes) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const [isExpanded, setIsExpanded] = useState(true);
   const toggledHeight = useExpandAnimation(isExpanded, 50, 100, 180);
 
@@ -52,7 +54,7 @@ function GalleryImagePicker({
   return (
     <>
       {/* <Button onPress={handlePickImage} containerStyles={styles.button} textStyles={styles.buttonText}>
-        <Icon name="image" size={24} color={Colors.primaryDark} />
+        <Icon name="image" size={24} color={colors.primaryDark} />
       </Button> */}
 
       <Pressable onPress={() => handlePickImage()}>
@@ -66,63 +68,66 @@ function GalleryImagePicker({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  imagePreview: {
-    width: '100%',
-    marginVertical: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    overflow: 'hidden',
-    position: 'relative',
-    marginTop: 4,
-  },
-  image: {
-    width: '100%',
-    height: 100,
-    backgroundColor: Colors.white,
-  },
-  text: {
-    fontSize: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  button: {
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    backgroundColor: Colors.white,
-  },
-  buttonText: {
-    fontWeight: 400,
-    fontSize: 16,
-  },
-  toggleExpand: {
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    borderColor: Colors.primaryDark,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 30,
-    height: 30,
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
-    elevation: 2,
-  },
-  collapsedArea: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  collapsedText: {
-    fontSize: 16,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    imagePreview: {
+      width: '100%',
+      marginVertical: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.background,
+      borderRadius: 4,
+      overflow: 'hidden',
+      position: 'relative',
+      marginTop: 4,
+    },
+    image: {
+      width: '100%',
+      height: 100,
+      backgroundColor: colors.background,
+    },
+    text: {
+      fontSize: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: colors.defaultText,
+    },
+    button: {
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.background,
+      color: colors.defaultText,
+    },
+    buttonText: {
+      fontWeight: 400,
+      fontSize: 16,
+    },
+    toggleExpand: {
+      backgroundColor: colors.background,
+      borderRadius: 4,
+      borderColor: colors.borderColor,
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 30,
+      height: 30,
+      position: 'absolute',
+      top: 10,
+      right: 10,
+      zIndex: 1,
+      elevation: 2,
+    },
+    collapsedArea: {
+      width: '100%',
+      height: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    collapsedText: {
+      fontSize: 16,
+    },
+  });
+}
 
 export default GalleryImagePicker;

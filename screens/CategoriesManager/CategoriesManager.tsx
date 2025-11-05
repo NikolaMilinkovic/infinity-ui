@@ -1,4 +1,3 @@
-import React from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import AddCategories from '../../components/categories/AddCategories';
 import EditCategories from '../../components/categories/EditCategories';

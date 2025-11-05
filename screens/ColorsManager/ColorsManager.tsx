@@ -1,4 +1,3 @@
-import React from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import AddColor from '../../components/colors/AddColor';
 import EditColors from '../../components/colors/EditColors';

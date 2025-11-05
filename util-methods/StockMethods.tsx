@@ -119,7 +119,7 @@ export const increaseDressStock = (
 interface PurseStockDataDecrease {
   purseId: string;
   colorId: string;
-  decrement: number;
+  increment: number;
 }
 // Function to decrease stock for a specific purse, color
 export const decreasePurseStock = (
@@ -136,7 +136,7 @@ export const decreasePurseStock = (
             if (color._id.toString() === data.colorId.toString()) {
               return {
                 ...color,
-                stock: color.stock - data.decrement >= 0 ? color.stock - data.decrement : color.stock,
+                stock: color.stock - data.increment >= 0 ? color.stock - data.increment : color.stock,
               };
             }
             return color;

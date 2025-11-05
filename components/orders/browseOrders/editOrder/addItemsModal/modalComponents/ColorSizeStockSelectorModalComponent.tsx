@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import RadioButtonsGroup from 'react-native-radio-buttons-group';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../../../../../constants/colors';
-import { globalStyles } from '../../../../../../constants/globalStyles';
+import { useGlobalStyles } from '../../../../../../constants/globalStyles';
+import { ThemeColors, useThemeColors } from '../../../../../../store/theme-context';
 import { DressColorTypes, DressTypes, OrderProductTypes, PurseColorTypes } from '../../../../../../types/allTsTypes';
 
 interface ButtonTypes {
@@ -21,12 +21,14 @@ interface PropTypes {
   index: number;
 }
 function ColorSizeStockSelectorModalComponent({ product, index, setSelectedItems }: any) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors, product.selectedColor, product.selectedSize);
+  const globalStyles = useGlobalStyles();
   const [isExpanded, setIsExpanded] = useState(true);
   const [productColors, setProductColors] = useState([]);
   const [selectedColor, setSelectedColor] = useState('');
   const [colorButtons, setColorButtons] = useState<ButtonTypes[]>([]);
   const [sizeButtons, setSizeButtons] = useState<ButtonTypes[]>([]);
-  const styles = getStyles(product.selectedColor, product.selectedSize);
 
   useEffect(() => {
     if (!product) return;
@@ -81,7 +83,7 @@ function ColorSizeStockSelectorModalComponent({ product, index, setSelectedItems
   // selectedSize & selectedSizeId
   function handleColorSelect(index: number, color: string, product: OrderProductTypes) {
     // Filter all colors and find the selected color object
-    const colorObj = product.itemReference.colors.find((obj) => obj.color === color);
+    const colorObj = product.itemReference.colors.find((obj: any) => obj.color === color);
 
     // Update the order object & cache selected color obj
     setSelectedColor(colorObj);
@@ -146,7 +148,7 @@ function ColorSizeStockSelectorModalComponent({ product, index, setSelectedItems
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={styles.iconStyle}
           size={26}
-          color={Colors.white}
+          color={colors.white}
         />
       </Pressable>
 
@@ -184,31 +186,31 @@ function ColorSizeStockSelectorModalComponent({ product, index, setSelectedItems
   );
 }
 
-function getStyles(selectedColor: string, selectedSize: string) {
+function getStyles(colors: ThemeColors, selectedColor: string, selectedSize: string) {
   return StyleSheet.create({
     headerContainer: {
       padding: 10,
       flexDirection: 'row',
-      backgroundColor: Colors.primaryLight,
+      backgroundColor: colors.primaryLight,
     },
     iconStyle: {
       marginLeft: 'auto',
-      color: Colors.primaryDark,
+      color: colors.primaryDark,
     },
     header: {
       fontSize: 20,
       fontWeight: 'bold',
-      color: Colors.primaryDark,
+      color: colors.primaryDark,
       maxWidth: '88%',
     },
     container: {
       marginBottom: 8,
     },
     colorsContainer: {
-      backgroundColor: selectedColor ? Colors.white : Colors.secondaryHighlight,
+      backgroundColor: selectedColor ? colors.white : colors.secondaryHighlight,
     },
     sizeContainer: {
-      backgroundColor: selectedSize ? Colors.white : Colors.secondaryHighlight,
+      backgroundColor: selectedSize ? colors.white : colors.secondaryHighlight,
     },
     radioButtonsContainer: {
       flexDirection: 'row',
@@ -217,10 +219,10 @@ function getStyles(selectedColor: string, selectedSize: string) {
       paddingHorizontal: 6,
     },
     label: {
-      color: Colors.primaryDark,
+      color: colors.primaryDark,
     },
     colorHeader: {
-      color: Colors.primaryDark,
+      color: colors.primaryDark,
       fontSize: 16,
       fontWeight: 'bold',
       padding: 6,

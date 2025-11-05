@@ -1,19 +1,18 @@
-import React, { useContext, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import SafeView from '../../components/layout/SafeView';
-import { Colors } from '../../constants/colors';
-import { useGetAppColors } from '../../constants/useGetAppColors';
-import { AppContext } from '../../store/app-context';
-import { AppColors } from '../../types/allTsTypes';
+import { useBoutique } from '../../store/app-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 import InputField from '../../util-components/InputField';
 
 function Versions() {
-  const appCtx = useContext(AppContext);
-  const [remoteAppVersion, setRemoteAppVersion] = useState(appCtx.version);
+  const boutique = useBoutique();
+  const [remoteAppVersion, setRemoteAppVersion] = useState(boutique.versionData.version);
   const [description, setDescription] = useState('');
   const [buildLink, setBuildLink] = useState('');
-  const styles = getStyles(useGetAppColors());
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   return (
     <SafeView>
@@ -40,7 +39,7 @@ function Versions() {
         />
 
         {/* Save Btn */}
-        <Button backColor={Colors.highlight} textColor={Colors.whiteText}>
+        <Button backColor={colors.highlight} textColor={colors.whiteText}>
           Save Build Version
         </Button>
 
@@ -50,7 +49,7 @@ function Versions() {
   );
 }
 
-function getStyles(Colors: AppColors) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       padding: 10,

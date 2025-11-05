@@ -3,7 +3,6 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { Colors } from '../constants/colors';
 import { popupMessage } from '../util-components/PopupMessage';
 
 Notifications.setNotificationHandler({
@@ -33,7 +32,7 @@ export const usePushNotifications = (): PushNotificationState => {
         name: 'default',
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: Colors.secondaryDark,
+        lightColor: '#024059',
       });
     }
 

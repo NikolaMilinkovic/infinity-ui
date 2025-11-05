@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../../../constants/colors';
+import { useGlobalStyles } from '../../../constants/globalStyles';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useHighlightAnimation } from '../../../hooks/useHighlightAnimation';
 import useImagePreviewModal from '../../../hooks/useImagePreviewModal';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { useUser } from '../../../store/user-context';
 import { ImageTypes, OrderTypes } from '../../../types/allTsTypes';
+import CustomText from '../../../util-components/CustomText';
 import IconButton from '../../../util-components/IconButton';
 import ImagePreviewModal from '../../../util-components/ImagePreviewModal';
 import { getFormattedDate } from '../../../util-methods/DateFormatters';
@@ -33,6 +35,10 @@ function OrderItem({
   onPress,
   onLongPress,
 }: PropTypes) {
+  if (!order) return <></>;
+
+  const colors = useThemeColors();
+  const styles = getStyles(colors, order.packed);
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const [previewImage, setPreviewImage] = useState(order.buyer.profileImage);
   const [isHighlighted, setIsHighlighted] = useState(false);
@@ -50,7 +56,7 @@ function OrderItem({
     return order.products.length * 88 + 184 + noteHeight;
   }, [order.products.length, noteHeight]);
   const expandHeight = useExpandAnimation(isExpanded, 160, expandedHeight, 180);
-  const styles = getStyles(isHighlighted, order.packed);
+  const globalStyles = useGlobalStyles();
 
   useEffect(() => {
     const highlighted = highlightedItems.some((highlightedItem) => order._id === highlightedItem._id);
@@ -82,7 +88,10 @@ function OrderItem({
     highlightColor: '#A3B9CC',
   });
 
-  if (!order) return <></>;
+  function Row({ children }: any) {
+    return <View style={{ flexDirection: 'row', gap: 6 }}>{children}</View>;
+  }
+
   return (
     <Pressable delayLongPress={200} onPress={() => handleOnPress(order)} onLongPress={() => onLongPress(order)}>
       {/* {isHighlighted && (
@@ -98,13 +107,30 @@ function OrderItem({
             <Image source={order.buyer.profileImage} style={styles.profileImage} />
           </Pressable>
           <View style={styles.info}>
-            <Text style={{ fontWeight: 'bold' }}>{order.buyer.name}</Text>
-            <Text>
+            <CustomText variant="header" style={{ marginBottom: 6 }}>
+              {order.buyer.name}
+            </CustomText>
+            <CustomText>
               {order.buyer.address}, {order.buyer?.place}
-            </Text>
-            <Text>{order.buyer.phone}</Text>
-            <Text>Otkup: {order.totalPrice} din.</Text>
-            <Text>Kurir: {order.courier?.name}</Text>
+            </CustomText>
+            <Row>
+              <CustomText variant="bold" style={{ minWidth: 46 }}>
+                Tel.
+              </CustomText>
+              <CustomText>{order.buyer.phone}</CustomText>
+            </Row>
+            <Row>
+              <CustomText variant="bold" style={{ minWidth: 46 }}>
+                Otkup:
+              </CustomText>
+              <CustomText>{order.totalPrice} rsd.</CustomText>
+            </Row>
+            <Row>
+              <CustomText variant="bold" style={{ minWidth: 46 }}>
+                Kurir:
+              </CustomText>
+              <CustomText>{order.courier?.name}</CustomText>
+            </Row>
             {order.orderNotes && <Text style={styles.orderNoteIndicator}>NAPOMENA</Text>}
           </View>
           <View style={styles.buttonsContainer}>
@@ -113,11 +139,11 @@ function OrderItem({
                 {isHighlighted && (
                   <IconButton
                     size={26}
-                    color={Colors.secondaryDark}
+                    color={colors.secondaryDark}
                     onPress={() => onRemoveHighlight(order)}
                     key={`key-${order._id}-highlight-button`}
                     icon="check"
-                    style={[styles.editButtonContainer, { backgroundColor: '#9FB7C6' }]}
+                    style={[styles.editButtonContainer, { backgroundColor: '#9FB7C6' }, globalStyles.elevation_1]}
                     pressedStyles={styles.buttonContainerPressed}
                   />
                 )}
@@ -127,17 +153,21 @@ function OrderItem({
                 {user?.permissions?.orders?.update && (
                   <IconButton
                     size={26}
-                    color={Colors.secondaryDark}
+                    color={colors.secondaryDark}
                     onPress={handleOnEditPress}
                     key={`key-${order._id}-edit-button`}
                     icon="edit"
-                    style={styles.editButtonContainer}
+                    style={[styles.editButtonContainer, globalStyles.elevation_1]}
                     pressedStyles={styles.buttonContainerPressed}
                   />
                 )}
               </>
             )}
-            {order.packed && order.packedIndicator && <Text style={styles.packedText}>SPAKOVANO</Text>}
+            {order.packed && order.packedIndicator && (
+              <CustomText style={styles.packedText} variant="bold">
+                SPAKOVANO
+              </CustomText>
+            )}
           </View>
         </View>
 
@@ -145,11 +175,13 @@ function OrderItem({
           <Animated.View style={styles.productsContainer}>
             {order.orderNotes && (
               <View style={styles.orderNoteContainer} onLayout={onNoteLayout}>
-                <Text style={styles.orderNoteLabel}>Napomena:</Text>
-                <Text style={styles.orderNoteText}>{order.orderNotes}</Text>
+                <CustomText style={styles.orderNoteLabel} variant="bold">
+                  Napomena:
+                </CustomText>
+                <CustomText style={styles.orderNoteText}>{order.orderNotes}</CustomText>
               </View>
             )}
-            <Text style={styles.header}>Lista artikala:</Text>
+            <CustomText variant="bold">Lista artikala:</CustomText>
             {order.products.map((product, index) => (
               <DisplayOrderProduct key={`${index}-${product._id}`} product={product} index={index} />
             ))}
@@ -160,13 +192,13 @@ function OrderItem({
   );
 }
 
-function getStyles(isHighlighted: boolean, packed: boolean) {
+function getStyles(colors: ThemeColors, packed: boolean) {
   return StyleSheet.create({
     container: {
       position: 'relative',
       width: '100%',
       elevation: 2,
-      backgroundColor: Colors.white,
+      backgroundColor: colors.white,
       minHeight: 160,
       paddingHorizontal: 16,
       paddingVertical: 14,
@@ -175,16 +207,16 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
     },
     orderNoteIndicator: {
       position: 'absolute',
-      right: -50,
+      right: -47,
       bottom: packed ? 10 : 0,
-      color: Colors.error,
+      color: colors.error,
       fontWeight: 'bold',
     },
     timestamp: {
       position: 'absolute',
       right: 10,
       fontSize: 12,
-      color: Colors.secondaryDark,
+      color: colors.secondaryDark,
     },
     infoContainer: {
       flex: 1,
@@ -196,7 +228,7 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
     },
     profileImage: {
       height: 70,
-      width: 130,
+      width: 120,
       flex: 2,
       borderRadius: 4,
     },
@@ -218,7 +250,7 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
       top: 8,
       borderRadius: 100,
       overflow: 'hidden',
-      backgroundColor: Colors.white,
+      backgroundColor: colors.white,
       padding: 10,
       elevation: 2,
     },
@@ -227,16 +259,13 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
       elevation: 1,
     },
     productsContainer: {},
-    header: {
-      fontWeight: 'bold',
-    },
     itemHighlightedOverlay: {
       position: 'absolute',
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: Colors.primaryDark,
+      backgroundColor: colors.primaryDark,
       zIndex: 12,
       opacity: 0.4,
       pointerEvents: 'none',
@@ -244,7 +273,7 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
     packedText: {
       position: 'absolute',
       fontWeight: 'bold',
-      color: Colors.success,
+      color: colors.success,
       bottom: 10,
       right: -8,
       width: 100,
@@ -261,7 +290,7 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
     },
     orderNoteText: {
       fontWeight: 'bold',
-      color: Colors.error,
+      color: colors.error,
       flexShrink: 1,
     },
   });

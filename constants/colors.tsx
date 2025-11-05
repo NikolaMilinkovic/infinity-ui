@@ -1,8 +1,9 @@
 export const Colors = {
   // Text colors
-  defaultText: '#000000',
+  defaultText: '#024059',
   whiteText: '#F0F0F0',
   grayText: '#aaaaaaff',
+  black: '#000000',
 
   // Dark colors
   primaryDark: '#012340',
@@ -13,6 +14,9 @@ export const Colors = {
   secondaryLight: '#C5D5D9',
   secondaryLightDarken: '#7d878aff',
   highlight: '#C28E8E',
+
+  // Soft lightgray
+  // highlight: '#E0E6E3',
   secondaryHighlight: '#FFE4E4',
 
   // Error red

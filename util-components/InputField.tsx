@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   KeyboardTypeOptions,
@@ -12,7 +12,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { Colors } from '../constants/colors';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 
 interface InputFieldProps {
   label?: string | null;
@@ -33,6 +33,7 @@ interface InputFieldProps {
   displayClearInputButton?: boolean;
   onManualInput?: () => void;
   placeholder?: string;
+  selectionColor?: string;
 }
 
 const InputField = ({
@@ -41,9 +42,9 @@ const InputField = ({
   inputText,
   setInputText,
   capitalize = 'sentences',
-  background = Colors.primaryLight,
-  color = Colors.primaryDark,
-  activeColor = Colors.secondaryDark,
+  background,
+  color,
+  activeColor,
   keyboard = 'default',
   labelBorders = true,
   containerStyles,
@@ -53,11 +54,15 @@ const InputField = ({
   labelStyles,
   placeholder = '',
   displayClearInputButton = false,
+  fullBorder = true,
+  selectionColor,
   onManualInput,
 }: InputFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const inputRef = useRef<TextInput>(null);
+  const colors = useThemeColors();
+  const styles = getStyles(colors, fullBorder);
 
   // Label animation value
   const labelAnim = useRef(new Animated.Value(inputText !== '' ? 1 : 0)).current;
@@ -85,7 +90,7 @@ const InputField = ({
 
   useEffect(() => {
     Animated.timing(labelAnim, {
-      toValue: inputText !== '' ? 1 : 0,
+      toValue: inputText !== '' || isActive ? 1 : 0,
       duration: 150,
       useNativeDriver: true,
     }).start();
@@ -101,7 +106,7 @@ const InputField = ({
     left: 18,
     paddingHorizontal: 4,
     borderRadius: 4,
-    backgroundColor: background,
+    backgroundColor: background || colors.background,
     zIndex: 1,
     pointerEvents: 'none',
     transform: [
@@ -114,13 +119,16 @@ const InputField = ({
     ],
   };
 
-  const labelTextColor = isActive || inputText ? activeColor : Colors.secondaryDark;
+  const labelTextColor = isActive || inputText ? activeColor : colors.defaultText;
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: background, borderColor: isActive ? activeColor : Colors.secondaryLight },
+        {
+          backgroundColor: background ? background : colors.background,
+          borderColor: isActive ? (activeColor ? activeColor : colors.borderColor) : colors.secondaryLight,
+        },
         containerStyles,
       ]}
     >
@@ -134,11 +142,12 @@ const InputField = ({
         style={[
           styles.input,
           {
-            color,
-            borderColor: isActive ? activeColor : Colors.secondaryLight,
+            color: color ? color : colors.defaultText,
+            borderColor: isActive ? activeColor : colors.borderColor,
             textAlignVertical: multiline ? 'top' : 'center',
           },
         ]}
+        selectionColor={selectionColor || colors.borderColor}
         value={inputText}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -157,7 +166,7 @@ const InputField = ({
           onPress={() => setShowPassword(!showPassword)}
           style={({ pressed }) => [styles.showHideText, pressed && styles.pressed]}
         >
-          <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color="#333" />
+          <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color={colors.defaultText} />
         </Pressable>
       )}
       {displayClearInputButton && (
@@ -165,38 +174,41 @@ const InputField = ({
           onPress={() => setInputText('')}
           style={({ pressed }) => [styles.showHideText, pressed && styles.pressed]}
         >
-          <Ionicons name="close" size={24} color="#333" />
+          <Ionicons name="close" size={24} color={colors.defaultText} />
         </Pressable>
       )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    borderRadius: 4,
-    position: 'relative',
-    justifyContent: 'center',
-  },
-  input: {
-    minHeight: 44,
-    padding: 8,
-    fontSize: 16,
-    borderRadius: 4,
-    paddingHorizontal: 22,
-    textAlignVertical: 'center',
-    borderWidth: 0.5,
-  },
-  showHideText: {
-    position: 'absolute',
-    right: 20,
-    opacity: 0.7,
-  },
-  pressed: {
-    opacity: 0.5,
-  },
-});
+function getStyles(colors: ThemeColors, fullBorder: boolean) {
+  return StyleSheet.create({
+    container: {
+      width: '100%',
+      borderRadius: 4,
+      position: 'relative',
+      justifyContent: 'center',
+    },
+    input: {
+      minHeight: 44,
+      padding: 8,
+      fontSize: 16,
+      borderRadius: 4,
+      paddingHorizontal: 22,
+      textAlignVertical: 'center',
+      borderWidth: fullBorder ? 0.5 : 0,
+      borderBottomWidth: 0.5,
+    },
+    showHideText: {
+      position: 'absolute',
+      right: 20,
+      opacity: 0.7,
+    },
+    pressed: {
+      opacity: 0.5,
+    },
+  });
+}
 
 // Memo to prevent unnecessary re-renders
 export default memo(InputField);

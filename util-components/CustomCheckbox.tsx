@@ -1,6 +1,6 @@
-import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../constants/colors';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
+import CustomText from './CustomText';
 
 interface CustomCheckboxPropTypes {
   label: string;
@@ -8,9 +8,19 @@ interface CustomCheckboxPropTypes {
   onCheckedChange: (newState: boolean) => void;
   containerStyles?: object | object[];
   customColor?: string;
+  checkColor?: string;
 }
 
-const CustomCheckbox = ({ label, checked, onCheckedChange, containerStyles, customColor }: CustomCheckboxPropTypes) => {
+const CustomCheckbox = ({
+  label,
+  checked,
+  onCheckedChange,
+  containerStyles,
+  customColor,
+  checkColor,
+}: CustomCheckboxPropTypes) => {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   function onPressHandler() {
     const newCheckedState = !checked;
     onCheckedChange(newCheckedState);
@@ -24,49 +34,54 @@ const CustomCheckbox = ({ label, checked, onCheckedChange, containerStyles, cust
     const b = parseInt(hex.substring(4, 6), 16);
     return `rgba(${r},${g},${b},${opacity})`;
   };
-  const lightColor = customColor ? getLightColor(customColor, 0.4) : Colors.primaryDark;
+  const lightColor = checkColor ? getLightColor(checkColor, 0.75) : colors.primaryDark;
 
   return (
     <Pressable style={[styles.checkboxContainer, containerStyles]} onPress={onPressHandler}>
-      <View style={[styles.checkbox, checked && styles.checkboxChecked, customColor && { borderColor: customColor }]}>
-        {checked && <View style={[styles.checkboxTick, customColor && { backgroundColor: lightColor }]} />}
+      <View style={[styles.checkbox, checked && styles.checkboxChecked, checkColor && { borderColor: checkColor }]}>
+        {checked && <View style={[styles.checkboxTick, checkColor && { backgroundColor: lightColor }]} />}
       </View>
-      <Text style={[styles.label, customColor && { color: customColor }]}>{label}</Text>
+      <CustomText style={[styles.label, customColor && { color: customColor }]} numberOfLines={2} ellipsizeMode="tail">
+        {label}
+      </CustomText>
     </Pressable>
   );
 };
 
-const styles = StyleSheet.create({
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 6,
-  },
-  checkbox: {
-    height: 24,
-    width: 24,
-    borderWidth: 2,
-    borderColor: Colors.primaryDark,
-    backgroundColor: Colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-    borderRadius: 50,
-  },
-  checkboxChecked: {
-    backgroundColor: Colors.white,
-  },
-  checkboxTick: {
-    width: 15,
-    height: 15,
-    backgroundColor: Colors.highlight,
-    borderRadius: 50,
-  },
-  label: {
-    fontSize: 16,
-    color: Colors.primaryDark,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    checkboxContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 6,
+      overflow: 'hidden',
+    },
+    checkbox: {
+      height: 24,
+      width: 24,
+      borderWidth: 2,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.background1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 10,
+      borderRadius: 50,
+    },
+    checkboxChecked: {
+      backgroundColor: colors.background1,
+    },
+    checkboxTick: {
+      width: 15,
+      height: 15,
+      backgroundColor: colors.highlight,
+      borderRadius: 50,
+    },
+    label: {
+      fontSize: 16,
+      color: colors.defaultText,
+    },
+  });
+}
 
 export default CustomCheckbox;

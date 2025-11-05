@@ -1,6 +1,7 @@
 // components/KeyboardAvoidingWrapper.tsx
 import React from 'react';
-import { KeyboardAvoidingView, Platform, ViewStyle } from 'react-native';
+import { KeyboardAvoidingView, Platform, View, ViewStyle } from 'react-native';
+import { useThemeColors } from '../store/theme-context';
 
 interface Props {
   children: React.ReactNode;
@@ -9,10 +10,17 @@ interface Props {
 }
 
 const KeyboardAvoidingWrapper: React.FC<Props> = ({ children }) => {
-  return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+  const colors = useThemeColors();
+  return Platform.OS === 'ios' ? (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior="padding"
+      contentContainerStyle={{ backgroundColor: colors.primaryDark }}
+    >
       {children}
     </KeyboardAvoidingView>
+  ) : (
+    <View style={{ flex: 1 }}>{children}</View>
   );
 };
 

@@ -1,8 +1,8 @@
 import Constants from 'expo-constants';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../../constants/colors';
 import { AuthContext } from '../../store/auth-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import Button from '../../util-components/Button';
 import InputField from '../../util-components/InputField';
@@ -12,9 +12,11 @@ const backendURI = Constants.expoConfig?.extra?.backendURI;
 function AddCourier() {
   const authCtx = useContext(AuthContext);
   const [inputText, setInputText] = useState<string>('');
-  const [inputPrice, setInputPrice] = useState<number>('');
+  const [inputPrice, setInputPrice] = useState<number | string>('');
   const [error, setError] = useState<string>('');
   const user = useUser();
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   function resetInputAndError() {
     setInputText('');
@@ -85,9 +87,9 @@ function AddCourier() {
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
-            background={Colors.white}
-            color={Colors.primaryDark}
-            activeColor={Colors.highlight}
+            background={colors.white}
+            color={colors.primaryDark}
+            activeColor={colors.highlight}
             labelBorders={false}
             containerStyles={{ flex: 1 }}
           />
@@ -96,15 +98,15 @@ function AddCourier() {
             isSecure={false}
             inputText={inputPrice}
             setInputText={setInputPrice}
-            background={Colors.white}
-            color={Colors.primaryDark}
-            activeColor={Colors.highlight}
+            background={colors.white}
+            color={colors.primaryDark}
+            activeColor={colors.highlight}
             labelBorders={false}
             keyboard="number-pad"
             containerStyles={{ flex: 1 }}
           />
         </View>
-        <Button onPress={addCourierHandler} textColor={Colors.white} backColor={Colors.highlight}>
+        <Button onPress={addCourierHandler} textColor={colors.white} backColor={colors.highlight}>
           Sačuvaj
         </Button>
       </View>
@@ -112,38 +114,38 @@ function AddCourier() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderColor: Colors.primaryDark,
-    borderWidth: 0,
-    paddingVertical: 16,
-    paddingBottom: 8,
-    backgroundColor: Colors.white,
-  },
-  controllsContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-    gap: 8,
-    paddingHorizontal: 16,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  buttonContainer: {
-    flex: 0.4,
-  },
-  error: {
-    color: Colors.error,
-    marginTop: 10,
-  },
-  success: {
-    color: Colors.success,
-    marginTop: 10,
-  },
-});
-
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      borderColor: colors.primaryDark,
+      borderWidth: 0,
+      paddingVertical: 16,
+      paddingBottom: 8,
+      backgroundColor: colors.white,
+    },
+    controllsContainer: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      width: '100%',
+      gap: 8,
+      paddingHorizontal: 16,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      gap: 8,
+    },
+    buttonContainer: {
+      flex: 0.4,
+    },
+    error: {
+      color: colors.error,
+      marginTop: 10,
+    },
+    success: {
+      color: colors.success,
+      marginTop: 10,
+    },
+  });
+}
 export default AddCourier;

@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../../constants/colors';
-import { globalStyles } from '../../../constants/globalStyles';
+import { useGlobalStyles } from '../../../constants/globalStyles';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { AuthContext } from '../../../store/auth-context';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { useUser } from '../../../store/user-context';
 import { OrderTypes } from '../../../types/allTsTypes';
 import Button from '../../../util-components/Button';
@@ -27,6 +27,9 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const user = useUser();
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
 
   async function finishPackingHandler() {
     if (!user?.permissions?.packaging?.finish_packaging) {
@@ -73,16 +76,16 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
             label="Pretraži"
             inputText={searchParams.query}
             setInputText={(text) => setSearchParams((prev: any) => ({ ...prev, query: text }))}
-            background={Colors.white}
+            background={colors.white}
             labelBorders={false}
             containerStyles={[styles.inputFieldStyle, { flex: 1.35 }]}
             displayClearInputButton={true}
           />
           <Button
-            containerStyles={[styles.button, styles.finishPackingButton, { flex: 1, height: 46, marginTop: 'auto' }]}
+            containerStyles={[styles.button, styles.finishPackingButton]}
             onPress={finishPackingHandler}
-            backColor={Colors.highlight}
-            textColor={Colors.white}
+            backColor={colors.highlight}
+            textColor={colors.white}
           >
             Završi pakovanje
           </Button>
@@ -95,15 +98,15 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
               label="Pretraži"
               inputText={searchParams.query}
               setInputText={(text) => setSearchParams((prev: any) => ({ ...prev, query: text }))}
-              background={Colors.white}
+              background={colors.white}
               labelBorders={false}
               containerStyles={styles.inputFieldStyle}
             />
             <Button
               containerStyles={[styles.button, styles.finishPackingButton]}
               onPress={finishPackingHandler}
-              backColor={Colors.highlight}
-              textColor={Colors.white}
+              backColor={colors.highlight}
+              textColor={colors.white}
             >
               Završi pakovanje
             </Button>
@@ -112,7 +115,7 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
                 name={isExpanded ? 'chevron-up' : 'chevron-down'}
                 style={styles.iconStyle}
                 size={26}
-                color={Colors.primaryDark}
+                color={colors.primaryDark}
               />
             </Button>
           </>
@@ -122,47 +125,50 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    elevation: 2,
-    backgroundColor: Colors.white,
-  },
-  counterContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 8,
-    alignItems: 'center',
-  },
-  counterText: {
-    fontSize: 14,
-  },
-  finishPackingButton: {
-    height: 50,
-    position: 'static',
-  },
-  buttonsContainer: {
-    flexDirection: 'column',
-    gap: 10,
-    paddingBottom: 8,
-    paddingHorizontal: 16,
-  },
-  inputFieldStyle: {
-    marginTop: 5,
-  },
-  drpodownStyle: {
-    borderWidth: 0.5,
-    elevation: 2,
-    height: 45,
-  },
-  button: {
-    borderWidth: 0,
-    elevation: 2,
-  },
-  chevronButton: {
-    elevation: 0,
-    height: 40,
-  },
-  iconStyle: {},
-});
-
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      elevation: 2,
+      backgroundColor: colors.white,
+    },
+    counterContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      paddingVertical: 8,
+      alignItems: 'center',
+    },
+    counterText: {
+      fontSize: 14,
+    },
+    finishPackingButton: {
+      height: 44,
+      flex: 1,
+      marginTop: 'auto',
+      position: 'static',
+    },
+    buttonsContainer: {
+      flexDirection: 'column',
+      gap: 10,
+      paddingBottom: 8,
+      paddingHorizontal: 16,
+    },
+    inputFieldStyle: {
+      marginTop: 5,
+    },
+    drpodownStyle: {
+      borderWidth: 0.5,
+      elevation: 2,
+      height: 45,
+    },
+    button: {
+      borderWidth: 0,
+      elevation: 2,
+    },
+    chevronButton: {
+      elevation: 0,
+      height: 40,
+    },
+    iconStyle: {},
+  });
+}
 export default PackOrdersControlls;

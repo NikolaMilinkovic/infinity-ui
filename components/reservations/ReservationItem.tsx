@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../../constants/colors';
 import { useExpandAnimation } from '../../hooks/useExpand';
 import { useHighlightAnimation } from '../../hooks/useHighlightAnimation';
 import useImagePreviewModal from '../../hooks/useImagePreviewModal';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { ImageTypes, OrderTypes } from '../../types/allTsTypes';
+import CustomText from '../../util-components/CustomText';
 import IconButton from '../../util-components/IconButton';
 import ImagePreviewModal from '../../util-components/ImagePreviewModal';
 import { getFormattedDate, getFormattedDateWithoutTime } from '../../util-methods/DateFormatters';
@@ -32,6 +33,7 @@ function ReservationItem({
   onPress,
   onLongPress,
 }: PropTypes) {
+  if (!order) return <></>;
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const [previewImage, setPreviewImage] = useState(order.buyer.profileImage);
   const [isHighlighted, setIsHighlighted] = useState(false);
@@ -39,7 +41,8 @@ function ReservationItem({
   const [isVisible, setIsVisible] = useState(false);
   const [noteHeight] = useState(order.orderNotes ? 40 : 0);
   const expandHeight = useExpandAnimation(isExpanded, 160, order.products.length * 88 + 184 + noteHeight, 180);
-  const styles = getStyles(isHighlighted, order.packed);
+  const colors = useThemeColors();
+  const styles = getStyles(colors, order.packed);
 
   useEffect(() => {
     const highlighted = highlightedItems.some((highlightedItem) => order._id === highlightedItem._id);
@@ -72,7 +75,9 @@ function ReservationItem({
     highlightColor: '#A3B9CC',
   });
 
-  if (!order) return <></>;
+  function Row({ children }: any) {
+    return <View style={{ flexDirection: 'row', gap: 6 }}>{children}</View>;
+  }
   return (
     <Pressable delayLongPress={200} onPress={() => handleOnPress(order._id)} onLongPress={() => onLongPress(order._id)}>
       <Animated.View style={[styles.container, { height: expandHeight, backgroundColor: backgroundColor }]}>
@@ -86,19 +91,26 @@ function ReservationItem({
             <Image source={order.buyer.profileImage} style={styles.profileImage} />
           </Pressable>
           <View style={styles.info}>
-            <Text>{order.buyer.name}</Text>
-            <Text>
+            <CustomText variant="bold">{order.buyer.name}</CustomText>
+            <CustomText>
               {order.buyer.address}, {order.buyer.place}
-            </Text>
-            <Text>{order.buyer.phone}</Text>
+            </CustomText>
+            <Row>
+              <CustomText>Tel.</CustomText>
+              <CustomText>{order.buyer.phone}</CustomText>
+            </Row>
             {order.reservation && order.reservationDate && (
               <>
-                <Text style={{ fontWeight: 'bold' }}>Rezervisano za:</Text>
-                <Text style={{ fontWeight: 'bold' }}>{getFormattedDateWithoutTime(order.reservationDate)}</Text>
+                <CustomText>Rezervisano za:</CustomText>
+                <CustomText variant="bold">{getFormattedDateWithoutTime(order.reservationDate)}</CustomText>
               </>
             )}
-            {order.orderNotes && <Text style={styles.orderNoteIndicator}>NAPOMENA</Text>}
-            {/* <Text>Otkup: {order.totalPrice} din.</Text> */}
+            {order.orderNotes && (
+              <CustomText variant="bold" style={styles.orderNoteIndicator}>
+                NAPOMENA
+              </CustomText>
+            )}
+            {/* <Text>Otkup: {order.totalPrice} rsd.</Text> */}
           </View>
           <View style={styles.buttonsContainer}>
             {batchMode ? (
@@ -106,7 +118,7 @@ function ReservationItem({
                 {isHighlighted && (
                   <IconButton
                     size={26}
-                    color={Colors.secondaryDark}
+                    color={colors.secondaryDark}
                     onPress={() => onRemoveHighlight(order._id)}
                     key={`key-${order._id}-highlight-button`}
                     icon="check"
@@ -118,7 +130,7 @@ function ReservationItem({
             ) : (
               <IconButton
                 size={26}
-                color={Colors.secondaryDark}
+                color={colors.secondaryDark}
                 onPress={handleOnEditPress}
                 key={`key-${order._id}-edit-button`}
                 icon="edit"
@@ -126,7 +138,11 @@ function ReservationItem({
                 pressedStyles={styles.buttonContainerPressed}
               />
             )}
-            {order.packed && order.packedIndicator && <Text style={styles.packedText}>SPAKOVANO</Text>}
+            {order.packed && order.packedIndicator && (
+              <CustomText variant="bold" style={styles.packedText}>
+                SPAKOVANO
+              </CustomText>
+            )}
           </View>
         </View>
 
@@ -134,8 +150,12 @@ function ReservationItem({
           <Animated.View style={styles.productsContainer}>
             {order.orderNotes && (
               <View style={styles.orderNoteContainer}>
-                <Text style={styles.orderNoteLabel}>Napomena:</Text>
-                <Text style={styles.orderNoteText}>{order.orderNotes}</Text>
+                <CustomText style={styles.orderNoteLabel} variant="bold">
+                  Napomena:
+                </CustomText>
+                <CustomText style={styles.orderNoteText} variant="bold">
+                  {order.orderNotes}
+                </CustomText>
               </View>
             )}
             <Text style={styles.header}>Lista artikala:</Text>
@@ -149,13 +169,13 @@ function ReservationItem({
   );
 }
 
-function getStyles(isHighlighted: boolean, packed: boolean) {
+function getStyles(colors: ThemeColors, packed: boolean) {
   return StyleSheet.create({
     container: {
       position: 'relative',
       width: '100%',
       elevation: 2,
-      backgroundColor: Colors.white,
+      backgroundColor: colors.white,
       minHeight: 160,
       paddingHorizontal: 16,
       paddingVertical: 14,
@@ -166,14 +186,13 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
       position: 'absolute',
       right: -50,
       bottom: packed ? 10 : 0,
-      color: Colors.error,
-      fontWeight: 'bold',
+      color: colors.error,
     },
     timestamp: {
       position: 'absolute',
       right: 10,
       fontSize: 12,
-      color: Colors.secondaryDark,
+      color: colors.secondaryDark,
     },
     infoContainer: {
       flex: 1,
@@ -185,7 +204,7 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
     },
     profileImage: {
       height: 70,
-      width: 130,
+      width: 120,
       flex: 2,
       borderRadius: 4,
     },
@@ -207,7 +226,7 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
       top: 8,
       borderRadius: 100,
       overflow: 'hidden',
-      backgroundColor: Colors.white,
+      backgroundColor: colors.white,
       padding: 10,
       elevation: 2,
     },
@@ -225,21 +244,18 @@ function getStyles(isHighlighted: boolean, packed: boolean) {
       gap: 10,
     },
     orderNoteLabel: {
-      fontWeight: 'bold',
       minWidth: 25,
       flex: 4,
     },
     orderNoteText: {
-      fontWeight: 'bold',
-      color: Colors.error,
+      color: colors.error,
     },
     packedText: {
       position: 'absolute',
-      color: Colors.success,
+      color: colors.success,
       bottom: 10,
       right: -8,
       width: 100,
-      fontWeight: 'bold',
     },
   });
 }

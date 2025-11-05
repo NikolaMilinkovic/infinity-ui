@@ -1,34 +1,34 @@
-import Constants from 'expo-constants';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { BoutiqueTypes, defaultBoutique, VersionDataTypes } from '../types/allTsTypes';
+import { popupMessage } from '../util-components/PopupMessage';
 import { fetchData } from '../util-methods/FetchMethods';
 import { betterErrorLog } from '../util-methods/LogMethods';
 import { AuthContext } from './auth-context';
-import { LogContext } from './log-context';
 import { SocketContext } from './socket-context';
 
 interface AppContextTypes {
-  version: string | undefined;
-  buildLink: string;
-  appSettings: any;
+  data: BoutiqueTypes;
+  versionData: VersionDataTypes;
 }
 interface AppContextProviderTypes {
   children: ReactNode;
 }
 export const AppContext = createContext<AppContextTypes>({
-  version: '',
-  buildLink: '',
-  appSettings: {},
+  data: defaultBoutique,
+  versionData: {
+    version: '',
+    buildLinkAndroid: '',
+    buildLinkIOS: '',
+  },
 });
 
-export function useGetAppContexts() {
-  return useContext(AppContext);
-}
-
 function AppContextProvider({ children }: AppContextProviderTypes) {
-  const { add_new_startup_log, update_startup_log } = useContext(LogContext);
-  const [appSettings, setAppSettings] = useState({});
-  const [version, setVersion] = useState(Constants?.expoConfig?.version);
-  const [buildLink, setBuildLink] = useState('');
+  const [data, setData] = useState(defaultBoutique);
+  const [versionData, setVersionData] = useState({
+    version: '',
+    buildLinkAndroid: '',
+    buildLinkIOS: '',
+  });
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
@@ -39,41 +39,26 @@ function AppContextProvider({ children }: AppContextProviderTypes) {
       async function getAppSettings(token: string) {
         try {
           const response = await fetchData(token, 'app/settings');
-          setAppSettings(response.settings);
-          setVersion(response?.version || '');
-          setBuildLink(response?.buildLink || '');
-
-          console.log('[1][app-context] Initial fetch: true');
+          setData(response.boutiqueData);
+          const versionDataResponse = await fetchData(token, 'app/version');
+          setVersionData(versionDataResponse.versionData);
         } catch (error) {
-          console.log('[1][app-context] Initial fetch: false');
           betterErrorLog('> Error in method getAppSettings', error);
         }
       }
-
-      add_new_startup_log('app_context', {
-        text: '> App Context: FETCHING...',
-        success: false,
-      });
       getAppSettings(token);
+    } else {
+      setData(defaultBoutique);
     }
   }, [token]);
 
-  /**
-   * BACI OKO NA OVO, MOZDA JE BOLJI NACIN ZA INITIAL FETCH
-   */
-  //   useEffect(() => {
-  //   if (!socket) return;
-
-  //   const fetchOnConnect = () => getAppSettings(token);
-  //   socket.on('connect', fetchOnConnect);
-
-  //   return () => {
-  //     socket.off('connect', fetchOnConnect);
-  //   };
-  // }, [socket, token]);
-
-  function handleUpdateAppSettings(updatedAppSettings: any) {
-    setAppSettings(updatedAppSettings.settings);
+  function handleUpdateAppSettings(appData: any) {
+    setData(appData);
+    if (appData.settings.appIcon.appIconUri && appData.settings.appIcon.appIconName) {
+      popupMessage('Podešavanje aplikacije uspešno ažurirano', 'success');
+    } else {
+      popupMessage('Došlo je do problema prilikom ažuriranja podešavanja aplikacije', 'danger');
+    }
   }
 
   useEffect(() => {
@@ -88,14 +73,24 @@ function AppContextProvider({ children }: AppContextProviderTypes) {
 
   const value = useMemo(
     () => ({
-      appSettings,
-      version,
-      buildLink,
+      data,
+      versionData,
+      setAppData: setData,
     }),
-    [appSettings, version, buildLink]
+    [data, versionData]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+}
+
+export function useBoutique() {
+  const context = useContext(AppContext);
+
+  if (!context) {
+    throw new Error('BoutiqueContext must be used within a BoutiqueContextProvider');
+  }
+
+  return context;
 }
 
 export default AppContextProvider;

@@ -1,16 +1,13 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Dimensions } from 'react-native';
-import { useGetAppColors } from '../constants/useGetAppColors';
 import BrowseProducts from '../screens/Home/browseProducts/BrowseProducts';
 import NewOrder from '../screens/Home/newOrder/NewOrder';
-import { useUser } from '../store/user-context';
+import { useThemeColors } from '../store/theme-context';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function BrowsePageTabs() {
-  const Colors = useGetAppColors();
-  const user = useUser();
-
+  const colors = useThemeColors();
   /**
    * Main TAB navigation | The sliding windows
    */
@@ -20,16 +17,16 @@ export default function BrowsePageTabs() {
         width: Dimensions.get('window').width,
       }}
       screenOptions={{
-        tabBarPressColor: Colors.tabsPressEffect,
+        tabBarPressColor: colors.tabsPressEffect,
         tabBarLabelStyle: {
           fontSize: 11,
-          color: Colors.primaryDark,
+          color: colors.primaryDark,
         },
         tabBarStyle: {
-          backgroundColor: Colors.tabsBackground,
+          backgroundColor: colors.tabsBackground,
         },
         tabBarIndicatorStyle: {
-          backgroundColor: Colors.highlight,
+          backgroundColor: colors.highlight,
           height: 3,
         },
         lazy: false,
@@ -44,7 +41,6 @@ export default function BrowsePageTabs() {
           title: 'Lista Proizvoda',
         }}
       />
-      {/* {user && user?.permissions?.orders?.create && ( */}
       <Tab.Screen
         name="NewOrder"
         component={NewOrder}
@@ -52,7 +48,6 @@ export default function BrowsePageTabs() {
           title: 'Nova Porudžbina',
         }}
       />
-      {/* )} */}
     </Tab.Navigator>
   );
 }

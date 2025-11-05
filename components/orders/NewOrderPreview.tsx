@@ -1,10 +1,10 @@
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import React, { forwardRef, useContext, useEffect, useImperativeHandle, useState } from 'react';
-import { Animated, NativeSyntheticEvent, Pressable, StyleSheet, Text, View } from 'react-native';
+import { forwardRef, useContext, useEffect, useImperativeHandle, useState } from 'react';
+import { Animated, NativeSyntheticEvent, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../constants/colors';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { NewOrderContext } from '../../store/new-order-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 import CustomCheckbox from '../../util-components/CustomCheckbox';
 import InputField from '../../util-components/InputField';
@@ -21,6 +21,8 @@ export type NewOrderPreviewRef = {
 
 const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
   ({ isExpanded, setIsExpanded, setCustomPrice }, ref) => {
+    const colors = useThemeColors();
+    const styles = getStyles(colors);
     const orderCtx = useContext(NewOrderContext);
     const [itemsPrice, setItemsPrice] = useState<string | number>('N/A');
     const [calculateItemsPrice, setCalculateItemsPrice] = useState(true);
@@ -116,7 +118,7 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
             name={isExpanded ? 'chevron-up' : 'chevron-down'}
             style={styles.iconStyle}
             size={26}
-            color={Colors.white}
+            color={colors.whiteText}
           />
         </Pressable>
 
@@ -219,30 +221,53 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
 
                 {/* DATE PICKER */}
                 {orderCtx.isReservation === true && (
-                  <View style={styles.radioGroupContainer}>
-                    {orderCtx.reservationDate && pickedDateDisplay && (
-                      <View style={styles.dateDisplayContainer}>
-                        {/* <Text style={styles.dateLabel}>Izabrani datum:</Text> */}
-                        <Text style={styles.dateText}>{formatDateHandler(orderCtx.reservationDate)}</Text>
+                  <>
+                    {Platform.OS === 'ios' ? (
+                      <View style={[styles.radioGroupContainer, { flexDirection: 'column' }]}>
+                        <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+                        <View style={{ justifyContent: 'center', alignSelf: 'center' }}>
+                          <DateTimePicker
+                            value={orderCtx.reservationDate}
+                            mode="date"
+                            onChange={handleDatePick}
+                            onTouchCancel={handleDateReset}
+                            themeVariant={'light'}
+                            accentColor={colors.highlight}
+                          />
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={[styles.radioGroupContainer, { flexDirection: 'column' }]}>
+                        {orderCtx.reservationDate && pickedDateDisplay && (
+                          <View style={styles.dateDisplayContainer}>
+                            <Text style={styles.dateLabel}>Izabrani datum:</Text>
+                            <Text style={styles.dateText}>{formatDateHandler(orderCtx.reservationDate)}</Text>
+                          </View>
+                        )}
+                        <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+                        <View style={styles.dateButtonsContainer}>
+                          <Button
+                            containerStyles={styles.dateButton}
+                            onPress={handleOpenDatePicker}
+                            backColor={colors.buttonNormal1}
+                            backColor1={colors.buttonNormal2}
+                            textStyles={{ color: colors.defaultText }}
+                          >
+                            Izaberi datum
+                          </Button>
+                          {showDatePicker && (
+                            <DateTimePicker
+                              value={orderCtx.reservationDate}
+                              mode="date"
+                              onChange={handleDatePick}
+                              onTouchCancel={handleDateReset}
+                              accentColor={colors.highlight}
+                            />
+                          )}
+                        </View>
                       </View>
                     )}
-                    <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
-                    <View style={styles.dateButtonsContainer}>
-                      <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
-                        Izaberi datum
-                      </Button>
-                    </View>
-
-                    {showDatePicker && (
-                      <DateTimePicker
-                        value={orderCtx.reservationDate}
-                        mode="date"
-                        is24Hour={true}
-                        onChange={handleDatePick}
-                        onTouchCancel={handleDateReset}
-                      />
-                    )}
-                  </View>
+                  </>
                 )}
 
                 <Text style={styles.header2}>Ostale informacije:</Text>
@@ -275,17 +300,21 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
                     inputText={orderCtx.customPrice}
                     setInputText={orderCtx.setCustomPrice}
                     containerStyles={styles.customPriceInput}
-                    background={Colors.white}
+                    background={colors.background}
                     keyboard="numeric"
                     selectTextOnFocus={true}
                     onManualInput={handleUserManualPriceInput}
                     labelBorders={false}
+                    labelStyles={{ color: colors.defaultText }}
+                    activeColor={colors.borderColor}
                   />
                   {!calculateItemsPrice && (
                     <Button
                       containerStyles={styles.recalculatePriceBtn}
-                      textStyles={{ color: Colors.primaryDark }}
+                      textStyles={{ color: colors.defaultText }}
                       onPress={() => setCalculateItemsPrice(true)}
+                      backColor={colors.buttonNormal1}
+                      backColor1={colors.buttonNormal2}
                     >
                       Preračunaj cenu
                     </Button>
@@ -300,156 +329,161 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
   }
 );
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 8,
-  },
-  headerContainer: {
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    backgroundColor: Colors.secondaryDark,
-    marginBottom: 6,
-    flexDirection: 'row',
-  },
-  iconStyle: {
-    marginLeft: 'auto',
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.white,
-  },
-  buyerInfoContainer: {
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    borderRadius: 4,
-    padding: 10,
-    backgroundColor: Colors.white,
-  },
-  header2: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 6,
-  },
-  rowContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    width: '100%',
-    marginLeft: 8,
-  },
-  label: {
-    flex: 2,
-  },
-  information: {
-    flex: 2.5,
-  },
-  selectedItemsContainer: {
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    borderRadius: 4,
-    padding: 10,
-    marginVertical: 8,
-    paddingBottom: 0,
-    backgroundColor: Colors.white,
-  },
-  selectedItem: {
-    borderBottomWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    borderRadius: 4,
-    paddingVertical: 8,
-  },
-  lastItemStyle: {
-    borderBottomWidth: 0,
-  },
-  otherInfoContainer: {
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    borderRadius: 4,
-    padding: 10,
-    marginBottom: 8,
-    position: 'relative',
-    backgroundColor: Colors.white,
-  },
-  editButton: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    height: 40,
-    width: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-  },
-  editIcon: {},
-  customPriceInput: {
-    marginTop: 16,
-    flex: 1,
-  },
-  deliveryRemarkInput: {
-    marginTop: 16,
-    justifyContent: 'flex-start',
-    textAlignVertical: 'top',
-  },
-  dateButtonsContainer: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  dateButton: {
-    flex: 1,
-    backgroundColor: Colors.secondaryLight,
-    color: Colors.primaryDark,
-  },
-  dateDisplayContainer: {
-    flexDirection: 'column',
-    gap: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dateLabel: {},
-  dateText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.highlight,
-    lineHeight: 16,
-    marginBottom: 8,
-  },
-  filtersH2absolute: {
-    fontSize: 14,
-    color: Colors.primaryDark,
-    marginBottom: 8,
-    position: 'absolute',
-    left: 10,
-    top: -12,
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    paddingHorizontal: 4,
-  },
-  radioGroupContainer: {
-    padding: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    borderRadius: 4,
-    marginBottom: 8,
-    paddingTop: 20,
-    marginTop: 10,
-  },
-  priceContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    gap: 10,
-  },
-  recalculatePriceBtn: {
-    flex: 1,
-    maxHeight: 44,
-    marginTop: 'auto',
-    backgroundColor: Colors.secondaryLight,
-    textAlign: 'center',
-    justifyContent: 'center',
-    maxWidth: 150,
-    marginBottom: 1,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      paddingHorizontal: 8,
+    },
+    headerContainer: {
+      padding: 10,
+      borderRadius: 4,
+      borderWidth: 0,
+      borderColor: colors.secondaryLight,
+      backgroundColor: colors.secondaryDark,
+      marginBottom: 6,
+      flexDirection: 'row',
+    },
+    iconStyle: {
+      marginLeft: 'auto',
+    },
+    header: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.whiteText,
+    },
+    buyerInfoContainer: {
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      borderRadius: 4,
+      padding: 10,
+      backgroundColor: colors.background,
+    },
+    header2: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginBottom: 6,
+      color: colors.highlightText,
+    },
+    rowContainer: {
+      flexDirection: 'row',
+      flex: 1,
+      width: '100%',
+      marginLeft: 8,
+    },
+    label: {
+      flex: 2,
+      color: colors.grayText,
+    },
+    information: {
+      flex: 2.5,
+      color: colors.defaultText,
+    },
+    selectedItemsContainer: {
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      borderRadius: 4,
+      padding: 10,
+      marginVertical: 8,
+      paddingBottom: 0,
+      backgroundColor: colors.background,
+    },
+    selectedItem: {
+      borderBottomWidth: 0.5,
+      borderColor: colors.borderColor,
+      borderRadius: 4,
+      paddingVertical: 8,
+    },
+    lastItemStyle: {
+      borderBottomWidth: 0,
+    },
+    otherInfoContainer: {
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      borderRadius: 4,
+      padding: 10,
+      marginBottom: 8,
+      position: 'relative',
+      backgroundColor: colors.background,
+    },
+    editButton: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      height: 40,
+      width: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1,
+    },
+    editIcon: {},
+    customPriceInput: {
+      marginTop: 16,
+      flex: 1,
+    },
+    deliveryRemarkInput: {
+      marginTop: 16,
+      justifyContent: 'flex-start',
+      textAlignVertical: 'top',
+    },
+    dateButtonsContainer: {
+      flexDirection: 'row',
+      gap: 10,
+    },
+    dateButton: {
+      flex: 1,
+      color: colors.defaultText,
+    },
+    dateDisplayContainer: {
+      flexDirection: 'column',
+      gap: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    dateLabel: {
+      color: colors.defaultText,
+    },
+    dateText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.highlight1,
+      lineHeight: 16,
+      marginBottom: 8,
+    },
+    filtersH2absolute: {
+      fontSize: 14,
+      color: colors.borderColor,
+      marginBottom: 8,
+      position: 'absolute',
+      left: 10,
+      top: -12,
+      backgroundColor: colors.background,
+      borderRadius: 4,
+      paddingHorizontal: 4,
+    },
+    radioGroupContainer: {
+      padding: 10,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      borderRadius: 4,
+      marginBottom: 8,
+      paddingTop: 20,
+      marginTop: 10,
+    },
+    priceContainer: {
+      flexDirection: 'row',
+      flex: 1,
+      gap: 10,
+    },
+    recalculatePriceBtn: {
+      flex: 1,
+      maxHeight: 44,
+      marginTop: 'auto',
+      textAlign: 'center',
+      justifyContent: 'center',
+      maxWidth: 150,
+      padding: 1,
+    },
+  });
+}
 
 export default NewOrderPreview;

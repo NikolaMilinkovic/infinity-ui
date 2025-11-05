@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Animated, StyleSheet } from 'react-native';
-import { Colors } from '../../../constants/colors';
-import { globalStyles } from '../../../constants/globalStyles';
+import { useGlobalStyles } from '../../../constants/globalStyles';
 import { useExpandAnimationWithContentVisibility } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { useUser } from '../../../store/user-context';
 import IconButton from '../../../util-components/IconButton';
 
@@ -29,6 +29,9 @@ function BatchModeOrderControlls({
   const toggleFade = useToggleFadeAnimation(isExpanded, 100);
   const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 0, 60, 100);
   const user = useUser();
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
 
   return (
     <>
@@ -37,7 +40,7 @@ function BatchModeOrderControlls({
           {user?.permissions?.orders?.delete && (
             <IconButton
               size={22}
-              color={Colors.highlight}
+              color={colors.highlight}
               onPress={onRemoveBatchPress}
               key={`key-remove-batch-button`}
               icon="delete"
@@ -52,7 +55,7 @@ function BatchModeOrderControlls({
           )}
           <IconButton
             size={22}
-            color={Colors.secondaryDark}
+            color={colors.secondaryDark}
             onPress={onExcellExportPress}
             key={`key-excell-export-batch-button`}
             icon="file-export"
@@ -69,7 +72,7 @@ function BatchModeOrderControlls({
           {isAllSelected ? (
             <IconButton
               size={22}
-              color={Colors.secondaryDark}
+              color={colors.secondaryDark}
               onPress={onSelectAllOrders}
               key={`key-select-all-orders-button`}
               icon="close"
@@ -81,7 +84,7 @@ function BatchModeOrderControlls({
           ) : (
             <IconButton
               size={22}
-              color={Colors.secondaryDark}
+              color={colors.secondaryDark}
               onPress={onSelectAllOrders}
               key={`key-select-all-orders-button`}
               icon="done-all"
@@ -97,36 +100,37 @@ function BatchModeOrderControlls({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 8,
-    backgroundColor: Colors.primaryLight,
-    flexDirection: 'row-reverse',
-  },
-  removeBatchItemsButton: {
-    width: 50,
-  },
-  exportExcellButton: {
-    gap: 10,
-    width: 100,
-  },
-  highlightAll: {
-    width: 120,
-    gap: 10,
-  },
-  generalButtonStyle: {
-    marginVertical: 10,
-    marginHorizontal: 5,
-    backgroundColor: Colors.white,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  removeBatchItemsButtonPressed: {
-    opacity: 0.7,
-    elevation: 1,
-  },
-});
-
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      paddingHorizontal: 8,
+      backgroundColor: colors.primaryLight,
+      flexDirection: 'row-reverse',
+    },
+    removeBatchItemsButton: {
+      width: 50,
+    },
+    exportExcellButton: {
+      gap: 10,
+      width: 100,
+    },
+    highlightAll: {
+      width: 120,
+      gap: 10,
+    },
+    generalButtonStyle: {
+      marginVertical: 10,
+      marginHorizontal: 5,
+      backgroundColor: colors.white,
+      height: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+    },
+    removeBatchItemsButtonPressed: {
+      opacity: 0.7,
+      elevation: 1,
+    },
+  });
+}
 export default BatchModeOrderControlls;

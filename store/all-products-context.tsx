@@ -10,8 +10,6 @@ import {
   increasePurseStock,
 } from '../util-methods/StockMethods';
 import { AuthContext } from './auth-context';
-import { DressesContext } from './dresses-context';
-import { PursesContext } from './purses-context';
 import { SocketContext } from './socket-context';
 
 interface AllProductsContextType {
@@ -53,7 +51,6 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
   const [allProducts, setAllProducts] = useState<(DressTypes | PurseTypes)[]>([]);
   const [productsBySuppliers, setProductsBySuppliers] = useState<ProductsBySuppliersTypes>();
   const [productsByCategory, setProductsByCategory] = useState<ProductsByCategoryTypes>();
-
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
@@ -103,19 +100,27 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
       return prevInactive;
     });
   }
-  function handleStockDecrease(data: any) {
+
+  function handleUpdateProduct(updateData: Record<string, DressTypes | PurseTypes>) {
+    const updateDataMap = new Map(Object.entries(updateData));
     try {
-      // if(!data[0].stockType) return popupMessage('Update stanja nije uspeo, stockType je obavezan!', 'danger');
-      for (const item of data) {
-        if (item.stockType === 'Boja-Veličina-Količina') {
-          decreaseDressStock(item, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
+      setActiveProducts((prevProducts) => {
+        const updated = [...prevProducts];
+
+        for (let i = 0; i < updated.length; i++) {
+          const product = updated[i];
+          const updatedItem = updateDataMap.get(product._id?.toString());
+
+          if (updatedItem) {
+            updated[i] = updatedItem as any;
+            updateDataMap.delete(product._id?.toString());
+          }
         }
-        if (item.stockType === 'Boja-Količina') {
-          decreasePurseStock(item, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
-        }
-      }
+
+        return updated;
+      });
     } catch (error) {
-      console.error(error);
+      console.error('Error updating products:', error);
     }
   }
 
@@ -144,42 +149,38 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
     dresses: DressStockDataIncrease[];
     purses: PurseStockDataIncrease[];
   }
-  const dressesCtx = useContext(DressesContext);
-  const pursesCtx = useContext(PursesContext);
-
   function handleBatchStockIncrease(data: DataProps) {
-    // Loop over all dresses and increase for each stock
     for (const dress of data.dresses) {
       increaseDressStock(dress, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
-      increaseDressStock(dress, dressesCtx.setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
     }
     // Loop over all purses and increase for each stock
     for (const purse of data.purses) {
       increasePurseStock(purse, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
-      increasePurseStock(purse, pursesCtx.setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
     }
   }
 
-  function handleBatchStockDecreasee(data: DataProps) {
+  interface PurseStockDataDecrease {
+    purseId: string;
+    colorId: string;
+    increment: number;
+  }
+  interface DressStockDataDecrease {
+    dressId: string;
+    colorId: string;
+    sizeId: string;
+    increment: number;
+  }
+  interface DataPropsDecrease {
+    dresses: DressStockDataDecrease[];
+    purses: PurseStockDataDecrease[];
+  }
+  function handleBatchStockDecreasee(data: DataPropsDecrease) {
     for (const dress of data.dresses) {
       decreaseDressStock(dress, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
-      decreaseDressStock(dress, dressesCtx.setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
     }
-    // Loop over all purses and increase for each stock
     for (const purse of data.purses) {
       decreasePurseStock(purse, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
-      decreasePurseStock(purse, pursesCtx.setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
     }
-    // // Loop over all dresses and increase for each stock
-    // if(data.dresses.length > 0){
-    //   decreaseDressBatchStock(data.dresses, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
-    //   decreaseDressBatchStock(data.dresses, dressesCtx.setActiveDresses as React.Dispatch<React.SetStateAction<DressTypes[]>>);
-    // }
-    // // Loop over all purses and increase for each stock
-    // if(data.purses.length > 0){
-    //   decreasePurseBatchStock(data.purses, setActiveProducts as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
-    //   decreasePurseBatchStock(data.purses, pursesCtx.setActivePurses as React.Dispatch<React.SetStateAction<PurseTypes[]>>);
-    // }
   }
 
   // Handle setting ALL PRODUCTS
@@ -246,7 +247,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
       socket.on('inactiveProductRemoved', inactiveProductRemovedHandler);
       socket.on('activeToInactive', activeToInactive);
       socket.on('inactiveToActive', inactiveToActive);
-      socket.on('allProductStockDecrease', handleStockDecrease);
+      socket.on('allProductStockDecrease', handleUpdateProduct);
       socket.on('allProductStockIncrease', handleStockIncrease);
       socket.on('batchStockIncrease', handleBatchStockIncrease);
       socket.on('batchStockDecrease', handleBatchStockDecreasee);
@@ -261,7 +262,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
         socket.off('inactiveProductRemoved', inactiveProductRemovedHandler);
         socket.off('activeToInactive', activeToInactive);
         socket.off('inactiveToActive', inactiveToActive);
-        socket.off('allProductStockDecrease', handleStockDecrease);
+        socket.off('allProductStockDecrease', handleUpdateProduct);
         socket.off('allProductStockIncrease', handleStockIncrease);
         socket.off('batchStockIncrease', handleBatchStockIncrease);
         socket.off('batchStockDecrease', handleBatchStockDecreasee);
@@ -288,27 +289,6 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
     return merged.concat(arrA.slice(i)).concat(arrB.slice(j));
   }
 
-  useEffect(() => {
-    async function getProductsData() {
-      if (token) {
-        try {
-          const [activeDresses, activePurses, inactiveDresses, inactivePurses] = await Promise.all([
-            fetchData(token, 'products/active-dresses'),
-            fetchData(token, 'products/active-purses'),
-            fetchData(token, 'products/inactive-dresses'),
-            fetchData(token, 'products/inactive-purses'),
-          ]);
-
-          setActiveProducts(mergeSortedProductArrays(activeDresses, activePurses));
-          setInactiveProducts(mergeSortedProductArrays(inactiveDresses, inactivePurses));
-        } catch (error) {
-          console.error('Error fetching products:', error);
-        }
-      }
-    }
-    getProductsData();
-  }, [token]);
-
   async function getProductsData() {
     if (token) {
       try {
@@ -328,7 +308,17 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
     }
   }
 
-  // Memoizing the getters
+  useEffect(() => {
+    getProductsData();
+    if (!token) {
+      setActiveProducts([]);
+      setInactiveProducts([]);
+      setAllProducts([]);
+      setProductsBySuppliers({});
+      setProductsByCategory({});
+    }
+  }, [token]);
+
   const value = useMemo(
     () => ({
       allActiveProducts: activeProducts,

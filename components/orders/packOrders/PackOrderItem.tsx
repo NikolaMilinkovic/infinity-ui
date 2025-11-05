@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../../../constants/colors';
 import { useExpandAnimationFromExpandedState } from '../../../hooks/useExpand';
 import { AuthContext } from '../../../store/auth-context';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { useUser } from '../../../store/user-context';
 import { OrderTypes } from '../../../types/allTsTypes';
+import CustomText from '../../../util-components/CustomText';
 import IconButton from '../../../util-components/IconButton';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { getFormattedDate } from '../../../util-methods/DateFormatters';
@@ -28,7 +29,8 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
     order.products.length * 88 + 184 + noteHeight,
     180
   );
-  const styles = getStyles(isPacked);
+  const colors = useThemeColors();
+  const styles = getStyles(colors, isPacked);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const user = useUser();
@@ -90,45 +92,59 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
           <View style={styles.info}>
             {/* NAME */}
             <View style={styles.rowInfo}>
-              <Text style={styles.rowLabel}>Kupac:</Text>
-              <Text style={styles.rowText}>{order.buyer.name}</Text>
+              <CustomText variant="bold" style={styles.rowLabel}>
+                Kupac:
+              </CustomText>
+              <CustomText style={styles.rowText}>{order.buyer.name}</CustomText>
             </View>
 
             {/* ADDRESS */}
             <View style={[styles.rowInfo, { minHeight: 10 }]}>
-              <Text style={styles.rowLabel}>Adresa:</Text>
-              <Text style={styles.rowText}>
+              <CustomText variant="bold" style={styles.rowLabel}>
+                Adresa:
+              </CustomText>
+              <CustomText style={styles.rowText}>
                 {order.buyer.address}, {order.buyer.place}
-              </Text>
+              </CustomText>
             </View>
 
             {/* PHONE */}
             <View style={styles.rowInfo}>
-              <Text style={styles.rowLabel}>Tel.</Text>
-              <Text style={styles.rowText}>{order.buyer.phone}</Text>
+              <CustomText variant="bold" style={styles.rowLabel}>
+                Tel.
+              </CustomText>
+              <CustomText style={styles.rowText}>{order.buyer.phone}</CustomText>
             </View>
 
             {/* TOTAL PRICE */}
             <View style={styles.rowInfo}>
-              <Text style={styles.rowLabel}>Otkup:</Text>
-              <Text style={styles.rowText}>{order.totalPrice} din.</Text>
+              <CustomText variant="bold" style={styles.rowLabel}>
+                Otkup:
+              </CustomText>
+              <CustomText style={styles.rowText}>{order.totalPrice} rsd.</CustomText>
             </View>
 
             {/* COURIER */}
             <View style={styles.rowInfo}>
-              <Text style={styles.rowLabel}>Kurir:</Text>
-              <Text style={styles.rowText}>{order.courier?.name}</Text>
+              <CustomText variant="bold" style={styles.rowLabel}>
+                Kurir:
+              </CustomText>
+              <CustomText style={styles.rowText}>{order.courier?.name}</CustomText>
             </View>
 
             {/* ORDER NOTE INDICATOR */}
-            {order.orderNotes && <Text style={styles.orderNoteIndicator}>NAPOMENA</Text>}
+            {order.orderNotes && (
+              <CustomText variant="bold" style={styles.orderNoteIndicator}>
+                NAPOMENA
+              </CustomText>
+            )}
           </View>
           <View style={styles.buttonsContainer}>
             <View style={styles.buttonBorder}>
               {isPacked ? (
                 <IconButton
                   size={36}
-                  color={Colors.success}
+                  color={colors.success}
                   onPress={handleUnpackOrder}
                   key={`key-${order._id}-edit-button`}
                   icon="check"
@@ -146,11 +162,15 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
           <Animated.View style={styles.productsContainer}>
             {order.orderNotes && (
               <View style={styles.orderNoteContainer} onLayout={onNoteLayout}>
-                <Text style={styles.orderNoteLabel}>Napomena:</Text>
-                <Text style={styles.orderNoteText}>{order.orderNotes}</Text>
+                <CustomText variant="bold" style={styles.orderNoteLabel}>
+                  Napomena:
+                </CustomText>
+                <CustomText style={styles.orderNoteText} variant="bold">
+                  {order.orderNotes}
+                </CustomText>
               </View>
             )}
-            <Text style={styles.header}>Lista artikala:</Text>
+            <CustomText variant="bold">Lista artikala:</CustomText>
             {order.products.map((product, index) => (
               <DisplayOrderProduct key={`${index}-${product._id}`} product={product} index={index} grayedText={true} />
             ))}
@@ -161,12 +181,12 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
   );
 }
 
-function getStyles(isPacked: boolean) {
+function getStyles(colors: ThemeColors, isPacked: boolean) {
   return StyleSheet.create({
     container: {
       position: 'relative',
       width: '100%',
-      backgroundColor: isPacked ? Colors.white : Colors.secondaryHighlight,
+      backgroundColor: isPacked ? colors.white : colors.secondaryHighlight,
       minHeight: 160,
       paddingHorizontal: 16,
       paddingVertical: 14,
@@ -178,14 +198,13 @@ function getStyles(isPacked: boolean) {
       position: 'absolute',
       right: -60,
       bottom: 0,
-      color: Colors.error,
-      fontWeight: 'bold',
+      color: colors.error,
     },
     timestamp: {
       position: 'absolute',
       right: 10,
       fontSize: 12,
-      color: Colors.secondaryDark,
+      color: colors.secondaryDark,
     },
     infoContainer: {
       flex: 1,
@@ -205,8 +224,7 @@ function getStyles(isPacked: boolean) {
     },
     rowLabel: {
       flex: 1.2,
-      color: Colors.grayText,
-      fontWeight: 'bold',
+      color: colors.grayText,
     },
     rowText: {
       flex: 4,
@@ -220,8 +238,8 @@ function getStyles(isPacked: boolean) {
       width: 42,
       elevation: 2,
       borderWidth: 2,
-      borderColor: isPacked ? Colors.success : Colors.highlight,
-      backgroundColor: isPacked ? Colors.white : Colors.secondaryHighlight,
+      borderColor: isPacked ? colors.success : colors.highlight,
+      backgroundColor: isPacked ? colors.white : colors.secondaryHighlight,
       alignItems: 'center',
       justifyContent: 'center',
       marginTop: 10,
@@ -240,16 +258,13 @@ function getStyles(isPacked: boolean) {
       elevation: 1,
     },
     productsContainer: {},
-    header: {
-      fontWeight: 'bold',
-    },
     itemHighlightedOverlay: {
       position: 'absolute',
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: Colors.primaryDark,
+      backgroundColor: colors.primaryDark,
       zIndex: 12,
       opacity: 0.4,
       pointerEvents: 'none',
@@ -260,13 +275,11 @@ function getStyles(isPacked: boolean) {
       gap: 10,
     },
     orderNoteLabel: {
-      fontWeight: 'bold',
       minWidth: 75,
       flex: 4,
     },
     orderNoteText: {
-      fontWeight: 'bold',
-      color: Colors.error,
+      color: colors.error,
       flexShrink: 1,
     },
   });

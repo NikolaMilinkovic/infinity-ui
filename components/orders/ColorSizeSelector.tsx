@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import RadioButtonsGroup from 'react-native-radio-buttons-group';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../constants/colors';
 import { NewOrderContext } from '../../store/new-order-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { DressColorTypes, DressTypes, OrderProductTypes, PurseColorTypes } from '../../types/allTsTypes';
+import CustomText from '../../util-components/CustomText';
+import TruncatedText from '../text/TruncatedText';
 interface ButtonTypes {
   id: string;
   value: string;
@@ -26,7 +28,8 @@ function ColorSizeSelector({ product, index }: PropTypes) {
   const [selectedColor, setSelectedColor] = useState('');
   const [colorButtons, setColorButtons] = useState<ButtonTypes[]>([]);
   const [sizeButtons, setSizeButtons] = useState<ButtonTypes[]>([]);
-  const styles = getStyles(product.selectedColor, product.selectedSize);
+  const colors = useThemeColors();
+  const styles = getStyles(colors, product.selectedColor, product.selectedSize);
 
   useEffect(() => {
     if (!product) return;
@@ -35,11 +38,11 @@ function ColorSizeSelector({ product, index }: PropTypes) {
       const filteredColors = product.itemReference.colors.filter((color: DressColorTypes) =>
         color.sizes.some((size) => size.stock > 0)
       );
-      setProductColors(filteredColors);
+      setProductColors(filteredColors as any);
     }
     if (product.itemReference.stockType === 'Boja-Količina') {
       const filteredColors = product.itemReference.colors.filter((color: PurseColorTypes) => color.stock > 0);
-      setProductColors(filteredColors);
+      setProductColors(filteredColors as any);
     }
   }, [product]);
 
@@ -102,19 +105,19 @@ function ColorSizeSelector({ product, index }: PropTypes) {
     <Animated.ScrollView style={styles.container}>
       {/* TOGGLE  BUTTON */}
       <Pressable onPress={() => setIsExpanded(!isExpanded)} style={styles.headerContainer}>
-        <Text style={styles.header}>{product?.itemReference?.name}</Text>
+        <TruncatedText style={styles.header}>{product?.itemReference?.name}</TruncatedText>
         <Icon
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={styles.iconStyle}
           size={26}
-          color={Colors.white}
+          color={colors.defaultText}
         />
       </Pressable>
       {isExpanded && (
         <>
           <View style={styles.colorsContainer}>
             {/* COLOR PICKERS */}
-            <Text style={styles.colorHeader}> Boja</Text>
+            <CustomText style={styles.colorHeader}> Boja</CustomText>
             <RadioButtonsGroup
               radioButtons={colorButtons}
               // onPress={(value) => handleColorSelect(index, value, product)}
@@ -128,7 +131,7 @@ function ColorSizeSelector({ product, index }: PropTypes) {
           {/* SIZE PICKER */}
           {product.selectedColor && product.itemReference.stockType !== 'Boja-Količina' && (
             <View style={styles.sizeContainer}>
-              <Text style={styles.colorHeader}> Veličina</Text>
+              <CustomText style={styles.colorHeader}> Veličina</CustomText>
               <RadioButtonsGroup
                 radioButtons={sizeButtons}
                 onPress={(size) => handleSizeSelect(index, size, product)}
@@ -144,33 +147,36 @@ function ColorSizeSelector({ product, index }: PropTypes) {
   );
 }
 
-function getStyles(selectedColor: string, selectedSize: string) {
+function getStyles(colors: ThemeColors, selectedColor: string, selectedSize: string) {
   return StyleSheet.create({
     headerContainer: {
       padding: 10,
       flexDirection: 'row',
+      alignItems: 'center',
     },
     iconStyle: {
       marginLeft: 'auto',
-      color: Colors.primaryDark,
+      color: colors.defaultText,
     },
     header: {
-      fontSize: 20,
+      fontSize: 16,
       fontWeight: 'bold',
-      color: Colors.primaryDark,
+      color: colors.highlightText,
+      maxWidth: '90%',
     },
     container: {
-      borderWidth: 1,
-      borderColor: Colors.secondaryLight,
-      backgroundColor: Colors.white,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      backgroundColor: 'transparent',
+      marginHorizontal: 8,
       borderRadius: 4,
       marginBottom: 8,
     },
     colorsContainer: {
-      backgroundColor: selectedColor ? 'transparent' : Colors.secondaryHighlight,
+      backgroundColor: 'transparent',
     },
     sizeContainer: {
-      backgroundColor: selectedSize ? 'transparent' : Colors.secondaryHighlight,
+      backgroundColor: 'transparent',
     },
     radioButtonsContainer: {
       flexDirection: 'row',
@@ -179,12 +185,12 @@ function getStyles(selectedColor: string, selectedSize: string) {
       paddingHorizontal: 6,
     },
     label: {
-      color: Colors.primaryDark,
+      color: colors.primaryDark,
     },
     colorHeader: {
-      borderTopWidth: 1,
-      borderTopColor: Colors.secondaryLight,
-      color: Colors.primaryDark,
+      borderTopWidth: 0,
+      borderTopColor: colors.borderColor,
+      color: colors.defaultText,
       fontSize: 16,
       fontWeight: 'bold',
       padding: 6,

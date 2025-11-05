@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../../../../constants/colors';
+import { useEffect, useState } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 import { useToggleFadeAnimation } from '../../../../hooks/useFadeAnimation';
+import { ThemeColors, useThemeColors } from '../../../../store/theme-context';
 import { PurseTypes } from '../../../../types/allTsTypes';
+import CustomText from '../../../../util-components/CustomText';
 
 interface PropTypes {
   isExpanded: boolean;
@@ -12,7 +13,8 @@ interface PropTypes {
 function DisplayPurseStock({ isExpanded, item }: PropTypes) {
   const [availableColors, setAvailableColors] = useState<string[]>([]);
   const toggleFade = useToggleFadeAnimation(isExpanded, 180);
-  const styles = getStyles();
+  const colors = useThemeColors();
+  const styles = getStyles(colors, availableColors.length === 0);
 
   useEffect(() => {
     if (!item) return;
@@ -29,8 +31,12 @@ function DisplayPurseStock({ isExpanded, item }: PropTypes) {
       {isExpanded && item.stockType === 'Boja-Količina' && (
         <Animated.View style={[styles.container, { overflow: 'hidden', opacity: toggleFade }]}>
           <View style={styles.sizesContainer}>
-            <Text style={styles.header}>Boja</Text>
-            <Text style={styles.header}>Količina</Text>
+            <CustomText variant="bold" style={styles.header}>
+              Boja
+            </CustomText>
+            <CustomText variant="bold" style={styles.header}>
+              Količina
+            </CustomText>
           </View>
 
           {item.colors.map((item, index) => (
@@ -45,10 +51,10 @@ function DisplayPurseStock({ isExpanded, item }: PropTypes) {
               ]}
               key={`${index}-${item.color}`}
             >
-              <Text style={styles.colorLabel2}>{item.color}</Text>
-              <Text key={`${item.color}${index}`} style={styles.sizeText}>
+              <CustomText style={styles.colorLabel2}>{item.color}</CustomText>
+              <CustomText key={`${item.color}${index}`} style={styles.sizeText}>
                 {item.stock}
-              </Text>
+              </CustomText>
             </View>
           ))}
         </Animated.View>
@@ -57,13 +63,13 @@ function DisplayPurseStock({ isExpanded, item }: PropTypes) {
   );
 }
 
-function getStyles() {
+function getStyles(colors: ThemeColors, onStock: boolean) {
   return StyleSheet.create({
     container: {
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       padding: 4,
       borderRadius: 4,
-      borderColor: Colors.secondaryLight,
+      borderColor: colors.borderColor,
       borderWidth: 0.5,
       marginBottom: 10,
       marginTop: 10,
@@ -74,12 +80,12 @@ function getStyles() {
       paddingVertical: 4,
       paddingHorizontal: 2,
       borderBottomWidth: 1,
-      borderColor: '#ddd',
+      borderColor: colors.borderColor,
     },
     header: {
-      fontWeight: 'bold',
       flex: 1,
       textAlign: 'center',
+      color: colors.highlightText,
     },
     rowContainer: {
       flexDirection: 'row',
@@ -87,21 +93,22 @@ function getStyles() {
       justifyContent: 'space-between',
       paddingVertical: 4,
       paddingHorizontal: 2,
+      backgroundColor: onStock ? colors.outOfStockButtonColor : 'transparent',
     },
     rowColorOnStock: {
-      backgroundColor: Colors.successSecondary,
+      backgroundColor: colors.background1,
     },
     rowColorOutOfStock: {
-      backgroundColor: Colors.secondaryHighlight,
+      backgroundColor: colors.outOfStockSelectedProductBackground,
     },
     colorLabel2: {
       textAlign: 'center',
       flex: 1,
+      color: colors.defaultText,
     },
     sizeText: {
       fontSize: 14,
-      fontWeight: 'bold',
-      color: Colors.primaryDark,
+      color: colors.defaultText,
       textAlign: 'center',
       padding: 8,
       flex: 1,

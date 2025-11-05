@@ -1,26 +1,26 @@
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Animated as RNAnimated, ScrollView, StyleSheet, View } from 'react-native';
-import SafeView from '../../components/layout/SafeView';
+import Card from '../../components/layout/Card';
 import EndOfDayStatistics from '../../components/statistics/EndOfDayStatistics';
-import { Colors } from '../../constants/colors';
-import { useFadeAnimation } from '../../hooks/useFadeAnimation';
-import { useFadeTransitionReversed } from '../../hooks/useFadeTransition';
 import { AuthContext } from '../../store/auth-context';
 import { OrdersContext } from '../../store/orders-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { CourierTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
 import CourierSelector from '../../util-components/CourierSelector';
+import CustomText from '../../util-components/CustomText';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { generateExcellForOrders } from '../../util-methods/Excell';
 import { fetchWithBodyData } from '../../util-methods/FetchMethods';
 import { betterErrorLog } from '../../util-methods/LogMethods';
 
 function EndOfDay() {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const orders = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
   const [selectedCourier, setSelectedCourier] = useState<CourierTypes>();
   const token = authCtx.token;
-  const fade = useFadeAnimation();
 
   async function handleOnDayEnd() {
     try {
@@ -36,6 +36,7 @@ function EndOfDay() {
           fileData: excellFile?.fileData,
           fileName: excellFile?.fileName,
         };
+
         const response = await fetchWithBodyData(token, 'orders/parse-orders-for-latest-period', data, 'POST');
 
         if (response?.status === 200) {
@@ -50,52 +51,85 @@ function EndOfDay() {
       return betterErrorLog('> ERROR: ', error);
     }
   }
-  const overlayView = useFadeTransitionReversed(orders.processedOrdersStats !== null, 500, 150);
+
+  function NoEndOfDayRenderer() {
+    const internalStyle = StyleSheet.create({
+      container: {
+        height: '100%',
+        minHeight: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      text: {
+        textAlign: 'center',
+        color: colors.defaultText,
+      },
+    });
+
+    return (
+      <View style={internalStyle.container}>
+        <CustomText style={internalStyle.text}>Izvucite porudžbine za danas kako bi videli statistiku.</CustomText>
+      </View>
+    );
+  }
 
   return (
-    <SafeView>
-      <RNAnimated.View style={[styles.container, { opacity: fade }]}>
-        <View style={styles.controllsContainer}>
-          <CourierSelector setSelectedCourier={setSelectedCourier} defaultValueByMatch="Bex" />
-          <Button onPress={handleOnDayEnd} backColor={Colors.highlight} textColor={Colors.white}>
-            Završi dan i izvuci porudžbine
-          </Button>
-        </View>
-        <ScrollView style={styles.statisticsContainer}>
-          {/* <Animated.View style={[overlayView, styles.overlay]}/> */}
-          {orders.processedOrdersStats === null ? null : <EndOfDayStatistics stats={orders.processedOrdersStats} />}
-        </ScrollView>
-      </RNAnimated.View>
-    </SafeView>
+    <RNAnimated.View style={styles.container}>
+      <View style={styles.controllsContainer}>
+        <CourierSelector setSelectedCourier={setSelectedCourier} defaultValueByMatch="Bex" style={styles.dropdown} />
+        <Button
+          onPress={handleOnDayEnd}
+          backColor={colors.buttonHighlight1}
+          backColor1={colors.buttonHighlight2}
+          textColor={colors.white}
+        >
+          Završi dan i izvuci porudžbine
+        </Button>
+      </View>
+      <ScrollView style={styles.statisticsContainer}>
+        <Card cardStyles={styles.card}>
+          {orders.processedOrdersStats === null ? (
+            <NoEndOfDayRenderer />
+          ) : (
+            <EndOfDayStatistics stats={orders.processedOrdersStats} />
+          )}
+        </Card>
+      </ScrollView>
+    </RNAnimated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  controllsContainer: {
-    gap: 10,
-    backgroundColor: Colors.white,
-    elevation: 2,
-    padding: 16,
-  },
-  statisticsContainer: {
-    position: 'relative',
-    flex: 1,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'red',
-    zIndex: 1,
-  },
-  temp: {
-    // height: 40,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.containerBackground,
+    },
+    controllsContainer: {
+      gap: 10,
+      backgroundColor: colors.background,
+      elevation: 2,
+      padding: 16,
+    },
+    card: {
+      marginBottom: 50,
+    },
+    statisticsContainer: {
+      position: 'relative',
+      flex: 1,
+    },
+    overlay: {
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: 'red',
+      zIndex: 1,
+    },
+    dropdown: {
+      backgroundColor: colors.background,
+    },
+  });
+}
 
 export default EndOfDay;

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, ReactNode, useState } from 'react';
+import { resetUserExpoPushToken } from '../util-methods/auth/AuthMethods';
 
 interface AuthContextType {
   token: string | null;
@@ -22,12 +23,16 @@ interface AuthContextProviderType {
 }
 function AuthContextProvider({ children }: AuthContextProviderType) {
   const [authToken, setAuthToken] = useState<string | null>(null);
-
   function authenticate(token: string) {
     setAuthToken(token);
     AsyncStorage.setItem('token', token);
   }
   function logout() {
+    console.log('> Logging out..');
+    if (authToken) {
+      console.log('> reseting user expo push token');
+      resetUserExpoPushToken(authToken);
+    }
     setAuthToken(null);
     AsyncStorage.removeItem('token');
   }

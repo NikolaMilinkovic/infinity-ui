@@ -1,16 +1,16 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Dimensions } from 'react-native';
-import { useGetAppColors } from '../constants/useGetAppColors';
 import GlobalAppSettings from '../screens/Settings/GlobalAppSettings';
 import UserSettings from '../screens/Settings/UserSettings';
+import { useThemeColors } from '../store/theme-context';
 import { useUser } from '../store/user-context';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function SettingsTabs() {
-  const Colors = useGetAppColors();
   const user = useUser();
   const role = user.getUserRole();
+  const colors = useThemeColors();
 
   /**
    * Main TAB navigation | The sliding windows
@@ -21,16 +21,16 @@ export default function SettingsTabs() {
         width: Dimensions.get('window').width,
       }}
       screenOptions={{
-        tabBarPressColor: Colors.tabsPressEffect,
+        tabBarPressColor: colors.tabsPressEffect,
         tabBarLabelStyle: {
           fontSize: 11,
-          color: Colors.primaryDark,
+          color: colors.primaryDark,
         },
         tabBarStyle: {
-          backgroundColor: Colors.tabsBackground,
+          backgroundColor: colors.tabsBackground,
         },
         tabBarIndicatorStyle: {
-          backgroundColor: Colors.highlight,
+          backgroundColor: colors.highlight,
           height: 3,
         },
         lazy: false,

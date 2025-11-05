@@ -1,8 +1,7 @@
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { Animated, Dimensions, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { Animated, Dimensions, NativeSyntheticEvent, Platform, StyleSheet, Text, View } from 'react-native';
 import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
-import { Colors } from '../../../constants/colors';
 import useBackClickHandler from '../../../hooks/useBackClickHandler';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
@@ -10,6 +9,7 @@ import { AuthContext } from '../../../store/auth-context';
 import { ColorsContext } from '../../../store/colors-context';
 import { CouriersContext } from '../../../store/couriers-context';
 import { OrdersContext } from '../../../store/orders-context';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { CategoryTypes } from '../../../types/allTsTypes';
 import Button from '../../../util-components/Button';
 import DropdownList from '../../../util-components/DropdownList';
@@ -42,6 +42,8 @@ function SearchOrders({
   setIsDateForPeriodPicked,
   setPickedDateForPeriod,
 }: PropTypes) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const [isExpanded, setIsExpanded] = useState(false);
   const screenHeight = Dimensions.get('window').height;
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 172, 180);
@@ -264,8 +266,8 @@ function SearchOrders({
           label="Pretraži porudžbine"
           inputText={searchData}
           setInputText={setSearchData}
-          background={Colors.white}
-          color={Colors.primaryDark}
+          background={colors.white}
+          color={colors.primaryDark}
           labelBorders={false}
           containerStyles={styles.input}
           displayClearInputButton={true}
@@ -374,37 +376,62 @@ function SearchOrders({
 
         {/* Date Picker */}
 
+        {/* PRETRAGA OD DATUMA PA DO SADA */}
         <DatePickerFromDateToNow
           isDatePicked={isDateForPeriodPicked}
           setIsDatePicked={setIsDateForPeriodPicked}
           setPickedDate={setPickedDateForPeriod}
           resetOtherDatePickers={handleDateReset}
         />
-        <View style={[styles.radioGroupContainer, { marginBottom: 70 }]}>
-          <Text style={styles.filtersH2absolute}>Pretrazi po datumu</Text>
-          <View style={styles.dateButtonsContainer}>
-            <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
-              Izaberi datum
-            </Button>
-            <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
-              Resetuj izbor
-            </Button>
-          </View>
 
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              is24Hour={true}
-              onChange={handleDatePick}
-              onTouchCancel={handleDateReset}
-            />
-          )}
-          {date && isDatePicked && (
-            <View style={styles.dateDisplayContainer}>
-              <Text style={styles.dateLabel}>Izabrani datum:</Text>
-              <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
-            </View>
+        {/* PRETRAGA PO DATUMU */}
+        <View style={[styles.radioGroupContainer, { marginBottom: '20%' }]}>
+          {Platform.OS === 'ios' ? (
+            <>
+              <Text style={styles.filtersH2absolute}>Pretraži po datumu</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ justifyContent: 'center', alignSelf: 'center', width: '50%' }}>
+                  <DateTimePicker
+                    value={date}
+                    mode="date"
+                    is24Hour={true}
+                    onChange={handleDatePick}
+                    onTouchCancel={handleDateReset}
+                  />
+                </View>
+                <Button containerStyles={[styles.dateButton, { width: '50%' }]} onPress={handleDateReset}>
+                  Resetuj izbor
+                </Button>
+              </View>
+            </>
+          ) : (
+            <>
+              <Text style={styles.filtersH2absolute}>Pretraži po datumu</Text>
+              <View style={styles.dateButtonsContainer}>
+                <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+                  Izaberi datum
+                </Button>
+                <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
+                  Resetuj izbor
+                </Button>
+
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={date}
+                    mode="date"
+                    is24Hour={true}
+                    onChange={handleDatePick}
+                    onTouchCancel={handleDateReset}
+                  />
+                )}
+              </View>
+              {date && isDatePicked && (
+                <View style={styles.dateDisplayContainer}>
+                  <Text style={styles.dateLabel}>Izabrani datum:</Text>
+                  <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+                </View>
+              )}
+            </>
           )}
         </View>
 
@@ -412,8 +439,8 @@ function SearchOrders({
         {/* <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
             <Button
             onPress={() => setIsExpanded(!isExpanded)}
-            backColor={Colors.highlight}
-            textColor={Colors.white}
+            backColor={colors.highlight}
+            textColor={colors.white}
             containerStyles={{ marginBottom: 16, marginTop: 10}}
             >
             Zatvori
@@ -445,6 +472,8 @@ function DatePickerFromDateToNow({
   const ordersCtx = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   async function handleFetchOrdersFromDateToNow(date: Date, token: any) {
     const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0));
@@ -494,132 +523,157 @@ function DatePickerFromDateToNow({
   }
   return (
     <View style={styles.radioGroupContainer}>
-      <Text style={styles.filtersH2absolute}>Pretrazi porudžbine od datuma pa do sada</Text>
-      <View style={styles.dateButtonsContainer}>
-        <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
-          Izaberi datum
-        </Button>
-        <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
-          Resetuj izbor
-        </Button>
-      </View>
+      {Platform.OS === 'ios' ? (
+        <>
+          <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ justifyContent: 'center', alignSelf: 'center', width: '50%' }}>
+              <DateTimePicker
+                value={date}
+                mode="date"
+                is24Hour={true}
+                onChange={handleDatePick}
+                onTouchCancel={handleDateReset}
+              />
+            </View>
+            <Button containerStyles={[styles.dateButton, { width: '50%' }]} onPress={handleDateReset}>
+              Resetuj izbor
+            </Button>
+          </View>
+        </>
+      ) : (
+        <>
+          <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+          <View style={styles.dateButtonsContainer}>
+            <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+              Izaberi datum
+            </Button>
+            <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
+              Resetuj izbor
+            </Button>
 
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          is24Hour={true}
-          onChange={handleDatePick}
-          onTouchCancel={handleDateReset}
-        />
-      )}
-      {date && isDatePicked && (
-        <View style={styles.dateDisplayContainer}>
-          <Text style={styles.dateLabel}>Izabrani datum:</Text>
-          <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
-        </View>
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                is24Hour={true}
+                onChange={handleDatePick}
+                onTouchCancel={handleDateReset}
+              />
+            )}
+          </View>
+          {date && isDatePicked && (
+            <View style={styles.dateDisplayContainer}>
+              <Text style={styles.dateLabel}>Izabrani datum:</Text>
+              <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+            </View>
+          )}
+        </>
       )}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-    elevation: 2,
-    borderColor: Colors.primaryDark,
-    backgroundColor: Colors.white,
-    marginBottom: 2,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    marginBottom: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-    zIndex: 2,
-    backgroundColor: Colors.white,
-  },
-  input: {
-    marginTop: 18,
-    backgroundColor: Colors.white,
-    flex: 7,
-    height: 50,
-  },
-  expandButton: {
-    position: 'relative',
-    flex: 1.5,
-    marginLeft: 10,
-    height: 45,
-    right: 0,
-    top: 10,
-  },
-  searchParamsContainer: {
-    position: 'relative',
-  },
-  overlay: {},
-  radioGroupContainer: {
-    padding: 10,
-    borderWidth: 2,
-    borderColor: Colors.primaryLight,
-    borderRadius: 4,
-    marginBottom: 16,
-    marginTop: 10,
-  },
-  radioGroup: {},
-  radioComponentContainer: {
-    justifyContent: 'flex-start',
-  },
-  filtersH1: {
-    marginTop: 10,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.primaryDark,
-  },
-  filtersH2: {
-    fontSize: 14,
-    color: Colors.primaryDark,
-    marginBottom: 8,
-    backgroundColor: Colors.white,
-    paddingHorizontal: 14,
-  },
-  filtersH2absolute: {
-    fontSize: 14,
-    color: Colors.primaryDark,
-    marginBottom: 8,
-    position: 'absolute',
-    left: 10,
-    top: -12,
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    paddingHorizontal: 4,
-  },
-  dateButtonsContainer: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  dateButton: {
-    flex: 1,
-    backgroundColor: Colors.secondaryLight,
-    color: Colors.primaryDark,
-  },
-  dateDisplayContainer: {
-    flexDirection: 'column',
-    gap: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  dateLabel: {},
-  dateText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.highlight,
-    lineHeight: 16,
-  },
-  courierContainer: {
-    marginBottom: 10,
-  },
-});
-
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      paddingHorizontal: 16,
+      elevation: 2,
+      borderColor: colors.primaryDark,
+      backgroundColor: colors.white,
+      marginBottom: 2,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      marginBottom: 6,
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      zIndex: 2,
+      backgroundColor: colors.white,
+    },
+    input: {
+      marginTop: 18,
+      backgroundColor: colors.white,
+      flex: 7,
+      height: 50,
+    },
+    expandButton: {
+      position: 'relative',
+      flex: 1.5,
+      marginLeft: 10,
+      height: 45,
+      right: 0,
+      top: 10,
+      marginBottom: 2,
+    },
+    searchParamsContainer: {
+      position: 'relative',
+    },
+    overlay: {},
+    radioGroupContainer: {
+      padding: 10,
+      borderWidth: 2,
+      borderColor: colors.primaryLight,
+      borderRadius: 4,
+      marginBottom: 16,
+      marginTop: 10,
+    },
+    radioGroup: {},
+    radioComponentContainer: {
+      justifyContent: 'flex-start',
+    },
+    filtersH1: {
+      marginTop: 10,
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.primaryDark,
+      marginBottom: 16,
+    },
+    filtersH2: {
+      fontSize: 14,
+      color: colors.primaryDark,
+      marginBottom: 8,
+      backgroundColor: colors.white,
+      paddingHorizontal: 14,
+    },
+    filtersH2absolute: {
+      fontSize: 14,
+      color: colors.primaryDark,
+      marginBottom: 8,
+      position: 'absolute',
+      left: 10,
+      top: -12,
+      backgroundColor: colors.white,
+      borderRadius: 4,
+      paddingHorizontal: 4,
+    },
+    dateButtonsContainer: {
+      flexDirection: 'row',
+      gap: 10,
+    },
+    dateButton: {
+      flex: 1,
+      backgroundColor: colors.secondaryLight,
+      color: colors.primaryDark,
+    },
+    dateDisplayContainer: {
+      flexDirection: 'column',
+      gap: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 10,
+    },
+    dateLabel: {},
+    dateText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.highlight,
+      lineHeight: 16,
+    },
+    courierContainer: {
+      marginBottom: 10,
+    },
+  });
+}
 export default SearchOrders;

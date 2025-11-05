@@ -1,15 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { useContext, useMemo, useState } from 'react';
-import { FlatList, Modal, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Modal, Platform, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
 import { useFadeTransition } from '../../hooks/useFadeTransition';
+import { AppContext } from '../../store/app-context';
 import { AuthContext } from '../../store/auth-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
+import CustomText from '../../util-components/CustomText';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { handleFetchingWithBodyData } from '../../util-methods/FetchMethods';
 import EditUserModal from './editUserComponents/EditUserModal';
@@ -24,21 +26,31 @@ function EditUser() {
   const [selectedRole, setSelectedRole] = useState('all');
   const [editedUser, setEditedUser] = useState(null);
   const editProductFade = useFadeTransition(editedUser !== null);
+  const appCtx = useContext(AppContext);
   useBackClickHandler(!!editedUser, handleRemoveEditedUser);
   function handleRemoveEditedUser() {
     setEditedUser(null);
   }
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   const filteredUsers = useMemo(() => {
     return user.usersList.filter((u) => {
       const matchesSearch = u.username.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesRole = selectedRole === 'all' || u.role === selectedRole;
-      return matchesSearch && matchesRole;
+
+      // Filter out root user, aka me :)
+      const notBoutiqueAccount = u.username !== appCtx.data.boutiqueName.toLowerCase();
+      return matchesSearch && matchesRole && notBoutiqueAccount;
     });
-  }, [user.usersList, searchQuery, selectedRole]);
+  }, [user.usersList, searchQuery, selectedRole, appCtx.data.boutiqueName]);
 
   function getTotalUsersCount() {
-    return <Text style={styles.listHeader}>Ukupno korisnika: {filteredUsers.length}</Text>;
+    return (
+      <CustomText variant="bold" style={styles.listHeader}>
+        Ukupno korisnika: {filteredUsers.length}
+      </CustomText>
+    );
   }
 
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
@@ -64,7 +76,7 @@ function EditUser() {
 
   return (
     <>
-      <View style={{ minHeight: '100%' }}>
+      <View style={styles.container}>
         <ConfirmationModal
           isVisible={isModalVisible}
           onConfirm={confirmAction}
@@ -99,9 +111,9 @@ function EditUser() {
         animationType="fade"
         visible={editedUser !== null}
         onRequestClose={handleRemoveEditedUser}
-        presentationStyle="overFullScreen"
+        presentationStyle={Platform.OS === 'android' ? 'overFullScreen' : 'pageSheet'}
       >
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.primaryDark }}>
           <StatusBar style="light" translucent />
           <Animated.ScrollView contentContainerStyle={editProductFade}>
             {editedUser && <EditUserModal user={editedUser} setUser={setEditedUser} />}
@@ -112,17 +124,24 @@ function EditUser() {
   );
 }
 
-const styles = StyleSheet.create({
-  list: {},
-  listHeader: {
-    fontWeight: 'bold',
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 6,
-  },
-  listContainer: {
-    paddingBottom: 150,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background2,
+    },
+    list: {},
+    listHeader: {
+      fontSize: 14,
+      textAlign: 'center',
+      marginTop: 4,
+      marginBottom: 6,
+      color: colors.defaultText,
+    },
+    listContainer: {
+      paddingBottom: 150,
+    },
+  });
+}
 
 export default EditUser;

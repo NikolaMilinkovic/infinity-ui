@@ -1,15 +1,16 @@
 import Constants from 'expo-constants';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import useBatchSelectBackHandler from '../../hooks/useBatchSelectBackHandler';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
 import useImagePreviewModal from '../../hooks/useImagePreviewModal';
 import { AllProductsContext } from '../../store/all-products-context';
-import { AppContext } from '../../store/app-context';
 import { AuthContext } from '../../store/auth-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { UserContext } from '../../store/user-context';
 import { DressTypes, ImageTypes, ProductTypes, PurseTypes, SearchParamsTypes } from '../../types/allTsTypes';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
+import CustomText from '../../util-components/CustomText';
 import ImagePreviewModal from '../../util-components/ImagePreviewModal';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { fetchWithBodyData } from '../../util-methods/FetchMethods';
@@ -47,13 +48,10 @@ function DisplayProducts({ setEditItem, showAddBtn = true }: DisplayProductsProp
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const [previewImage, setPreviewImage] = useState<string>('');
-  const appCtx = useContext(AppContext);
   const userCtx = useContext(UserContext);
-  const [settings, setSettings] = useState(appCtx.appSettings);
   const [userSettings, setUserSettings] = useState(userCtx.settings);
-  useEffect(() => {
-    setSettings(appCtx.appSettings);
-  }, [appCtx.appSettings]);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   useEffect(() => {
     setUserSettings(userCtx.settings);
   }, [userCtx.settings]);
@@ -109,12 +107,12 @@ function DisplayProducts({ setEditItem, showAddBtn = true }: DisplayProductsProp
   }, [
     productsCtx.allActiveProducts,
     productsCtx.allInactiveProducts,
-    searchData,
-    searchParams,
-    selectedList,
     productsCtx?.productsBySuppliers,
     productsCtx?.productsByCategory,
     userSettings?.defaults?.listProductsBy,
+    searchData,
+    searchParams,
+    selectedList,
   ]);
 
   interface ProductsBySuppliersTypes {
@@ -200,6 +198,23 @@ function DisplayProducts({ setEditItem, showAddBtn = true }: DisplayProductsProp
     }
   }
 
+  function NoProductsRenderer() {
+    const internalStyle = StyleSheet.create({
+      container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      text: {},
+    });
+
+    return (
+      <View style={internalStyle.container}>
+        <CustomText style={internalStyle.text}>Trenutno ne postoje dodati proizvodi</CustomText>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ConfirmationModal
@@ -225,7 +240,7 @@ function DisplayProducts({ setEditItem, showAddBtn = true }: DisplayProductsProp
       />
       <ProductListSelector products={filteredData} setSelectedList={setSelectedList} />
 
-      {filteredData && filteredData.length > 0 && (
+      {filteredData && filteredData.length > 0 ? (
         <FlatList
           data={filteredData}
           renderItem={({ item }) => (
@@ -249,29 +264,41 @@ function DisplayProducts({ setEditItem, showAddBtn = true }: DisplayProductsProp
           )}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.productsContainer}
-          ListHeaderComponent={() => <Text style={styles.listHeader}>Ukupno Proizvoda: {filteredData.length}</Text>}
+          ListHeaderComponent={() => (
+            <CustomText style={styles.listHeader} variant="bold">
+              Ukupno Proizvoda: {filteredData.length}
+            </CustomText>
+          )}
           initialNumToRender={10}
           maxToRenderPerBatch={15}
           windowSize={5}
         />
+      ) : (
+        <NoProductsRenderer />
       )}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    height: '100%',
-    position: 'relative',
-  },
-  productsContainer: {
-    flexGrow: 1,
-  },
-  listHeader: {
-    fontWeight: 'bold',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      height: '100%',
+      position: 'relative',
+      backgroundColor: colors.background2,
+    },
+    productsContainer: {
+      flexGrow: 1,
+      paddingBottom: 40,
+    },
+    listHeader: {
+      fontSize: 14,
+      textAlign: 'center',
+      marginBottom: 3,
+      marginTop: 3,
+      color: colors.defaultText,
+    },
+  });
+}
 
 export default DisplayProducts;

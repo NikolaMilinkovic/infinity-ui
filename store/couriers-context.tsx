@@ -37,13 +37,16 @@ function CouriersContextProvider({ children }: CouriersContextProviderType) {
   };
   async function fetchCouriers(token: string) {
     const fetchedCouriers = await fetchData(token, 'couriers');
-    console.log('[6][couriers-context] Initial fetch: true');
 
     if (fetchedCouriers !== false) setCouriers(fetchedCouriers);
   }
 
   useEffect(() => {
-    if (token) fetchCouriers(token);
+    if (token) {
+      fetchCouriers(token);
+    } else {
+      setCouriers([]);
+    }
   }, [token]);
 
   // SOCKETS

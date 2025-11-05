@@ -13,10 +13,8 @@ export const pickImage = async (
   // Request permissions
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (status !== 'granted') {
-    popupMessage('Permisija za galeriju je neophodna!', 'info');
-    return null;
-  } else {
-    await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const { status: newStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (newStatus !== 'granted') return null;
   }
 
   try {
@@ -43,7 +41,7 @@ export const pickImage = async (
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
-        aspect: [1, 1],
+        aspect: allowsEditing && useAspect ? aspectValue : undefined,
         quality,
         base64: false,
       });

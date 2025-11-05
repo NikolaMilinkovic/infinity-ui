@@ -36,7 +36,11 @@ function CategoriesContextProvider({ children }: CategoriesContextProviderType) 
   // Fetches initial categories data
   useEffect(() => {
     async function fetchCategoriesData() {
-      if (token) setCategories(await fetchCategories(token));
+      if (token) {
+        setCategories(await fetchCategories(token));
+      } else {
+        setCategories([]);
+      }
     }
     fetchCategoriesData();
   }, [token]);

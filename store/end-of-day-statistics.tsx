@@ -33,9 +33,7 @@ function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextP
         try {
           const fetchedData = await fetchData(token, 'orders/get-order-statistic-files-for-period');
           setStatisticData(fetchedData.data);
-          console.log('[end-of-day-context] Initial fetch: true');
         } catch (error) {
-          console.log('[end-of-day-context] Initial fetch: false');
           console.error(error);
         }
       }
@@ -69,7 +67,6 @@ function EndOfDayStatisticsContextProvider({ children }: OrderStatisticsContextP
     }
   }
 
-  // Memoizing the getters
   const value = useMemo(
     () => ({
       statisticData,

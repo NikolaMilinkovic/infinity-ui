@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 
 interface ConfirmModalProps {
@@ -22,6 +22,8 @@ const ConfirmationModal: React.FC<ConfirmModalProps> = ({
   message,
 }) => {
   if (!isVisible) return null;
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   return (
     <SafeAreaView style={{ flex: 1, position: 'absolute' }}>
       <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onCancel}>
@@ -34,8 +36,8 @@ const ConfirmationModal: React.FC<ConfirmModalProps> = ({
                 <View style={styles.buttonContainer}>
                   <Button
                     textStyles={{ fontSize: 14 }}
-                    backColor={Colors.primaryDark}
-                    textColor={Colors.white}
+                    backColor={colors.primaryDark}
+                    textColor={colors.white}
                     containerStyles={styles.button}
                     onPress={onCancel}
                   >
@@ -43,8 +45,8 @@ const ConfirmationModal: React.FC<ConfirmModalProps> = ({
                   </Button>
                   <Button
                     textStyles={{ fontSize: 14 }}
-                    backColor={Colors.primaryDark}
-                    textColor={Colors.white}
+                    backColor={colors.primaryDark}
+                    textColor={colors.white}
                     containerStyles={styles.button}
                     onPress={onConfirm}
                   >
@@ -59,42 +61,43 @@ const ConfirmationModal: React.FC<ConfirmModalProps> = ({
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  content: {
-    width: '80%',
-    maxWidth: 350,
-    padding: 20,
-    backgroundColor: Colors.white,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  image: {
-    height: 80,
-    resizeMode: 'contain',
-    marginBottom: 20,
-  },
-  text: {
-    fontSize: 16,
-    color: Colors.primaryDark,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    gap: 8,
-  },
-  button: {
-    flex: 1,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    overlay: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    content: {
+      width: '80%',
+      maxWidth: 350,
+      padding: 20,
+      backgroundColor: colors.white,
+      borderRadius: 10,
+      alignItems: 'center',
+    },
+    image: {
+      height: 80,
+      resizeMode: 'contain',
+      marginBottom: 20,
+    },
+    text: {
+      fontSize: 16,
+      color: colors.primaryDark,
+      textAlign: 'center',
+      marginBottom: 20,
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      width: '100%',
+      gap: 8,
+    },
+    button: {
+      flex: 1,
+    },
+  });
+}
 
 export default ConfirmationModal;

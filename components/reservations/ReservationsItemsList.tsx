@@ -1,13 +1,14 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../constants/colors';
 import useBatchSelectBackHandler from '../../hooks/useBatchSelectBackHandler';
 import useConfirmationModal from '../../hooks/useConfirmationMondal';
 import { AuthContext } from '../../store/auth-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { OrderTypes } from '../../types/allTsTypes';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
+import CustomText from '../../util-components/CustomText';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { getFormattedDateWithoutTime } from '../../util-methods/DateFormatters';
 import { handleFetchingWithBodyData } from '../../util-methods/FetchMethods';
@@ -33,8 +34,9 @@ function ReservationsItemsList({ data, setEditedReservation, isDatePicked, picke
   const [selectedReservations, setSelectedReservations] = useState<SelectedOrdersTypes[]>([]);
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const authCtx = useContext(AuthContext);
-  const styles = getStyles(batchMode);
   const token = authCtx.token;
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   function resetBatch() {
     setBatchMode(false);
     setSelectedReservations([]);
@@ -146,11 +148,13 @@ function ReservationsItemsList({ data, setEditedReservation, isDatePicked, picke
           contentContainerStyle={styles.listContainer}
           ListHeaderComponent={() => {
             return isDatePicked ? (
-              <Text style={styles.listHeader}>
+              <CustomText variant="bold" style={styles.listHeader}>
                 Ukupno Rezervacija za {pickedDate}: {numOfReservations}
-              </Text>
+              </CustomText>
             ) : (
-              <Text style={styles.listHeader}>Ukupno Rezervacija: {numOfReservations}</Text>
+              <CustomText variant="bold" style={styles.listHeader}>
+                Ukupno Rezervacija: {numOfReservations}
+              </CustomText>
             );
           }}
           initialNumToRender={10}
@@ -212,28 +216,31 @@ function ReservationsGroup({
     [selectedReservations, batchMode, setEditedReservation, handlePress, handleLongPress, data]
   );
 
+  const colors = useThemeColors();
+  const resGroupStyles = getResGroupStyles(colors);
+
   return (
     <>
       <Pressable
         onPress={() => setIsExpanded(!isExpanded)}
-        style={[ResGroupStyles.headerContainer]}
+        style={[resGroupStyles.headerContainer]}
         delayLongPress={200}
         onLongPress={toggleSelectAll}
       >
-        {allSelected && <Animated.View style={[ResGroupStyles.highlightBox, {}]}></Animated.View>}
+        {allSelected && <Animated.View style={[resGroupStyles.highlightBox, {}]}></Animated.View>}
         {/* {batchMode && (
-          <Pressable onPress={toggleSelectAll} style={ResGroupStyles.highlightAllBtn}>
-            {allSelected && <MaterialIcons name={'check'} color={Colors.white} size={22} />}
+          <Pressable onPress={toggleSelectAll} style={resGroupStyles.highlightAllBtn}>
+            {allSelected && <MaterialIcons name={'check'} color={colors.white} size={22} />}
           </Pressable>
         )} */}
-        <Text style={ResGroupStyles.header}>
+        <Text style={resGroupStyles.header}>
           {getFormattedDateWithoutTime(data.date)} Ukupno: {data.reservations.length} kom.
         </Text>
         <Icon
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
-          style={ResGroupStyles.iconStyle}
+          style={resGroupStyles.iconStyle}
           size={26}
-          color={Colors.white}
+          color={colors.white}
         />
       </Pressable>
       <Animated.View>
@@ -241,7 +248,7 @@ function ReservationsGroup({
           <View>
             <FlatList
               data={data.reservations}
-              style={ResGroupStyles.list}
+              style={resGroupStyles.list}
               keyExtractor={(item) => `${item._id}-${item.orderNotes?.length ?? 0}`}
               renderItem={renderReservationItem}
               initialNumToRender={10}
@@ -253,81 +260,83 @@ function ReservationsGroup({
   );
 }
 
-function getStyles(batchMode: boolean) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     list: {
       paddingHorizontal: 10,
     },
     listHeader: {
-      fontWeight: 'bold',
       fontSize: 14,
       textAlign: 'center',
+      marginTop: 6,
     },
     listContainer: {
       gap: 6,
-      // paddingBottom: batchMode ? 82 : 22,
-      backgroundColor: Colors.primaryLight,
+      backgroundColor: colors.primaryLight,
       overflow: 'hidden',
     },
   });
 }
 
-const ResGroupStyles = StyleSheet.create({
-  headerContainer: {
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    backgroundColor: Colors.secondaryDark,
-    marginBottom: 6,
-    flexDirection: 'row',
-    height: 50,
-    position: 'relative',
-  },
-  iconStyle: {
-    marginLeft: 'auto',
-    zIndex: 3,
-  },
-  header: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.white,
-    marginLeft: 8,
-    zIndex: 3,
-  },
-  container: {
-    paddingHorizontal: 8,
-  },
-  list: {
-    gap: 5,
-  },
-  highlightAllBtn: {
-    borderWidth: 1,
-    borderColor: Colors.secondaryLight,
-    width: 30,
-    borderRadius: 50,
-    padding: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  highlightAllActive: {
-    backgroundColor: Colors.secondaryLight,
-    flex: 1,
-    borderRadius: 4,
-  },
-  iconCheckStyle: {
-    fontWeight: 'bold',
-  },
-  highlightBox: {
-    position: 'absolute',
-    backgroundColor: '#A3B9CC',
-    zIndex: 2,
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    opacity: 0.25,
-  },
-});
+function getResGroupStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    headerContainer: {
+      padding: 10,
+      borderRadius: 4,
+      borderWidth: 0.5,
+      borderColor: colors.primaryDark,
+      backgroundColor: colors.secondaryDark,
+      marginBottom: 6,
+      flexDirection: 'row',
+      height: 50,
+      position: 'relative',
+      alignItems: 'center',
+    },
+    iconStyle: {
+      marginLeft: 'auto',
+      zIndex: 3,
+    },
+    header: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: colors.white,
+      marginLeft: 8,
+      zIndex: 3,
+    },
+    container: {
+      paddingHorizontal: 8,
+    },
+    list: {
+      gap: 5,
+    },
+    highlightAllBtn: {
+      borderWidth: 1,
+      borderColor: colors.secondaryLight,
+      width: 30,
+      borderRadius: 50,
+      padding: 3,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    highlightAllActive: {
+      backgroundColor: colors.secondaryLight,
+      flex: 1,
+      borderRadius: 4,
+    },
+    iconCheckStyle: {
+      fontWeight: 'bold',
+    },
+    highlightBox: {
+      position: 'absolute',
+      backgroundColor: '#A3B9CC',
+      zIndex: 2,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      opacity: 0.25,
+    },
+  });
+}
 
 export default ReservationsItemsList;

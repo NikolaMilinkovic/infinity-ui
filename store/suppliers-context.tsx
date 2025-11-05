@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { SupplierTypes } from '../types/allTsTypes';
 import { popupMessage } from '../util-components/PopupMessage';
 import { AuthContext } from './auth-context';
@@ -45,9 +45,7 @@ function SuppliersContextProvider({ children }: SuppliersContextProviderType) {
       if (data.length > 0) {
         setSuppliers(data);
       }
-      console.log('[7][suppliers-context] Initial fetch: true');
     } catch (error) {
-      console.log('[7][suppliers-context] Initial fetch: false');
       console.error('Error fetching suppliers:', error);
     }
   }
@@ -69,18 +67,8 @@ function SuppliersContextProvider({ children }: SuppliersContextProviderType) {
     );
   }
 
-  useEffect(() => {}, [suppliers]);
-
-  // TO DO: Fix the filter issue, for some reason this always returns an empty array..
-  function handleSupplierRemoved(supplier: string) {
-    fetchSuppliers(token as string);
-
-    // const filteredSuppliers = suppliers.filter((supplierInstance) =>
-    //   supplierInstance._id.toString() !== supplier
-    // );
-
-    // betterConsoleLog('> filteredSuppliers:', filteredSuppliers);
-    // setSuppliers(filteredSuppliers);
+  function handleSupplierRemoved(removedSupplierId: string) {
+    setSuppliers((prev) => prev.filter((supplier) => supplier._id.toString() !== removedSupplierId.toString()));
   }
 
   useEffect(() => {

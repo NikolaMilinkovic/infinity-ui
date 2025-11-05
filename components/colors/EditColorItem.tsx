@@ -1,12 +1,12 @@
 import Constants from 'expo-constants';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useGetAppColors } from '../../constants/useGetAppColors';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { AuthContext } from '../../store/auth-context';
 import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
-import { AppColors, ColorTypes } from '../../types/allTsTypes';
+import { ColorTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
 import IconButton from '../../util-components/IconButton';
 import { popupMessage } from '../../util-components/PopupMessage';
@@ -15,6 +15,7 @@ const backendURI = Constants.expoConfig?.extra?.backendURI;
 function EditColorItem({ data }: { data: ColorTypes }) {
   const [colorData, setColorData] = useState<ColorTypes>({
     _id: '',
+    boutiqueId: '',
     name: '',
     colorCode: '',
   });
@@ -24,8 +25,8 @@ function EditColorItem({ data }: { data: ColorTypes }) {
   const [success, setSucces] = useState('');
   const [error, setError] = useState('');
   const [display, setDisplay] = useState(true);
-  const Colors = useGetAppColors();
-  const styles = getStyles(Colors);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const user = useUser();
 
   // Resets Error & Success
@@ -168,16 +169,16 @@ function EditColorItem({ data }: { data: ColorTypes }) {
             <View style={styles.buttons}>
               <Button
                 onPress={showEditColorHandler}
-                textColor={Colors.whiteText}
-                backColor={Colors.deleteButton}
+                textColor={colors.whiteText}
+                backColor={colors.deleteButton}
                 containerStyles={styles.buttonStyle}
               >
                 Otkaži
               </Button>
               <Button
                 onPress={updateColorHandler}
-                textColor={Colors.whiteText}
-                backColor={Colors.primaryDark}
+                textColor={colors.whiteText}
+                backColor={colors.primaryDark}
                 containerStyles={styles.buttonStyle}
               >
                 Sačuvaj
@@ -192,7 +193,7 @@ function EditColorItem({ data }: { data: ColorTypes }) {
             <IconButton
               icon="delete"
               onPress={removeColorHandler}
-              color={Colors.deleteButton}
+              color={colors.deleteButton}
               style={styles.deleteIcon}
               size={26}
             />
@@ -203,14 +204,14 @@ function EditColorItem({ data }: { data: ColorTypes }) {
   );
 }
 
-function getStyles(Colors: AppColors) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     colorItem: {
       padding: 14,
       paddingHorizontal: 25,
       borderWidth: 0.5,
-      borderColor: Colors.secondaryLight,
-      backgroundColor: Colors.buttonBackground,
+      borderColor: colors.secondaryLight,
+      backgroundColor: colors.buttonBackground,
       marginBottom: 1,
       flexDirection: 'row',
       gap: 20,
@@ -228,14 +229,14 @@ function getStyles(Colors: AppColors) {
     },
     colorText: {
       fontSize: 16,
-      color: Colors.defaultText,
+      color: colors.defaultText,
     },
     mainInputsContainer: {
       width: '100%',
       flexDirection: 'column',
     },
     input: {
-      borderBottomColor: Colors.secondaryLight,
+      borderBottomColor: colors.secondaryLight,
       borderBottomWidth: 1,
       flex: 1,
       marginBottom: 10,
@@ -250,12 +251,12 @@ function getStyles(Colors: AppColors) {
     },
     error: {
       marginTop: 8,
-      color: Colors.error,
+      color: colors.error,
       textAlign: 'center',
     },
     success: {
       marginTop: 8,
-      color: Colors.success,
+      color: colors.success,
       textAlign: 'center',
     },
     buttonStyle: {

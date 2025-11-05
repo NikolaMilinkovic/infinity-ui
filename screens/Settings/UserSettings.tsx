@@ -1,27 +1,25 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import SafeView from '../../components/layout/SafeView';
-import CheckForUpdates from '../../components/settings/CheckForUpdates';
-import CouriersSettings from '../../components/settings/CouriersSettings';
-import ListProductsByDropdown from '../../components/settings/ListProductsByDropdown';
-import { useGetAppColors } from '../../constants/useGetAppColors';
+import { useContext } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import LinearGradientBackground from '../../components/gradients/LinearBackgroundGradient';
 import useAuthToken from '../../hooks/useAuthToken';
 import useTextForActiveLanguage from '../../hooks/useTextForActiveLanguage';
-import { AppContext } from '../../store/app-context';
-import { CouriersContext } from '../../store/couriers-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { UserContext } from '../../store/user-context';
-import { AppColors } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
-import DropdownList from '../../util-components/DropdownList';
+import CustomText from '../../util-components/CustomText';
 import { popupMessage } from '../../util-components/PopupMessage';
 import { handleFetchingWithBodyData } from '../../util-methods/FetchMethods';
+import CheckForUpdates from './userSettingsComponents/CheckForUpdates';
+import CouriersSettings from './userSettingsComponents/CouriersSettings';
+import ListProductsByDropdown from './userSettingsComponents/ListProductsByDropdown';
+import ThemeSelector from './userSettingsComponents/ThemeSelector';
 
 function UserSettings() {
   const authToken = useAuthToken();
   const userCtx = useContext(UserContext);
   const text = useTextForActiveLanguage('settings');
-  const appCtx = useContext(AppContext);
-  const styles = getStyles(useGetAppColors());
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   /**
    * @param field Attribute that we are updating
@@ -60,23 +58,33 @@ function UserSettings() {
   }
 
   return (
-    <SafeView>
-      <ScrollView style={styles.container}>
-        <View style={styles.card}>
+    <ScrollView style={styles.container}>
+      <View style={styles.card}>
+        <LinearGradientBackground
+          containerStyles={{ padding: 18 }}
+          color1={colors.cardBackground}
+          color2={colors.cardBackground1}
+        >
           {/* UPDATES */}
-          <Text style={[styles.h1, { marginTop: 0 }]}>Ažuriranje | Updates:</Text>
+          <CustomText style={[styles.h1, { marginTop: 0 }]} variant="bold">
+            Ažuriranje | Updates:
+          </CustomText>
           <View style={styles.sectionOutline}>
-            <CheckForUpdates appCtx={appCtx} />
+            <CheckForUpdates />
           </View>
 
           {/* LIST PRODUCTS BY */}
-          <Text style={styles.h1}>{text.listProductsBy_header}</Text>
+          <CustomText variant="bold" style={styles.h1}>
+            {text.listProductsBy_header}
+          </CustomText>
           <View style={styles.sectionOutline}>
             <ListProductsByDropdown updateDefault={updateDefault} />
           </View>
 
           {/* DEFAULT COURIER */}
-          <Text style={styles.h1}>Kuriri</Text>
+          <CustomText variant="bold" style={styles.h1}>
+            Kuriri
+          </CustomText>
           <View style={styles.sectionOutline}>
             <CouriersSettings updateDefault={updateDefault} />
           </View>
@@ -88,7 +96,9 @@ function UserSettings() {
         </View> */}
 
           {/* THEME SELECTOR */}
-          <Text style={styles.h1}>{text.theme_header}</Text>
+          <CustomText variant="bold" style={styles.h1}>
+            {text.theme_header}
+          </CustomText>
           <View style={styles.sectionOutline}>
             <ThemeSelector updateDefault={updateDefault} />
           </View>
@@ -104,215 +114,74 @@ function UserSettings() {
             containerStyles={styles.saveButton}
             onPress={saveAndUpdateUserSettings}
             textStyles={styles.saveButtonText}
+            backColor={colors.buttonHighlight1}
+            backColor1={colors.buttonHighlight2}
           >
             Sačuvaj
           </Button>
-        </View>
-      </ScrollView>
-    </SafeView>
+        </LinearGradientBackground>
+      </View>
+    </ScrollView>
   );
 }
 
-function getStyles(Colors: AppColors) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       display: 'flex',
       position: 'relative',
-      backgroundColor: Colors.primaryLight,
+      backgroundColor: colors.background2,
     },
     card: {
-      backgroundColor: Colors.white,
-      padding: 10,
+      backgroundColor: colors.cardBackground,
+      borderColor: colors.borderColor,
+      borderTopColor: colors.borderColorHighlight,
       borderRadius: 4,
       borderWidth: 1,
-      borderColor: Colors.secondaryLight,
       marginBottom: 16,
       margin: 10,
+      padding: 1,
     },
     h1: {
-      fontSize: 18,
-      fontWeight: 'bold',
+      fontSize: 16,
       marginBottom: 8,
       marginTop: 16,
-      color: Colors.defaultText,
-      borderBottomWidth: 1,
-      borderBottomColor: Colors.secondaryLight,
+      color: colors.highlightText,
+      borderBottomWidth: 1.5,
+      borderBottomColor: colors.secondaryLight,
     },
     h2: {
-      color: Colors.defaultText,
+      color: colors.defaultText,
     },
     text: {
       fontSize: 16,
-      color: Colors.defaultText,
+      color: colors.defaultText,
     },
     sectionOutline: {
-      padding: 10,
       paddingTop: 0,
-      borderColor: Colors.secondaryLight,
+      borderColor: colors.secondaryLight,
       borderRadius: 10,
-      backgroundColor: Colors.white,
     },
     dropdown: {
-      backgroundColor: Colors.buttonBackground,
+      backgroundColor: '#ffffff',
       marginTop: 10,
       elevation: 1,
       shadowOffset: { width: 1, height: 1 },
       shadowOpacity: 0.25,
       shadowRadius: 4,
       borderWidth: 0.5,
-      borderColor: Colors.secondaryLight,
+      borderColor: colors.secondaryLight,
     },
     dropdownText: {
-      color: Colors.defaultText,
+      color: colors.defaultText,
     },
     saveButton: {
-      backgroundColor: Colors.highlight,
       marginTop: 10,
     },
     saveButtonText: {
-      color: Colors.white,
+      color: colors.whiteText,
     },
   });
-}
-
-function ThemeSelector({ updateDefault }: { updateDefault: (field: string, value: any) => void }) {
-  const userCtx = useContext(UserContext);
-  const [firstRender, setFirstRender] = useState(true);
-  const text = useTextForActiveLanguage('settings');
-  const styles = getStyles(useGetAppColors());
-  interface DrpodownTypes {
-    _id: number;
-    name: string;
-    value: string;
-  }
-  const [listSelectorData] = useState([
-    { _id: 0, name: 'Svetla tema', value: 'light' },
-    { _id: 1, name: 'Tamna tema', value: 'dark' },
-  ]);
-  function getDefaultValue() {
-    switch (userCtx?.settings?.defaults?.theme) {
-      case 'light':
-        return 'Svetla tema';
-      case 'dark':
-        return 'Tamna tema';
-    }
-  }
-  async function updateSetting(selected: DrpodownTypes) {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    updateDefault('theme', selected.value);
-  }
-
-  return (
-    <>
-      <Text style={styles.text}>{text.theme_description}</Text>
-      <DropdownList
-        data={listSelectorData}
-        defaultValue={getDefaultValue()}
-        onSelect={updateSetting}
-        buttonContainerStyles={styles.dropdown}
-        buttonTextStyles={styles.dropdownText}
-      />
-    </>
-  );
-}
-
-function LanguageSelector({ updateUserSetting }: { updateUserSetting: (field: string, value: any) => void }) {
-  const userCtx = useContext(UserContext);
-  const [firstRender, setFirstRender] = useState(true);
-  const text = useTextForActiveLanguage('settings');
-  const styles = getStyles(useGetAppColors());
-  interface DrpodownTypes {
-    _id: number;
-    name: string;
-    value: string;
-  }
-  const [listSelectorData] = useState([
-    { _id: 0, name: 'Engleski', value: 'en' },
-    { _id: 1, name: 'Srpski', value: 'srb' },
-  ]);
-  function getDefaultValue() {
-    switch (userCtx?.settings?.language) {
-      case 'en':
-        return 'Engleski';
-      case 'srb':
-        return 'Srpski';
-    }
-  }
-  async function updateSetting(selected: DrpodownTypes) {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    updateUserSetting('language', selected.value);
-  }
-
-  return (
-    <>
-      <Text style={styles.text}>{text.language_description}</Text>
-      <DropdownList
-        data={listSelectorData}
-        defaultValue={getDefaultValue()}
-        onSelect={updateSetting}
-        buttonContainerStyles={[styles.dropdown, { marginTop: 10 }]}
-      />
-    </>
-  );
-}
-
-function DefaultCourier({ updateDefault }: { updateDefault: (field: string, value: any) => void }) {
-  const userCtx = useContext(UserContext);
-  const courierCtx = useContext(CouriersContext);
-  const styles = getStyles(useGetAppColors());
-  const [firstRender, setFirstRender] = useState(true);
-  interface DrpodownTypes {
-    _id: number;
-    name: string;
-    value: string;
-  }
-
-  useEffect(() => {
-    function generateOptionsHandler() {
-      let options = [];
-      // for (const [index, courier] of courierCtx.couriers.entries()) {
-      //   console.log(`Index: ${index}, courier: ${courier}`);
-      // }
-    }
-    let test = generateOptionsHandler();
-  }, [courierCtx.couriers]);
-  const [listSelectorData] = useState([
-    { _id: 0, name: 'Svetla tema', value: 'light' },
-    { _id: 1, name: 'Tamna tema', value: 'dark' },
-  ]);
-  function getDefaultValue() {
-    switch (userCtx?.settings?.defaults?.theme) {
-      case 'light':
-        return 'Svetla tema';
-      case 'dark':
-        return 'Tamna tema';
-    }
-  }
-  async function updateSetting(selected: DrpodownTypes) {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    updateDefault('theme', selected.value);
-  }
-
-  return (
-    <>
-      <Text style={styles.text}>Postavka defaultnog izabranog kurira prilikom kreiranja nove porudžbine:</Text>
-      <DropdownList
-        data={listSelectorData}
-        defaultValue={getDefaultValue()}
-        onSelect={updateSetting}
-        buttonContainerStyles={{ marginTop: 10 }}
-      />
-    </>
-  );
 }
 
 export default UserSettings;

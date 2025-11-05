@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useContext, useEffect, useState } from 'react';
@@ -12,6 +13,7 @@ import AuthStack from './navigation/AuthStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
 import ContextProvider from './store/ContextProvider';
 import { AuthContext } from './store/auth-context';
+import { SocketContext } from './store/socket-context';
 import { PopupMessagesComponent } from './util-components/PopupMessage';
 SplashScreen.preventAutoHideAsync();
 
@@ -37,12 +39,12 @@ function Navigation() {
 }
 
 function Root() {
-  console.log('> Root rendering..');
   /**
    * Makes the native splash screen remain visible until hideAsync is called.
    */
   const [isCheckingToken, setIsCheckingToken] = useState(true);
   const authCtx = useContext(AuthContext);
+  const socketCtx = useContext(SocketContext);
 
   /**
    * Checks the token in the AsyncStorage upon app startup
@@ -54,12 +56,15 @@ function Root() {
       try {
         const token = await AsyncStorage.getItem('token');
         if (token) {
+          socketCtx?.socket?.connect();
           authCtx.authenticate(token);
         } else {
+          socketCtx?.socket?.disconnect();
           authCtx.logout();
         }
       } catch (err) {
         console.error('Error while checking token:', err);
+        socketCtx?.socket?.disconnect();
         authCtx.logout();
       } finally {
         setIsCheckingToken(false);
@@ -97,6 +102,9 @@ function Root() {
       {!isCheckingToken && (
         <>
           <PopupMessagesComponent />
+          {/* <SafeAreaView edges={['top']} style={{ backgroundColor: Colors.primaryLight }}>
+            <SocketDcRc />
+          </SafeAreaView> */}
           <Navigation />
         </>
       )}
@@ -108,14 +116,24 @@ function Root() {
 }
 
 export default function App() {
+  useFonts({
+    'Playfair-Regular': require('./assets/fonts/playfair/PlayfairDisplay-Regular.ttf'),
+    'Playfair-Bold': require('./assets/fonts/playfair/PlayfairDisplay-Bold.ttf'),
+    'Playfair-Black': require('./assets/fonts/playfair/PlayfairDisplay-Black.ttf'),
+    'HelveticaNeue-Regular': require('./assets/fonts/helveticaNeue/HelveticaNeueMedium.otf'),
+    'HelveticaNeue-Light': require('./assets/fonts/helveticaNeue/HelveticaNeueMedium.otf'),
+    'HelveticaNeue-Bold': require('./assets/fonts/helveticaNeue/HelveticaNeueBold.otf'),
+    Bodoni: require('./assets/fonts/bodoni/bodoni.ttf'),
+  });
+
   return (
-    <SafeAreaProvider>
-      <View style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
-        <StatusBar style="light" translucent={true} />
-        <ContextProvider>
+    <ContextProvider>
+      <SafeAreaProvider>
+        <View style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
+          <StatusBar style="light" translucent />
           <Root />
-        </ContextProvider>
-      </View>
-    </SafeAreaProvider>
+        </View>
+      </SafeAreaProvider>
+    </ContextProvider>
   );
 }

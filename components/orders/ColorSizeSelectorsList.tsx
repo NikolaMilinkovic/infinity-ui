@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../constants/colors';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { NewOrderContextTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
@@ -15,6 +15,8 @@ interface PropTypes {
   onNext: () => void;
 }
 function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }: PropTypes) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
   const toggleExpandAnimation = useExpandAnimationWithContentVisibility(
@@ -54,7 +56,7 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={styles.iconStyle}
           size={26}
-          color={Colors.white}
+          color={colors.white}
         />
       </Pressable>
 
@@ -79,10 +81,11 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
 
             {/* ON NEXT BUTTON */}
             <Button
-              backColor={Colors.highlight}
-              textColor={Colors.white}
+              textColor={colors.whiteText}
               containerStyles={{ marginBottom: 6, marginHorizontal: 0 }}
               onPress={handleOnNext}
+              backColor={colors.buttonHighlight1}
+              backColor1={colors.buttonHighlight2}
             >
               Dalje
             </Button>
@@ -93,27 +96,29 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
   );
 }
 
-const styles = StyleSheet.create({
-  headerContainer: {
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    backgroundColor: Colors.secondaryDark,
-    marginBottom: 6,
-    flexDirection: 'row',
-  },
-  iconStyle: {
-    marginLeft: 'auto',
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.white,
-  },
-  container: {
-    paddingHorizontal: 8,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    headerContainer: {
+      padding: 10,
+      borderRadius: 4,
+      borderWidth: 0,
+      borderColor: colors.primaryDark,
+      backgroundColor: colors.secondaryDark,
+      marginBottom: 6,
+      flexDirection: 'row',
+    },
+    iconStyle: {
+      marginLeft: 'auto',
+    },
+    header: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.white,
+    },
+    container: {
+      paddingHorizontal: 8,
+    },
+  });
+}
 
 export default ColorSizeSelectorsList;

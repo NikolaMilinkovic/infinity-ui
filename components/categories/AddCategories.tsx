@@ -1,8 +1,8 @@
 import Constants from 'expo-constants';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../../constants/colors';
 import { AuthContext } from '../../store/auth-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import Button from '../../util-components/Button';
 import DropdownList from '../../util-components/DropdownList';
@@ -29,6 +29,8 @@ function AddCategories() {
     { _id: 1, name: 'Boja-Količina', value: 'Boja-Količina' },
   ]);
   const [error, setError] = useState<string>('');
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   function resetInputAndError() {
     setInputText('');
@@ -97,9 +99,9 @@ function AddCategories() {
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
-            background={Colors.white}
-            color={Colors.primaryDark}
-            activeColor={Colors.highlight}
+            background={colors.white}
+            color={colors.primaryDark}
+            activeColor={colors.highlight}
             labelBorders={false}
           />
         </View>
@@ -119,7 +121,7 @@ function AddCategories() {
 
       {/* BUTTON */}
       <View style={styles.buttonContainer}>
-        <Button onPress={addCategoryHandler} textColor={Colors.white} backColor={Colors.highlight}>
+        <Button onPress={addCategoryHandler} textColor={colors.white} backColor={colors.highlight}>
           Sačuvaj
         </Button>
       </View>
@@ -127,49 +129,50 @@ function AddCategories() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderColor: Colors.secondaryLight,
-    borderWidth: 0.5,
-    paddingVertical: 16,
-    paddingBottom: 8,
-    backgroundColor: Colors.white,
-  },
-  controllsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    gap: 8,
-    paddingHorizontal: 16,
-  },
-  inputContainer: {
-    flex: 1,
-  },
-  buttonContainer: {
-    width: '100%',
-    marginTop: 6,
-    paddingHorizontal: 16,
-  },
-  error: {
-    color: Colors.error,
-    marginTop: 10,
-  },
-  success: {
-    color: Colors.success,
-    marginTop: 10,
-  },
-  dropdownContainer: {
-    flex: 1,
-    elevation: 0,
-  },
-  dropdown: {
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    height: 46,
-  },
-});
-
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      borderColor: colors.secondaryLight,
+      borderWidth: 0.5,
+      paddingVertical: 16,
+      paddingBottom: 8,
+      backgroundColor: colors.white,
+    },
+    controllsContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '100%',
+      gap: 8,
+      paddingHorizontal: 16,
+    },
+    inputContainer: {
+      flex: 1,
+    },
+    buttonContainer: {
+      width: '100%',
+      marginTop: 6,
+      paddingHorizontal: 16,
+    },
+    error: {
+      color: colors.error,
+      marginTop: 10,
+    },
+    success: {
+      color: colors.success,
+      marginTop: 10,
+    },
+    dropdownContainer: {
+      flex: 1,
+      elevation: 0,
+    },
+    dropdown: {
+      borderWidth: 0.5,
+      borderColor: colors.secondaryLight,
+      backgroundColor: colors.white,
+      borderRadius: 4,
+      height: 46,
+    },
+  });
+}
 export default AddCategories;

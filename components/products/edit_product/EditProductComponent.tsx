@@ -1,14 +1,13 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
-import Animated, { FadeIn } from 'react-native-reanimated';
-import { Colors } from '../../../constants/colors';
 import DressColor from '../../../models/DressColor';
 import PurseColor from '../../../models/PurseColor';
 import { AuthContext } from '../../../store/auth-context';
 import { CategoriesContext } from '../../../store/categories-context';
 import { ColorsContext } from '../../../store/colors-context';
 import { SuppliersContext } from '../../../store/suppliers-context';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import {
   CategoryTypes,
   DressColorTypes,
@@ -18,15 +17,18 @@ import {
   SupplierTypes,
 } from '../../../types/allTsTypes';
 import Button from '../../../util-components/Button';
+import CustomText from '../../../util-components/CustomText';
 import DropdownList from '../../../util-components/DropdownList';
 import ImagePicker from '../../../util-components/ImagePicker';
 import InputField from '../../../util-components/InputField';
+import KeyboardAvoidingWrapper from '../../../util-components/KeyboardAvoidingWrapper';
 import MultiDropdownList from '../../../util-components/MultiDropdownList';
 import MultilineInput from '../../../util-components/MultilineInput';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import { handleFetchingWithFormData } from '../../../util-methods/FetchMethods';
 import { getMimeType } from '../../../util-methods/ImageMethods';
 import { betterErrorLog } from '../../../util-methods/LogMethods';
+import ModalHeader from '../../modals/components/ModalHeader';
 import AddDressComponents from '../unique_product_components/add/AddDressComponents';
 import AddPurseComponents from '../unique_product_components/add/AddPurseComponents';
 
@@ -37,6 +39,15 @@ interface PropTypes {
 }
 
 function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+  if (!item) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', minHeight: '100%' }}>
+        <Text style={{ color: colors.white }}>Došlo je do problema prilikom ažuriranja izabranog proizvoda..</Text>
+      </View>
+    );
+  }
   const authCtx = useContext(AuthContext);
   const colorsCtx = useContext(ColorsContext);
   const categoryCtx = useContext(CategoriesContext);
@@ -50,11 +61,17 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
   // Note - item.category je string "Torbica" tako da moramo da pronadjemo ceo objekat prvo
-  const initialCategory = categoryCtx.categories.find((cat) => cat.name === item.category);
-  if (!initialCategory) return;
+  let initialCategory = categoryCtx.categories.find((cat) => cat.name === item.category);
+  if (!initialCategory) {
+    initialCategory = {
+      _id: '',
+      name: item.category,
+      stockType: item.stockType,
+    };
+  }
   const [category, setCategory] = useState<CategoryTypes>(initialCategory);
   const [isActive, setIsActive] = useState(item.active);
-  const [allColors, setAllColors] = useState(colorsCtx.colors);
+  const [allColors] = useState(colorsCtx.colors);
   const [description, setDescription] = useState(item.description);
   const [colorsDefaultOptions, setColorsDefaultOptions] = useState<string[]>(item.colors.map((obj) => obj.color));
   const [itemColors, setItemColors] = useState<(DressColorTypes | PurseColorTypes)[]>(item.colors);
@@ -210,77 +227,103 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
     setResetKey((prevKey) => prevKey + 1);
   }
 
+  // Filtriramo kategorije, izvacujemo sve koje su razlicitog stock type
+  // Ukoliko kategorija ne postoji za ovaj item u listi kategorija kreiramo fiktivnu
+  // Ukoliko nemamo kategoriju i ne kreiramo fiktivnu kategoriju za item
+  // Komponenta se nece renderovati, dolazimo do problema
+  const filteredCategories = useMemo(() => {
+    const matchingCategories = categoryCtx.categories.filter((cat) => cat.stockType === item.stockType);
+
+    // Check if item's category exists in filtered list
+    const hasItemCategory = matchingCategories.some((cat) => cat.name === item.category);
+
+    if (matchingCategories.length > 0 && hasItemCategory) {
+      return matchingCategories;
+    } else {
+      // Add fictive category to the list
+      return [
+        {
+          _id: '',
+          name: item.category,
+          stockType: item.stockType,
+        },
+        ...matchingCategories,
+      ];
+    }
+  }, [categoryCtx.categories, item.stockType, item.category]);
+
   return (
-    <Animated.View entering={FadeIn.duration(400)} style={{ flex: 1 }}>
-      {showHeader && (
-        <View style={styles.headerContainer}>
-          <Text style={styles.modalHeader} numberOfLines={2} ellipsizeMode="tail">
-            {item.name}
-          </Text>
-        </View>
-      )}
-      <Animated.View style={styles.container}>
-        <View style={[styles.card, !showHeader && { marginTop: 10 }]}>
-          {/* ACTIVE | INACTIVE */}
-          <View>
-            <Text style={[styles.sectionText]}>Aktivan | Neaktivan</Text>
-            <RadioGroup
-              radioButtons={activeButtons}
-              onPress={handleRadioSelect}
-              selectedId={isActive ? '1' : '2'}
-              containerStyle={styles.radioButtionsContainer}
-            />
-          </View>
+    <KeyboardAvoidingWrapper>
+      <View style={{ flex: 1 }}>
+        {showHeader && <ModalHeader title={`TEST: ${item.name}`} />}
 
-          {/* PRODUCT NAME */}
-          <View>
-            <Text style={styles.sectionText}>Osnovne Informacije</Text>
-            <InputField
-              labelBorders={false}
-              label="Naziv Proizvoda"
-              isSecure={false}
-              inputText={name}
-              setInputText={setName}
-              background={Colors.white}
-              color={Colors.primaryDark}
-              activeColor={Colors.primaryDark}
-              containerStyles={{ marginTop: 18 }}
-            />
-          </View>
+        {/* CONTENT */}
+        <ScrollView style={styles.container}>
+          <View style={styles.card}>
+            {/* ACTIVE | INACTIVE */}
+            <View>
+              <CustomText style={[styles.sectionText]}>Aktivan | Neaktivan</CustomText>
+              <RadioGroup
+                radioButtons={activeButtons}
+                onPress={handleRadioSelect}
+                selectedId={isActive ? '1' : '2'}
+                containerStyle={styles.radioButtionsContainer}
+              />
+            </View>
 
-          {/* PRICE */}
-          <View>
-            <InputField
-              labelBorders={false}
-              label="Cena"
-              isSecure={false}
-              inputText={price}
-              setInputText={setPrice}
-              background={Colors.white}
-              color={Colors.primaryDark}
-              activeColor={Colors.secondaryDark}
-              keyboard="numeric"
-              containerStyles={{ marginTop: 18 }}
-            />
-          </View>
+            {/* PRODUCT NAME */}
+            <View>
+              <CustomText style={styles.sectionText}>Osnovne Informacije</CustomText>
+              <InputField
+                labelBorders={false}
+                label="Naziv Proizvoda"
+                isSecure={false}
+                inputText={name}
+                setInputText={setName}
+                background={colors.background}
+                color={colors.defaultText}
+                activeColor={colors.borderColor}
+                containerStyles={{ marginTop: 18 }}
+              />
+            </View>
 
-          {/* IMAGE PICKER */}
-          <View>
-            <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Slika Proizvoda</Text>
-            <ImagePicker onTakeImage={setProductImage} previewImage={previewImage} setPreviewImage={setPreviewImage} />
-          </View>
+            {/* PRICE */}
+            <View>
+              <InputField
+                labelBorders={false}
+                label="Cena"
+                isSecure={false}
+                inputText={price}
+                setInputText={setPrice}
+                background={colors.background}
+                color={colors.defaultText}
+                activeColor={colors.borderColor}
+                keyboard="numeric"
+                containerStyles={{ marginTop: 18 }}
+              />
+            </View>
 
-          {/* CATEGORY */}
-          <View>
-            <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Kategorija</Text>
-            <DropdownList
-              data={categoryCtx.categories}
-              placeholder="Kategorija Proizvoda"
-              onSelect={(category) => setCategoryHandler(category)}
-              defaultValue={item.category}
-              buttonContainerStyles={{ marginTop: 4 }}
-            />
-            {/* <DropdownList2
+            {/* IMAGE PICKER */}
+            <View>
+              <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Slika Proizvoda</CustomText>
+              <ImagePicker
+                onTakeImage={setProductImage}
+                previewImage={previewImage}
+                setPreviewImage={setPreviewImage}
+              />
+            </View>
+
+            {/* CATEGORY */}
+            <View>
+              <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Kategorija</CustomText>
+              <DropdownList
+                data={filteredCategories}
+                placeholder="Kategorija Proizvoda"
+                onSelect={(category) => setCategoryHandler(category)}
+                defaultValue={item.category}
+                buttonContainerStyles={{ marginTop: 4 }}
+              />
+              {/* <DropdownList2
               data={categoryCtx.categories}
               value={initialCategory as any}
               placeholder="Kategorija Proizvoda"
@@ -289,54 +332,57 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
               valueField="name"
               containerStyle={{ marginTop: 4 }}
             /> */}
-          </View>
+            </View>
 
-          {/* COLORS */}
-          <View>
-            <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Boje, veličine i količina lagera</Text>
-            {colorsDefaultOptions && allColors && (
-              <MultiDropdownList
-                data={allColors}
-                setSelected={setSelectedColors}
-                isOpen={true}
-                placeholder="Izaberi boje"
-                label="Boje Proizvoda"
-                containerStyles={{ marginTop: 4 }}
-                defaultValues={colorsDefaultOptions.length === 0 ? [] : colorsDefaultOptions}
-              />
+            {/* COLORS */}
+            <View>
+              <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>
+                Boje, veličine i količina lagera
+              </CustomText>
+              {colorsDefaultOptions && allColors && (
+                <MultiDropdownList
+                  data={allColors}
+                  setSelected={setSelectedColors}
+                  isOpen={true}
+                  placeholder="Izaberi boje"
+                  label="Boje Proizvoda"
+                  containerStyles={{ marginTop: 4 }}
+                  defaultValues={colorsDefaultOptions.length === 0 ? [] : colorsDefaultOptions}
+                />
+              )}
+            </View>
+            {/* DRESES */}
+            {category && category.stockType === 'Boja-Veličina-Količina' && (
+              <AddDressComponents dressColors={itemColors as any} setDressColors={setItemColors} />
             )}
-          </View>
-          {/* DRESES */}
-          {category && category.stockType === 'Boja-Veličina-Količina' && (
-            <AddDressComponents dressColors={itemColors} setDressColors={setItemColors} />
-          )}
-          {/* PURSES */}
-          {category && category.stockType === 'Boja-Količina' && (
-            <AddPurseComponents purseColors={itemColors} setPurseColors={setItemColors} />
-          )}
+            {/* PURSES */}
+            {category && category.stockType === 'Boja-Količina' && (
+              <AddPurseComponents purseColors={itemColors as any} setPurseColors={setItemColors} />
+            )}
 
-          <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Dodatne informacije:</Text>
-          <MultilineInput
-            label="Opis proizvoda"
-            value={description}
-            setValue={(text: string | number | undefined) => setDescription(text as string)}
-            containerStyles={styles.descriptionField}
-            numberOfLines={4}
-            background={Colors.white}
-          />
-
-          {/* SUPPLIER */}
-          <View>
-            <Text style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</Text>
-            <DropdownList
-              key={resetKey}
-              data={supplierData}
-              placeholder="Izaberite dobavljača"
-              onSelect={setSupplier}
-              buttonContainerStyles={{ marginTop: 4 }}
-              defaultValue={supplierDefaultValue}
+            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Dodatne informacije:</CustomText>
+            <MultilineInput
+              label="Opis proizvoda"
+              value={description}
+              setValue={(text: string | number | undefined) => setDescription(text as string)}
+              containerStyles={styles.descriptionField}
+              numberOfLines={4}
+              background={colors.background}
+              activeColor={colors.borderColor}
             />
-            {/* <DropdownList2
+
+            {/* SUPPLIER */}
+            <View>
+              <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</CustomText>
+              <DropdownList
+                key={resetKey}
+                data={supplierData}
+                placeholder="Izaberite dobavljača"
+                onSelect={setSupplier}
+                buttonContainerStyles={{ marginTop: 4 }}
+                defaultValue={supplierDefaultValue}
+              />
+              {/* <DropdownList2
               key={resetKey}
               data={supplierData}
               value={typeof supplier === 'string' ? supplier : supplier?.name || null}
@@ -346,109 +392,112 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
               valueField="name"
               containerStyle={{ marginTop: 4 }}
             /> */}
-          </View>
+            </View>
 
-          {/* BUTTONS */}
-          <View style={styles.buttonsContainer}>
-            <Button
-              onPress={handleOnPress}
-              textColor={Colors.white}
-              backColor={Colors.error}
-              containerStyles={styles.button}
-              textStyles={{}}
-            >
-              Nazad
-            </Button>
-            <Button
-              onPress={handleProductUpdate}
-              textColor={Colors.white}
-              backColor={Colors.secondaryDark}
-              containerStyles={styles.button}
-              textStyles={{}}
-            >
-              Sačuvaj izmene
-            </Button>
+            {/* BUTTONS */}
+            <View style={styles.buttonsContainer}>
+              <Button
+                onPress={handleOnPress}
+                textColor={colors.defaultText}
+                backColor={colors.buttonNormal1}
+                backColor1={colors.buttonNormal2}
+                containerStyles={styles.button}
+              >
+                Nazad
+              </Button>
+              <Button
+                onPress={handleProductUpdate}
+                textColor={colors.white}
+                backColor={colors.buttonHighlight1}
+                backColor1={colors.buttonHighlight2}
+                containerStyles={styles.button}
+              >
+                Sačuvaj izmene
+              </Button>
+            </View>
           </View>
-        </View>
-      </Animated.View>
-    </Animated.View>
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingWrapper>
   );
 }
 
-const styles = StyleSheet.create({
-  headerContainer: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    left: 0,
-    zIndex: 2,
-    height: 60,
-    backgroundColor: Colors.primaryDark,
-    paddingHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalHeader: {
-    color: Colors.white,
-    fontWeight: 'bold',
-    fontSize: 20,
-    textAlign: 'center',
-  },
-  container: {
-    display: 'flex',
-    position: 'relative',
-    backgroundColor: Colors.primaryLight,
-  },
-  card: {
-    marginTop: 70,
-    backgroundColor: Colors.white,
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: Colors.secondaryLight,
-    marginBottom: 16,
-    margin: 10,
-  },
-  sectionText: {
-    fontSize: 18,
-  },
-  sectionTextTopMargin: {
-    marginTop: 16,
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    padding: 10,
-    backgroundColor: 'white',
-  },
-  input: {
-    marginTop: 22,
-  },
-  buttonsContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    flex: 1,
-    gap: 10,
-    marginTop: 10,
-  },
-  button: {
-    flex: 2,
-    height: 50,
-  },
-  radioButtionsContainer: {
-    flexDirection: 'row',
-    marginBottom: 10,
-  },
-  descriptionField: {
-    justifyContent: 'flex-start',
-    textAlignVertical: 'top',
-    marginTop: 18,
-    marginBottom: 8,
-    backgroundColor: Colors.white,
-  },
-  inputFieldLabelStyles: {
-    backgroundColor: Colors.white,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    headerContainer: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      left: 0,
+      zIndex: 2,
+      height: 60,
+      backgroundColor: colors.navBackground,
+      paddingHorizontal: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    modalHeader: {
+      color: colors.highlightText,
+      fontWeight: 'bold',
+      fontSize: 20,
+      textAlign: 'center',
+    },
+    container: {
+      display: 'flex',
+      position: 'relative',
+      backgroundColor: colors.background2,
+    },
+    card: {
+      marginTop: 10,
+      backgroundColor: colors.background,
+      padding: 10,
+      borderRadius: 4,
+      borderWidth: 1,
+      borderColor: colors.borderColor,
+      marginBottom: 16,
+      margin: 10,
+    },
+    sectionText: {
+      fontSize: 18,
+      color: colors.highlightText,
+    },
+    sectionTextTopMargin: {
+      marginTop: 16,
+    },
+    header: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      padding: 10,
+    },
+    input: {
+      marginTop: 22,
+      color: colors.defaultText,
+    },
+    buttonsContainer: {
+      flexDirection: 'row',
+      gap: 12,
+      marginTop: 20,
+      paddingHorizontal: 4,
+    },
+    button: {
+      flex: 1,
+    },
+    radioButtionsContainer: {
+      flexDirection: 'row',
+      marginBottom: 10,
+    },
+    descriptionField: {
+      justifyContent: 'flex-start',
+      textAlignVertical: 'top',
+      marginTop: 18,
+      marginBottom: 8,
+      backgroundColor: colors.background,
+    },
+    inputFieldLabelStyles: {
+      backgroundColor: colors.background,
+      color: colors.highlightText,
+    },
+  });
+}
 
 export default EditProductComponent;

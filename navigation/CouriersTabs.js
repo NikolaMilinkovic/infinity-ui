@@ -1,27 +1,28 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { Colors } from '../constants/colors';
 import CouriersManager from '../screens/CouriersManager/CouriersManager';
 import SuppliersManager from '../screens/SuppliersManager/SuppliersManager';
+import { useThemeColors } from '../store/theme-context';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function CouriersTabs() {
+  const colors = useThemeColors();
   /**
    * COURIERS tabovi
    */
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarPressColor: Colors.tabsPressEffect,
+        tabBarPressColor: colors.tabsPressEffect,
         tabBarLabelStyle: {
           fontSize: 11,
-          color: Colors.secondaryDark,
+          color: colors.secondaryDark,
         },
         tabBarStyle: {
-          backgroundColor: Colors.secondaryLight,
+          backgroundColor: colors.secondaryLight,
         },
         tabBarIndicatorStyle: {
-          backgroundColor: Colors.highlight,
+          backgroundColor: colors.highlight,
           height: 3,
         },
       }}

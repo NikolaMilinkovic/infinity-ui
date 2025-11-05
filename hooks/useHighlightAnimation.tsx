@@ -1,21 +1,22 @@
-import { useEffect, useRef } from "react";
-import { Animated } from "react-native";
-import { Colors } from "../constants/colors";
+import { useEffect, useRef } from 'react';
+import { Animated } from 'react-native';
+import { useThemeColors } from '../store/theme-context';
 
-interface UseHighlightAnimationTypes{
-  isHighlighted: boolean
-  duration: number
-  highlightColor: string
+interface UseHighlightAnimationTypes {
+  isHighlighted: boolean;
+  duration: number;
+  highlightColor: string;
 }
 /**
  * Handles highlight animation
- * @returns backgroundColor value => backgroundColor: return value 
+ * @returns backgroundColor value => backgroundColor: return value
  */
-export const useHighlightAnimation = ({ isHighlighted, duration, highlightColor =  '#A3B9CC'}: UseHighlightAnimationTypes) => {
+export const useHighlightAnimation = ({ isHighlighted, duration, highlightColor }: UseHighlightAnimationTypes) => {
+  const colors = useThemeColors();
   // 0 = Not Highlighted, 1 = Highlighted
-  const backgroundColor = useRef(new Animated.Value(0)).current; 
+  const backgroundColor = useRef(new Animated.Value(0)).current;
 
-    // 1 = Highlighted, 0 = Default
+  // 1 = Highlighted, 0 = Default
   useEffect(() => {
     Animated.timing(backgroundColor, {
       toValue: isHighlighted ? 1 : 0,
@@ -26,8 +27,7 @@ export const useHighlightAnimation = ({ isHighlighted, duration, highlightColor 
 
   const interpolatedBackgroundColor = backgroundColor.interpolate({
     inputRange: [0, 1],
-    outputRange: [Colors.white, highlightColor], // White → Blue transition
+    outputRange: [colors.background, highlightColor], // White → Blue transition
   });
   return interpolatedBackgroundColor;
-}
-  
+};

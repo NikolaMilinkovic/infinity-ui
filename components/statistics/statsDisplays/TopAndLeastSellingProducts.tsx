@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../../constants/colors';
+import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
+import CustomText from '../../../util-components/CustomText';
+import Accordion from '../../accordion/Accordion';
 
 interface TopSellingTypes {
   id: string;
@@ -15,108 +16,54 @@ interface LeastSellingTypes {
 }
 
 interface DataTypes {
-  top: TopSellingTypes[]
-  least: LeastSellingTypes[]
+  top: TopSellingTypes[];
+  least: LeastSellingTypes[];
 }
 interface TopAndLeastSellingProductsPropTypes {
-  data: DataTypes
+  data: DataTypes;
 }
 function TopAndLeastSellingProducts({ data }: TopAndLeastSellingProductsPropTypes) {
   const [topIsExpanded, setTopIsExpanded] = useState(false);
-  const [leastIsExpanded, setLeastIsExpanded] = useState(false);
-  const styles = getStyles(topIsExpanded, leastIsExpanded);
+  // const [leastIsExpanded, setLeastIsExpanded] = useState(false);
+
   return (
     <>
-      <View style={[styles.container, styles.topContainer]}>
-        <Pressable onPress = {() => setTopIsExpanded(!topIsExpanded)} style={[styles.pressable, styles.topBorder]}>
-          <Text style={styles.header}>Najviše prodato</Text>
-          <Icon name={topIsExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.primaryDark}/>
-        </Pressable>
-        {data.top && topIsExpanded &&
-          data.top.map((data, index) => (
-            <DisplayData key={index} data={data}/>
-        ))}
-      </View>
-      <View style={[styles.container, styles.leastContainer]}>
-        <Pressable onPress = {() => setLeastIsExpanded(!leastIsExpanded)} style={[styles.pressable, styles.leastBorder]}>
-          <Text style={styles.header}>Najmanje prodato</Text>
-          <Icon name={topIsExpanded ? 'chevron-up' : 'chevron-down'} style={styles.iconStyle} size={26} color={Colors.primaryDark}/>
-        </Pressable>
-        {data.least && leastIsExpanded &&
-          data.least.map((data, index) => (
-            <DisplayData key={index} data={data}/>
-          ))}
-      </View>
+      <Accordion isExpanded={topIsExpanded} setIsExpanded={setTopIsExpanded} title="Najviše prodato">
+        {data.top && data.top.map((data, index) => <DisplayData key={`${index}-najvise-prodato`} data={data} />)}
+      </Accordion>
+      {/* <Accordion isExpanded={leastIsExpanded} setIsExpanded={setLeastIsExpanded} title="Najmanje prodato">
+        {data.least && data.least.map((data, index) => <DisplayData key={`${index}-najmanje-prodato`} data={data} />)}
+      </Accordion> */}
     </>
   );
 }
 
-function DisplayData({ data }: { data: TopSellingTypes | LeastSellingTypes;}){
-  const styles = getStyles();
+function DisplayData({ data }: { data: TopSellingTypes | LeastSellingTypes }) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   return (
     <View style={styles.dataContainer}>
       <View style={styles.labeledRow}>
-        <Text style={styles.label}>Naziv proizvoda:</Text>
-        <Text style={styles.info}>{data.name}</Text>
+        <CustomText style={styles.label}>Naziv proizvoda:</CustomText>
+        <CustomText variant="bold" style={styles.info}>
+          {data.name}
+        </CustomText>
       </View>
       <View style={styles.labeledRow}>
-        <Text style={styles.label}>Prodano komada:</Text>
-        <Text style={styles.info}>{data.amountSold} kom.</Text>
+        <CustomText style={styles.label}>Prodano komada:</CustomText>
+        <CustomText variant="bold" style={styles.info}>
+          {data.amountSold} kom.
+        </CustomText>
       </View>
     </View>
   );
 }
-function getStyles(topIsExpanded?:boolean, leastIsExpanded?:boolean){
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
-    container: {
-      margin: 10,
-      borderWidth: 0.5,
-      borderColor: Colors.primaryDark,
-      borderRadius: 8,
-      marginBottom: 0,
-      elevation: 2,
-      backgroundColor: Colors.primaryLight
-    },
-    topContainer: {
-      paddingBottom: topIsExpanded ? 10 : 0,
-    },
-    leastContainer: {
-      paddingBottom: leastIsExpanded ? 10 : 0,
-    },
-    pressable: {
-      padding: 16,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 10,
-      marginHorizontal: 10,
-    },
-    topBorder: {
-      borderBottomColor: Colors.primaryDark,
-      borderBottomWidth: topIsExpanded ? 0.5 : 0,
-    },
-    leastBorder: {
-      borderBottomColor: Colors.primaryDark,
-      borderBottomWidth: leastIsExpanded ? 0.5 : 0,
-    },
-    iconStyle: {
-      flex: 2
-    },
-    header: {
-      fontWeight: 'bold',
-      fontSize: 20,
-      color: Colors.primaryDark,
-      textAlign: 'center',
-      flex: 20,
-    },
     dataContainer: {
       padding: 12,
-      borderWidth: 0.5,
-      borderColor: Colors.primaryDark,
-      borderRadius: 8,
-      backgroundColor: Colors.secondaryLight,
-      margin: 10,
-      marginBottom: 0,
+      backgroundColor: 'transparent',
+      marginVertical: 10,
     },
     labeledRow: {
       flexDirection: 'row',
@@ -125,15 +72,14 @@ function getStyles(topIsExpanded?:boolean, leastIsExpanded?:boolean){
     label: {
       flex: 1,
       fontWeight: '600',
-      color: Colors.secondaryDark,
+      color: colors.defaultText,
     },
     info: {
       flex: 1,
       textAlign: 'right',
-      fontWeight: 'bold',
-      color: Colors.primaryDark,
+      color: colors.defaultText,
     },
   });
 }
 
-export default TopAndLeastSellingProducts
+export default TopAndLeastSellingProducts;

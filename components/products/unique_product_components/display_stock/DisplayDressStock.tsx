@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../../../../constants/colors';
 import { useToggleFadeAnimation } from '../../../../hooks/useFadeAnimation';
+import { ThemeColors, useThemeColors } from '../../../../store/theme-context';
 import { DressTypes } from '../../../../types/allTsTypes';
+import CustomText from '../../../../util-components/CustomText';
 
 interface PropTypes {
   isExpanded: boolean;
@@ -10,8 +11,9 @@ interface PropTypes {
 }
 function DisplayDressStock({ isExpanded, item }: PropTypes) {
   const [availableColors, setAvailableColors] = useState<string[]>([]);
-  const styles = getStyles(isExpanded);
   const toggleFade = useToggleFadeAnimation(isExpanded, 180);
+  const colors = useThemeColors();
+  const styles = getStyles(colors, availableColors.length === 0);
 
   // Extracts all the colors that have at least one size withing its stock
   useEffect(() => {
@@ -31,13 +33,27 @@ function DisplayDressStock({ isExpanded, item }: PropTypes) {
       {isExpanded && item.stockType === 'Boja-Veličina-Količina' && (
         <Animated.View style={[styles.container, { overflow: 'hidden', opacity: toggleFade }]}>
           <View style={styles.sizesContainer}>
-            <Text style={{ width: 100, fontWeight: 'bold', textAlign: 'center' }}>Boja</Text>
-            <Text style={styles.header}>UNI</Text>
-            <Text style={styles.header}>XS</Text>
-            <Text style={styles.header}>S</Text>
-            <Text style={styles.header}>M</Text>
-            <Text style={styles.header}>L</Text>
-            <Text style={styles.header}>XL</Text>
+            <CustomText variant="bold" style={{ width: 100, textAlign: 'center' }}>
+              Boja
+            </CustomText>
+            <CustomText variant="bold" style={styles.header}>
+              UNI
+            </CustomText>
+            <CustomText variant="bold" style={styles.header}>
+              XS
+            </CustomText>
+            <CustomText variant="bold" style={styles.header}>
+              S
+            </CustomText>
+            <CustomText variant="bold" style={styles.header}>
+              M
+            </CustomText>
+            <CustomText variant="bold" style={styles.header}>
+              L
+            </CustomText>
+            <CustomText variant="bold" style={styles.header}>
+              XL
+            </CustomText>
           </View>
           {item.colors.map((colorItem, index) => {
             // Sort sizes so "UNI" comes first
@@ -85,13 +101,13 @@ function DisplayDressStock({ isExpanded, item }: PropTypes) {
   );
 }
 
-function getStyles(isExpanded: boolean) {
+function getStyles(colors: ThemeColors, onStock: boolean) {
   return StyleSheet.create({
     container: {
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       padding: 4,
       borderRadius: 4,
-      borderColor: Colors.secondaryLight,
+      borderColor: colors.borderColor,
       borderWidth: 0.5,
       marginBottom: 10,
       marginTop: 10,
@@ -102,12 +118,12 @@ function getStyles(isExpanded: boolean) {
       paddingVertical: 4,
       paddingHorizontal: 2,
       borderBottomWidth: 1,
-      borderColor: '#ddd',
+      borderColor: colors.borderColor,
     },
     header: {
-      fontWeight: 'bold',
       flex: 1,
       textAlign: 'center',
+      color: colors.highlightText,
     },
     rowContainer: {
       flexDirection: 'row',
@@ -115,22 +131,24 @@ function getStyles(isExpanded: boolean) {
       justifyContent: 'space-between',
       paddingVertical: 4,
       paddingHorizontal: 2,
+      backgroundColor: onStock ? colors.outOfStockButtonColor : 'transparent',
     },
     rowColorOnStock: {
-      backgroundColor: Colors.successSecondary,
+      backgroundColor: colors.background1,
     },
     rowColor2: {},
     rowColorOutOfStock: {
-      backgroundColor: Colors.secondaryHighlight,
+      backgroundColor: colors.outOfStockSelectedProductBackground,
     },
     colorLabel2: {
       width: 100,
       textAlign: 'center',
+      color: colors.defaultText,
     },
     sizeText: {
       fontSize: 14,
       fontWeight: 'bold',
-      color: Colors.primaryDark,
+      color: colors.defaultText,
       textAlign: 'center',
       padding: 8,
       paddingHorizontal: 4,
@@ -140,7 +158,7 @@ function getStyles(isExpanded: boolean) {
     pressable: {
       padding: 6,
       borderWidth: 0.5,
-      borderColor: Colors.success,
+      borderColor: colors.success,
     },
   });
 }

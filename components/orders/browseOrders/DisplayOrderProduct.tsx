@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../../../constants/colors';
 import useImagePreviewModal from '../../../hooks/useImagePreviewModal';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
+import CustomText from '../../../util-components/CustomText';
 import ImagePreviewModal from '../../../util-components/ImagePreviewModal';
 
 interface DisplayOrderProductPropTypes {
@@ -13,7 +14,8 @@ interface DisplayOrderProductPropTypes {
 function DisplayOrderProduct({ product, index, grayedText = false }: DisplayOrderProductPropTypes) {
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const [previewImage, setPreviewImage] = useState(product?.image);
-  const styles = getStyles(grayedText);
+  const colors = useThemeColors();
+  const styles = getStyles(colors, grayedText);
   function handleImagePreview() {
     setPreviewImage(product.image);
     showImageModal();
@@ -31,15 +33,19 @@ function DisplayOrderProduct({ product, index, grayedText = false }: DisplayOrde
       )}
       <View style={styles.info}>
         <View style={styles.row}>
-          <Text style={styles.label}>Naziv:</Text>
+          <CustomText variant="bold" style={styles.label}>
+            Naziv:
+          </CustomText>
           <Text style={styles.data} numberOfLines={1} ellipsizeMode="tail">
             {product.name}
           </Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.label}>Boja:</Text>
+          <CustomText variant="bold" style={styles.label}>
+            Boja:
+          </CustomText>
           <Text
-            style={[styles.data, { fontWeight: 'bold', color: Colors.defaultText }]}
+            style={[styles.data, { fontWeight: 'bold', color: colors.black }]}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
@@ -48,9 +54,11 @@ function DisplayOrderProduct({ product, index, grayedText = false }: DisplayOrde
         </View>
         {product.selectedSize && (
           <View style={styles.row}>
-            <Text style={styles.label}>Veličina:</Text>
+            <CustomText variant="bold" style={styles.label}>
+              Veličina:
+            </CustomText>
             <Text
-              style={[styles.data, { fontWeight: 'bold', color: Colors.defaultText }]}
+              style={[styles.data, { fontWeight: 'bold', color: colors.black }]}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -59,9 +67,11 @@ function DisplayOrderProduct({ product, index, grayedText = false }: DisplayOrde
           </View>
         )}
         <View style={styles.row}>
-          <Text style={styles.label}>Cena:</Text>
+          <CustomText variant="bold" style={styles.label}>
+            Cena:
+          </CustomText>
           <Text style={styles.data} numberOfLines={1} ellipsizeMode="tail">
-            {product.price} din.
+            {product.price} rsd.
           </Text>
         </View>
       </View>
@@ -69,7 +79,7 @@ function DisplayOrderProduct({ product, index, grayedText = false }: DisplayOrde
   );
 }
 
-function getStyles(grayedText: boolean) {
+function getStyles(colors: ThemeColors, grayedText: boolean) {
   return StyleSheet.create({
     container: {
       flexDirection: 'row',
@@ -86,11 +96,10 @@ function getStyles(grayedText: boolean) {
     },
     label: {
       width: 70,
-      fontWeight: 'bold',
-      color: grayedText ? Colors.grayText : Colors.defaultText,
+      color: grayedText ? colors.grayText : colors.black,
     },
     data: {
-      color: grayedText ? Colors.grayText : Colors.defaultText,
+      color: grayedText ? colors.grayText : colors.black,
       flexShrink: 1,
       flex: 1,
     },

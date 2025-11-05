@@ -1,13 +1,14 @@
 import { useContext, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
-import { useGetAppColors } from '../../constants/useGetAppColors';
-import useTextForActiveLanguage from '../../hooks/useTextForActiveLanguage';
-import { UserContext } from '../../store/user-context';
-import { AppColors } from '../../types/allTsTypes';
-import DropdownList from '../../util-components/DropdownList';
+import { StyleSheet } from 'react-native';
+import useTextForActiveLanguage from '../../../hooks/useTextForActiveLanguage';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
+import { UserContext } from '../../../store/user-context';
+import CustomText from '../../../util-components/CustomText';
+import DropdownList from '../../../util-components/DropdownList';
 
 function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: string, value: any) => void }) {
-  const styles = getStyles(useGetAppColors());
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const userCtx = useContext(UserContext);
   const [firstRender, setFirstRender] = useState(true);
   const text = useTextForActiveLanguage('settings');
@@ -41,7 +42,7 @@ function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: stri
 
   return (
     <>
-      <Text style={styles.text}>{text.listProductsBy_description}</Text>
+      <CustomText style={styles.text}>{text.listProductsBy_description}</CustomText>
       <DropdownList
         data={listSelectorData}
         defaultValue={getDefaultSelectionForListProductsBy()}
@@ -53,25 +54,25 @@ function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: stri
   );
 }
 
-function getStyles(Colors: AppColors) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     text: {
-      fontSize: 16,
-      color: Colors.defaultText,
+      fontSize: 14,
+      color: colors.defaultText,
     },
     h2: {},
     dropdown: {
-      backgroundColor: Colors.buttonBackground,
+      backgroundColor: colors.background,
       marginTop: 10,
       elevation: 1,
       shadowOffset: { width: 1, height: 1 },
       shadowOpacity: 0.25,
       shadowRadius: 4,
       borderWidth: 0.5,
-      borderColor: Colors.secondaryLight,
+      borderColor: colors.borderColor,
     },
     dropdownText: {
-      color: Colors.defaultText,
+      color: colors.defaultText,
     },
   });
 }

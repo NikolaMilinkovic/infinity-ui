@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../constants/colors';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 import TestMultipleDropdownList from './TestMultiDropdownList';
 
 // React Native Dropdown Select List Documentation
@@ -37,6 +37,8 @@ export default function MultiDropdownList({
   search = true,
 }: DropdownPropTypes) {
   const [dropdownData, setDropdownData] = useState([]);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   useEffect(() => {
     let d = [];
@@ -86,54 +88,57 @@ export default function MultiDropdownList({
   );
 }
 
-const styles = StyleSheet.create({
-  containerStyles: {
-    marginTop: 0,
-  },
-  boxStyles: {
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: Colors.primaryLight,
-  },
-  inputStyles: {
-    fontSize: 16,
-  },
-  dropdownStyles: {
-    backgroundColor: Colors.white,
-    borderWidth: 2,
-    borderColor: Colors.primaryLight,
-    borderRadius: 4,
-    maxHeight: 200,
-  },
-  dropdownItemStyles: {
-    backgroundColor: Colors.white,
-  },
-  dropdownTextStyles: {
-    fontSize: 16,
-  },
-  disabledItemStyles: {},
-  disabledTextStyles: {},
-  dropdown1ButtonArrowStyle: {
-    alignSelf: 'center',
-    justifyContent: 'center',
-    color: Colors.primaryDark,
-    height: 20,
-    width: 20,
-  },
-  disabledCheckBoxStyles: {},
-  checkBoxStyles: {
-    borderColor: Colors.primaryDark,
-  },
-  badgeStyles: {
-    backgroundColor: Colors.secondaryHighlight,
-  },
-  badgeTextStyles: {
-    color: Colors.highlight,
-  },
-  labelStyles: {
-    color: Colors.primaryDark,
-    borderBottomColor: Colors.secondaryLight,
-    borderBottomWidth: 0.5,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    containerStyles: {
+      marginTop: 0,
+    },
+    boxStyles: {
+      borderRadius: 4,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+    },
+    inputStyles: {
+      fontSize: 16,
+      color: colors.defaultText,
+    },
+    dropdownStyles: {
+      backgroundColor: colors.background,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
+      borderRadius: 4,
+      maxHeight: 200,
+    },
+    dropdownItemStyles: {
+      backgroundColor: colors.background,
+    },
+    dropdownTextStyles: {
+      color: colors.defaultText,
+      fontSize: 16,
+    },
+    disabledItemStyles: {},
+    disabledTextStyles: {},
+    dropdown1ButtonArrowStyle: {
+      alignSelf: 'center',
+      justifyContent: 'center',
+      color: colors.defaultText,
+      height: 20,
+      width: 20,
+    },
+    disabledCheckBoxStyles: {},
+    checkBoxStyles: {
+      borderColor: colors.borderColor,
+    },
+    badgeStyles: {
+      backgroundColor: colors.secondaryHighlight,
+    },
+    badgeTextStyles: {
+      color: colors.highlight,
+    },
+    labelStyles: {
+      color: colors.highlightText,
+      borderBottomColor: colors.borderColor,
+      borderBottomWidth: 0.5,
+    },
+  });
+}

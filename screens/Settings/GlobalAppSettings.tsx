@@ -1,22 +1,26 @@
-import React, { useContext, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import SafeView from '../../components/layout/SafeView';
-import SetAppIcon from '../../components/settings/SetAppIcon';
-import { useGetAppColors } from '../../constants/useGetAppColors';
+import { useContext, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import LinearGradientBackground from '../../components/gradients/LinearBackgroundGradient';
 import useTextForActiveLanguage from '../../hooks/useTextForActiveLanguage';
-import { useGetAppContexts } from '../../store/app-context';
+import { useBoutique } from '../../store/app-context';
 import { AuthContext } from '../../store/auth-context';
-import { AppColors, ProductImageTypes } from '../../types/allTsTypes';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
+import { ProductImageTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
+import CustomText from '../../util-components/CustomText';
 import { handleFetchingWithFormData } from '../../util-methods/FetchMethods';
 import { betterErrorLog } from '../../util-methods/LogMethods';
+import SetAppIcon from './globalAppSettingsComponents/SetAppIcon';
 
 function GlobalAppSettings() {
-  const appCtx = useGetAppContexts();
+  const boutique = useBoutique();
   const auth = useContext(AuthContext);
-  const [appSettings, setAppSettings] = useState(appCtx.appSettings);
-  const [appIcon, setAppIcon] = useState<ProductImageTypes | null>(appCtx?.appSettings?.appIcon?.appIconUri);
-  const styles = getStyles(useGetAppColors());
+  const [appIcon, setAppIcon] = useState<ProductImageTypes | null>({
+    uri: boutique.data?.settings?.appIcon?.appIconUri,
+    fileName: boutique.data?.settings?.appIcon?.appIconName,
+  });
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const text = useTextForActiveLanguage('globalSettings');
 
   async function handleUpdateAppSettings() {
@@ -26,7 +30,7 @@ function GlobalAppSettings() {
         formData.append('appIcon', {
           uri: appIcon.uri,
           type: appIcon.mimeType || 'image/jpeg',
-          name: appIcon.fileName || 'product_image.jpg',
+          name: appIcon.fileName || 'icon_image.jpg',
         } as any);
       }
 
@@ -38,13 +42,19 @@ function GlobalAppSettings() {
     }
   }
   return (
-    <SafeView>
-      <ScrollView style={styles.container}>
-        <View style={styles.card}>
+    <ScrollView style={styles.container}>
+      <View style={styles.card}>
+        <LinearGradientBackground
+          containerStyles={{ padding: 18, borderRadius: 4 }}
+          color1={colors.cardBackground1}
+          color2={colors.cardBackground2}
+        >
           {/* UPLOAD APP ICON */}
-          <Text style={[styles.h1, { marginTop: 0 }]}>{text.app_icon}</Text>
+          <CustomText variant="bold" style={[styles.h1, { marginTop: 0 }]}>
+            {text.app_icon}
+          </CustomText>
           <View style={styles.sectionOutline}>
-            <Text>{text.app_icon_description}</Text>
+            <CustomText style={styles.text}>{text.app_icon_description}</CustomText>
             <SetAppIcon appIcon={appIcon} setAppIcon={setAppIcon} />
           </View>
 
@@ -52,73 +62,71 @@ function GlobalAppSettings() {
             containerStyles={styles.saveButton}
             onPress={handleUpdateAppSettings}
             textStyles={styles.saveButtonText}
+            backColor={colors.buttonHighlight1}
+            backColor1={colors.buttonHighlight2}
           >
             Sačuvaj
           </Button>
-        </View>
-      </ScrollView>
-    </SafeView>
+        </LinearGradientBackground>
+      </View>
+    </ScrollView>
   );
 }
 
-function getStyles(Colors: AppColors) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       display: 'flex',
       position: 'relative',
-      backgroundColor: Colors.primaryLight,
+      backgroundColor: colors.background2,
     },
     card: {
-      backgroundColor: Colors.white,
-      padding: 10,
       borderRadius: 4,
-      borderWidth: 1,
-      borderColor: Colors.secondaryLight,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
       marginBottom: 16,
       margin: 10,
+      padding: 0.5,
+      borderTopColor: colors.borderColorHighlight,
     },
     h1: {
-      fontSize: 18,
-      fontWeight: 'bold',
+      fontSize: 16,
       marginBottom: 8,
       marginTop: 16,
-      color: Colors.defaultText,
+      color: colors.highlightText,
       borderBottomWidth: 1,
-      borderBottomColor: Colors.secondaryLight,
+      borderBottomColor: colors.secondaryLight,
     },
     h2: {
-      color: Colors.defaultText,
+      color: colors.defaultText,
     },
     text: {
-      fontSize: 16,
-      color: Colors.defaultText,
+      fontSize: 14,
+      color: colors.defaultText,
     },
     sectionOutline: {
-      padding: 10,
       paddingTop: 0,
-      borderColor: Colors.secondaryLight,
+      borderColor: colors.secondaryLight,
       borderRadius: 10,
-      backgroundColor: Colors.white,
     },
     dropdown: {
-      backgroundColor: Colors.buttonBackground,
+      backgroundColor: colors.buttonBackground,
       marginTop: 10,
       elevation: 1,
       shadowOffset: { width: 1, height: 1 },
       shadowOpacity: 0.25,
       shadowRadius: 4,
       borderWidth: 0.5,
-      borderColor: Colors.secondaryLight,
+      borderColor: colors.secondaryLight,
     },
     dropdownText: {
-      color: Colors.defaultText,
+      color: colors.defaultText,
     },
     saveButton: {
-      backgroundColor: Colors.highlight,
       marginTop: 10,
     },
     saveButtonText: {
-      color: Colors.white,
+      color: colors.white,
     },
   });
 }

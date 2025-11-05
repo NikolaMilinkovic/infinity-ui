@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import SafeView from '../../components/layout/SafeView';
 import LoadingOverlay from '../../components/loading/LoadingOverlay';
-import { Colors } from '../../constants/colors';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
 import { AuthContext } from '../../store/auth-context';
+import { ThemeColors, useTheme, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 import InputField from '../../util-components/InputField';
 import { loginUser } from '../../util-methods/auth/AuthMethods';
@@ -17,6 +16,9 @@ function Login() {
   const [password, setPassword] = useState<string>('');
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
   const { expoPushToken } = usePushNotifications();
+  const colors = useThemeColors();
+  const themeContext = useTheme();
+  const styles = getStyles(colors);
 
   const authCtx = useContext(AuthContext);
   useEffect(() => {
@@ -83,9 +85,16 @@ function Login() {
   }
 
   return (
-    <SafeView>
-      <Animated.View entering={FadeIn.duration(600)} style={styles.container}>
-        <Image source={require('../../assets/infinity.png')} style={styles.image} />
+    <View style={{ backgroundColor: colors.background, flex: 1 }}>
+      <Animated.View
+        entering={FadeIn.duration(600).withInitialValues({ backgroundColor: colors.background2 })}
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
+        {themeContext.theme === 'light' && <Image source={require('../../assets/infinity.png')} style={styles.image} />}
+        {themeContext.theme === 'dark' && (
+          <Image source={require('../../assets/infinity-white.png')} style={styles.image} />
+        )}
+
         <View style={styles.inputsContainer}>
           <View style={styles.inputWrapper}>
             <InputField
@@ -94,6 +103,9 @@ function Login() {
               setInputText={setUsername}
               capitalize="none"
               labelBorders={false}
+              color={colors.defaultText}
+              activeColor={colors.defaultText}
+              background={colors.blackWhite}
             />
           </View>
           <View style={styles.inputWrapper}>
@@ -104,50 +116,55 @@ function Login() {
               setInputText={setPassword}
               capitalize="none"
               labelBorders={false}
+              color={colors.defaultText}
+              activeColor={colors.defaultText}
+              background={colors.blackWhite}
             />
           </View>
           <Text style={styles.errorMessage}>{errorMessage}</Text>
         </View>
         <Button
           onPress={() => loginUserHandler(username, password, expoPushToken?.data || '')}
-          textColor={Colors.whiteText}
-          backColor={Colors.primaryDark}
+          textColor={colors.whiteText}
+          backColor={colors.highlight1}
+          backColor1={colors.highlight2}
         >
           Login
         </Button>
       </Animated.View>
-    </SafeView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 44,
-  },
-  inputsContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    marginBottom: 28,
-  },
-  inputWrapper: {
-    marginTop: 16,
-    width: '100%',
-  },
-  errorMessage: {
-    color: Colors.error,
-    textAlign: 'center',
-  },
-  image: {
-    maxHeight: 140,
-    aspectRatio: 16 / 9,
-    resizeMode: 'contain',
-    marginBottom: 24,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.blackWhite,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 44,
+    },
+    inputsContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+      marginBottom: 28,
+    },
+    inputWrapper: {
+      marginTop: 16,
+      width: '100%',
+    },
+    errorMessage: {
+      color: colors.error,
+      textAlign: 'center',
+    },
+    image: {
+      maxHeight: 140,
+      aspectRatio: 16 / 9,
+      resizeMode: 'contain',
+      marginBottom: 24,
+    },
+  });
+}
 
 export default Login;

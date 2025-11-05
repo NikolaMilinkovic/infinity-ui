@@ -1,7 +1,6 @@
-import React, { Dispatch, SetStateAction, useContext, useEffect, useMemo, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dispatch, SetStateAction, useContext, useEffect, useMemo, useState } from 'react';
+import { Animated, Dimensions, StyleSheet, View } from 'react-native';
 import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
-import { useGetAppColors } from '../../constants/useGetAppColors';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useExpandAnimation } from '../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
@@ -9,7 +8,9 @@ import useTextForComponent from '../../hooks/useTextForComponent';
 import { CategoriesContext } from '../../store/categories-context';
 import { ColorsContext } from '../../store/colors-context';
 import { SuppliersContext } from '../../store/suppliers-context';
-import { AppColors, SearchParamsTypes, SupplierTypes } from '../../types/allTsTypes';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
+import { SearchParamsTypes, SupplierTypes } from '../../types/allTsTypes';
+import CustomText from '../../util-components/CustomText';
 import DropdownList from '../../util-components/DropdownList';
 import ExpandButton from '../../util-components/ExpandButton';
 import InputField from '../../util-components/InputField';
@@ -35,30 +36,13 @@ function SearchProducts({
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 10, screenHeight - 132, 180);
   const toggleFade = useToggleFadeAnimation(isExpanded, 180);
   const text = useTextForComponent('searchProducts');
-  const Colors = useGetAppColors();
-  const styles = getStyles(isExpanded, useGetAppColors());
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   function handleToggleExpand() {
     setIsExpanded((prevIsExpanded: boolean) => !prevIsExpanded);
   }
   useBackClickHandler(isExpanded, handleToggleExpand);
-
-  // ACTIVE | INACTIVE RADIO BUTTONS
-  const activeRadioButtons: RadioButtonProps[] = useMemo(
-    () => [
-      {
-        id: '1',
-        label: 'Aktivni proizvodi',
-        value: 'active',
-      },
-      {
-        id: '2',
-        label: 'Neaktivni proizvodi',
-        value: 'inactive',
-      },
-    ],
-    []
-  );
   const [areActiveProducts, setAreActiveProducts] = useState<string>('1');
   type ActiveProductsParams = {
     active: boolean;
@@ -196,8 +180,9 @@ function SearchProducts({
           setInputText={setSearchData}
           containerStyles={styles.inputField}
           labelBorders={false}
-          background={Colors.white}
+          background={colors.background}
           displayClearInputButton={true}
+          activeColor={colors.highlight}
         />
         <ExpandButton
           isExpanded={isExpanded}
@@ -207,24 +192,15 @@ function SearchProducts({
       </View>
 
       {/* FILTERS */}
-      <Animated.View style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}>
+      <Animated.View
+        style={[styles.searchParamsContainer, { height: toggleExpandAnimation }]}
+        pointerEvents={isExpanded ? 'auto' : 'none'}
+      >
         <Animated.View style={{ opacity: toggleFade, height: screenHeight - 172 }}>
-          <Text style={styles.filtersH1}>Filteri</Text>
-          {/* ACTIVE INACTIVE */}
-          {/* <View style={styles.radioGroupContainer}>
-            <Text style={styles.filtersH2absolute}>Izbor Aktivni | Neaktivni proizvodi</Text>
-            <View style={styles.radioGroup}>
-              <RadioGroup
-                radioButtons={activeRadioButtons}
-                onPress={setAreActiveProducts}
-                selectedId={areActiveProducts}
-                layout="row"
-              />
-            </View>
-          </View> */}
+          <CustomText style={[styles.filtersH1, { marginTop: 20 }]}>Filteri</CustomText>
           {/* STOCK AVAILABILITY FILTER INPUT */}
           <View style={styles.radioGroupContainer}>
-            <Text style={styles.filtersH2absolute}>Stanje na lageru</Text>
+            <CustomText style={styles.filtersH2absolute}>Stanje na lageru</CustomText>
             <View style={styles.radioGroup}>
               <RadioGroup radioButtons={radioButtons} onPress={setSelectedId} selectedId={selectedId} layout="row" />
             </View>
@@ -289,30 +265,17 @@ function SearchProducts({
             />
           </View>
         </Animated.View>
-        {/* CLOSE BUTTON */}
-        {/* <Animated.View style={{ opacity: toggleFade, pointerEvents: isExpanded ? 'auto' : 'none' }}>
-          <Button
-            onPress={() => setIsExpanded(!isExpanded)}
-            backColor={Colors.highlight}
-            textColor={Colors.white}
-            containerStyles={{ marginBottom: 10, marginTop: -90, position: 'static' }}
-          >
-            Zatvori
-          </Button>
-        </Animated.View> */}
       </Animated.View>
     </View>
   );
 }
 
-function getStyles(isExpanded?: boolean, Colors: AppColors) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       paddingHorizontal: 16,
-      // borderWidth: 0.5,
-      borderColor: Colors.primaryDark,
-      backgroundColor: Colors.white,
-      elevation: 2,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.background,
     },
     inputContainer: {
       flexDirection: 'row',
@@ -324,7 +287,7 @@ function getStyles(isExpanded?: boolean, Colors: AppColors) {
     },
     inputField: {
       marginTop: 18,
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       flex: 7,
       height: 50,
     },
@@ -335,6 +298,7 @@ function getStyles(isExpanded?: boolean, Colors: AppColors) {
       height: 45,
       right: 0,
       top: 10,
+      marginBottom: 1,
     },
     searchParamsContainer: {
       // flex: 1,
@@ -344,8 +308,8 @@ function getStyles(isExpanded?: boolean, Colors: AppColors) {
     },
     radioGroupContainer: {
       padding: 10,
-      borderWidth: 2,
-      borderColor: Colors.primaryLight,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
       borderRadius: 4,
       marginBottom: 8,
       position: 'relative',
@@ -358,23 +322,24 @@ function getStyles(isExpanded?: boolean, Colors: AppColors) {
     filtersH1: {
       fontSize: 20,
       fontWeight: 'bold',
-      color: Colors.primaryDark,
+      color: colors.highlightText,
+      marginBottom: 16,
     },
     filtersH2: {
       fontSize: 14,
-      color: Colors.primaryDark,
+      color: colors.highlightText,
       marginBottom: 8,
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       paddingHorizontal: 18,
     },
     filtersH2absolute: {
       fontSize: 14,
-      color: Colors.primaryDark,
+      color: colors.defaultText,
       marginBottom: 8,
       position: 'absolute',
       left: 10,
       top: -12,
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       borderRadius: 4,
       paddingHorizontal: 4,
     },

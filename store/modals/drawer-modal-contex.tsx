@@ -25,11 +25,13 @@ export const DrawerModalProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [content, setContent] = useState<DrawerContent>(null);
   const [contentKey, setContentKey] = useState<string>('');
   const slideAnim = useState(new Animated.Value(Dimensions.get('window').width))[0];
+  const [drawerWidth, setDrawerWidth] = useState<string>('80%');
 
-  const openDrawer = (component: ReactNode, key?: string) => {
+  const openDrawer = (component: ReactNode, key?: string, width?: string) => {
     setContent(component);
     setContentKey(key || Date.now().toString());
     setIsRendered(true);
+    setDrawerWidth(width ?? '80%');
     setTimeout(() => {
       setIsVisible(true);
       Animated.timing(slideAnim, {
@@ -68,7 +70,7 @@ export const DrawerModalProvider: React.FC<{ children: ReactNode }> = ({ childre
         <TouchableWithoutFeedback onPress={closeDrawer}>
           <View style={[styles.overlay, isVisible && styles.visible]}>
             <TouchableWithoutFeedback>
-              <Animated.View style={[styles.drawer, { transform: [{ translateX: slideAnim }] }]}>
+              <Animated.View style={[styles.drawer, { transform: [{ translateX: slideAnim }], width: '80%' as any }]}>
                 <View key={contentKey}>{content}</View>
               </Animated.View>
             </TouchableWithoutFeedback>
@@ -89,7 +91,6 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   drawer: {
-    width: '100%',
     height: '100%',
     backgroundColor: '#fff',
     position: 'absolute',

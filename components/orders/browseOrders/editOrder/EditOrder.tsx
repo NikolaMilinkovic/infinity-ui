@@ -1,10 +1,10 @@
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { NativeSyntheticEvent, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../../../../constants/colors';
-import { globalStyles } from '../../../../constants/globalStyles';
+import { NativeSyntheticEvent, Platform, StyleSheet, Text, View } from 'react-native';
+import { useGlobalStyles } from '../../../../constants/globalStyles';
 import { AuthContext } from '../../../../store/auth-context';
 import { CouriersContext } from '../../../../store/couriers-context';
+import { ThemeColors, useThemeColors } from '../../../../store/theme-context';
 import { CourierTypesWithNoId, OrderTypes, ProductTypes } from '../../../../types/allTsTypes';
 import Button from '../../../../util-components/Button';
 import CustomCheckbox from '../../../../util-components/CustomCheckbox';
@@ -15,6 +15,7 @@ import { popupMessage } from '../../../../util-components/PopupMessage';
 import { handleFetchingWithBodyData, handleFetchingWithFormData } from '../../../../util-methods/FetchMethods';
 import { getMimeType } from '../../../../util-methods/ImageMethods';
 import { betterErrorLog } from '../../../../util-methods/LogMethods';
+import ModalHeader from '../../../modals/components/ModalHeader';
 import AddItemsModal from './addItemsModal/AddItemsModal';
 import BuyerDataInputs from './BuyerDataInputs';
 import ProductDisplay from './ProductDisplay';
@@ -31,6 +32,9 @@ interface CourierTypes {
 }
 
 function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
   const [showAddItemModal, setShowAddItemModal] = useState(false);
   const couriersCtx = useContext(CouriersContext);
   const [name, setName] = useState<string | number | undefined>(editedOrder?.buyer.name || '');
@@ -273,14 +277,10 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   };
 
   return (
-    <KeyboardAvoidingWrapper style={{ backgroundColor: 'red' }}>
+    <KeyboardAvoidingWrapper>
       <View style={{ flex: 1 }}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.modalHeader} numberOfLines={2} ellipsizeMode="tail">
-            Porudžbina: {editedOrder?.buyer.name}, {editedOrder?.buyer.address}
-          </Text>
-        </View>
-        <ScrollView style={styles.container}>
+        <ModalHeader title={`${editedOrder?.buyer.name}, ${editedOrder?.buyer.address}`} />
+        <View style={styles.container}>
           <View style={styles.card}>
             {/* Buyer data */}
             <Text style={styles.sectionLabel}>Podaci o kupcu</Text>
@@ -337,8 +337,8 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
                 ))}
               {/* Add new product btn */}
               <Button
-                backColor={Colors.secondaryLight}
-                textColor={Colors.primaryDark}
+                backColor={colors.secondaryLight}
+                textColor={colors.primaryDark}
                 onPress={handleShowAddItemComponent}
                 containerStyles={(globalStyles.border, globalStyles.elevation_1)}
               >
@@ -365,30 +365,47 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
               </View>
               {/* DATE PICKER */}
               {isReservation === true && (
-                <View style={styles.radioGroupContainer}>
-                  {reservationDate && pickedDateDisplay && (
-                    <View style={styles.dateDisplayContainer}>
-                      <Text style={styles.dateLabel}>Izabrani datum:</Text>
-                      <Text style={styles.dateText}>{formatDateHandler(reservationDate)}</Text>
+                <>
+                  {Platform.OS === 'ios' ? (
+                    <View style={[styles.radioGroupContainer, { flexDirection: 'column' }]}>
+                      <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+                      <View style={{ justifyContent: 'center', alignSelf: 'center' }}>
+                        <DateTimePicker
+                          value={reservationDate}
+                          mode="date"
+                          onChange={handleDatePick}
+                          onTouchCancel={handleDateReset}
+                          themeVariant={'light'}
+                          accentColor={colors.highlight}
+                        />
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={[styles.radioGroupContainer, { flexDirection: 'column' }]}>
+                      {reservationDate && pickedDateDisplay && (
+                        <View style={styles.dateDisplayContainer}>
+                          <Text style={styles.dateLabel}>Izabrani datum:</Text>
+                          <Text style={styles.dateText}>{formatDateHandler(reservationDate)}</Text>
+                        </View>
+                      )}
+                      <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+                      <View style={styles.dateButtonsContainer}>
+                        <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+                          Izaberi datum
+                        </Button>
+                        {showDatePicker && (
+                          <DateTimePicker
+                            value={reservationDate}
+                            mode="date"
+                            onChange={handleDatePick}
+                            onTouchCancel={handleDateReset}
+                            accentColor={colors.highlight}
+                          />
+                        )}
+                      </View>
                     </View>
                   )}
-                  <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
-                  <View style={styles.dateButtonsContainer}>
-                    <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
-                      Izaberi datum
-                    </Button>
-                  </View>
-
-                  {showDatePicker && (
-                    <DateTimePicker
-                      value={reservationDate}
-                      mode="date"
-                      is24Hour={true}
-                      onChange={handleDatePick}
-                      onTouchCancel={handleDateReset}
-                    />
-                  )}
-                </View>
+                </>
               )}
 
               {/* Packed */}
@@ -405,17 +422,17 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
               {/* Products prices */}
               <View style={styles.row}>
                 <Text style={styles.rowItem}>Cena proizvoda:</Text>
-                <Text style={styles.rowItem}>{productsPrice} din.</Text>
+                <Text style={styles.rowItem}>{productsPrice} rsd.</Text>
               </View>
               {/* Courier Price */}
               <View style={styles.row}>
                 <Text style={styles.rowItem}>Cena kurira:</Text>
-                <Text style={styles.rowItem}>{deliveryPrice} din.</Text>
+                <Text style={styles.rowItem}>{deliveryPrice} rsd.</Text>
               </View>
               {/* Total Price */}
               <View style={styles.row}>
                 <Text style={styles.rowItem}>Ukupno:</Text>
-                <Text style={styles.rowItem}>{totalPrice} din.</Text>
+                <Text style={styles.rowItem}>{totalPrice} rsd.</Text>
               </View>
 
               {/* Custom Price */}
@@ -425,7 +442,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
                   inputText={customPrice.toString()}
                   setInputText={setCustomPrice as any}
                   containerStyles={styles.customPriceInput}
-                  background={Colors.white}
+                  background={colors.white}
                   keyboard="number-pad"
                   onManualInput={handleUserManualPriceInput}
                   labelBorders={false}
@@ -433,7 +450,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
                 {!calculateItemsPrice && (
                   <Button
                     containerStyles={styles.recalculatePriceBtn}
-                    textStyles={{ color: Colors.primaryDark }}
+                    textStyles={{ color: colors.primaryDark }}
                     onPress={() => setCalculateItemsPrice(true)}
                   >
                     Preračunaj cenu
@@ -448,8 +465,8 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
               <Button
                 containerStyles={styles.button}
                 onPress={() => setEditedOrder(null)}
-                backColor={Colors.error}
-                textColor={Colors.white}
+                backColor={colors.error}
+                textColor={colors.white}
               >
                 Nazad
               </Button>
@@ -458,166 +475,155 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
               <Button
                 containerStyles={styles.button}
                 onPress={handleUpdateMethod}
-                backColor={Colors.secondaryDark}
-                textColor={Colors.white}
+                backColor={colors.secondaryDark}
+                textColor={colors.white}
               >
                 Sačuvaj
               </Button>
             </View>
           </View>
-        </ScrollView>
+        </View>
       </View>
     </KeyboardAvoidingWrapper>
   );
 }
-const styles = StyleSheet.create({
-  headerContainer: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    left: 0,
-    zIndex: 2,
-    height: 60,
-    backgroundColor: Colors.primaryDark,
-    paddingHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalHeader: {
-    color: Colors.white,
-    fontWeight: 'bold',
-    fontSize: 20,
-    textAlign: 'center',
-  },
-  container: {
-    display: 'flex',
-    position: 'relative',
-    backgroundColor: Colors.primaryLight,
-  },
-  card: {
-    marginTop: 70,
-    backgroundColor: Colors.white,
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: Colors.secondaryLight,
-    marginBottom: 16,
-    margin: 10,
-  },
-  sectionContainer: {
-    padding: 10,
-  },
-  sectionLabel: {
-    fontSize: 18,
-  },
-  buttonsContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    flex: 1,
-    gap: 10,
-    marginTop: 10,
-  },
-  button: {
-    flex: 2,
-    height: 50,
-  },
-  productListContainer: {
-    gap: 10,
-  },
-  row: {
-    flexDirection: 'row',
-    flex: 1,
-  },
-  rowItem: {
-    flex: 2,
-  },
-  pricesContainer: {
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    margin: 10,
-  },
-  radioGroupContainer: {
-    padding: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    borderRadius: 4,
-    marginBottom: 8,
-    paddingTop: 20,
-    marginTop: 10,
-    flexDirection: 'row',
-    backgroundColor: Colors.white,
-    justifyContent: 'space-around',
-  },
-  radioGroupHeader: {
-    fontSize: 14,
-    color: Colors.primaryDark,
-    marginBottom: 8,
-    position: 'absolute',
-    left: 10,
-    top: -12,
-    backgroundColor: Colors.white,
-    borderRadius: 4,
-    paddingHorizontal: 4,
-    borderWidth: 0,
-    borderColor: Colors.secondaryLight,
-  },
-  dateButtonsContainer: {
-    flexDirection: 'column',
-    gap: 10,
-  },
-  dateButton: {
-    flex: 1,
-    backgroundColor: Colors.secondaryLight,
-    color: Colors.primaryDark,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dateDisplayContainer: {
-    flexDirection: 'column',
-    gap: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dateLabel: {},
-  dateText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.highlight,
-    lineHeight: 16,
-    marginBottom: 8,
-  },
-  filtersH2absolute: {
-    fontSize: 14,
-    color: Colors.primaryDark,
-    marginBottom: 8,
-    position: 'absolute',
-    left: 10,
-    top: -12,
-    backgroundColor: Colors.white,
-    borderWidth: 0,
-    paddingHorizontal: 4,
-  },
-  priceContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    gap: 10,
-  },
-  recalculatePriceBtn: {
-    flex: 1,
-    maxHeight: 44,
-    marginTop: 'auto',
-    backgroundColor: Colors.secondaryLight,
-    textAlign: 'center',
-    justifyContent: 'center',
-    maxWidth: 150,
-    marginBottom: 1,
-  },
-  customPriceInput: {
-    marginTop: 16,
-    flex: 1,
-  },
-});
 
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      backgroundColor: colors.white,
+      flex: 1,
+    },
+    card: {
+      marginTop: 10,
+      backgroundColor: colors.white,
+      padding: 10,
+      borderRadius: 4,
+      borderWidth: 1,
+      borderColor: colors.secondaryLight,
+      marginBottom: 16,
+      margin: 10,
+      flex: 1,
+    },
+    sectionContainer: {
+      padding: 10,
+      flex: 1,
+    },
+    sectionLabel: {
+      fontSize: 18,
+    },
+    buttonsContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      flex: 1,
+      gap: 10,
+      marginTop: 10,
+    },
+    button: {
+      flex: 2,
+    },
+    productListContainer: {
+      gap: 10,
+      flex: 1,
+    },
+    row: {
+      flexDirection: 'row',
+      flex: 1,
+    },
+    rowItem: {
+      flex: 2,
+    },
+    pricesContainer: {
+      backgroundColor: colors.white,
+      borderRadius: 4,
+      borderWidth: 0.5,
+      borderColor: colors.secondaryLight,
+      margin: 10,
+      flex: 1,
+    },
+    radioGroupContainer: {
+      padding: 10,
+      borderWidth: 0.5,
+      borderColor: colors.secondaryLight,
+      borderRadius: 4,
+      marginBottom: 8,
+      paddingTop: 20,
+      marginTop: 10,
+      flexDirection: 'row',
+      backgroundColor: colors.white,
+      justifyContent: 'space-around',
+      flex: 1,
+    },
+    radioGroupHeader: {
+      fontSize: 14,
+      color: colors.primaryDark,
+      marginBottom: 8,
+      position: 'absolute',
+      left: 10,
+      top: -12,
+      backgroundColor: colors.white,
+      borderRadius: 4,
+      paddingHorizontal: 4,
+      borderWidth: 0,
+      borderColor: colors.secondaryLight,
+    },
+    dateButtonsContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      flex: 1,
+    },
+    dateButton: {
+      flex: 1,
+      backgroundColor: colors.secondaryLight,
+      color: colors.primaryDark,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    dateDisplayContainer: {
+      flexDirection: 'column',
+      gap: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    dateLabel: {},
+    dateText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.highlight,
+      lineHeight: 16,
+      marginBottom: 8,
+    },
+    filtersH2absolute: {
+      fontSize: 14,
+      color: colors.primaryDark,
+      marginBottom: 8,
+      position: 'absolute',
+      left: 10,
+      top: -12,
+      backgroundColor: colors.white,
+      borderWidth: 0,
+      paddingHorizontal: 4,
+    },
+    priceContainer: {
+      flexDirection: 'row',
+      flex: 1,
+      gap: 10,
+    },
+    recalculatePriceBtn: {
+      flex: 1,
+      maxHeight: 44,
+      marginTop: 'auto',
+      backgroundColor: colors.secondaryLight,
+      textAlign: 'center',
+      justifyContent: 'center',
+      maxWidth: 150,
+      marginBottom: 1,
+    },
+    customPriceInput: {
+      marginTop: 16,
+      flex: 1,
+    },
+  });
+}
 export default EditOrder;

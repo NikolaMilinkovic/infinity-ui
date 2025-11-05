@@ -24,6 +24,7 @@ export interface CategoryTypes {
 // COLORS
 export interface ColorTypes {
   _id: string;
+  boutiqueId: string;
   name: string;
   colorCode: string;
 }
@@ -185,6 +186,7 @@ export interface NewOrderContextTypes {
 
 export interface CourierTypes {
   _id: string;
+  boutiqueId: string;
   name: string;
   deliveryPrice: number;
 }
@@ -195,6 +197,7 @@ export interface CourierTypesWithNoId {
 
 export interface OrderTypes {
   _id: string;
+  boutiqueId: string;
   buyer: BuyerTypes;
   courier?: CourierTypesWithNoId;
   products: ProductTypes[];
@@ -276,6 +279,7 @@ export interface ProcessedOrderStatisticsFileTypes {
 
 export interface SupplierTypes {
   _id: string;
+  boutiqueId: string;
   name: string;
 }
 
@@ -357,3 +361,54 @@ export interface DropdownTypes {
   name: string;
   value: string;
 }
+
+export interface BoutiqueTypes {
+  _id: string;
+  boutiqueName: string;
+  isActive: boolean;
+  billingDue?: Date | null;
+  settings: {
+    appIcon: {
+      appIconUri: string;
+      appIconName: string;
+    };
+    defaults: {
+      courier: string;
+      listProductsBy: string;
+    };
+  };
+  version: string;
+  buildLink: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export const defaultBoutique: BoutiqueTypes = {
+  _id: '',
+  boutiqueName: '',
+  isActive: true,
+  billingDue: null,
+  settings: {
+    appIcon: {
+      appIconUri: '',
+      appIconName: '',
+    },
+    defaults: {
+      courier: '',
+      listProductsBy: 'category',
+    },
+  },
+  version: '1.0.0',
+  buildLink: '',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+export type VersionDataTypes = {
+  _id?: string;
+  version: string;
+  buildLinkAndroid: string;
+  buildLinkIOS: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};

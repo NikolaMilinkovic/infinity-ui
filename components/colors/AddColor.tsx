@@ -1,10 +1,9 @@
 import Constants from 'expo-constants';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useGetAppColors } from '../../constants/useGetAppColors';
 import { AuthContext } from '../../store/auth-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
-import { AppColors } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
 import InputField from '../../util-components/InputField';
 import { popupMessage } from '../../util-components/PopupMessage';
@@ -14,8 +13,8 @@ function AddColor() {
   const authCtx = useContext(AuthContext);
   const [inputText, setInputText] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const Colors = useGetAppColors();
-  const styles = getStyles(useGetAppColors());
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const user = useUser();
 
   function resetInputAndError() {
@@ -81,14 +80,14 @@ function AddColor() {
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
-            background={Colors.white}
-            color={Colors.defaultText}
-            activeColor={Colors.highlight}
+            background={colors.background}
+            color={colors.defaultText}
+            activeColor={colors.highlight}
             labelBorders={false}
           />
         </View>
         <View style={styles.buttonContainer}>
-          <Button onPress={addColorHandler} textColor={Colors.white} backColor={Colors.highlight}>
+          <Button onPress={addColorHandler} textColor={colors.white} backColor={colors.highlight}>
             Sačuvaj
           </Button>
         </View>
@@ -98,15 +97,13 @@ function AddColor() {
   );
 }
 
-function getStyles(Colors: AppColors) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       alignItems: 'center',
-      borderColor: Colors.secondaryLight,
-      borderWidth: 0,
-      paddingVertical: 16,
+      paddingTop: 20,
       paddingBottom: 8,
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
     },
     controllsContainer: {
       flexDirection: 'row',
@@ -122,11 +119,11 @@ function getStyles(Colors: AppColors) {
       flex: 0.4,
     },
     error: {
-      color: Colors.error,
+      color: colors.error,
       marginTop: 10,
     },
     success: {
-      color: Colors.success,
+      color: colors.success,
       marginTop: 10,
     },
   });

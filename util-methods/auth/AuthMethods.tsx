@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { Alert } from 'react-native';
 import { popupMessage } from '../../util-components/PopupMessage';
-import { handleFetchingWithBodyData } from '../FetchMethods';
+import { fetchData, handleFetchingWithBodyData } from '../FetchMethods';
 import { betterErrorLog } from '../LogMethods';
 
 const BACKEND_URI = process.env.EXPO_PUBLIC_BACKEND_URI;
@@ -103,5 +103,14 @@ export async function updateUserExpoPushToken(token: string, expoPushToken: stri
   } catch (error) {
     betterErrorLog('> Došlo je do errora prilikom ažuriranja expo push tokena', error);
     popupMessage('Došlo je do problema prilikom ažuriranja expo push tokena', 'danger');
+  }
+}
+
+export async function resetUserExpoPushToken(token: string) {
+  try {
+    if (!token) return;
+    await fetchData(token, 'user/reset-user-push-token', 'POST');
+  } catch (error) {
+    betterErrorLog('> Došlo je do errora prilikom resetovanja expo push tokena', error);
   }
 }

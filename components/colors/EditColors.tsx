@@ -1,21 +1,21 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useGetAppColors } from '../../constants/useGetAppColors';
 import { ColorsContext } from '../../store/colors-context';
-import { AppColors, ColorType } from '../../types/allTsTypes';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
+import { ColorTypes } from '../../types/allTsTypes';
 import EditColorItem from './EditColorItem';
 
 function EditColors() {
   const colorsCtx = useContext(ColorsContext);
-  const [colors, setColors] = useState<ColorType[]>([]);
+  const [colors, setColors] = useState<ColorTypes[]>([]);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const Colors = useGetAppColors();
-  const styles = getStyles(Colors);
+  const themeColors = useThemeColors();
+  const styles = getStyles(themeColors);
 
   useEffect(() => {
     const fetchColors = async () => {
-      const ctxColors = colorsCtx.getColors();
+      const ctxColors = colorsCtx.colors;
       setColors(ctxColors);
       setIsLoading(false);
     };
@@ -26,14 +26,14 @@ function EditColors() {
   const filteredColors = useMemo(() => {
     if (!searchQuery.trim()) return colors;
     return colors.filter(
-      (color) =>
+      (color: ColorTypes) =>
         color.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        color.hex?.toLowerCase().includes(searchQuery.toLowerCase())
+        color.colorCode?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [colors, searchQuery]);
 
   if (isLoading) {
-    return <Text>Ucitavam boje...</Text>;
+    return <Text style={{ color: themeColors.defaultText }}>Ucitavam boje...</Text>;
   }
 
   function NoColorRenderer() {
@@ -43,7 +43,9 @@ function EditColors() {
         justifyContent: 'center',
         alignItems: 'center',
       },
-      text: {},
+      text: {
+        color: themeColors.defaultText,
+      },
     });
 
     return (
@@ -65,6 +67,7 @@ function EditColors() {
               placeholder="Pretraži boje"
               value={searchQuery}
               onChangeText={setSearchQuery}
+              selectionColor={themeColors.defaultText}
             />
           </View>
 
@@ -85,12 +88,12 @@ function EditColors() {
   );
 }
 
-function getStyles(Colors: AppColors) {
+function getStyles(themeColors: ThemeColors) {
   return StyleSheet.create({
     container: {
       flex: 1,
       width: '100%',
-      backgroundColor: Colors.primaryLight,
+      backgroundColor: themeColors.screenBackground,
     },
     list: {
       flex: 1,
@@ -100,11 +103,11 @@ function getStyles(Colors: AppColors) {
       gap: 2,
     },
     headerWrapper: {
-      backgroundColor: Colors.white,
+      backgroundColor: themeColors.white,
       flexDirection: 'row',
       marginBottom: 6,
       paddingHorizontal: 10,
-      borderBottomColor: Colors.secondaryLight,
+      borderBottomColor: themeColors.borderColor,
       borderBottomWidth: 0.5,
       elevation: 2,
     },
@@ -112,17 +115,18 @@ function getStyles(Colors: AppColors) {
       fontSize: 14,
       fontWeight: 'bold',
       padding: 10,
-      backgroundColor: Colors.white,
       textAlign: 'center',
+      color: themeColors.defaultText,
     },
     input: {
-      borderBottomColor: Colors.secondaryLight,
+      borderBottomColor: themeColors.borderColor,
       borderBottomWidth: 1,
       flex: 1,
       marginBottom: 10,
       marginLeft: 10,
       fontSize: 14,
       textAlignVertical: 'bottom',
+      color: themeColors.defaultText,
     },
   });
 }

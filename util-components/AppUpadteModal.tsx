@@ -1,28 +1,29 @@
 import Constants from 'expo-constants';
-import React, { useContext, useEffect, useState } from 'react';
-import { Linking } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import { Linking, Platform } from 'react-native';
 import { AppContext } from '../store/app-context';
 import ConfirmationModal from './ConfirmationModal';
 
 function AppUpadteModal() {
   // Handles update modal
-  const appCtx = useContext(AppContext);
+  const boutique = useContext(AppContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [buildLink, setBuildLink] = useState(appCtx.buildLink);
+  const buildLink =
+    Platform.OS === 'android' ? boutique.versionData.buildLinkAndroid : boutique.versionData.buildLinkIOS;
   const [version, setVersion] = useState('');
   useEffect(() => {
-    if (!appCtx || !appCtx.buildLink || !appCtx.version || !Constants?.expoConfig?.version) return;
-    setBuildLink(appCtx.buildLink);
-    setVersion(appCtx.version);
-    if (appCtx.version !== Constants?.expoConfig?.version) {
+    if (!boutique.versionData || !boutique.versionData.version || !Constants?.expoConfig?.version) return;
+    setVersion(boutique.versionData.version);
+    if (boutique.versionData.version !== Constants?.expoConfig?.version) {
       setIsModalVisible(true);
     }
-  }, [appCtx.buildLink, appCtx.version, Constants?.expoConfig?.version]);
+  }, [boutique.versionData.version, Constants?.expoConfig?.version]);
 
-  if (!appCtx?.buildLink || !appCtx?.version || !Constants?.expoConfig?.version) return null;
-  console.log('===============================================================');
-  console.log(`> Expo Version ${Constants?.expoConfig?.version}`);
-  console.log('===============================================================');
+  useEffect(() => {
+    console.log(`> buildLink: ${buildLink}`);
+  }, [buildLink]);
+
+  if (!buildLink || !boutique.versionData?.version || !Constants?.expoConfig?.version) return null;
   function onConfirm() {
     Linking.openURL(buildLink);
   }

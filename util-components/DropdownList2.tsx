@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { Colors } from '../constants/colors';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 
 interface DropdownListProps<T> {
   data: T[];
@@ -30,6 +30,8 @@ function DropdownList2<T extends { [key: string]: any }>({
 }: DropdownListProps<T>) {
   const [selectedValue, setSelectedValue] = useState<string | number | null>(value);
   const [isFocus, setIsFocus] = useState(false);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   useEffect(() => {
     if (resetValue) setSelectedValue(null);
@@ -66,38 +68,40 @@ function DropdownList2<T extends { [key: string]: any }>({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 5,
-  },
-  dropdown: {
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryLight,
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    height: 45,
-    backgroundColor: Colors.white,
-  },
-  selectedText: {
-    fontSize: 14,
-    color: Colors.secondaryDark,
-  },
-  placeholder: {
-    fontSize: 14,
-    color: Colors.secondaryDark,
-  },
-  dropdownContainer: {
-    borderColor: Colors.secondaryLight,
-    borderRadius: 4,
-    elevation: 2,
-    position: 'absolute',
-    bottom: '50%',
-    maxHeight: 400,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.65)',
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      marginVertical: 5,
+    },
+    dropdown: {
+      borderWidth: 0.5,
+      borderColor: colors.secondaryLight,
+      borderRadius: 4,
+      paddingHorizontal: 12,
+      height: 45,
+      backgroundColor: colors.white,
+    },
+    selectedText: {
+      fontSize: 14,
+      color: colors.secondaryDark,
+    },
+    placeholder: {
+      fontSize: 14,
+      color: colors.secondaryDark,
+    },
+    dropdownContainer: {
+      borderColor: colors.secondaryLight,
+      borderRadius: 4,
+      elevation: 2,
+      position: 'absolute',
+      bottom: '50%',
+      maxHeight: 400,
+    },
+    overlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.65)',
+    },
+  });
+}
 
 export default DropdownList2;

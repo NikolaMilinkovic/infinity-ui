@@ -1,9 +1,8 @@
 import Constants from 'expo-constants';
-import React, { useContext, useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useGetAppColors } from '../../constants/useGetAppColors';
 import { AuthContext } from '../../store/auth-context';
-import { AppColors } from '../../types/allTsTypes';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
 import NewUserDetails from './addUserComponents/NewUserDetails';
@@ -20,6 +19,7 @@ interface NewUserDataTypes {
   password: string;
   name: string;
   role: string;
+  boutiqueId: string;
   permissions: {
     navigation: {
       lista_artikla: boolean;
@@ -57,6 +57,7 @@ function AddUser() {
     password: '',
     name: '',
     role: 'user',
+    boutiqueId: '',
     permissions: {
       navigation: {
         lista_artikla: true,
@@ -105,8 +106,8 @@ function AddUser() {
       },
     },
   });
-  const Colors = useGetAppColors();
-  const styles = getStyles(useGetAppColors());
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   const authCtx = useContext(AuthContext);
 
   function resetInputs() {
@@ -116,6 +117,7 @@ function AddUser() {
       password: '',
       name: '',
       role: 'user',
+      boutiqueId: '',
       permissions: {
         navigation: {
           lista_artikla: true,
@@ -226,7 +228,12 @@ function AddUser() {
           data={newUserData}
           setData={setNewUserData}
         />
-        <Button onPress={addUserHandler} textColor={Colors.whiteText} backColor={Colors.highlight}>
+        <Button
+          onPress={addUserHandler}
+          textColor={colors.whiteText}
+          backColor={colors.buttonHighlight1}
+          backColor1={colors.buttonHighlight2}
+        >
           Dodaj korisnika
         </Button>
       </View>
@@ -234,24 +241,24 @@ function AddUser() {
   );
 }
 
-function getStyles(Colors: AppColors) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       display: 'flex',
       position: 'relative',
-      backgroundColor: Colors.primaryLight,
+      backgroundColor: colors.background2,
     },
     card: {
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       padding: 10,
       borderRadius: 4,
       borderWidth: 1,
-      borderColor: Colors.secondaryLight,
+      borderColor: colors.borderColor,
       margin: 10,
       marginBottom: 50,
     },
     success: {
-      color: Colors.success,
+      color: colors.success,
       marginTop: 10,
     },
   });

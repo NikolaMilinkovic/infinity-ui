@@ -2,26 +2,27 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { Dimensions } from 'react-native';
 import ProductsListModalComponent from '../components/orders/browseOrders/editOrder/addItemsModal/modalComponents/ProductsListModalComponent';
 import SelectedItemsModalComponent from '../components/orders/browseOrders/editOrder/addItemsModal/modalComponents/SelectedItemsModalComponent';
-import { Colors } from '../constants/colors';
+import { useThemeColors } from '../store/theme-context';
 
 const Tab = createMaterialTopTabNavigator();
 export default function NewArticleTabs({ setNewProducts, newProducts }) {
+  const colors = useThemeColors();
   return (
     <Tab.Navigator
       initialLayout={{
         width: Dimensions.get('window').width,
       }}
       screenOptions={{
-        tabBarPressColor: Colors.tabsPressEffect,
+        tabBarPressColor: colors.tabsPressEffect,
         tabBarLabelStyle: {
           fontSize: 11,
-          color: Colors.secondaryDark,
+          color: colors.secondaryDark,
         },
         tabBarStyle: {
-          backgroundColor: Colors.secondaryLight,
+          backgroundColor: colors.tabsBackground,
         },
         tabBarIndicatorStyle: {
-          backgroundColor: Colors.highlight,
+          backgroundColor: colors.highlight,
           height: 3,
         },
         lazy: false,

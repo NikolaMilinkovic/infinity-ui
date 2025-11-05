@@ -1,11 +1,11 @@
-import React, { forwardRef, useContext, useImperativeHandle, useState } from 'react';
+import { forwardRef, useContext, useImperativeHandle, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../constants/colors';
 import { useGetCourierDropdownData } from '../../hooks/couriers/useGetCourierDropdownItems';
 import { useGetDefaultCourierData } from '../../hooks/couriers/useGetDefaultCourierData';
 import { useExpandAnimation } from '../../hooks/useExpand';
 import { NewOrderContext } from '../../store/new-order-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 import DropdownList from '../../util-components/DropdownList';
 
@@ -16,11 +16,6 @@ interface PropTypes {
   defaultValueByMatch?: string;
   courierSelectorRef?: any;
 }
-interface DropdownTypes {
-  _id: string;
-  name: string;
-  deliveryPrice: number;
-}
 
 const CourierSelector = forwardRef(
   ({ isExpanded, setIsExpanded, onNext, defaultValueByMatch = 'Bex', courierSelectorRef }: PropTypes, ref) => {
@@ -29,12 +24,8 @@ const CourierSelector = forwardRef(
     const toggleExpandAnimation = useExpandAnimation(isExpanded, 0, 117, 180);
     const defaultCourierData = useGetDefaultCourierData();
     const [resetDropdownCounter, setResetDropdownCounter] = useState(0);
-
-    // useEffect(() => {
-    //   if (defaultCourierData && !orderCtx.courierData) {
-    //     orderCtx.setCourierData(defaultCourierData);
-    //   }
-    // }, [defaultCourierData]);
+    const colors = useThemeColors();
+    const styles = getStyles(colors);
 
     // Expose reset method to parent
     useImperativeHandle(ref, () => ({
@@ -56,7 +47,7 @@ const CourierSelector = forwardRef(
             name={isExpanded ? 'chevron-up' : 'chevron-down'}
             style={styles.iconStyle}
             size={26}
-            color={Colors.white}
+            color={colors.whiteText}
           />
         </Pressable>
 
@@ -84,8 +75,9 @@ const CourierSelector = forwardRef(
             reference={courierSelectorRef}
           /> */}
           <Button
-            backColor={Colors.highlight}
-            textColor={Colors.white}
+            backColor={colors.buttonHighlight1}
+            backColor1={colors.buttonHighlight2}
+            textColor={colors.whiteText}
             containerStyles={{ marginBottom: 6, marginTop: 6 }}
             onPress={onNext}
           >
@@ -97,19 +89,20 @@ const CourierSelector = forwardRef(
   }
 );
 
-const styles = StyleSheet.create({
-  headerContainer: {
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: Colors.primaryDark,
-    backgroundColor: Colors.secondaryDark,
-    marginBottom: 6,
-    flexDirection: 'row',
-  },
-  iconStyle: { marginLeft: 'auto' },
-  header: { fontSize: 20, fontWeight: 'bold', color: Colors.white },
-  container: { paddingHorizontal: 8 },
-});
-
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    headerContainer: {
+      padding: 10,
+      borderRadius: 4,
+      borderWidth: 0,
+      borderColor: colors.primaryDark,
+      backgroundColor: colors.secondaryDark,
+      marginBottom: 6,
+      flexDirection: 'row',
+    },
+    iconStyle: { marginLeft: 'auto' },
+    header: { fontSize: 20, fontWeight: 'bold', color: colors.whiteText },
+    container: { paddingHorizontal: 8 },
+  });
+}
 export default CourierSelector;

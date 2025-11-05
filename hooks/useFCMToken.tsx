@@ -14,7 +14,6 @@ export const useFCMToken = () => {
       if (!enabled) return;
 
       const token = await messaging().getToken();
-      console.log('FCM Token:', token);
       setFcmToken(token);
     }
 
@@ -22,7 +21,6 @@ export const useFCMToken = () => {
 
     // Optional: listen for token refresh
     const unsubscribe = messaging().onTokenRefresh((token) => {
-      console.log('FCM Token refreshed:', token);
       setFcmToken(token);
     });
 

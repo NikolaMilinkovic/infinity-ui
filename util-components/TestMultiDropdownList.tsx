@@ -12,7 +12,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Colors } from '../constants/colors';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
+import CustomText from './CustomText';
 
 // import { TestMultipleDropdownListProps } from '..';
 
@@ -56,6 +57,9 @@ const TestMultipleDropdownList: React.FC<any> = ({
   const [height, setHeight] = React.useState<number>(350);
   const animatedvalue = React.useRef(new Animated.Value(0)).current;
   const [filtereddata, setFilteredData] = React.useState(data);
+
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   useEffect(() => {
     if (defaultValues?.length > 0) setSelectedVal(defaultValues);
@@ -107,7 +111,12 @@ const TestMultipleDropdownList: React.FC<any> = ({
         <View style={[styles.wrapper, boxStyles]}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
             {!searchicon ? (
-              <MaterialIcons name="search" color="gray" size={22} style={{ width: 20, height: 20, marginRight: 7 }} />
+              <MaterialIcons
+                name="search"
+                color={colors.iconColor}
+                size={22}
+                style={{ width: 20, height: 20, marginRight: 7 }}
+              />
             ) : (
               searchicon
             )}
@@ -122,7 +131,8 @@ const TestMultipleDropdownList: React.FC<any> = ({
                 });
                 setFilteredData(result);
               }}
-              style={[{ padding: 0, height: 20, flex: 1, fontFamily }, inputStyles]}
+              style={[{ padding: 0, height: 20, flex: 1, fontFamily, color: colors.defaultText }, inputStyles]}
+              placeholderTextColor={colors.defaultText}
             />
             <TouchableOpacity
               onPress={() => {
@@ -172,9 +182,9 @@ const TestMultipleDropdownList: React.FC<any> = ({
             }
           }}
         >
-          <Text style={[{ fontFamily }, inputStyles]}>
+          <CustomText style={[{ fontFamily }, inputStyles]}>
             {selectedval == '' ? (placeholder ? placeholder : 'Select option') : selectedval}
-          </Text>
+          </CustomText>
           {!arrowicon ? (
             <Image
               // source={require('../assets/images/chevron.png')}
@@ -222,7 +232,7 @@ const TestMultipleDropdownList: React.FC<any> = ({
                             />
                           ) : null}
                         </View>
-                        <Text style={[{ fontFamily, color: '#c4c5c6' }, disabledTextStyles]}>{value}</Text>
+                        <CustomText style={[{ fontFamily, color: '#c4c5c6' }, disabledTextStyles]}>{value}</CustomText>
                       </TouchableOpacity>
                     );
                   } else {
@@ -283,7 +293,7 @@ const TestMultipleDropdownList: React.FC<any> = ({
                           ]}
                         >
                           {selectedval?.includes(value) ? (
-                            <View style={{ width: 8, height: 8, paddingLeft: 7, backgroundColor: Colors.highlight }} />
+                            <View style={{ width: 8, height: 8, paddingLeft: 7, backgroundColor: colors.highlight }} />
                           ) : null}
                         </View>
                         <Text style={[{ fontFamily }, dropdownTextStyles]}>{value}</Text>
@@ -318,7 +328,7 @@ const TestMultipleDropdownList: React.FC<any> = ({
                     paddingLeft: 20,
                   }}
                 >
-                  <Text style={{ marginRight: 20, fontWeight: '600', fontFamily }}>Selected</Text>
+                  <CustomText style={{ marginRight: 20, fontFamily }}>Selected</CustomText>
                   <View style={{ height: 1, flex: 1, backgroundColor: 'gray' }} />
                 </View>
                 <View style={{ flexDirection: 'row', paddingHorizontal: 20, marginBottom: 20, flexWrap: 'wrap' }}>
@@ -338,7 +348,9 @@ const TestMultipleDropdownList: React.FC<any> = ({
                           badgeStyles,
                         ]}
                       >
-                        <Text style={[{ color: 'white', fontSize: 12, fontFamily }, badgeTextStyles]}>{item}</Text>
+                        <Text style={[{ color: colors.defaultText, fontSize: 12, fontFamily }, badgeTextStyles]}>
+                          {item}
+                        </Text>
                       </View>
                     );
                   })}
@@ -354,24 +366,26 @@ const TestMultipleDropdownList: React.FC<any> = ({
 
 export default TestMultipleDropdownList;
 
-const styles = StyleSheet.create({
-  wrapper: {
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: 'gray',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  dropdown: { borderWidth: 1, borderRadius: 10, borderColor: 'gray', overflow: 'hidden' },
-  option: { paddingHorizontal: 20, paddingVertical: 8, flexDirection: 'row', alignItems: 'center' },
-  disabledoption: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'whitesmoke',
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    wrapper: {
+      borderWidth: 1,
+      borderRadius: 10,
+      borderColor: colors.borderColor,
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 10,
+    },
+    dropdown: { borderWidth: 1, borderRadius: 10, borderColor: colors.borderColor, overflow: 'hidden' },
+    option: { paddingHorizontal: 20, paddingVertical: 8, flexDirection: 'row', alignItems: 'center' },
+    disabledoption: {
+      paddingHorizontal: 20,
+      paddingVertical: 8,
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.grayText,
+    },
+  });
+}

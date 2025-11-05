@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { Colors } from '../../constants/colors';
-import { globalStyles } from '../../constants/globalStyles';
+import { useGlobalStyles } from '../../constants/globalStyles';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { NewOrderContextTypes, ProductTypes } from '../../types/allTsTypes';
 
 interface PropTypes {
@@ -9,8 +9,11 @@ interface PropTypes {
   index: number;
 }
 function SelectedProduct({ item, orderCtx, index }: PropTypes) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
   function onPressHandler() {
-    // item.totalStock++;
+    item.totalStock++;
     orderCtx.removeProductReference(index);
     orderCtx.removeProduct(index);
   }
@@ -26,24 +29,28 @@ function SelectedProduct({ item, orderCtx, index }: PropTypes) {
     </Pressable>
   );
 }
-const styles = StyleSheet.create({
-  pressable: {
-    width: '100%',
-    padding: 10,
-    backgroundColor: Colors.white,
-    elevation: 1,
-    borderRadius: 4,
-    marginBottom: 6,
-    borderColor: Colors.secondaryLight,
-  },
-  pressed: {
-    opacity: 0.7,
-    elevation: 1,
-  },
-  text: {
-    color: Colors.primaryDark,
-    fontSize: 16,
-  },
-});
+
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    pressable: {
+      width: '100%',
+      padding: 10,
+      backgroundColor: colors.background,
+      elevation: 1,
+      borderRadius: 4,
+      marginBottom: 6,
+      borderColor: colors.borderColor,
+      borderWidth: 0.5,
+    },
+    pressed: {
+      opacity: 0.7,
+      elevation: 1,
+    },
+    text: {
+      color: colors.defaultText,
+      fontSize: 16,
+    },
+  });
+}
 
 export default SelectedProduct;

@@ -3,9 +3,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { globalStyles } from '../constants/globalStyles';
-import { useGetAppColors } from '../constants/useGetAppColors';
-import { AppColors } from '../types/allTsTypes';
+import LinearGradientBackground from '../components/gradients/LinearBackgroundGradient';
+import { useGlobalStyles } from '../constants/globalStyles';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 
 // GitHub Repo & Documentation | Examples
 // https://github.com/AdelRedaa97/react-native-select-dropdown/tree/master
@@ -37,10 +37,11 @@ const DropdownList = ({
   defaultValueByIndex,
   buttonTextStyles,
 }: DropdownPropTypes) => {
-  const styles = getStyles(useGetAppColors());
   const [dropdownData, setDropdownData] = useState<any[]>([]);
   const [defaultVal, setDefaultVal] = useState(['']);
-  const Colors = useGetAppColors();
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
 
   // useEffect(() => {
   //   setDropdownData(data || []);
@@ -99,13 +100,21 @@ const DropdownList = ({
         // BUTTON
         renderButton={(selectedItem, isOpen) => {
           return (
-            <View
-              style={[styles.dropdownButtonStyle, buttonContainerStyles, globalStyles.elevation_1, globalStyles.border]}
-            >
-              <Text style={[styles.dropdownButtonTxtStyle, buttonTextStyles]} numberOfLines={1}>
-                {selectedItem?.name || selectedItem?.value || placeholder || 'No placeholder value provided'}
-              </Text>
-              <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} style={styles.dropdown1ButtonArrowStyle} size={18} />
+            <View style={[globalStyles.border, { padding: 0.7, height: 50 }, buttonContainerStyles]}>
+              <LinearGradientBackground
+                color1={colors.cardBackground1}
+                color2={colors.cardBackground2}
+                containerStyles={styles.dropdownButtonStyle}
+              >
+                <Text style={[styles.dropdownButtonTxtStyle, buttonTextStyles]} numberOfLines={1}>
+                  {selectedItem?.name || selectedItem?.value || placeholder || 'No placeholder value provided'}
+                </Text>
+                <Icon
+                  name={isOpen ? 'chevron-up' : 'chevron-down'}
+                  style={styles.dropdown1ButtonArrowStyle}
+                  size={18}
+                />
+              </LinearGradientBackground>
             </View>
           );
         }}
@@ -115,7 +124,7 @@ const DropdownList = ({
             <View
               style={{
                 ...styles.dropdownItemStyle,
-                ...(isSelected && { backgroundColor: Colors.dropdownSelectedBackground, color: Colors.highlight }),
+                ...(isSelected && { backgroundColor: colors.dropdownSelectedBackground, color: colors.highlight2 }),
               }}
             >
               {/* <Text>{index + 1}</Text> */}
@@ -126,11 +135,11 @@ const DropdownList = ({
         dropdownStyle={styles.dropdownMenuStyle}
         search
         searchInputStyle={styles.dropdownSearchInputStyle}
-        searchInputTxtColor={Colors.whiteText}
+        searchInputTxtColor={colors.white}
         searchPlaceHolder={'Pretraži'}
-        searchPlaceHolderColor={Colors.whiteText}
+        searchPlaceHolderColor={colors.white}
         renderSearchInputLeftIcon={() => {
-          return <FontAwesome name={'search'} color={Colors.whiteText} size={18} />;
+          return <FontAwesome name={'search'} color={colors.white} size={18} />;
         }}
       />
     );
@@ -139,7 +148,7 @@ const DropdownList = ({
 
 export default DropdownList;
 
-function getStyles(Colors: AppColors) {
+function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     dropdownButtonStyle: {
       height: 50,
@@ -148,23 +157,23 @@ function getStyles(Colors: AppColors) {
       alignItems: 'center',
       paddingHorizontal: 22,
       marginTop: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
     },
     dropdownButtonTxtStyle: {
       flex: 1,
       fontSize: 14,
-      color: Colors.primaryDark,
+      color: colors.defaultText,
     },
     dropdownMenuStyle: {
-      backgroundColor: Colors.primaryLight,
+      backgroundColor: colors.background,
       maxHeight: 250,
       borderRadius: 4,
     },
     dropdownSearchInputStyle: {
-      backgroundColor: Colors.primaryDark,
+      backgroundColor: colors.dropdownSearchBackground,
       borderRadius: 4,
-      borderBottomWidth: 1,
-      borderBottomColor: Colors.borders,
+      borderBottomWidth: 0.5,
+      borderBottomColor: colors.borderColor,
     },
     dropdownItemStyle: {
       minWidth: '100%',
@@ -173,16 +182,14 @@ function getStyles(Colors: AppColors) {
       justifyContent: 'center',
       alignItems: 'center',
       paddingVertical: 12,
-      borderBottomWidth: 0.5,
-      borderBottomColor: Colors.secondaryLight,
-      backgroundColor: Colors.primaryLight,
+      backgroundColor: colors.background,
       marginBottom: 2,
     },
     dropdownItemTxtStyle: {
       flex: 1,
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: '400',
-      color: Colors.defaultText,
+      color: colors.defaultText,
       textAlign: 'center',
     },
     dropdownItemIconStyle: {
@@ -192,7 +199,7 @@ function getStyles(Colors: AppColors) {
     dropdown1ButtonArrowStyle: {
       alignSelf: 'center',
       justifyContent: 'center',
-      color: Colors.defaultText,
+      color: colors.defaultText,
       height: 20,
       width: 20,
     },

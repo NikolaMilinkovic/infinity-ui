@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useMemo, useState } from 'react';
+import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 import { useGetDefaultCourierData } from '../hooks/couriers/useGetDefaultCourierData';
 import {
   BuyerTypes,
@@ -13,6 +13,7 @@ import {
 } from '../types/allTsTypes';
 import { popupMessage } from '../util-components/PopupMessage';
 import { getMimeType } from '../util-methods/ImageMethods';
+import { AllProductsContext } from './all-products-context';
 interface ContextChildrenTypes {
   children: ReactNode;
 }
@@ -69,6 +70,7 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
 });
 
 function NewOrderContextProvider({ children }: ContextChildrenTypes) {
+  const productsContext = useContext(AllProductsContext);
   const [productReferences, setProductReferences] = useState<ProductTypes[]>([]);
   const [buyerData, setBuyerData] = useState<BuyerTypes | null>(null);
   const [productData, setProductData] = useState<OrderProductTypes[]>([]);
@@ -238,6 +240,25 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
   };
 
   const resetOrderDataHandler = () => {
+    /**
+     * Count all instances in the product reference array
+     * We use the count to increase the totalStock
+     */
+    const productCount: Record<string, number> = {};
+    productReferences.forEach((ref) => {
+      productCount[ref._id] = (productCount[ref._id] || 0) + 1;
+    });
+    /**
+     * Update total stock in the productsContext
+     */
+    const updatedProducts = productsContext.allActiveProducts.map((p) => {
+      const count = productCount[p._id] || 0;
+      if (count > 0) {
+        return { ...p, totalStock: p.totalStock + count };
+      }
+      return p;
+    });
+    productsContext.setAllActiveProducts(updatedProducts);
     setProductReferences([]);
     setProductData([]);
     setBuyerData({
