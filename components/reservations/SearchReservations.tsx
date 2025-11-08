@@ -11,6 +11,7 @@ import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 import ExpandButton from '../../util-components/ExpandButton';
 import InputField from '../../util-components/InputField';
+import KeyboardAvoidingWrapper from '../../util-components/KeyboardAvoidingWrapper';
 import MultiDropdownList from '../../util-components/MultiDropdownList';
 import { popupMessage } from '../../util-components/PopupMessage';
 import SizePickerCheckboxes from '../../util-components/SizePickerCheckboxes';
@@ -139,11 +140,13 @@ function SearchReservations({ searchParams, setSearchParams, updateSearchParam }
           label="Pretraži rezervacije"
           inputText={searchParams.query}
           setInputText={(text) => setSearchParams((prev: any) => ({ ...prev, query: text }))}
-          background={colors.white}
-          color={colors.primaryDark}
+          background={colors.background}
+          color={colors.defaultText}
           labelBorders={false}
           containerStyles={styles.input}
           displayClearInputButton={true}
+          activeColor={colors.highlight}
+          selectionColor={colors.highlight}
         />
         <ExpandButton
           isExpanded={isExpanded}
@@ -151,98 +154,116 @@ function SearchReservations({ searchParams, setSearchParams, updateSearchParam }
           containerStyles={styles.expandButton}
         />
       </View>
-      <Animated.ScrollView
-        style={[styles.searchParamsContainer, { height: toggleExpandAnimation, opacity: toggleFade }]}
-      >
-        <Text style={styles.filtersH1}>Filteri</Text>
+      <Animated.View style={[styles.searchParamsContainer, { height: toggleExpandAnimation, opacity: toggleFade }]}>
+        <KeyboardAvoidingWrapper>
+          <Text style={styles.filtersH1}>Filteri</Text>
 
-        {/* Date Picker */}
-        <View style={[styles.radioGroupContainer]}>
-          {Platform.OS === 'ios' ? (
-            <>
-              <Text style={styles.filtersH2absolute}>Pretraži po datumu</Text>
-              <View style={{ flexDirection: 'row' }}>
-                <View style={{ justifyContent: 'center', alignSelf: 'center', width: '50%' }}>
-                  <DateTimePicker
-                    value={searchParams.pickedDate || new Date()}
-                    mode="date"
-                    is24Hour={true}
-                    onChange={handleDatePick}
-                    onTouchCancel={handleDateReset}
-                  />
+          {/* Date Picker */}
+          <View style={[styles.radioGroupContainer]}>
+            {Platform.OS === 'ios' ? (
+              <>
+                <Text style={styles.filtersH2absolute}>Pretraži po datumu</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <View style={{ justifyContent: 'center', alignSelf: 'center', width: '50%' }}>
+                    <DateTimePicker
+                      value={searchParams.pickedDate || new Date()}
+                      mode="date"
+                      is24Hour={true}
+                      onChange={handleDatePick}
+                      onTouchCancel={handleDateReset}
+                    />
+                  </View>
+                  <Button
+                    textColor={colors.defaultText}
+                    containerStyles={[styles.dateButton, { width: '50%' }]}
+                    onPress={handleDateReset}
+                    backColor={colors.buttonNormal1}
+                    backColor1={colors.buttonNormal2}
+                  >
+                    Resetuj izbor
+                  </Button>
                 </View>
-                <Button containerStyles={[styles.dateButton, { width: '50%' }]} onPress={handleDateReset}>
-                  Resetuj izbor
-                </Button>
-              </View>
-            </>
-          ) : (
-            <>
-              <Text style={styles.filtersH2absolute}>Pretraži po datumu</Text>
-              <View style={styles.dateButtonsContainer}>
-                <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
-                  Izaberi datum
-                </Button>
-                <Button containerStyles={styles.dateButton} onPress={handleDateReset}>
-                  Resetuj izbor
-                </Button>
+              </>
+            ) : (
+              <>
+                <Text style={styles.filtersH2absolute}>Pretraži po datumu</Text>
+                <View style={styles.dateButtonsContainer}>
+                  <Button
+                    textColor={colors.defaultText}
+                    containerStyles={styles.dateButton}
+                    onPress={handleOpenDatePicker}
+                    backColor={colors.buttonNormal1}
+                    backColor1={colors.buttonNormal2}
+                  >
+                    Izaberi datum
+                  </Button>
+                  <Button
+                    textColor={colors.defaultText}
+                    containerStyles={styles.dateButton}
+                    onPress={handleDateReset}
+                    backColor={colors.buttonNormal1}
+                    backColor1={colors.buttonNormal2}
+                  >
+                    Resetuj izbor
+                  </Button>
 
-                {showDatePicker && (
-                  <DateTimePicker
-                    value={searchParams.pickedDate || new Date()}
-                    mode="date"
-                    is24Hour={true}
-                    onChange={handleDatePick}
-                    onTouchCancel={handleDateReset}
-                  />
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={searchParams.pickedDate || new Date()}
+                      mode="date"
+                      is24Hour={true}
+                      onChange={handleDatePick}
+                      onTouchCancel={handleDateReset}
+                    />
+                  )}
+                </View>
+                {date && searchParams.pickedDate && (
+                  <View style={styles.dateDisplayContainer}>
+                    <Text style={styles.dateLabel}>Izabrani datum:</Text>
+                    <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+                  </View>
                 )}
-              </View>
-              {date && searchParams.pickedDate && (
-                <View style={styles.dateDisplayContainer}>
-                  <Text style={styles.dateLabel}>Izabrani datum:</Text>
-                  <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
-                </View>
-              )}
-            </>
-          )}
-        </View>
+              </>
+            )}
+          </View>
 
-        {/* Ascending | Descending */}
-        <View style={styles.radioGroupContainer}>
-          <Text style={styles.filtersH2absolute}>Redosled</Text>
-          <View style={styles.radioGroup}>
-            <RadioGroup
-              radioButtons={ascendDescendFilterButtons}
-              onPress={setIsAscending}
-              selectedId={isAscending}
-              containerStyle={styles.radioComponentContainer}
-              layout="row"
+          {/* Ascending | Descending */}
+          <View style={styles.radioGroupContainer}>
+            <Text style={styles.filtersH2absolute}>Redosled</Text>
+            <View style={styles.radioGroup}>
+              <RadioGroup
+                radioButtons={ascendDescendFilterButtons}
+                onPress={setIsAscending}
+                selectedId={isAscending}
+                containerStyle={styles.radioComponentContainer}
+                layout="row"
+              />
+            </View>
+          </View>
+
+          {/* COLORS FILTER */}
+          <Text style={styles.filtersH2}>Pretraga po boji proizvoda</Text>
+          <MultiDropdownList
+            data={colorsData}
+            setSelected={setSelectedColors}
+            isOpen={true}
+            label="Boje"
+            placeholder="Filtriraj po bojama"
+            dropdownStyles={{ maxHeight: 150 }}
+          />
+
+          {/* SIZE FILTER */}
+          <View style={[styles.radioGroupContainer, { paddingBottom: 8, paddingTop: 8, marginTop: 36 }]}>
+            <Text style={styles.filtersH2absolute}>Pretraga po veličini proizvoda</Text>
+            <SizePickerCheckboxes
+              sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
+              selectedSizes={selectedSizes}
+              setSelectedSizes={setSelectedSizes}
+              borders={false}
             />
           </View>
-        </View>
-
-        {/* COLORS FILTER */}
-        <Text style={styles.filtersH2}>Pretraga po boji proizvoda</Text>
-        <MultiDropdownList
-          data={colorsData}
-          setSelected={setSelectedColors}
-          isOpen={true}
-          label="Boje"
-          placeholder="Filtriraj po bojama"
-          dropdownStyles={{ maxHeight: 150 }}
-        />
-
-        {/* SIZE FILTER */}
-        <View style={[styles.radioGroupContainer, { paddingBottom: 8, paddingTop: 8, marginTop: 36 }]}>
-          <Text style={styles.filtersH2absolute}>Pretraga po veličini proizvoda</Text>
-          <SizePickerCheckboxes
-            sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
-            selectedSizes={selectedSizes}
-            setSelectedSizes={setSelectedSizes}
-            borders={false}
-          />
-        </View>
-      </Animated.ScrollView>
+        </KeyboardAvoidingWrapper>
+      </Animated.View>
     </View>
   );
 }
@@ -250,10 +271,10 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       paddingHorizontal: 16,
-      elevation: 2,
-      borderColor: colors.primaryDark,
-      backgroundColor: colors.white,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.background,
       marginBottom: 2,
+      paddingVertical: 1,
     },
     inputContainer: {
       flexDirection: 'row',
@@ -261,11 +282,11 @@ function getStyles(colors: ThemeColors) {
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 2,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
     },
     input: {
       marginTop: 18,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       flex: 7,
       height: 50,
     },
@@ -284,11 +305,10 @@ function getStyles(colors: ThemeColors) {
     overlay: {},
     radioGroupContainer: {
       padding: 10,
-      borderWidth: 2,
-      borderColor: colors.primaryLight,
+      borderWidth: 0.7,
+      borderColor: colors.borderColor,
       borderRadius: 4,
       marginBottom: 16,
-      // paddingTop: 20,
       marginTop: 10,
     },
     radioGroup: {},
@@ -299,24 +319,24 @@ function getStyles(colors: ThemeColors) {
       marginTop: 10,
       fontSize: 20,
       fontWeight: 'bold',
-      color: colors.primaryDark,
+      color: colors.defaultText,
       marginBottom: 16,
     },
     filtersH2: {
       fontSize: 14,
-      color: colors.primaryDark,
+      color: colors.defaultText,
       marginBottom: 8,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       paddingHorizontal: 14,
     },
     filtersH2absolute: {
       fontSize: 14,
-      color: colors.primaryDark,
+      color: colors.defaultText,
       marginBottom: 8,
       position: 'absolute',
       left: 10,
       top: -12,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       borderRadius: 4,
       paddingHorizontal: 4,
     },
@@ -326,8 +346,8 @@ function getStyles(colors: ThemeColors) {
     },
     dateButton: {
       flex: 1,
-      backgroundColor: colors.secondaryLight,
-      color: colors.primaryDark,
+      backgroundColor: colors.background,
+      color: colors.defaultText,
     },
     dateDisplayContainer: {
       flexDirection: 'column',
@@ -339,7 +359,7 @@ function getStyles(colors: ThemeColors) {
     dateText: {
       fontSize: 16,
       fontWeight: 'bold',
-      color: colors.highlight,
+      color: colors.highlight1,
       lineHeight: 16,
     },
     courierContainer: {

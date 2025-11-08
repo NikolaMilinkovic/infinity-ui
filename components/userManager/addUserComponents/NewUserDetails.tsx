@@ -58,7 +58,7 @@ function NewUserDetails({ isExpanded, setIsExpanded, data, setData, dropdownRef 
         <Animated.View style={{ height: toggleExpandAnimation, opacity: fadeAnimation, paddingTop: 6 }}>
           <View style={styles.contentContainer}>
             <InputField
-              activeColor={colors.borderColor}
+              activeColor={colors.grayText}
               label="Korisničko ime (Username)"
               isSecure={false}
               inputText={data.username}
@@ -68,7 +68,7 @@ function NewUserDetails({ isExpanded, setIsExpanded, data, setData, dropdownRef 
               labelBorders={false}
             />
             <InputField
-              activeColor={colors.borderColor}
+              activeColor={colors.grayText}
               label="Šifra (Password)"
               isSecure={false}
               inputText={data.password}
@@ -79,7 +79,7 @@ function NewUserDetails({ isExpanded, setIsExpanded, data, setData, dropdownRef 
               selectTextOnFocus={true}
             />
             <InputField
-              activeColor={colors.borderColor}
+              activeColor={colors.grayText}
               label="Ime korisnika"
               isSecure={false}
               inputText={data.name}

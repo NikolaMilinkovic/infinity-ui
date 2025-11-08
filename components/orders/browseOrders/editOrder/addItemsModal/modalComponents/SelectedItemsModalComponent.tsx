@@ -49,7 +49,7 @@ function SelectedItemsModalComponent({ selectedItems, setSelectedItems }: any) {
 function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       padding: 8,
     },
     iconStyle: {
@@ -58,7 +58,7 @@ function getStyles(colors: ThemeColors) {
     header: {
       fontSize: 16,
       fontWeight: 'bold',
-      color: colors.primaryDark,
+      color: colors.defaultText,
       marginBottom: 6,
       marginTop: 10,
     },

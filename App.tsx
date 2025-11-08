@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { LogBox, View } from 'react-native';
+import { KeyboardProvider, KeyboardToolbar } from 'react-native-keyboard-controller';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import StartupOverlay from './components/loading/StartupOverlay';
@@ -128,12 +129,15 @@ export default function App() {
 
   return (
     <ContextProvider>
-      <SafeAreaProvider>
-        <View style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
-          <StatusBar style="light" translucent />
-          <Root />
-        </View>
-      </SafeAreaProvider>
+      <KeyboardProvider>
+        <SafeAreaProvider>
+          <View style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
+            <StatusBar style="light" translucent />
+            <Root />
+            <KeyboardToolbar doneText="Završi unos" />
+          </View>
+        </SafeAreaProvider>
+      </KeyboardProvider>
     </ContextProvider>
   );
 }

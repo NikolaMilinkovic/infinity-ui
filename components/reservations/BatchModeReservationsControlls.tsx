@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import { useGlobalStyles } from '../../constants/globalStyles';
 import useAuthToken from '../../hooks/useAuthToken';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
@@ -34,7 +33,6 @@ function BatchModeReservationsControlls({
   const token = useAuthToken();
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const globalStyles = useGlobalStyles();
 
   const [selectedCourier, setSelectedCourier] = useState<CourierTypes | null>(null);
   async function saveReservationsAsOrders() {
@@ -70,22 +68,26 @@ function BatchModeReservationsControlls({
             <CourierSelector style={styles.courierSelector} setSelectedCourier={setSelectedCourier} />
             <IconButton
               size={26}
-              color={colors.primaryDark}
+              color={colors.defaultText}
               onPress={saveReservationsAsOrders}
               key={`key-remove-batch-button`}
               icon="check"
-              style={[styles.saveToCourrierButton, globalStyles.border, globalStyles.elevation_1]}
+              style={[styles.saveToCourrierButton]}
               pressedStyles={styles.removeBatchItemsButtonPressed}
+              backColor={'transparent'}
+              backColor1={'transparent'}
             />
           </View>
           <IconButton
             size={22}
-            color={colors.highlight}
+            color={colors.error}
             onPress={onRemoveBatchPress}
             key={`key-remove-batch-button`}
             icon="delete"
-            style={[styles.removeBatchItemsButton, globalStyles.border, globalStyles.elevation_1]}
+            style={[styles.removeBatchItemsButton]}
             pressedStyles={styles.removeBatchItemsButtonPressed}
+            backColor={'transparent'}
+            backColor1={'transparent'}
           />
         </Animated.View>
       )}
@@ -97,7 +99,7 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       paddingHorizontal: 8,
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.containerBackground,
       flexDirection: 'row',
     },
     couriersContainer: {
@@ -107,12 +109,14 @@ function getStyles(colors: ThemeColors) {
       gap: 10,
     },
     courierSelector: {
-      backgroundColor: colors.white,
-      height: 40,
+      backgroundColor: colors.background,
+      borderWidth: 0,
+      height: 44,
       flex: 1,
     },
     saveToCourrierButton: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
+      borderRadius: 4,
       width: 50,
       height: 40,
       alignItems: 'center',
@@ -121,7 +125,8 @@ function getStyles(colors: ThemeColors) {
     },
     removeBatchItemsButton: {
       margin: 10,
-      backgroundColor: colors.white,
+      borderRadius: 4,
+      backgroundColor: colors.background,
       width: 50,
       height: 40,
       alignItems: 'center',
@@ -130,7 +135,6 @@ function getStyles(colors: ThemeColors) {
     },
     removeBatchItemsButtonPressed: {
       opacity: 0.7,
-      elevation: 1,
     },
   });
 }

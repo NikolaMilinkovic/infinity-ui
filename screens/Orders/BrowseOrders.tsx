@@ -9,6 +9,7 @@ import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useFadeTransition } from '../../hooks/useFadeTransition';
 import { OrdersContext } from '../../store/orders-context';
 import { useThemeColors } from '../../store/theme-context';
+import KeyboardAvoidingWrapper from '../../util-components/KeyboardAvoidingWrapper';
 import { searchOrders } from '../../util-methods/OrderFilterMethods';
 
 interface SearchParamsTypes {
@@ -75,7 +76,7 @@ function BrowseOrders() {
   const editOrderFade = useFadeTransition(editedOrder !== null);
 
   return (
-    <Animated.View style={{ flex: 1 }}>
+    <>
       <SearchOrders
         searchData={searchData}
         setSearchData={setSearchData}
@@ -104,12 +105,14 @@ function BrowseOrders() {
       >
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.primaryDark }}>
           <StatusBar style="light" translucent={true} />
-          <Animated.ScrollView style={[editOrderFade, { flex: 1 }]} keyboardShouldPersistTaps="handled">
-            {editedOrder && <EditOrder editedOrder={editedOrder} setEditedOrder={setEditedOrder} />}
-          </Animated.ScrollView>
+          <Animated.View style={[editOrderFade, { flex: 1 }]} keyboardShouldPersistTaps="handled">
+            <KeyboardAvoidingWrapper>
+              {editedOrder && <EditOrder editedOrder={editedOrder} setEditedOrder={setEditedOrder} />}
+            </KeyboardAvoidingWrapper>
+          </Animated.View>
         </SafeAreaView>
       </Modal>
-    </Animated.View>
+    </>
   );
 }
 

@@ -39,12 +39,16 @@ function EditSuppliers() {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: colors.containerBackground,
+      },
+      text: {
+        color: colors.defaultText,
       },
     });
 
     return (
       <View style={internalStyle.container}>
-        <Text>Trenutno ne postoje dodati dobavljači</Text>
+        <Text style={internalStyle.text}>Trenutno ne postoje dodati dobavljači</Text>
       </View>
     );
   }
@@ -61,6 +65,8 @@ function EditSuppliers() {
               placeholder="Pretraži dobavljače"
               value={searchQuery}
               onChangeText={setSearchQuery}
+              selectionColor={colors.defaultText}
+              placeholderTextColor={colors.grayText}
             />
           </View>
 
@@ -86,33 +92,32 @@ function getStyles(colors: ThemeColors) {
     container: {
       flex: 1,
       width: '100%',
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.containerBackground,
     },
     list: {
       flex: 1,
     },
     listContent: {
-      paddingBottom: 10,
+      paddingTop: 3,
+      paddingBottom: 50,
       gap: 2,
     },
     headerWrapper: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       flexDirection: 'row',
-      marginBottom: 6,
       paddingHorizontal: 10,
-      borderBottomColor: colors.secondaryLight,
-      borderBottomWidth: 0.5,
-      elevation: 2,
     },
     header: {
       fontSize: 14,
       fontWeight: 'bold',
       padding: 10,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       textAlign: 'center',
+      color: colors.defaultText,
     },
     input: {
-      borderBottomColor: colors.secondaryLight,
+      borderBottomColor: colors.borderColor,
+      color: colors.defaultText,
       borderBottomWidth: 1,
       flex: 1,
       marginBottom: 10,

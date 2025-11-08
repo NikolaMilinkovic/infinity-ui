@@ -64,11 +64,6 @@ function getStyles(colors: ThemeColors) {
     dropdown: {
       backgroundColor: colors.background,
       marginTop: 10,
-      elevation: 1,
-      shadowOffset: { width: 1, height: 1 },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      borderWidth: 0.5,
       borderColor: colors.borderColor,
     },
     dropdownText: {

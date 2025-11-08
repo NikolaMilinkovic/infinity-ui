@@ -3,7 +3,7 @@ module.exports = {
     name: 'Infinity Boutique App',
     slug: 'infinity-boutique-app',
     backgroundColor: '#ffffff',
-    version: '1.1.0',
+    version: '2.0.0',
     jsEngine: 'hermes',
     orientation: 'portrait',
     icon: './assets/icon.png',
@@ -114,6 +114,7 @@ module.exports = {
       ],
       package: 'com.infinity.infinityboutiqueapp',
       googleServicesFile: process.env.EXPO_GOOGLE_SERVICES_JSON ?? './google-services.json',
+      softwareKeyboardLayoutMode: 'pan',
     },
     web: {
       favicon: './assets/infinity.png',

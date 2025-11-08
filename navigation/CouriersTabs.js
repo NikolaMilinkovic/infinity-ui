@@ -16,14 +16,14 @@ export default function CouriersTabs() {
         tabBarPressColor: colors.tabsPressEffect,
         tabBarLabelStyle: {
           fontSize: 11,
-          color: colors.secondaryDark,
+          color: colors.primaryDark,
         },
         tabBarStyle: {
-          backgroundColor: colors.secondaryLight,
+          backgroundColor: colors.tabsBackground,
         },
         tabBarIndicatorStyle: {
           backgroundColor: colors.highlight,
-          height: 3,
+          height: 4,
         },
       }}
     >

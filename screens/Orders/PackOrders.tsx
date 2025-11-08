@@ -1,9 +1,10 @@
-import React, { useContext, useMemo, useState } from 'react';
-import SafeView from '../../components/layout/SafeView';
+import { useContext, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import { filterPackOrders } from '../../components/orders/packOrders/packOrderFilterMethod';
 import PackOrdersControlls from '../../components/orders/packOrders/PackOrdersControlls';
 import PackOrdersItemsList from '../../components/orders/packOrders/PackOrdersItemsList';
 import { OrdersContext } from '../../store/orders-context';
+import { useThemeColors } from '../../store/theme-context';
 import { CategoryTypes } from '../../types/allTsTypes';
 
 function PackOrders() {
@@ -12,6 +13,7 @@ function PackOrders() {
     query: '',
   });
   const orderCtx = useContext(OrdersContext);
+  const colors = useThemeColors();
 
   const filteredOrders = useMemo(() => {
     if (searchParams.query === '') {
@@ -22,10 +24,10 @@ function PackOrders() {
   }, [orderCtx.unpackedOrders, searchParams]);
 
   return (
-    <SafeView>
+    <View style={{ backgroundColor: colors.containerBackground, flex: 1 }}>
       <PackOrdersControlls searchParams={searchParams} setSearchParams={setSearchParams} orders={filteredOrders} />
       <PackOrdersItemsList selectedCourier={selectedCourier} data={filteredOrders} />
-    </SafeView>
+    </View>
   );
 }
 

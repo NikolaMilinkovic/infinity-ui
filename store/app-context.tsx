@@ -9,6 +9,7 @@ import { SocketContext } from './socket-context';
 interface AppContextTypes {
   data: BoutiqueTypes;
   versionData: VersionDataTypes;
+  setAppData: React.Dispatch<React.SetStateAction<BoutiqueTypes>>;
 }
 interface AppContextProviderTypes {
   children: ReactNode;
@@ -20,6 +21,7 @@ export const AppContext = createContext<AppContextTypes>({
     buildLinkAndroid: '',
     buildLinkIOS: '',
   },
+  setAppData: () => {},
 });
 
 function AppContextProvider({ children }: AppContextProviderTypes) {
@@ -54,11 +56,7 @@ function AppContextProvider({ children }: AppContextProviderTypes) {
 
   function handleUpdateAppSettings(appData: any) {
     setData(appData);
-    if (appData.settings.appIcon.appIconUri && appData.settings.appIcon.appIconName) {
-      popupMessage('Podešavanje aplikacije uspešno ažurirano', 'success');
-    } else {
-      popupMessage('Došlo je do problema prilikom ažuriranja podešavanja aplikacije', 'danger');
-    }
+    popupMessage('Podešavanje aplikacije uspešno ažurirano', 'success');
   }
 
   useEffect(() => {

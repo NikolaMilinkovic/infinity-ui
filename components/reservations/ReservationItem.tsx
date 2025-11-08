@@ -72,7 +72,7 @@ function ReservationItem({
   const backgroundColor = useHighlightAnimation({
     isHighlighted,
     duration: 120,
-    highlightColor: '#A3B9CC',
+    highlightColor: colors.selectedProductBackground,
   });
 
   function Row({ children }: any) {
@@ -91,18 +91,22 @@ function ReservationItem({
             <Image source={order.buyer.profileImage} style={styles.profileImage} />
           </Pressable>
           <View style={styles.info}>
-            <CustomText variant="bold">{order.buyer.name}</CustomText>
-            <CustomText>
+            <CustomText variant="header" style={{ fontSize: 15, marginBottom: 0 }}>
+              {order.buyer.name}
+            </CustomText>
+            <CustomText style={{ color: colors.grayText, marginTop: -3, marginBottom: 8, fontSize: 13 }}>
               {order.buyer.address}, {order.buyer.place}
             </CustomText>
             <Row>
-              <CustomText>Tel.</CustomText>
-              <CustomText>{order.buyer.phone}</CustomText>
+              <CustomText style={{ fontSize: 13 }}>Tel.</CustomText>
+              <CustomText style={{ fontSize: 13 }}>{order.buyer.phone}</CustomText>
             </Row>
             {order.reservation && order.reservationDate && (
               <>
-                <CustomText>Rezervisano za:</CustomText>
-                <CustomText variant="bold">{getFormattedDateWithoutTime(order.reservationDate)}</CustomText>
+                <CustomText style={{ fontSize: 13 }}>Rezervisano za:</CustomText>
+                <CustomText style={{ fontSize: 13 }} variant="bold">
+                  {getFormattedDateWithoutTime(order.reservationDate)}
+                </CustomText>
               </>
             )}
             {order.orderNotes && (
@@ -118,24 +122,28 @@ function ReservationItem({
                 {isHighlighted && (
                   <IconButton
                     size={26}
-                    color={colors.secondaryDark}
+                    color={colors.defaultText}
                     onPress={() => onRemoveHighlight(order._id)}
                     key={`key-${order._id}-highlight-button`}
                     icon="check"
-                    style={[styles.editButtonContainer, { backgroundColor: '#9FB7C6' }]}
+                    style={[styles.editButtonContainer, { backgroundColor: colors.selectedProductButtonBackground }]}
                     pressedStyles={styles.buttonContainerPressed}
+                    backColor={'transparent'}
+                    backColor1={'transparent'}
                   />
                 )}
               </>
             ) : (
               <IconButton
                 size={26}
-                color={colors.secondaryDark}
+                color={colors.defaultText}
                 onPress={handleOnEditPress}
                 key={`key-${order._id}-edit-button`}
                 icon="edit"
                 style={styles.editButtonContainer}
                 pressedStyles={styles.buttonContainerPressed}
+                backColor={'transparent'}
+                backColor1={'transparent'}
               />
             )}
             {order.packed && order.packedIndicator && (
@@ -174,13 +182,13 @@ function getStyles(colors: ThemeColors, packed: boolean) {
     container: {
       position: 'relative',
       width: '100%',
-      elevation: 2,
-      backgroundColor: colors.white,
+      backgroundColor: colors.containerBackground,
       minHeight: 160,
       paddingHorizontal: 16,
       paddingVertical: 14,
       gap: 10,
       overflow: 'hidden',
+      elevation: 1,
     },
     orderNoteIndicator: {
       position: 'absolute',
@@ -192,7 +200,7 @@ function getStyles(colors: ThemeColors, packed: boolean) {
       position: 'absolute',
       right: 10,
       fontSize: 12,
-      color: colors.secondaryDark,
+      color: colors.grayText,
     },
     infoContainer: {
       flex: 1,
@@ -207,6 +215,8 @@ function getStyles(colors: ThemeColors, packed: boolean) {
       width: 120,
       flex: 2,
       borderRadius: 4,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
     },
     info: {
       flex: 10,
@@ -226,9 +236,8 @@ function getStyles(colors: ThemeColors, packed: boolean) {
       top: 8,
       borderRadius: 100,
       overflow: 'hidden',
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       padding: 10,
-      elevation: 2,
     },
     buttonContainerPressed: {
       opacity: 0.7,
@@ -252,7 +261,7 @@ function getStyles(colors: ThemeColors, packed: boolean) {
     },
     packedText: {
       position: 'absolute',
-      color: colors.success,
+      color: colors.success1,
       bottom: 10,
       right: -8,
       width: 100,

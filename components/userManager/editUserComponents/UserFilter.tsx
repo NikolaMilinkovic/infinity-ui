@@ -34,6 +34,7 @@ function UserFilter({ searchQuery, setSearchQuery, selectedRole, setSelectedRole
         labelBorders={false}
         activeColor={colors.highlight}
         containerStyles={[{ flex: 1.8 }]}
+        selectionColor={colors.highlight}
       />
       <DropdownList
         data={roleDropdownFilter}

@@ -23,7 +23,7 @@ export default function EndOfDayTabs() {
         },
         tabBarIndicatorStyle: {
           backgroundColor: colors.highlight,
-          height: 3,
+          height: 4,
         },
       }}
     >

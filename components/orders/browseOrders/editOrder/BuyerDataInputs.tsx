@@ -28,36 +28,40 @@ function BuyerDataInputs({
     <View style={styles.sectionContainer}>
       {/* Name */}
       <InputField
+        activeColor={colors.grayText}
         labelBorders={false}
         containerStyles={styles.input}
-        background={colors.white}
+        background={colors.background}
         label="Ime i prezime"
         inputText={name}
         setInputText={setName}
       />
       {/* Address */}
       <InputField
+        activeColor={colors.grayText}
         labelBorders={false}
         containerStyles={styles.input}
-        background={colors.white}
+        background={colors.background}
         label="Adresa"
         inputText={address}
         setInputText={setAddress}
       />
       {/* Place */}
       <InputField
+        activeColor={colors.grayText}
         labelBorders={false}
         containerStyles={styles.input}
-        background={colors.white}
+        background={colors.background}
         label="Mesto"
         inputText={place}
         setInputText={setPlace}
       />
       {/* Phone */}
       <InputField
+        activeColor={colors.grayText}
         labelBorders={false}
         containerStyles={styles.input}
-        background={colors.white}
+        background={colors.background}
         label="Kontakt telefon"
         inputText={phone}
         setInputText={setPhone}
@@ -65,9 +69,10 @@ function BuyerDataInputs({
       />
       {/* Phone2 */}
       <InputField
+        activeColor={colors.grayText}
         labelBorders={false}
         containerStyles={styles.input}
-        background={colors.white}
+        background={colors.background}
         label="Dodatni kontakt telefon"
         inputText={phone2}
         setInputText={setPhone2}
@@ -75,7 +80,8 @@ function BuyerDataInputs({
       />
       {/* Order Notes */}
       <MultilineInput
-        background={colors.white}
+        activeColor={colors.grayText}
+        background={colors.background}
         label="Napomena za porudžbinu"
         value={orderNotes}
         setValue={(text: string | number | undefined) => setOrderNotes(text as string)}
@@ -84,7 +90,8 @@ function BuyerDataInputs({
       />
       {/* Courier Notes */}
       <MultilineInput
-        background={colors.white}
+        activeColor={colors.grayText}
+        background={colors.background}
         label="Napomena za kurira"
         value={deliveryNotes}
         setValue={(text: string | number | undefined) => setDeliveryNotes(text as string)}
@@ -114,13 +121,12 @@ function getStyles(colors: ThemeColors) {
       left: 0,
       zIndex: 2,
       height: 60,
-      backgroundColor: colors.primaryDark,
       paddingHorizontal: 10,
       alignItems: 'center',
       justifyContent: 'center',
     },
     modalHeader: {
-      color: colors.white,
+      color: colors.defaultText,
       fontWeight: 'bold',
       fontSize: 20,
       textAlign: 'center',
@@ -128,15 +134,15 @@ function getStyles(colors: ThemeColors) {
     container: {
       display: 'flex',
       position: 'relative',
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.background,
     },
     card: {
       marginTop: 70,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       padding: 10,
       borderRadius: 4,
       borderWidth: 1,
-      borderColor: colors.secondaryLight,
+      borderColor: colors.borderColor,
       marginBottom: 16,
       margin: 10,
     },
@@ -174,36 +180,36 @@ function getStyles(colors: ThemeColors) {
       flex: 2,
     },
     pricesContainer: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       borderRadius: 4,
       borderWidth: 0.5,
-      borderColor: colors.secondaryLight,
+      borderColor: colors.borderColor,
       margin: 10,
     },
     radioGroupContainer: {
       padding: 10,
       borderWidth: 0.5,
-      borderColor: colors.secondaryLight,
+      borderColor: colors.borderColor,
       borderRadius: 4,
       marginBottom: 8,
       paddingTop: 20,
       marginTop: 10,
       flexDirection: 'row',
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       justifyContent: 'space-around',
     },
     radioGroupHeader: {
       fontSize: 14,
-      color: colors.primaryDark,
+      color: colors.defaultText,
       marginBottom: 8,
       position: 'absolute',
       left: 10,
       top: -12,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       borderRadius: 4,
       paddingHorizontal: 4,
       borderWidth: 0,
-      borderColor: colors.secondaryLight,
+      borderColor: colors.borderColor,
     },
     checkbox: {
       flex: 2,
@@ -214,8 +220,8 @@ function getStyles(colors: ThemeColors) {
     },
     dateButton: {
       flex: 1,
-      backgroundColor: colors.secondaryLight,
-      color: colors.primaryDark,
+      backgroundColor: colors.background,
+      color: colors.defaultText,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -235,12 +241,12 @@ function getStyles(colors: ThemeColors) {
     },
     filtersH2absolute: {
       fontSize: 14,
-      color: colors.primaryDark,
+      color: colors.defaultText,
       marginBottom: 8,
       position: 'absolute',
       left: 10,
       top: -12,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       borderWidth: 0,
       paddingHorizontal: 4,
     },
@@ -248,11 +254,11 @@ function getStyles(colors: ThemeColors) {
       justifyContent: 'flex-start',
       textAlignVertical: 'top',
       marginVertical: 8,
-      backgroundColor: colors.white,
-      borderColor: colors.secondaryLight,
+      backgroundColor: colors.background,
+      borderColor: colors.borderColor,
     },
     inputFieldLabelStyles: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.defaultText,
     },
     priceContainer: {
       flexDirection: 'row',
@@ -263,7 +269,7 @@ function getStyles(colors: ThemeColors) {
       flex: 1,
       maxHeight: 44,
       marginTop: 'auto',
-      backgroundColor: colors.secondaryLight,
+      backgroundColor: colors.background,
       textAlign: 'center',
       justifyContent: 'center',
       maxWidth: 150,

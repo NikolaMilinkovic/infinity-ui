@@ -31,7 +31,7 @@ function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }: 
           {/* Product sorting buttons */}
           <View style={styles.sortProductsContainer}>
             <Button
-              containerStyles={[styles.button]}
+              containerStyles={styles.button}
               onPress={() => handleSortProducts('top')}
               backColor={colors.buttonNormal1}
               backColor1={colors.buttonNormal2}
@@ -40,7 +40,7 @@ function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }: 
               Top
             </Button>
             <Button
-              containerStyles={[styles.button]}
+              containerStyles={styles.button}
               onPress={() => handleSortProducts('mid')}
               backColor={colors.buttonNormal1}
               backColor1={colors.buttonNormal2}
@@ -49,7 +49,7 @@ function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }: 
               Mid
             </Button>
             <Button
-              containerStyles={[styles.button]}
+              containerStyles={styles.button}
               onPress={() => handleSortProducts('bot')}
               backColor={colors.buttonNormal1}
               backColor1={colors.buttonNormal2}
@@ -105,7 +105,7 @@ function getStyles(colors: ThemeColors) {
     },
     button: {
       flex: 1,
-      maxWidth: 60,
+      maxWidth: 80,
       height: 40,
       alignItems: 'center',
       justifyContent: 'center',

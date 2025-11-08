@@ -87,12 +87,14 @@ function ProductDisplay({ product, index, setProducts }: ProductDisplayTypes) {
             {/* Delete button */}
             <IconButton
               size={26}
-              color={colors.highlight}
+              color={colors.error}
               onPress={handleOnRemovePress}
               key={`key-${index}-remove-button`}
               icon="delete"
-              style={[globalStyles.border, globalStyles.elevation_1, styles.removeButtonContainer]}
+              style={styles.removeButtonContainer}
               pressedStyles={styles.buttonContainerPressed}
+              backColor={'transparent'}
+              backColor1={'transparent'}
             />
           </View>
         </View>
@@ -104,7 +106,7 @@ function ProductDisplay({ product, index, setProducts }: ProductDisplayTypes) {
 function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       padding: 10,
     },
     subContainer: {
@@ -121,6 +123,7 @@ function getStyles(colors: ThemeColors) {
     header: {
       fontWeight: 'bold',
       fontSize: 16,
+      color: colors.defaultText,
     },
     image: {
       height: 140,
@@ -132,7 +135,7 @@ function getStyles(colors: ThemeColors) {
       bottom: 0,
       borderRadius: 100,
       overflow: 'hidden',
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       padding: 10,
     },
     buttonContainerPressed: {
@@ -145,9 +148,11 @@ function getStyles(colors: ThemeColors) {
     },
     infoLabel: {
       width: 75,
+      color: colors.defaultText,
     },
     infoText: {
       width: '55%',
+      color: colors.defaultText,
     },
   });
 }

@@ -11,14 +11,28 @@ interface ButtonTypes {
   backColor1?: string;
   containerStyles?: {};
   textStyles?: {};
+  disabled?: boolean;
 }
 
-function Button({ children, onPress, textColor, backColor, backColor1, containerStyles, textStyles }: ButtonTypes) {
+function Button({
+  children,
+  onPress,
+  textColor,
+  backColor,
+  backColor1,
+  containerStyles,
+  textStyles,
+  disabled = false,
+}: ButtonTypes) {
   const colors = useThemeColors();
   const styles = getStyles(colors, textColor, backColor);
 
   return (
-    <Pressable style={({ pressed }) => [styles.button, pressed && styles.pressed, containerStyles]} onPress={onPress}>
+    <Pressable
+      style={({ pressed }) => [styles.button, pressed && styles.pressed, containerStyles]}
+      onPress={onPress}
+      disabled={disabled}
+    >
       <LinearGradientBackground
         containerStyles={{ alignItems: 'center', justifyContent: 'center', borderRadius: 4, width: '100%' }}
         color1={backColor}

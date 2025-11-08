@@ -1,4 +1,5 @@
 import { ColorSizeTypes, DressTypes, PurseTypes } from '../types/allTsTypes';
+import normalizeText from './text/NormalizeText';
 type ProductType = DressTypes | PurseTypes;
 interface SearchParamsType {
   isOnStock: boolean;
@@ -73,13 +74,17 @@ export function sortByDisplayPriority(products: ProductType[]): ProductType[] {
 }
 
 // Search by inserted name compares inserted query with [Item Name, Item Colors]
-export function searchItemsByName(allActiveProducts: any, searchData: string) {
+export function searchItemsByName(allActiveProducts: any[], searchData: string) {
+  const normalizedInput = normalizeText(searchData);
+
   const nameBasedSearch = allActiveProducts.filter((item: ProductType) =>
-    item.name.toLowerCase().includes(searchData.toLowerCase())
+    normalizeText(item.name).includes(normalizedInput)
   );
+
   const colorBasedSearch = allActiveProducts.filter((item: any) =>
-    item.colors.some((colorObj: any) => colorObj.color.toLowerCase().includes(searchData.toLowerCase()))
+    item.colors.some((colorObj: any) => normalizeText(colorObj.color).includes(normalizedInput))
   );
+
   return [...new Set([...nameBasedSearch, ...colorBasedSearch])];
 }
 

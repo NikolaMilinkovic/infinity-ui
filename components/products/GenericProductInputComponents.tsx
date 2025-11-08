@@ -58,7 +58,7 @@ function GenericProductInputComponents({
           setInputText={setProductName}
           background={colors.background}
           color={colors.defaultText}
-          activeColor={colors.secondaryDark}
+          activeColor={colors.borderColor}
           containerStyles={{ marginTop: 18 }}
           selectionColor={colors.borderColor}
         />
@@ -72,7 +72,7 @@ function GenericProductInputComponents({
           setInputText={setPrice as any}
           background={colors.background}
           color={colors.defaultText}
-          activeColor={colors.secondaryDark}
+          activeColor={colors.borderColor}
           keyboard="number-pad"
           containerStyles={{ marginTop: 18 }}
           selectionColor={colors.borderColor}
@@ -133,10 +133,10 @@ function getStyles(colors: ThemeColors) {
       marginBottom: 0,
     },
     buttonContainer: {
-      marginBottom: 50,
+      marginBottom: 70,
     },
     sectionText: {
-      fontSize: 18,
+      fontSize: 16,
       color: colors.highlightText,
     },
     sectionTextTopMargin: {

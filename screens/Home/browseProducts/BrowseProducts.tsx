@@ -10,6 +10,7 @@ import { useFadeTransition } from '../../../hooks/useFadeTransition';
 import { useThemeColors } from '../../../store/theme-context';
 import { ProductTypes } from '../../../types/allTsTypes';
 import AppUpadteModal from '../../../util-components/AppUpadteModal';
+import KeyboardAvoidingWrapper from '../../../util-components/KeyboardAvoidingWrapper';
 
 function BrowseProducts() {
   const [editedProduct, setEditedProduct] = useState<ProductTypes | null>(null);
@@ -21,7 +22,7 @@ function BrowseProducts() {
   }
 
   return (
-    <Animated.View style={{ flex: 1 }}>
+    <>
       <Animated.View style={{ flex: 1 }}>
         <View>
           <AppUpadteModal />
@@ -37,12 +38,14 @@ function BrowseProducts() {
       >
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.primaryDark }}>
           <StatusBar style="light" translucent={true} />
-          <Animated.ScrollView style={[editProductFade, { flex: 1 }]} keyboardShouldPersistTaps="handled">
-            {editedProduct && <EditProductComponent item={editedProduct as any} setItem={setEditedProduct} />}
-          </Animated.ScrollView>
+          <Animated.View style={[editProductFade, { flex: 1 }]}>
+            <KeyboardAvoidingWrapper>
+              {editedProduct && <EditProductComponent item={editedProduct} setItem={setEditedProduct} />}
+            </KeyboardAvoidingWrapper>
+          </Animated.View>
         </SafeAreaView>
       </Modal>
-    </Animated.View>
+    </>
   );
 }
 

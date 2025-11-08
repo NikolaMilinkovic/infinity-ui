@@ -67,7 +67,7 @@ function getStyles(colors: ThemeColors) {
       position: 'relative',
       width: '100%',
       alignItems: 'center',
-      elevation: 2,
+      elevation: 1,
       backgroundColor: colors.background,
       minHeight: 60,
       paddingHorizontal: 16,

@@ -31,7 +31,7 @@ export default function SettingsTabs() {
         },
         tabBarIndicatorStyle: {
           backgroundColor: colors.highlight,
-          height: 3,
+          height: 4,
         },
         lazy: false,
         tabBarBounces: true,

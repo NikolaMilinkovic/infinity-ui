@@ -144,12 +144,14 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
               {isPacked ? (
                 <IconButton
                   size={36}
-                  color={colors.success}
+                  color={colors.success1}
                   onPress={handleUnpackOrder}
                   key={`key-${order._id}-edit-button`}
                   icon="check"
                   style={styles.buttonChecked}
                   pressedStyles={styles.buttonContainerPressed}
+                  backColor="transparent"
+                  backColor1="transparent"
                 />
               ) : (
                 <Pressable onPress={handlePackOrder} style={styles.packedButton} />
@@ -186,12 +188,12 @@ function getStyles(colors: ThemeColors, isPacked: boolean) {
     container: {
       position: 'relative',
       width: '100%',
-      backgroundColor: isPacked ? colors.white : colors.secondaryHighlight,
+      backgroundColor: isPacked ? colors.background : colors.unpackedOrderBackground,
       minHeight: 160,
       paddingHorizontal: 16,
       paddingVertical: 14,
       gap: 10,
-      elevation: 2,
+      elevation: 1,
       overflow: 'hidden',
     },
     orderNoteIndicator: {
@@ -204,7 +206,7 @@ function getStyles(colors: ThemeColors, isPacked: boolean) {
       position: 'absolute',
       right: 10,
       fontSize: 12,
-      color: colors.secondaryDark,
+      color: colors.grayText,
     },
     infoContainer: {
       flex: 1,
@@ -236,10 +238,9 @@ function getStyles(colors: ThemeColors, isPacked: boolean) {
     buttonBorder: {
       height: 42,
       width: 42,
-      elevation: 2,
       borderWidth: 2,
-      borderColor: isPacked ? colors.success : colors.highlight,
-      backgroundColor: isPacked ? colors.white : colors.secondaryHighlight,
+      borderColor: isPacked ? colors.success1 : colors.error,
+      backgroundColor: isPacked ? colors.background : colors.unpackedOrderBackground,
       alignItems: 'center',
       justifyContent: 'center',
       marginTop: 10,
@@ -264,7 +265,7 @@ function getStyles(colors: ThemeColors, isPacked: boolean) {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: colors.primaryDark,
+      backgroundColor: colors.background,
       zIndex: 12,
       opacity: 0.4,
       pointerEvents: 'none',

@@ -10,8 +10,9 @@ import SearchReservations from '../../components/reservations/SearchReservations
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useFadeTransition } from '../../hooks/useFadeTransition';
 import { OrdersContext } from '../../store/orders-context';
-import { useThemeColors } from '../../store/theme-context';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { OrderTypes } from '../../types/allTsTypes';
+import KeyboardAvoidingWrapper from '../../util-components/KeyboardAvoidingWrapper';
 
 interface SearchParamsTypes {
   query: string;
@@ -24,6 +25,7 @@ interface SearchParamsTypes {
 }
 function BrowseReservations() {
   const colors = useThemeColors();
+  const styles = getStyles(colors);
   const ordersCtx = useContext(OrdersContext);
   const [editedReservation, setEditedReservation] = useState<OrderTypes | null>(null);
   useBackClickHandler(!!editedReservation, removeEditedReservation);
@@ -78,19 +80,23 @@ function BrowseReservations() {
       >
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.primaryDark }}>
           <StatusBar style="light" />
-          <Animated.ScrollView style={[editReservationFade, { flex: 1 }]}>
-            <EditOrder editedOrder={editedReservation} setEditedOrder={setEditedReservation} />
-          </Animated.ScrollView>
+          <Animated.View style={[editReservationFade, { flex: 1 }]}>
+            <KeyboardAvoidingWrapper>
+              <EditOrder editedOrder={editedReservation} setEditedOrder={setEditedReservation} />
+            </KeyboardAvoidingWrapper>
+          </Animated.View>
         </SafeAreaView>
       </Modal>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  reservationsContainer: {
-    flex: 1,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    reservationsContainer: {
+      flex: 1,
+      backgroundColor: colors.containerBackground,
+    },
+  });
+}
 
 export default BrowseReservations;

@@ -142,7 +142,7 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
   const toggleExpandAnimation = useExpandAnimationWithContentVisibility(
     showEdit as boolean,
     setShowEdit,
-    28,
+    40,
     contentHeight,
     280
   );
@@ -161,6 +161,7 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
         style={{ height: toggleExpandAnimation }}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
+        scrollEnabled={false}
       >
         {showEdit ? (
           <View
@@ -174,20 +175,24 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
               placeholder="Ime dobavljača"
               value={newName}
               onChangeText={handleNameChange}
+              placeholderTextColor={colors.grayText}
+              selectionColor={colors.highlight}
             />
             <View style={styles.buttons}>
               <Button
                 onPress={showEditSupplierHandler}
-                textColor={colors.primaryLight}
-                backColor={colors.error}
+                textColor={colors.defaultText}
+                backColor={colors.buttonNormal1}
+                backColor1={colors.buttonNormal2}
                 containerStyles={styles.buttonStyle}
               >
                 Otkaži
               </Button>
               <Button
                 onPress={updateSupplierHandler}
-                textColor={colors.primaryLight}
-                backColor={colors.primaryDark}
+                textColor={colors.whiteText}
+                backColor={colors.buttonHighlight1}
+                backColor1={colors.buttonHighlight2}
                 containerStyles={styles.buttonStyle}
               >
                 Sačuvaj
@@ -205,6 +210,8 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
               color={colors.error}
               style={styles.deleteIcon}
               size={26}
+              backColor="transparent"
+              backColor1="transparent"
             />
           </View>
         )}
@@ -218,12 +225,10 @@ function getStyles(colors: ThemeColors) {
     supplierItem: {
       padding: 14,
       paddingHorizontal: 25,
-      borderBottomWidth: 1,
-      borderBottomColor: '#ccc',
-      backgroundColor: 'white',
+      backgroundColor: colors.background,
       marginBottom: 1,
       flexDirection: 'row',
-      gap: 20,
+      // gap: 20,
       alignItems: 'center',
     },
     deleteIcon: {
@@ -237,13 +242,15 @@ function getStyles(colors: ThemeColors) {
     },
     supplierText: {
       fontSize: 16,
+      color: colors.defaultText,
     },
     mainInputsContainer: {
       width: '100%',
       flexDirection: 'column',
     },
     input: {
-      borderBottomColor: colors.secondaryLight,
+      borderBottomColor: colors.borderColor,
+      color: colors.defaultText,
       borderBottomWidth: 1,
       flex: 1,
       marginBottom: 10,
@@ -263,7 +270,7 @@ function getStyles(colors: ThemeColors) {
     },
     success: {
       marginTop: 8,
-      color: colors.success,
+      color: colors.success1,
       textAlign: 'center',
     },
     buttonStyle: {

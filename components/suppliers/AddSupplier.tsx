@@ -79,17 +79,19 @@ function AddSupplier() {
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
-            background={colors.white}
-            color={colors.primaryDark}
+            background={colors.background}
+            color={colors.defaultText}
             activeColor={colors.highlight}
+            selectionColor={colors.highlight}
             labelBorders={false}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             onPress={addSupplierHandler}
-            textColor={colors.white}
-            backColor={colors.highlight}
+            textColor={colors.whiteText}
+            backColor={colors.buttonHighlight1}
+            backColor1={colors.buttonHighlight2}
             containerStyles={{ height: 44 }}
           >
             Sačuvaj
@@ -104,10 +106,10 @@ function AddSupplier() {
 function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
+      backgroundColor: colors.background,
       alignItems: 'center',
-      paddingVertical: 16,
+      paddingTop: 22,
       paddingBottom: 8,
-      backgroundColor: colors.white,
     },
     controllsContainer: {
       flexDirection: 'row',

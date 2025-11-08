@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Animated, StyleSheet } from 'react-native';
-import { useGlobalStyles } from '../../../constants/globalStyles';
+import { Animated, StyleSheet, View } from 'react-native';
 import { useExpandAnimationWithContentVisibility } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
@@ -31,72 +30,73 @@ function BatchModeOrderControlls({
   const user = useUser();
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const globalStyles = useGlobalStyles();
 
   return (
-    <>
+    <View style={{ backgroundColor: colors.containerBackground }}>
       {isContentVisible && (
         <Animated.View style={[styles.container, { height: toggleExpandAnimation, opacity: toggleFade }]}>
           {user?.permissions?.orders?.delete && (
             <IconButton
+              direction="row"
               size={22}
-              color={colors.highlight}
+              color={colors.error}
               onPress={onRemoveBatchPress}
               key={`key-remove-batch-button`}
               icon="delete"
-              style={[
-                styles.generalButtonStyle,
-                styles.removeBatchItemsButton,
-                globalStyles.border,
-                globalStyles.elevation_1,
-              ]}
+              style={[styles.generalButtonStyle, styles.removeBatchItemsButton]}
               pressedStyles={styles.removeBatchItemsButtonPressed}
+              backColor={'transparent'}
+              backColor1={'transparent'}
             />
           )}
           <IconButton
+            direction="row"
             size={22}
-            color={colors.secondaryDark}
+            color={colors.defaultText}
             onPress={onExcellExportPress}
             key={`key-excell-export-batch-button`}
             icon="file-export"
-            style={[
-              styles.generalButtonStyle,
-              styles.exportExcellButton,
-              globalStyles.border,
-              globalStyles.elevation_1,
-            ]}
+            style={[styles.generalButtonStyle, styles.exportExcellButton]}
             pressedStyles={styles.removeBatchItemsButtonPressed}
             iconsLibrary="FontAwesome6"
             text="Excell"
+            backColor={'transparent'}
+            backColor1={'transparent'}
           />
           {isAllSelected ? (
             <IconButton
+              direction="row"
               size={22}
-              color={colors.secondaryDark}
+              color={colors.defaultText}
               onPress={onSelectAllOrders}
               key={`key-select-all-orders-button`}
               icon="close"
-              style={[styles.generalButtonStyle, styles.highlightAll, globalStyles.border, globalStyles.elevation_1]}
+              style={[styles.generalButtonStyle, styles.highlightAll]}
               pressedStyles={styles.removeBatchItemsButtonPressed}
               iconsLibrary="MaterialIcons"
               text="Odštikliraj"
+              backColor={'transparent'}
+              backColor1={'transparent'}
             />
           ) : (
             <IconButton
+              direction="row"
               size={22}
-              color={colors.secondaryDark}
+              color={colors.defaultText}
               onPress={onSelectAllOrders}
               key={`key-select-all-orders-button`}
               icon="done-all"
-              style={[styles.generalButtonStyle, styles.highlightAll, globalStyles.border, globalStyles.elevation_1]}
+              style={[styles.generalButtonStyle, styles.highlightAll]}
               pressedStyles={styles.removeBatchItemsButtonPressed}
               iconsLibrary="MaterialIcons"
               text="Oznaci sve"
+              backColor={'transparent'}
+              backColor1={'transparent'}
             />
           )}
         </Animated.View>
       )}
-    </>
+    </View>
   );
 }
 
@@ -104,7 +104,7 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       paddingHorizontal: 8,
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.containerBackground,
       flexDirection: 'row-reverse',
     },
     removeBatchItemsButton: {
@@ -121,11 +121,12 @@ function getStyles(colors: ThemeColors) {
     generalButtonStyle: {
       marginVertical: 10,
       marginHorizontal: 5,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       height: 40,
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',
+      borderRadius: 4,
     },
     removeBatchItemsButtonPressed: {
       opacity: 0.7,

@@ -68,6 +68,7 @@ function EditColors() {
               value={searchQuery}
               onChangeText={setSearchQuery}
               selectionColor={themeColors.defaultText}
+              placeholderTextColor={themeColors.grayText}
             />
           </View>
 
@@ -79,6 +80,8 @@ function EditColors() {
             contentContainerStyle={styles.listContent}
             initialNumToRender={10}
             removeClippedSubviews={false}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
           />
         </>
       ) : (
@@ -92,24 +95,21 @@ function getStyles(themeColors: ThemeColors) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      width: '100%',
-      backgroundColor: themeColors.screenBackground,
+      backgroundColor: themeColors.containerBackground,
     },
     list: {
       flex: 1,
     },
     listContent: {
-      paddingBottom: 10,
-      gap: 2,
+      paddingTop: 2,
+      paddingBottom: 50,
+      gap: 0,
     },
     headerWrapper: {
-      backgroundColor: themeColors.white,
+      backgroundColor: themeColors.background,
       flexDirection: 'row',
-      marginBottom: 6,
       paddingHorizontal: 10,
-      borderBottomColor: themeColors.borderColor,
-      borderBottomWidth: 0.5,
-      elevation: 2,
+      marginTop: -2,
     },
     header: {
       fontSize: 14,

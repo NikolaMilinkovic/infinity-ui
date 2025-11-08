@@ -110,7 +110,7 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
     }));
 
     return (
-      <Animated.ScrollView>
+      <>
         {/* TOGGLE BUTTON */}
         <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
           <Text style={styles.header}>Pregled nove porudžbine</Text>
@@ -123,7 +123,7 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
         </Pressable>
 
         {isContentVisible && (
-          <Animated.ScrollView style={{ height: toggleExpandAnimation }}>
+          <Animated.ScrollView style={{ height: toggleExpandAnimation, flex: 1 }}>
             <View
               style={styles.container}
               onLayout={(e) => {
@@ -306,7 +306,7 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
                     onManualInput={handleUserManualPriceInput}
                     labelBorders={false}
                     labelStyles={{ color: colors.defaultText }}
-                    activeColor={colors.borderColor}
+                    activeColor={colors.grayText}
                   />
                   {!calculateItemsPrice && (
                     <Button
@@ -324,7 +324,7 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
             </View>
           </Animated.ScrollView>
         )}
-      </Animated.ScrollView>
+      </>
     );
   }
 );
@@ -342,6 +342,7 @@ function getStyles(colors: ThemeColors) {
       backgroundColor: colors.secondaryDark,
       marginBottom: 6,
       flexDirection: 'row',
+      flex: 1,
     },
     iconStyle: {
       marginLeft: 'auto',

@@ -12,6 +12,7 @@ import OrdersContextProvider from './orders-context';
 import { SocketProvider } from './socket-context';
 import SuppliersContextProvider from './suppliers-context';
 import { ThemeProvider } from './theme-context';
+import { TransitionsProvider } from './transitions-context';
 import UserContextProvider from './user-context';
 
 interface ContextChildrenType {
@@ -24,26 +25,28 @@ const ContextProvider: React.FC<ContextChildrenType> = ({ children }) => {
       <SocketProvider>
         <AppContextProvider>
           <ThemeProvider>
-            <UserContextProvider>
-              <ModalsContextProvider>
-                <ColorsContextProvider>
-                  <CategoriesContextProvider>
-                    <CouriersContextProvider>
-                      <SuppliersContextProvider>
-                        <AllProductsContextProvider>
-                          <NewOrderContextProvider>
-                            <OrdersContextProvider>
-                              {/* Last Updated needs to be wrapped by all context that store data */}
-                              <LastUpdatedContextProvider>{children}</LastUpdatedContextProvider>
-                            </OrdersContextProvider>
-                          </NewOrderContextProvider>
-                        </AllProductsContextProvider>
-                      </SuppliersContextProvider>
-                    </CouriersContextProvider>
-                  </CategoriesContextProvider>
-                </ColorsContextProvider>
-              </ModalsContextProvider>
-            </UserContextProvider>
+            <TransitionsProvider>
+              <UserContextProvider>
+                <ModalsContextProvider>
+                  <ColorsContextProvider>
+                    <CategoriesContextProvider>
+                      <CouriersContextProvider>
+                        <SuppliersContextProvider>
+                          <AllProductsContextProvider>
+                            <NewOrderContextProvider>
+                              <OrdersContextProvider>
+                                {/* Last Updated needs to be wrapped by all context that store data */}
+                                <LastUpdatedContextProvider>{children}</LastUpdatedContextProvider>
+                              </OrdersContextProvider>
+                            </NewOrderContextProvider>
+                          </AllProductsContextProvider>
+                        </SuppliersContextProvider>
+                      </CouriersContextProvider>
+                    </CategoriesContextProvider>
+                  </ColorsContextProvider>
+                </ModalsContextProvider>
+              </UserContextProvider>
+            </TransitionsProvider>
           </ThemeProvider>
         </AppContextProvider>
       </SocketProvider>

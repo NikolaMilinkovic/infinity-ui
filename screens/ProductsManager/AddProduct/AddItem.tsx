@@ -18,9 +18,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  tempText: {
-    fontSize: 34,
-  },
 });
 
 export default AddItem;

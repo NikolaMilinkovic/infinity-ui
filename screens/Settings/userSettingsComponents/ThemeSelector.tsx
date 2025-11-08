@@ -1,55 +1,38 @@
-import { useContext, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Switch, View } from 'react-native';
 import useTextForActiveLanguage from '../../../hooks/useTextForActiveLanguage';
 import { ThemeColors, useTheme, useThemeColors } from '../../../store/theme-context';
-import { UserContext } from '../../../store/user-context';
+import { useTransitions } from '../../../store/transitions-context';
 import CustomText from '../../../util-components/CustomText';
-import DropdownList from '../../../util-components/DropdownList';
 
 function ThemeSelector({ updateDefault }: { updateDefault: (field: string, value: any) => void }) {
-  const userCtx = useContext(UserContext);
-  const [firstRender, setFirstRender] = useState(true);
   const text = useTextForActiveLanguage('settings');
+  const { triggerTransition } = useTransitions();
   const colors = useThemeColors();
   const themeContext = useTheme();
   const styles = getStyles(colors);
-  interface DrpodownTypes {
-    _id: number;
-    name: string;
-    value: 'light' | 'dark';
-  }
-  const [listSelectorData] = useState([
-    { _id: 0, name: 'Svetla tema', value: 'light' },
-    { _id: 1, name: 'Tamna tema', value: 'dark' },
-  ]);
-  function getDefaultValue() {
-    switch (userCtx?.settings?.defaults?.theme) {
-      case 'light':
-        return 'Svetla tema';
-      case 'dark':
-        return 'Tamna tema';
+
+  async function toggleTheme() {
+    const newTheme = themeContext.theme === 'light' ? 'dark' : 'light';
+    updateDefault('theme', newTheme);
+    themeContext.setTheme(newTheme);
+    if (themeContext.theme === 'light') {
+      triggerTransition('dark', 2300);
+    } else {
+      triggerTransition('light', 2300);
     }
-  }
-  async function updateSetting(selected: DrpodownTypes) {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    updateDefault('theme', selected.value);
-    themeContext.setTheme(selected.value);
   }
 
   return (
-    <>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <CustomText style={styles.text}>{text.theme_description}</CustomText>
-      <DropdownList
-        data={listSelectorData}
-        defaultValue={getDefaultValue()}
-        onSelect={updateSetting}
-        buttonContainerStyles={styles.dropdown}
-        buttonTextStyles={styles.dropdownText}
+      <Switch
+        value={themeContext.theme === 'dark'}
+        onValueChange={toggleTheme}
+        trackColor={{ false: colors.white, true: colors.grayText }}
+        thumbColor={colors.thumbColor}
+        style={styles.switch}
       />
-    </>
+    </View>
   );
 }
 
@@ -61,18 +44,12 @@ function getStyles(colors: ThemeColors) {
       fontSize: 14,
       color: colors.defaultText,
     },
-    dropdown: {
-      backgroundColor: colors.background,
-      marginTop: 10,
-      elevation: 1,
-      shadowOffset: { width: 1, height: 1 },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      borderWidth: 0.5,
-      borderColor: colors.borderColor,
-    },
-    dropdownText: {
-      color: colors.defaultText,
+    switch: {
+      marginLeft: 'auto',
+      transform: Platform.select({
+        ios: [{ scaleX: 0.8 }, { scaleY: 0.8 }], // Make iOS switch smaller
+        android: [{ scaleX: 1.1 }, { scaleY: 1.1 }], // Make Android switch bigger
+      }),
     },
   });
 }

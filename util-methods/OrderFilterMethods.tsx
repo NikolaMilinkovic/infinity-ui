@@ -1,4 +1,5 @@
 import { OrderTypes } from '../types/allTsTypes';
+import normalizeText from './text/NormalizeText';
 
 interface OrderSearchParams {
   processed: boolean;
@@ -41,15 +42,18 @@ function ascDescDataDisplay(orders: OrderTypes[], searchParams: OrderSearchParam
 }
 
 function searchOrdersByInput(orders: OrderTypes[], searchData: string): OrderTypes[] {
-  const inputData = searchData.toLowerCase();
+  const inputData = normalizeText(searchData);
   return orders.filter((order) => {
-    const { name, address, phone, place, phone2 } = order.buyer;
+    const { phone, phone2 } = order.buyer;
+    const name = normalizeText(order.buyer.name);
+    const address = normalizeText(order.buyer.address);
+    const place = normalizeText(order.buyer.place);
     const { totalPrice } = order;
 
     return (
-      name?.toLowerCase().includes(inputData) ||
-      address?.toLowerCase().includes(inputData) ||
-      place?.toString().toLowerCase().includes(inputData) ||
+      name?.includes(inputData) ||
+      address?.includes(inputData) ||
+      place?.toString().includes(inputData) ||
       phone?.toString().includes(inputData) ||
       phone2?.toString().includes(inputData) ||
       totalPrice?.toString().includes(inputData)

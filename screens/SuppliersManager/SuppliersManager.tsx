@@ -1,33 +1,30 @@
-import React from 'react';
-// import AddColor from '../../components/colors/AddColor'
-// import EditColors from '../../components/colors/EditColors'
-import { Animated, StyleSheet } from 'react-native';
-import SafeView from '../../components/layout/SafeView';
+import { Platform, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import AddSupplier from '../../components/suppliers/AddSupplier';
 import EditSuppliers from '../../components/suppliers/EditSuppliers';
-import { useFadeAnimation } from '../../hooks/useFadeAnimation';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 
 function SuppliersManager() {
-  // Fade in animation
-  const fadeAnimation = useFadeAnimation();
-
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   return (
-    <SafeView>
-      <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
-        <AddSupplier />
-        <EditSuppliers />
-      </Animated.View>
-    </SafeView>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 200}
+    >
+      <AddSupplier />
+      <EditSuppliers />
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  tempText: {
-    fontSize: 34,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.containerBackground,
+    },
+  });
+}
 
 export default SuppliersManager;

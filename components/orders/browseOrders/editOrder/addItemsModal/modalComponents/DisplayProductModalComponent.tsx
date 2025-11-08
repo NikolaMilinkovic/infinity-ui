@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import useCheckStockAvailability from '../../../../../../hooks/useCheckStockAvailability';
 import useImagePreviewModal from '../../../../../../hooks/useImagePreviewModal';
 import { ThemeColors, useThemeColors } from '../../../../../../store/theme-context';
 import { DressTypes, ImageTypes, ProductTypes, PurseTypes } from '../../../../../../types/allTsTypes';
-import ExpandButton from '../../../../../../util-components/ExpandButton';
 import IconButton from '../../../../../../util-components/IconButton';
 import ImagePreviewModal from '../../../../../../util-components/ImagePreviewModal';
 import DisplayDressStock from '../../../../../products/unique_product_components/display_stock/DisplayDressStock';
@@ -69,62 +68,52 @@ export default function DisplayProductModalComponent({ item, addNewProduct }: Di
     showImageModal();
   }
   return (
-    <View style={styles.itemContainer}>
+    <Pressable style={styles.itemContainer} onPress={toggleExpand}>
       {/* IMAGE PREVIEW MODAL */}
       {previewImage && (
         <ImagePreviewModal image={previewImage} isVisible={isImageModalVisible} onCancel={hideImageModal} />
       )}
 
-      {/* IMAGE AND INFORMATIONS */}
+      {/* IMAGE AND INFO */}
       <View style={styles.infoContainer}>
+        {/* Stop parent press here */}
         <Pressable style={styles.imageContainer} onPress={() => handleImagePreview(item.image)}>
           <Image source={{ uri: item.image.uri }} style={styles.image} />
         </Pressable>
 
-        <TouchableWithoutFeedback>
-          <View style={styles.info}>
-            <Text style={styles.headerText} numberOfLines={2} ellipsizeMode="tail">
-              {item.name}
-            </Text>
-            <Text>Kategorija: {item.category}</Text>
-            <Text>Cena: {item.price} RSD</Text>
+        <View style={styles.info}>
+          <Text style={styles.headerText} numberOfLines={2} ellipsizeMode="tail">
+            {item.name}
+          </Text>
+          <Text>Kategorija: {item.category}</Text>
+          <Text>Cena: {item.price} RSD</Text>
 
-            {!onStock && <Text style={styles.soldText}>RASPRODATO</Text>}
-            {onStock && <Text style={styles.onStockText}>DOSTUPNO ({item.totalStock})</Text>}
-            <ExpandButton
-              isExpanded={isExpanded}
-              handleToggleExpand={toggleExpand}
-              containerStyles={styles.expandButton}
-              iconStyles={styles.expandButtonIcon}
-            />
-          </View>
-        </TouchableWithoutFeedback>
+          {!onStock && <Text style={styles.soldText}>RASPRODATO</Text>}
+        </View>
+
+        {/* Stop parent press here */}
         {onStock && (
           <IconButton
+            onPress={handleOnAddPress}
             size={26}
             color={colors.secondaryDark}
-            onPress={handleOnAddPress}
             key={`key-${item._id}-add-button`}
             icon="add"
             style={styles.addButtonContainer}
-            pressedStyles={styles.buttonContainerPressed}
+            backColor="transparent"
+            backColor1="transparent"
           />
         )}
       </View>
 
       {/* STOCK DATA */}
       <View style={styles.stockDataContainer}>
-        {/* DISPLAY DRESSES STOCK */}
-        {item && item.stockType === 'Boja-Veličina-Količina' && (
+        {item?.stockType === 'Boja-Veličina-Količina' && (
           <DisplayDressStock isExpanded={isExpanded} item={item as DressTypes} />
         )}
-
-        {/* DISPLAY PURSES STOCK */}
-        {item && item.stockType === 'Boja-Količina' && (
-          <DisplayPurseStock isExpanded={isExpanded} item={item as PurseTypes} />
-        )}
+        {item?.stockType === 'Boja-Količina' && <DisplayPurseStock isExpanded={isExpanded} item={item as PurseTypes} />}
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -141,9 +130,8 @@ function getStyles(colors: ThemeColors, onStock: boolean) {
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      backgroundColor: onStock ? colors.white : colors.secondaryHighlight,
-      marginBottom: 4,
-      elevation: 2,
+      backgroundColor: onStock ? colors.background : colors.outOfStockBackground,
+      marginBottom: 2,
       position: 'relative',
     },
     infoContainer: {
@@ -174,7 +162,7 @@ function getStyles(colors: ThemeColors, onStock: boolean) {
     headerText: {
       fontSize: 16,
       fontWeight: 'bold',
-      color: colors.primaryDark,
+      color: colors.defaultText,
       maxHeight: 40,
     },
     soldText: {
@@ -189,20 +177,20 @@ function getStyles(colors: ThemeColors, onStock: boolean) {
       bottom: -10,
       right: 0,
       marginLeft: 'auto',
-      backgroundColor: onStock ? colors.white : colors.secondaryHighlight,
-      borderColor: onStock ? colors.success : colors.error,
+      backgroundColor: onStock ? colors.background : colors.outOfStockBackground,
+      borderColor: onStock ? colors.success1 : colors.error,
       borderWidth: 0,
       width: '100%',
     },
     expandButtonIcon: {
-      color: onStock ? colors.success : colors.error,
+      color: onStock ? colors.success1 : colors.error,
     },
     stockDataContainer: {
       width: '100%',
       paddingHorizontal: 6,
     },
     onStockText: {
-      color: colors.success,
+      color: colors.success1,
       fontWeight: 'bold',
     },
     addButtonContainer: {
@@ -211,9 +199,8 @@ function getStyles(colors: ThemeColors, onStock: boolean) {
       top: 0,
       borderRadius: 100,
       overflow: 'hidden',
-      backgroundColor: onStock ? colors.white : colors.secondaryHighlight,
+      backgroundColor: onStock ? colors.background : colors.outOfStockBackground,
       padding: 10,
-      elevation: 2,
     },
   });
 }

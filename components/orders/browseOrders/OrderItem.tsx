@@ -85,7 +85,7 @@ function OrderItem({
   const backgroundColor = useHighlightAnimation({
     isHighlighted,
     duration: 120,
-    highlightColor: '#A3B9CC',
+    highlightColor: colors.selectedProductBackground,
   });
 
   function Row({ children }: any) {
@@ -107,44 +107,51 @@ function OrderItem({
             <Image source={order.buyer.profileImage} style={styles.profileImage} />
           </Pressable>
           <View style={styles.info}>
-            <CustomText variant="header" style={{ marginBottom: 6 }}>
+            <CustomText variant="header" style={{ marginBottom: 0, fontSize: 15 }}>
               {order.buyer.name}
             </CustomText>
-            <CustomText>
+            <Text style={[{ color: colors.grayText, marginBottom: 8, marginTop: -4 }, styles.orderTextinfoSize]}>
               {order.buyer.address}, {order.buyer?.place}
-            </CustomText>
+            </Text>
             <Row>
-              <CustomText variant="bold" style={{ minWidth: 46 }}>
+              <CustomText variant="bold" style={[{ minWidth: 46 }, styles.orderTextinfoSize]}>
                 Tel.
               </CustomText>
-              <CustomText>{order.buyer.phone}</CustomText>
+              <Text style={[{ color: colors.defaultText }, styles.orderTextinfoSize]}>{order.buyer.phone}</Text>
             </Row>
             <Row>
-              <CustomText variant="bold" style={{ minWidth: 46 }}>
+              <CustomText variant="bold" style={[{ minWidth: 46 }, styles.orderTextinfoSize]}>
                 Otkup:
               </CustomText>
-              <CustomText>{order.totalPrice} rsd.</CustomText>
+              <Text style={[{ color: colors.defaultText }, styles.orderTextinfoSize]}>{order.totalPrice} rsd.</Text>
             </Row>
             <Row>
-              <CustomText variant="bold" style={{ minWidth: 46 }}>
+              <CustomText variant="bold" style={[{ minWidth: 46 }, styles.orderTextinfoSize]}>
                 Kurir:
               </CustomText>
-              <CustomText>{order.courier?.name}</CustomText>
+              <Text style={[{ color: colors.defaultText }, styles.orderTextinfoSize]}>{order.courier?.name}</Text>
             </Row>
-            {order.orderNotes && <Text style={styles.orderNoteIndicator}>NAPOMENA</Text>}
+            {order.orderNotes && (
+              <CustomText variant="bold" style={styles.orderNoteIndicator}>
+                NAPOMENA
+              </CustomText>
+            )}
           </View>
+
           <View style={styles.buttonsContainer}>
             {batchMode ? (
               <>
                 {isHighlighted && (
                   <IconButton
                     size={26}
-                    color={colors.secondaryDark}
+                    color={colors.defaultText}
                     onPress={() => onRemoveHighlight(order)}
                     key={`key-${order._id}-highlight-button`}
                     icon="check"
-                    style={[styles.editButtonContainer, { backgroundColor: '#9FB7C6' }, globalStyles.elevation_1]}
+                    style={[styles.editButtonContainer, { backgroundColor: colors.selectedProductButtonBackground }]}
                     pressedStyles={styles.buttonContainerPressed}
+                    backColor={'transparent'}
+                    backColor1={'transparent'}
                   />
                 )}
               </>
@@ -153,12 +160,14 @@ function OrderItem({
                 {user?.permissions?.orders?.update && (
                   <IconButton
                     size={26}
-                    color={colors.secondaryDark}
+                    color={colors.defaultText}
                     onPress={handleOnEditPress}
                     key={`key-${order._id}-edit-button`}
                     icon="edit"
-                    style={[styles.editButtonContainer, globalStyles.elevation_1]}
+                    style={[styles.editButtonContainer]}
                     pressedStyles={styles.buttonContainerPressed}
+                    backColor={'transparent'}
+                    backColor1={'transparent'}
                   />
                 )}
               </>
@@ -197,26 +206,28 @@ function getStyles(colors: ThemeColors, packed: boolean) {
     container: {
       position: 'relative',
       width: '100%',
-      elevation: 2,
-      backgroundColor: colors.white,
+      backgroundColor: colors.containerBackground,
       minHeight: 160,
-      paddingHorizontal: 16,
+      paddingHorizontal: 18,
       paddingVertical: 14,
       gap: 10,
       overflow: 'hidden',
+      elevation: 1,
+    },
+    orderTextinfoSize: {
+      fontSize: 13,
     },
     orderNoteIndicator: {
       position: 'absolute',
-      right: -47,
+      right: -50,
       bottom: packed ? 10 : 0,
       color: colors.error,
-      fontWeight: 'bold',
     },
     timestamp: {
       position: 'absolute',
       right: 10,
       fontSize: 12,
-      color: colors.secondaryDark,
+      color: colors.grayText,
     },
     infoContainer: {
       flex: 1,
@@ -231,6 +242,8 @@ function getStyles(colors: ThemeColors, packed: boolean) {
       width: 120,
       flex: 2,
       borderRadius: 4,
+      borderWidth: 0.5,
+      borderColor: colors.borderColor,
     },
     info: {
       flex: 10,
@@ -250,9 +263,8 @@ function getStyles(colors: ThemeColors, packed: boolean) {
       top: 8,
       borderRadius: 100,
       overflow: 'hidden',
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       padding: 10,
-      elevation: 2,
     },
     buttonContainerPressed: {
       opacity: 0.7,
@@ -265,7 +277,7 @@ function getStyles(colors: ThemeColors, packed: boolean) {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: colors.primaryDark,
+      backgroundColor: colors.defaultText,
       zIndex: 12,
       opacity: 0.4,
       pointerEvents: 'none',
@@ -273,7 +285,7 @@ function getStyles(colors: ThemeColors, packed: boolean) {
     packedText: {
       position: 'absolute',
       fontWeight: 'bold',
-      color: colors.success,
+      color: colors.success1,
       bottom: 10,
       right: -8,
       width: 100,

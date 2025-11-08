@@ -182,6 +182,7 @@ export interface NewOrderContextTypes {
   setOrderNotes: (note: string) => void;
   reservationDate: Date | null;
   setReservationDate: (date: Date) => void;
+  resetProductAvailableStockOnResetButtonPress: () => void;
 }
 
 export interface CourierTypes {
@@ -376,6 +377,9 @@ export interface BoutiqueTypes {
       courier: string;
       listProductsBy: string;
     };
+    orders: {
+      requireBuyerImage: boolean;
+    };
   };
   version: string;
   buildLink: string;
@@ -396,6 +400,9 @@ export const defaultBoutique: BoutiqueTypes = {
     defaults: {
       courier: '',
       listProductsBy: 'category',
+    },
+    orders: {
+      requireBuyerImage: true,
     },
   },
   version: '1.0.0',

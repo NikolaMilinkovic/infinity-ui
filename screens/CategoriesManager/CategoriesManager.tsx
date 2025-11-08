@@ -1,30 +1,32 @@
-import { Animated, StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import AddCategories from '../../components/categories/AddCategories';
 import EditCategories from '../../components/categories/EditCategories';
-import SafeView from '../../components/layout/SafeView';
-import { useFadeAnimation } from '../../hooks/useFadeAnimation';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 
 function CategoriesManager() {
-  // Fade in animation
-  const fadeAnimation = useFadeAnimation();
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   return (
-    <SafeView>
-      <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
-        <AddCategories />
-        <EditCategories />
-      </Animated.View>
-    </SafeView>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 200}
+    >
+      <AddCategories />
+      <EditCategories />
+    </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  tempText: {
-    fontSize: 34,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.containerBackground,
+    },
+  });
+}
 
 export default CategoriesManager;

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import DressColor from '../../models/DressColor';
 import PurseColor from '../../models/PurseColor';
 import { AuthContext } from '../../store/auth-context';
@@ -41,7 +41,6 @@ function AddProduct() {
   const [allCategories, setAllCategories] = useState<CategoryTypes[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<CategoryTypes>();
   const [allColors, setAllColors] = useState<ColorTypes[]>([]);
-  const [isMultiDropdownOpen, setIsMultiDropdownOpen] = useState(false);
   const [selectedColors, setSelectedColors] = useState([]);
   const [previewImage, setPreviewImage] = useState('');
 
@@ -240,7 +239,7 @@ function AddProduct() {
 
   return (
     <TouchableWithoutFeedback onPress={handleOutsideClick} style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <Card cardStyles={{ marginBottom: 40 }}>
           <GenericProductInputComponents
             productName={productName}
@@ -316,7 +315,7 @@ function AddProduct() {
             </Button>
           </View>
         </Card>
-      </ScrollView>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
@@ -325,7 +324,7 @@ function getStyles(colors: ThemeColors) {
     container: {
       display: 'flex',
       position: 'relative',
-      backgroundColor: colors.background2,
+      backgroundColor: colors.containerBackground,
     },
     card: {
       backgroundColor: colors.background1,
@@ -341,7 +340,7 @@ function getStyles(colors: ThemeColors) {
     },
     buttonContainer: {},
     sectionText: {
-      fontSize: 18,
+      fontSize: 16,
     },
     sectionTextTopMargin: {
       marginTop: 16,

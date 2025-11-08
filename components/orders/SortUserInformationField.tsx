@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
+import { useBoutique } from '../../store/app-context';
 import { AuthContext } from '../../store/auth-context';
 import { NewOrderContext } from '../../store/new-order-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
@@ -25,6 +26,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
   const styles = getStyles(colors);
   const authCtx = useContext(AuthContext);
   const orderCtx = useContext(NewOrderContext);
+  const boutiqueCtx = useBoutique();
 
   // Expand animation that makescontent visible when expanded
   // Used to fix the padding issue when expand is collapsed
@@ -68,21 +70,26 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
       orderCtx.buyerData?.phone !== '' &&
       orderCtx.buyerData?.phone !== null &&
       orderCtx.buyerData?.phone !== undefined &&
-      orderCtx.profileImage &&
-      orderCtx.profileImage !== null &&
-      orderCtx.profileImage !== undefined &&
       orderCtx.buyerData?.place &&
       orderCtx.buyerData?.place !== '' &&
       orderCtx.buyerData?.place !== null &&
       orderCtx.buyerData?.place !== undefined
     ) {
+      if (boutiqueCtx.data.settings.orders.requireBuyerImage && !orderCtx.profileImage) {
+        popupMessage('Unesite sliku profila kupca', 'danger');
+        return;
+      }
       onNext();
     } else {
       if (!orderCtx.buyerData?.name) return popupMessage('Unesite ime / prezime kupca', 'danger');
       if (!orderCtx.buyerData?.address) return popupMessage('Unesite adresu kupca', 'danger');
       if (!orderCtx.buyerData?.place) return popupMessage('Unesite mesto kupca', 'danger');
       if (!orderCtx.buyerData?.phone) return popupMessage('Unesite broj telefona kupca', 'danger');
-      if (!orderCtx.profileImage) return popupMessage('Unesite sliku profila kupca', 'danger');
+      if (boutiqueCtx.data.settings.orders.requireBuyerImage) {
+        if (!orderCtx.profileImage || orderCtx.profileImage === null || orderCtx.profileImage === undefined) {
+          return popupMessage('Unesite sliku profila kupca', 'danger');
+        }
+      }
     }
   }
 
@@ -144,7 +151,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             </Button>
           </View> */}
           <InputField
-            activeColor={colors.borderColor}
+            activeColor={colors.grayText}
             labelStyles={{ backgroundColor: colors.background }}
             label="Ime i Prezime"
             inputText={orderCtx?.buyerData?.name || ''}
@@ -154,7 +161,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
-            activeColor={colors.borderColor}
+            activeColor={colors.grayText}
             labelStyles={{ backgroundColor: colors.background }}
             label="Adresa"
             inputText={orderCtx?.buyerData?.address || ''}
@@ -164,7 +171,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
-            activeColor={colors.borderColor}
+            activeColor={colors.grayText}
             labelStyles={{ backgroundColor: colors.background }}
             label="Mesto"
             inputText={orderCtx?.buyerData?.place || ''}
@@ -174,7 +181,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
-            activeColor={colors.borderColor}
+            activeColor={colors.grayText}
             keyboard="number-pad"
             labelStyles={{ backgroundColor: colors.background }}
             label="Broj telefona"
@@ -185,7 +192,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             containerStyles={styles.inputFieldStyle}
           />
           <InputField
-            activeColor={colors.borderColor}
+            activeColor={colors.grayText}
             keyboard="number-pad"
             labelStyles={{ backgroundColor: colors.background }}
             label="Broj drugog telefona"

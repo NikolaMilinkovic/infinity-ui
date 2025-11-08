@@ -84,6 +84,7 @@ function AddBoutique() {
             activeColor={colors.highlight}
             labelBorders={false}
             inputText={boutiqueData.boutiqueName}
+            selectionColor={colors.highlight}
             setInputText={(text) =>
               setBoutiqueData((prev) => ({
                 ...prev,

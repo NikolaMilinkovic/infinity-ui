@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { OrderTypes } from '../../../types/allTsTypes';
 import PackOrderItem from './PackOrderItem';
@@ -28,11 +28,11 @@ function PackOrdersItemsList({ selectedCourier, data }: PackOrderItemsListPropTy
 
 const styles = StyleSheet.create({
   listContainer: {
-    gap: 8,
-    paddingBottom: 16,
+    gap: 4,
+    paddingBottom: 60,
   },
   list: {
-    paddingTop: 8,
+    paddingTop: 3,
   },
 });
 export default PackOrdersItemsList;

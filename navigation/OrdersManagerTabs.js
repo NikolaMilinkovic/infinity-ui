@@ -24,11 +24,11 @@ export default function OrdersManagerTabs() {
           color: colors.secondaryDark,
         },
         tabBarStyle: {
-          backgroundColor: colors.secondaryLight,
+          backgroundColor: colors.tabsBackground,
         },
         tabBarIndicatorStyle: {
           backgroundColor: colors.highlight,
-          height: 3,
+          height: 4,
         },
         lazy: false,
         tabBarBounces: true,

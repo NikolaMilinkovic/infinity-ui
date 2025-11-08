@@ -255,7 +255,7 @@ function getStyles(colors: ThemeColors) {
       borderWidth: 1,
       borderColor: colors.borderColor,
       margin: 10,
-      marginBottom: 50,
+      marginBottom: 70,
     },
     success: {
       color: colors.success,

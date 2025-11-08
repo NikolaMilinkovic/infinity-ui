@@ -111,7 +111,7 @@ function getStyles(colors: ThemeColors) {
       padding: 16,
     },
     card: {
-      marginBottom: 50,
+      marginBottom: 70,
     },
     statisticsContainer: {
       position: 'relative',

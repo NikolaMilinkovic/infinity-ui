@@ -285,7 +285,7 @@ function getStyles(colors: ThemeColors) {
     container: {
       height: '100%',
       position: 'relative',
-      backgroundColor: colors.background2,
+      backgroundColor: colors.containerBackground,
     },
     productsContainer: {
       flexGrow: 1,

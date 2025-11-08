@@ -148,7 +148,7 @@ function ColorSizeStockSelectorModalComponent({ product, index, setSelectedItems
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={styles.iconStyle}
           size={26}
-          color={colors.white}
+          color={colors.defaultText}
         />
       </Pressable>
 
@@ -191,26 +191,26 @@ function getStyles(colors: ThemeColors, selectedColor: string, selectedSize: str
     headerContainer: {
       padding: 10,
       flexDirection: 'row',
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.background,
     },
     iconStyle: {
       marginLeft: 'auto',
-      color: colors.primaryDark,
+      color: colors.defaultText,
     },
     header: {
       fontSize: 20,
       fontWeight: 'bold',
-      color: colors.primaryDark,
+      color: colors.defaultText,
       maxWidth: '88%',
     },
     container: {
       marginBottom: 8,
     },
     colorsContainer: {
-      backgroundColor: selectedColor ? colors.white : colors.secondaryHighlight,
+      backgroundColor: colors.background,
     },
     sizeContainer: {
-      backgroundColor: selectedSize ? colors.white : colors.secondaryHighlight,
+      backgroundColor: colors.background,
     },
     radioButtonsContainer: {
       flexDirection: 'row',
@@ -219,10 +219,10 @@ function getStyles(colors: ThemeColors, selectedColor: string, selectedSize: str
       paddingHorizontal: 6,
     },
     label: {
-      color: colors.primaryDark,
+      color: colors.defaultText,
     },
     colorHeader: {
-      color: colors.primaryDark,
+      color: colors.defaultText,
       fontSize: 16,
       fontWeight: 'bold',
       padding: 6,

@@ -1,7 +1,7 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useEffect, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-import { ThemeColors, useThemeColors } from '../../store/theme-context';
+import { ThemeColors, useTheme, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 
 interface DatePicker {
@@ -17,6 +17,7 @@ interface DatePicker {
 function CustomDatePicker({ date, handleDatePick, handleDateReset, label }: DatePicker) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isDatePicked, setIsDatePicked] = useState(false);
+  const themeContext = useTheme();
   const colors = useThemeColors();
   const styles = getStyles(colors);
   useEffect(() => {
@@ -49,6 +50,10 @@ function CustomDatePicker({ date, handleDatePick, handleDateReset, label }: Date
                 is24Hour={true}
                 onChange={handleDatePick}
                 onTouchCancel={handleDateReset}
+                accentColor={colors.highlight1}
+                textColor={colors.defaultText}
+                themeVariant={themeContext.theme === 'dark' ? 'dark' : 'light'}
+                display="spinner"
               />
             </View>
             <Button containerStyles={[styles.dateButton, { width: '50%' }]} onPress={handleDateReset}>
@@ -74,6 +79,7 @@ function CustomDatePicker({ date, handleDatePick, handleDateReset, label }: Date
                 is24Hour={true}
                 onChange={handleDatePick}
                 onTouchCancel={handleDateReset}
+                accentColor={colors.highlight1}
               />
             )}
           </View>
@@ -95,19 +101,19 @@ function getStyles(colors: ThemeColors) {
     radioGroupContainer: {
       padding: 10,
       borderWidth: 2,
-      borderColor: colors.primaryLight,
+      borderColor: colors.borderColor,
       borderRadius: 4,
       marginBottom: 16,
       marginTop: 10,
     },
     filtersH2absolute: {
       fontSize: 14,
-      color: colors.primaryDark,
+      color: colors.defaultText,
       marginBottom: 8,
       position: 'absolute',
       left: 10,
       top: -12,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       borderRadius: 4,
       paddingHorizontal: 4,
     },
@@ -117,8 +123,8 @@ function getStyles(colors: ThemeColors) {
     },
     dateButton: {
       flex: 1,
-      backgroundColor: colors.secondaryLight,
-      color: colors.primaryDark,
+      backgroundColor: colors.background,
+      color: colors.defaultText,
     },
     dateDisplayContainer: {
       flexDirection: 'column',

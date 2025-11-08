@@ -160,7 +160,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
   const toggleExpandAnimation = useExpandAnimationWithContentVisibility(
     showEdit as boolean,
     setShowEdit,
-    40,
+    44,
     contentHeight,
     280
   );
@@ -192,6 +192,8 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
               placeholder="Ime kategorije"
               value={newName}
               onChangeText={handleNameChange}
+              placeholderTextColor={colors.grayText}
+              selectionColor={colors.highlight}
             />
             <DropdownList
               data={dropdownData}
@@ -203,16 +205,18 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
               <Button
                 containerStyles={styles.buttonStyle}
                 onPress={showEditCategoryrHandler}
-                textColor={colors.primaryLight}
-                backColor={colors.error}
+                textColor={colors.defaultText}
+                backColor={colors.buttonNormal1}
+                backColor1={colors.buttonNormal2}
               >
                 Otkaži
               </Button>
               <Button
                 containerStyles={styles.buttonStyle}
                 onPress={updateCategoryHandler}
-                textColor={colors.primaryLight}
-                backColor={colors.primaryDark}
+                textColor={colors.whiteText}
+                backColor={colors.buttonHighlight1}
+                backColor1={colors.buttonHighlight2}
               >
                 Sačuvaj
               </Button>
@@ -232,6 +236,8 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
               color={colors.error}
               style={styles.deleteIcon}
               size={26}
+              backColor1="transparent"
+              backColor="transparent"
             />
           </View>
         )}
@@ -244,14 +250,10 @@ function getStyles(colors: ThemeColors) {
     colorItem: {
       padding: 14,
       paddingHorizontal: 25,
-      borderWidth: 0.5,
-      borderColor: colors.secondaryLight,
-      backgroundColor: 'white',
-      marginBottom: 1,
+      backgroundColor: colors.background,
       flexDirection: 'row',
       gap: 20,
       alignItems: 'center',
-      elevation: 1,
     },
     deleteIcon: {
       marginLeft: 'auto',
@@ -267,21 +269,25 @@ function getStyles(colors: ThemeColors) {
     },
     text: {
       fontSize: 14,
+      color: colors.defaultText,
     },
     categoryName: {
       fontWeight: 'bold',
       fontSize: 16,
+      color: colors.defaultText,
     },
     mainInputsContainer: {
       width: '100%',
       flexDirection: 'column',
     },
     input: {
-      borderBottomColor: colors.secondaryLight,
+      borderBottomColor: colors.borderColor,
+      color: colors.defaultText,
       borderBottomWidth: 1,
       flex: 1,
       marginBottom: 10,
       fontSize: 16,
+      paddingVertical: 10,
     },
     dropdown: {
       marginBottom: 8,

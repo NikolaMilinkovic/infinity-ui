@@ -23,7 +23,7 @@ export default function AdminDashboardTabs() {
         },
         tabBarIndicatorStyle: {
           backgroundColor: colors.highlight,
-          height: 3,
+          height: 4,
         },
       }}
     >

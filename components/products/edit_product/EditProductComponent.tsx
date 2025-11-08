@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
 import DressColor from '../../../models/DressColor';
 import PurseColor from '../../../models/PurseColor';
@@ -21,7 +21,6 @@ import CustomText from '../../../util-components/CustomText';
 import DropdownList from '../../../util-components/DropdownList';
 import ImagePicker from '../../../util-components/ImagePicker';
 import InputField from '../../../util-components/InputField';
-import KeyboardAvoidingWrapper from '../../../util-components/KeyboardAvoidingWrapper';
 import MultiDropdownList from '../../../util-components/MultiDropdownList';
 import MultilineInput from '../../../util-components/MultilineInput';
 import { popupMessage } from '../../../util-components/PopupMessage';
@@ -253,77 +252,72 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
   }, [categoryCtx.categories, item.stockType, item.category]);
 
   return (
-    <KeyboardAvoidingWrapper>
-      <View style={{ flex: 1 }}>
-        {showHeader && <ModalHeader title={`TEST: ${item.name}`} />}
+    <>
+      {showHeader && <ModalHeader title={`TEST: ${item.name}`} />}
 
-        {/* CONTENT */}
-        <ScrollView style={styles.container}>
-          <View style={styles.card}>
-            {/* ACTIVE | INACTIVE */}
-            <View>
-              <CustomText style={[styles.sectionText]}>Aktivan | Neaktivan</CustomText>
-              <RadioGroup
-                radioButtons={activeButtons}
-                onPress={handleRadioSelect}
-                selectedId={isActive ? '1' : '2'}
-                containerStyle={styles.radioButtionsContainer}
-              />
-            </View>
+      {/* CONTENT */}
+      <View style={styles.container}>
+        <View style={styles.card}>
+          {/* ACTIVE | INACTIVE */}
+          <View>
+            <CustomText style={[styles.sectionText]}>Aktivan | Neaktivan</CustomText>
+            <RadioGroup
+              radioButtons={activeButtons}
+              onPress={handleRadioSelect}
+              selectedId={isActive ? '1' : '2'}
+              containerStyle={styles.radioButtionsContainer}
+            />
+          </View>
 
-            {/* PRODUCT NAME */}
-            <View>
-              <CustomText style={styles.sectionText}>Osnovne Informacije</CustomText>
-              <InputField
-                labelBorders={false}
-                label="Naziv Proizvoda"
-                isSecure={false}
-                inputText={name}
-                setInputText={setName}
-                background={colors.background}
-                color={colors.defaultText}
-                activeColor={colors.borderColor}
-                containerStyles={{ marginTop: 18 }}
-              />
-            </View>
+          {/* PRODUCT NAME */}
+          <View>
+            <CustomText style={styles.sectionText}>Osnovne Informacije</CustomText>
+            <InputField
+              labelBorders={false}
+              label="Naziv Proizvoda"
+              isSecure={false}
+              inputText={name}
+              setInputText={setName}
+              background={colors.background}
+              color={colors.defaultText}
+              activeColor={colors.grayText}
+              containerStyles={{ marginTop: 18 }}
+            />
+          </View>
 
-            {/* PRICE */}
-            <View>
-              <InputField
-                labelBorders={false}
-                label="Cena"
-                isSecure={false}
-                inputText={price}
-                setInputText={setPrice}
-                background={colors.background}
-                color={colors.defaultText}
-                activeColor={colors.borderColor}
-                keyboard="numeric"
-                containerStyles={{ marginTop: 18 }}
-              />
-            </View>
+          {/* PRICE */}
+          <View>
+            <InputField
+              labelBorders={false}
+              label="Cena"
+              isSecure={false}
+              inputText={price}
+              setInputText={setPrice}
+              background={colors.background}
+              color={colors.defaultText}
+              activeColor={colors.grayText}
+              keyboard="numeric"
+              containerStyles={{ marginTop: 18 }}
+            />
+          </View>
 
-            {/* IMAGE PICKER */}
-            <View>
-              <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Slika Proizvoda</CustomText>
-              <ImagePicker
-                onTakeImage={setProductImage}
-                previewImage={previewImage}
-                setPreviewImage={setPreviewImage}
-              />
-            </View>
+          {/* IMAGE PICKER */}
+          <View>
+            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Slika Proizvoda</CustomText>
+            <ImagePicker onTakeImage={setProductImage} previewImage={previewImage} setPreviewImage={setPreviewImage} />
+          </View>
 
-            {/* CATEGORY */}
-            <View>
-              <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Kategorija</CustomText>
-              <DropdownList
-                data={filteredCategories}
-                placeholder="Kategorija Proizvoda"
-                onSelect={(category) => setCategoryHandler(category)}
-                defaultValue={item.category}
-                buttonContainerStyles={{ marginTop: 4 }}
-              />
-              {/* <DropdownList2
+          {/* CATEGORY */}
+          <View>
+            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Kategorija</CustomText>
+            <DropdownList
+              data={filteredCategories}
+              placeholder="Kategorija Proizvoda"
+              onSelect={(category) => setCategoryHandler(category)}
+              defaultValue={item.category}
+              buttonContainerStyles={{ marginTop: 4 }}
+            />
+            {/* <DropdownList2
               data={categoryCtx.categories}
               value={initialCategory as any}
               placeholder="Kategorija Proizvoda"
@@ -332,57 +326,57 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
               valueField="name"
               containerStyle={{ marginTop: 4 }}
             /> */}
-            </View>
+          </View>
 
-            {/* COLORS */}
-            <View>
-              <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>
-                Boje, veličine i količina lagera
-              </CustomText>
-              {colorsDefaultOptions && allColors && (
-                <MultiDropdownList
-                  data={allColors}
-                  setSelected={setSelectedColors}
-                  isOpen={true}
-                  placeholder="Izaberi boje"
-                  label="Boje Proizvoda"
-                  containerStyles={{ marginTop: 4 }}
-                  defaultValues={colorsDefaultOptions.length === 0 ? [] : colorsDefaultOptions}
-                />
-              )}
-            </View>
-            {/* DRESES */}
-            {category && category.stockType === 'Boja-Veličina-Količina' && (
-              <AddDressComponents dressColors={itemColors as any} setDressColors={setItemColors} />
-            )}
-            {/* PURSES */}
-            {category && category.stockType === 'Boja-Količina' && (
-              <AddPurseComponents purseColors={itemColors as any} setPurseColors={setItemColors} />
-            )}
-
-            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Dodatne informacije:</CustomText>
-            <MultilineInput
-              label="Opis proizvoda"
-              value={description}
-              setValue={(text: string | number | undefined) => setDescription(text as string)}
-              containerStyles={styles.descriptionField}
-              numberOfLines={4}
-              background={colors.background}
-              activeColor={colors.borderColor}
-            />
-
-            {/* SUPPLIER */}
-            <View>
-              <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</CustomText>
-              <DropdownList
-                key={resetKey}
-                data={supplierData}
-                placeholder="Izaberite dobavljača"
-                onSelect={setSupplier}
-                buttonContainerStyles={{ marginTop: 4 }}
-                defaultValue={supplierDefaultValue}
+          {/* COLORS */}
+          <View>
+            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>
+              Boje, veličine i količina lagera
+            </CustomText>
+            {colorsDefaultOptions && allColors && (
+              <MultiDropdownList
+                data={allColors}
+                setSelected={setSelectedColors}
+                isOpen={true}
+                placeholder="Izaberi boje"
+                label="Boje Proizvoda"
+                containerStyles={{ marginTop: 4 }}
+                defaultValues={colorsDefaultOptions.length === 0 ? [] : colorsDefaultOptions}
               />
-              {/* <DropdownList2
+            )}
+          </View>
+          {/* DRESES */}
+          {category && category.stockType === 'Boja-Veličina-Količina' && (
+            <AddDressComponents dressColors={itemColors as any} setDressColors={setItemColors} />
+          )}
+          {/* PURSES */}
+          {category && category.stockType === 'Boja-Količina' && (
+            <AddPurseComponents purseColors={itemColors as any} setPurseColors={setItemColors} />
+          )}
+
+          <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Dodatne informacije:</CustomText>
+          <MultilineInput
+            label="Opis proizvoda"
+            value={description}
+            setValue={(text: string | number | undefined) => setDescription(text as string)}
+            containerStyles={styles.descriptionField}
+            numberOfLines={4}
+            background={colors.background}
+            activeColor={colors.grayText}
+          />
+
+          {/* SUPPLIER */}
+          <View>
+            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</CustomText>
+            <DropdownList
+              key={resetKey}
+              data={supplierData}
+              placeholder="Izaberite dobavljača"
+              onSelect={setSupplier}
+              buttonContainerStyles={{ marginTop: 4 }}
+              defaultValue={supplierDefaultValue}
+            />
+            {/* <DropdownList2
               key={resetKey}
               data={supplierData}
               value={typeof supplier === 'string' ? supplier : supplier?.name || null}
@@ -392,33 +386,32 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
               valueField="name"
               containerStyle={{ marginTop: 4 }}
             /> */}
-            </View>
-
-            {/* BUTTONS */}
-            <View style={styles.buttonsContainer}>
-              <Button
-                onPress={handleOnPress}
-                textColor={colors.defaultText}
-                backColor={colors.buttonNormal1}
-                backColor1={colors.buttonNormal2}
-                containerStyles={styles.button}
-              >
-                Nazad
-              </Button>
-              <Button
-                onPress={handleProductUpdate}
-                textColor={colors.white}
-                backColor={colors.buttonHighlight1}
-                backColor1={colors.buttonHighlight2}
-                containerStyles={styles.button}
-              >
-                Sačuvaj izmene
-              </Button>
-            </View>
           </View>
-        </ScrollView>
+
+          {/* BUTTONS */}
+          <View style={styles.buttonsContainer}>
+            <Button
+              onPress={handleOnPress}
+              textColor={colors.defaultText}
+              backColor={colors.buttonNormal1}
+              backColor1={colors.buttonNormal2}
+              containerStyles={styles.button}
+            >
+              Nazad
+            </Button>
+            <Button
+              onPress={handleProductUpdate}
+              textColor={colors.white}
+              backColor={colors.buttonHighlight1}
+              backColor1={colors.buttonHighlight2}
+              containerStyles={styles.button}
+            >
+              Sačuvaj izmene
+            </Button>
+          </View>
+        </View>
       </View>
-    </KeyboardAvoidingWrapper>
+    </>
   );
 }
 

@@ -152,7 +152,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
   const toggleExpandAnimation = useExpandAnimationWithContentVisibility(
     showEdit as boolean,
     setShowEdit,
-    40,
+    44,
     contentHeight,
     280
   );
@@ -179,27 +179,38 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
               setContentHeight(e.nativeEvent.layout.height);
             }}
           >
-            <TextInput style={styles.input} placeholder="Ime kurira" value={newName} onChangeText={handleNameChange} />
+            <TextInput
+              style={styles.input}
+              placeholder="Ime kurira"
+              value={newName}
+              onChangeText={handleNameChange}
+              selectionColor={colors.highlight}
+              placeholderTextColor={colors.grayText}
+            />
             <TextInput
               style={styles.input}
               placeholder="Cena dostave po paketu"
               value={deliveryPrice?.toString() || ''}
               onChangeText={handlePriceChange}
               keyboardType="numeric"
+              selectionColor={colors.highlight}
+              placeholderTextColor={colors.grayText}
             />
             <View style={styles.buttons}>
               <Button
                 onPress={showEditCourierHandler}
-                textColor={colors.primaryLight}
-                backColor={colors.error}
+                textColor={colors.defaultText}
+                backColor={colors.buttonNormal1}
+                backColor1={colors.buttonNormal2}
                 containerStyles={styles.buttonStyle}
               >
                 Otkaži
               </Button>
               <Button
                 onPress={updateCourierHandler}
-                textColor={colors.primaryLight}
-                backColor={colors.primaryDark}
+                textColor={colors.whiteText}
+                backColor={colors.buttonHighlight1}
+                backColor1={colors.buttonHighlight2}
                 containerStyles={styles.buttonStyle}
               >
                 Sačuvaj
@@ -211,7 +222,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
         ) : (
           <View style={styles.displayCourier}>
             <View style={styles.previewData}>
-              <Text style={styles.text}>{courierData.name}</Text>
+              <Text style={styles.text}>Kurir: {courierData.name}</Text>
               <Text style={styles.price}>Cena dostave: {courierData.deliveryPrice} RSD</Text>
             </View>
             <IconButton
@@ -220,6 +231,8 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
               color={colors.error}
               style={styles.deleteIcon}
               size={26}
+              backColor="transparent"
+              backColor1="transparent"
             />
           </View>
         )}
@@ -232,14 +245,11 @@ function getStyles(colors: ThemeColors) {
     courierItem: {
       padding: 14,
       paddingHorizontal: 25,
-      borderWidth: 0.5,
-      borderColor: colors.secondaryLight,
-      backgroundColor: 'white',
+      backgroundColor: colors.background,
       marginBottom: 1,
       flexDirection: 'row',
       gap: 20,
       alignItems: 'center',
-      elevation: 1,
     },
     deleteIcon: {
       marginLeft: 'auto',
@@ -250,24 +260,30 @@ function getStyles(colors: ThemeColors) {
       flex: 1,
       alignItems: 'center',
     },
-    previewData: {},
+    previewData: {
+      color: colors.defaultText,
+    },
     text: {
       fontWeight: 'bold',
       fontSize: 16,
+      color: colors.defaultText,
     },
     price: {
       fontSize: 14,
+      color: colors.defaultText,
     },
     mainInputsContainer: {
       width: '100%',
       flexDirection: 'column',
     },
     input: {
-      borderBottomColor: colors.secondaryLight,
+      borderBottomColor: colors.borderColor,
       borderBottomWidth: 1,
       flex: 1,
       marginBottom: 10,
       fontSize: 16,
+      color: colors.defaultText,
+      paddingVertical: 10,
     },
     buttons: {
       flexDirection: 'row',

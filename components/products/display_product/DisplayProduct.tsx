@@ -295,6 +295,7 @@ function getStyles(colors: ThemeColors, onStock: boolean, showAddBtn: boolean) {
       overflow: 'hidden',
       marginBottom: 1,
       position: 'relative',
+      elevation: 1,
     },
     infoContainer: {
       width: '100%',

@@ -178,7 +178,7 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
                 />
               </View>
 
-              <View style={styles.navRow}>
+              {/* <View style={styles.navRow}>
                 <CustomCheckbox
                   customColor={colors.defaultText}
                   checkColor={colors.checkboxCheckColor}
@@ -187,7 +187,7 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
                   label={'Admin Dashboard'}
                   checked={data.permissions.navigation.admin_dashboard}
                 />
-              </View>
+              </View> */}
             </View>
           </PermissionsRow>
 

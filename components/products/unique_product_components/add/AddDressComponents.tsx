@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   buttonContainer: {
-    marginBottom: 50,
+    marginBottom: 70,
   },
   sectionText: {
     fontSize: 18,

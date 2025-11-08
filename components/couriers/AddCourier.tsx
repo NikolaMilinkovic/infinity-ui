@@ -87,26 +87,32 @@ function AddCourier() {
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
-            background={colors.white}
-            color={colors.primaryDark}
+            background={colors.background}
+            color={colors.defaultText}
             activeColor={colors.highlight}
             labelBorders={false}
             containerStyles={{ flex: 1 }}
+            selectionColor={colors.highlight}
           />
           <InputField
             label="Cena dostave"
             isSecure={false}
             inputText={inputPrice}
             setInputText={setInputPrice}
-            background={colors.white}
-            color={colors.primaryDark}
+            background={colors.background}
+            color={colors.defaultText}
             activeColor={colors.highlight}
             labelBorders={false}
             keyboard="number-pad"
             containerStyles={{ flex: 1 }}
           />
         </View>
-        <Button onPress={addCourierHandler} textColor={colors.white} backColor={colors.highlight}>
+        <Button
+          onPress={addCourierHandler}
+          textColor={colors.whiteText}
+          backColor={colors.buttonHighlight1}
+          backColor1={colors.buttonHighlight2}
+        >
           Sačuvaj
         </Button>
       </View>
@@ -118,11 +124,11 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       alignItems: 'center',
-      borderColor: colors.primaryDark,
+      borderColor: colors.borderColor,
       borderWidth: 0,
-      paddingVertical: 16,
+      paddingTop: 22,
       paddingBottom: 8,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
     },
     controllsContainer: {
       flexDirection: 'column',

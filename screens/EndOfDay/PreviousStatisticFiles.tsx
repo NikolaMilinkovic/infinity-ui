@@ -7,7 +7,7 @@ import { ThemeColors, useThemeColors } from '../../store/theme-context';
 
 function PreviousStatisticFiles() {
   const statsCtx = useContext(OrderStatisticsContext);
-  const [statFiles, setStatFiles] = useState(statsCtx.statisticData);
+  const [statFiles, setStatFiles] = useState(statsCtx.statisticData || []);
   const colors = useThemeColors();
   const styles = getStyles(colors);
 
@@ -53,7 +53,7 @@ function getStyles(colors: ThemeColors) {
     },
     card: {
       flex: 1,
-      marginBottom: 50,
+      marginBottom: 70,
     },
   });
 }

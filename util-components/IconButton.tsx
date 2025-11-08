@@ -1,6 +1,7 @@
 import { FontAwesome6, MaterialIcons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import LinearGradientBackground from '../components/gradients/LinearBackgroundGradient';
+import { ThemeColors, useThemeColors } from '../store/theme-context';
 type MaterialIconNames = keyof typeof MaterialIcons.glyphMap;
 type FontAwesomeIconNames = keyof typeof FontAwesome6.glyphMap;
 
@@ -17,6 +18,7 @@ interface IconButtonProps {
   iconsLibrary?: 'MaterialIcons' | 'FontAwesome6';
   backColor: string;
   backColor1: string;
+  direction?: 'row' | 'column';
 }
 
 // file-export
@@ -33,7 +35,10 @@ function IconButton({
   iconsLibrary = 'MaterialIcons',
   backColor,
   backColor1,
+  direction,
 }: IconButtonProps) {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   return (
     <>
       <Pressable
@@ -46,6 +51,8 @@ function IconButton({
             justifyContent: 'center',
             borderRadius: 4,
             width: '100%',
+            flexDirection: direction,
+            gap: direction === 'row' ? 6 : 0,
           }}
           color1={backColor}
           color2={backColor1}
@@ -56,19 +63,24 @@ function IconButton({
           {icon && iconsLibrary === 'FontAwesome6' && (
             <FontAwesome6 style={iconStyle} name={icon as FontAwesomeIconNames} color={color} size={size} />
           )}
-          {text && <Text style={textStyle}>{text}</Text>}
+          {text && <Text style={[styles.genericTextStyles, textStyle]}>{text}</Text>}
         </LinearGradientBackground>
       </Pressable>
     </>
   );
 }
-const styles = StyleSheet.create({
-  pressed: {
-    opacity: 0.7,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    pressed: {
+      opacity: 0.7,
+    },
+    genericTextStyles: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: colors.defaultText,
+    },
+  });
+}
 
 export default IconButton;

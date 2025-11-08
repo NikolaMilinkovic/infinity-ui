@@ -66,6 +66,8 @@ function EditCategories() {
               placeholder="Pretraži kategorije"
               value={searchQuery}
               onChangeText={setSearchQuery}
+              selectionColor={colors.defaultText}
+              placeholderTextColor={colors.grayText}
             />
           </View>
 
@@ -90,39 +92,39 @@ function getStyles(colors: ThemeColors) {
     container: {
       flex: 1,
       width: '100%',
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.containerBackground,
     },
     list: {
       flex: 1,
     },
     listContent: {
-      paddingBottom: 10,
+      paddingTop: 2,
+      paddingBottom: 50,
       gap: 2,
     },
     headerWrapper: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       flexDirection: 'row',
       paddingHorizontal: 10,
-      marginBottom: 6,
-      borderBottomColor: colors.secondaryLight,
-      borderBottomWidth: 0.5,
-      elevation: 2,
+      marginTop: -2,
     },
     header: {
       fontSize: 14,
       fontWeight: 'bold',
       padding: 10,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       textAlign: 'center',
+      color: colors.defaultText,
     },
     input: {
-      borderBottomColor: colors.secondaryLight,
+      borderBottomColor: colors.borderColor,
       borderBottomWidth: 1,
       flex: 1,
       marginBottom: 10,
       marginLeft: 10,
       fontSize: 14,
       textAlignVertical: 'bottom',
+      color: colors.defaultText,
     },
   });
 }

@@ -11,7 +11,7 @@
       "listProductsBy_description": "Sort and create product lists based on the selected parameter. These lists are displayed above the product list and help with quicker product overview:",
 
       "theme_header": "Color Theme",
-      "theme_description": "Toggle between dark | light theme:",
+      "theme_description": "Toggle between light | dark theme:",
 
       "language_header": "Language",
       "language_description": "Sets the app language:"

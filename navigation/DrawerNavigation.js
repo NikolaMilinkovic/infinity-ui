@@ -153,7 +153,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* ADMIN DASHBOARD */}
-      {userCtx.userRole === 'admin' && userCtx.permissions.navigation.admin_dashboard && (
+      {/* {userCtx.userRole === 'admin' && userCtx.permissions.navigation.admin_dashboard && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('AdminDashboardTabs')}
           icon="equalizer"
@@ -163,7 +163,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
           text="Admin Dashboard"
           type="MaterialCommunityIcons"
         />
-      )}
+      )} */}
 
       {/* GLOBAL DASHBOARD */}
       {userCtx.userRole === 'admin' && userCtx.permissions.navigation.global_dashboard && (

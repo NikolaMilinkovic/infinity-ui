@@ -23,7 +23,7 @@ export default function ColorsCategoriesTabs() {
         },
         tabBarIndicatorStyle: {
           backgroundColor: colors.highlight,
-          height: 3,
+          height: 4,
         },
       }}
     >

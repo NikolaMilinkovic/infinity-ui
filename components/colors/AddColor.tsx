@@ -84,10 +84,16 @@ function AddColor() {
             color={colors.defaultText}
             activeColor={colors.highlight}
             labelBorders={false}
+            selectionColor={colors.highlight}
           />
         </View>
         <View style={styles.buttonContainer}>
-          <Button onPress={addColorHandler} textColor={colors.white} backColor={colors.highlight}>
+          <Button
+            onPress={addColorHandler}
+            textColor={colors.whiteText}
+            backColor={colors.buttonHighlight1}
+            backColor1={colors.buttonHighlight2}
+          >
             Sačuvaj
           </Button>
         </View>
@@ -123,7 +129,7 @@ function getStyles(colors: ThemeColors) {
       marginTop: 10,
     },
     success: {
-      color: colors.success,
+      color: colors.success1,
       marginTop: 10,
     },
   });

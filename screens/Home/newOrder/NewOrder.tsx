@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Card from '../../../components/layout/Card';
 import ColorSizeSelectorsList from '../../../components/orders/ColorSizeSelectorsList';
 import CourierSelector from '../../../components/orders/CourierSelector';
@@ -210,66 +210,66 @@ function NewOrder() {
   }
 
   return (
-    <KeyboardAvoidingWrapper>
-      <Animated.ScrollView
-        style={styles.scrollViewContainer}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      >
-        <Card cardStyles={{ marginBottom: 50 }} padding={10}>
-          <SelectedProductsDisplay
-            setIsExpanded={setIsArticleListOpen}
-            isExpanded={isArticleListOpen}
-            onNext={handleArticleListOk}
-            ordersCtx={newOrderCtx}
-          />
-          <ColorSizeSelectorsList
-            ordersCtx={newOrderCtx}
-            isExpanded={isColorSizeSelectorsOpen}
-            setIsExpanded={setIsColorSizeSelectorsOpen}
-            onNext={handleColorSizeSelectorsOk}
-          />
-          <SortUserInformationField
-            setIsExpanded={setIsBuyerInfoOpen}
-            isExpanded={isBuyerInfoOpen}
-            onNext={handleBuyerInfoOk}
-            buyerInfo={buyerInfo}
-            setBuyerInfo={setBuyerInfo}
-          />
-          <CourierSelector
-            isExpanded={isCourierPreviewOpen}
-            setIsExpanded={setIsCourierPreviewOpen}
-            onNext={handleCourierSelectorOk}
-            ref={courierSelectorRef}
-          />
-          <NewOrderPreview
-            isExpanded={isOrderPreviewOpen}
-            setIsExpanded={setIsOrderPreviewOpen}
-            setCustomPrice={newOrderCtx.setCustomPrice}
-            ref={orderPreviewRef}
-          />
-          <View style={styles.buttonsContainer}>
-            <Button
-              backColor={colors.buttonNormal1}
-              backColor1={colors.buttonNormal2}
-              textColor={colors.defaultText}
-              containerStyles={[styles.button, { marginBottom: 6 }]}
-              onPress={handleResetOrderData}
-            >
-              Resetuj
-            </Button>
-            <Button
-              backColor={colors.buttonHighlight1}
-              backColor1={colors.buttonHighlight2}
-              textColor={colors.whiteText}
-              containerStyles={[styles.button, { marginBottom: 6 }]}
-              onPress={handleSubmitOrder}
-            >
-              Dodaj porudžbinu
-            </Button>
-          </View>
-        </Card>
-      </Animated.ScrollView>
+    <KeyboardAvoidingWrapper style={{ backgroundColor: colors.containerBackground }}>
+      <Card cardStyles={{ marginBottom: 70 }} padding={10}>
+        <SelectedProductsDisplay
+          setIsExpanded={setIsArticleListOpen}
+          isExpanded={isArticleListOpen}
+          onNext={handleArticleListOk}
+          ordersCtx={newOrderCtx}
+        />
+        <ColorSizeSelectorsList
+          ordersCtx={newOrderCtx}
+          isExpanded={isColorSizeSelectorsOpen}
+          setIsExpanded={setIsColorSizeSelectorsOpen}
+          onNext={handleColorSizeSelectorsOk}
+        />
+        <SortUserInformationField
+          setIsExpanded={setIsBuyerInfoOpen}
+          isExpanded={isBuyerInfoOpen}
+          onNext={handleBuyerInfoOk}
+          buyerInfo={buyerInfo}
+          setBuyerInfo={setBuyerInfo}
+        />
+        <CourierSelector
+          isExpanded={isCourierPreviewOpen}
+          setIsExpanded={setIsCourierPreviewOpen}
+          onNext={handleCourierSelectorOk}
+          ref={courierSelectorRef}
+        />
+        <NewOrderPreview
+          isExpanded={isOrderPreviewOpen}
+          setIsExpanded={setIsOrderPreviewOpen}
+          setCustomPrice={newOrderCtx.setCustomPrice}
+          ref={orderPreviewRef}
+        />
+        <View style={styles.buttonsContainer}>
+          <Button
+            backColor={colors.buttonNormal1}
+            backColor1={colors.buttonNormal2}
+            textColor={colors.defaultText}
+            containerStyles={[styles.button, { marginBottom: 6 }]}
+            onPress={() => {
+              handleResetOrderData();
+
+              // This method is only to be called in button reset
+              // Never call it after adding order
+              newOrderCtx.resetProductAvailableStockOnResetButtonPress();
+            }}
+          >
+            Resetuj
+          </Button>
+          <Button
+            backColor={colors.buttonHighlight1}
+            backColor1={colors.buttonHighlight2}
+            textColor={colors.whiteText}
+            containerStyles={[styles.button, { marginBottom: 6 }]}
+            onPress={handleSubmitOrder}
+          >
+            Dodaj porudžbinu
+          </Button>
+        </View>
+      </Card>
     </KeyboardAvoidingWrapper>
   );
 }
@@ -281,6 +281,7 @@ function getStyles(colors: ThemeColors) {
       backgroundColor: colors.containerBackground,
     },
     scrollViewContainer: {
+      flex: 1,
       backgroundColor: colors.containerBackground,
     },
     buttonsContainer: {

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useGlobalStyles } from '../../../constants/globalStyles';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { AuthContext } from '../../../store/auth-context';
@@ -29,7 +28,6 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
   const user = useUser();
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const globalStyles = useGlobalStyles();
 
   async function finishPackingHandler() {
     if (!user?.permissions?.packaging?.finish_packaging) {
@@ -65,7 +63,7 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
   }, [orders]);
 
   return (
-    <Animated.View style={[styles.container, { height: height }, globalStyles.border, globalStyles.elevation_1]}>
+    <Animated.View style={[styles.container, { height: height }]}>
       <View style={styles.counterContainer}>
         <Text style={styles.counterText}>Spakovano: {packedCounter}</Text>
         <Text style={styles.counterText}>Za pakovanje: {toBePackedCounter}</Text>
@@ -76,16 +74,19 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
             label="Pretraži"
             inputText={searchParams.query}
             setInputText={(text) => setSearchParams((prev: any) => ({ ...prev, query: text }))}
-            background={colors.white}
+            background={colors.background}
             labelBorders={false}
             containerStyles={[styles.inputFieldStyle, { flex: 1.35 }]}
             displayClearInputButton={true}
+            activeColor={colors.highlight}
+            selectionColor={colors.highlight}
           />
           <Button
             containerStyles={[styles.button, styles.finishPackingButton]}
             onPress={finishPackingHandler}
-            backColor={colors.highlight}
-            textColor={colors.white}
+            backColor={colors.buttonHighlight1}
+            backColor1={colors.buttonHighlight2}
+            textColor={colors.whiteText}
           >
             Završi pakovanje
           </Button>
@@ -98,15 +99,16 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
               label="Pretraži"
               inputText={searchParams.query}
               setInputText={(text) => setSearchParams((prev: any) => ({ ...prev, query: text }))}
-              background={colors.white}
+              background={colors.background}
               labelBorders={false}
               containerStyles={styles.inputFieldStyle}
             />
             <Button
               containerStyles={[styles.button, styles.finishPackingButton]}
               onPress={finishPackingHandler}
-              backColor={colors.highlight}
-              textColor={colors.white}
+              backColor={colors.buttonHighlight1}
+              backColor1={colors.buttonHighlight2}
+              textColor={colors.whiteText}
             >
               Završi pakovanje
             </Button>
@@ -115,7 +117,7 @@ function PackOrdersControlls({ searchParams, setSearchParams, orders }: PackOrde
                 name={isExpanded ? 'chevron-up' : 'chevron-down'}
                 style={styles.iconStyle}
                 size={26}
-                color={colors.primaryDark}
+                color={colors.defaultText}
               />
             </Button>
           </>
@@ -129,7 +131,7 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       elevation: 2,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
     },
     counterContainer: {
       flexDirection: 'row',
@@ -139,6 +141,7 @@ function getStyles(colors: ThemeColors) {
     },
     counterText: {
       fontSize: 14,
+      color: colors.defaultText,
     },
     finishPackingButton: {
       height: 44,

@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { SwitchButton } from '../../components/buttons/SwitchButton';
 import LinearGradientBackground from '../../components/gradients/LinearBackgroundGradient';
 import useTextForActiveLanguage from '../../hooks/useTextForActiveLanguage';
 import { useBoutique } from '../../store/app-context';
@@ -10,6 +11,7 @@ import Button from '../../util-components/Button';
 import CustomText from '../../util-components/CustomText';
 import { handleFetchingWithFormData } from '../../util-methods/FetchMethods';
 import { betterErrorLog } from '../../util-methods/LogMethods';
+import { updateNestedValue } from '../../util-methods/UpdateNestedValue';
 import SetAppIcon from './globalAppSettingsComponents/SetAppIcon';
 
 function GlobalAppSettings() {
@@ -33,6 +35,7 @@ function GlobalAppSettings() {
           name: appIcon.fileName || 'icon_image.jpg',
         } as any);
       }
+      formData.append('settings', JSON.stringify(boutique.data.settings));
 
       if (auth.token) {
         await handleFetchingWithFormData(formData, auth.token, `app/update-global-settings`, 'POST');
@@ -41,6 +44,7 @@ function GlobalAppSettings() {
       betterErrorLog('> Error while updating app settings', error);
     }
   }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.card}>
@@ -56,6 +60,22 @@ function GlobalAppSettings() {
           <View style={styles.sectionOutline}>
             <CustomText style={styles.text}>{text.app_icon_description}</CustomText>
             <SetAppIcon appIcon={appIcon} setAppIcon={setAppIcon} />
+          </View>
+
+          {/* ORDER SETTINGS */}
+          <CustomText variant="bold" style={[styles.h1, { marginTop: 16 }]}>
+            Porudžbine
+          </CustomText>
+          <View style={[styles.sectionOutline, { paddingBottom: 8, paddingTop: 8 }]}>
+            <SwitchButton
+              value={boutique.data.settings.orders.requireBuyerImage}
+              text="• Obavezna slika kupčevog profila?"
+              onChange={() =>
+                boutique.setAppData((prev) =>
+                  updateNestedValue(prev, 'settings.orders.requireBuyerImage', !prev.settings.orders.requireBuyerImage)
+                )
+              }
+            />
           </View>
 
           <Button
@@ -84,10 +104,10 @@ function getStyles(colors: ThemeColors) {
       borderRadius: 4,
       borderWidth: 0.5,
       borderColor: colors.borderColor,
-      marginBottom: 16,
       margin: 10,
       padding: 0.5,
       borderTopColor: colors.borderColorHighlight,
+      marginBottom: 70,
     },
     h1: {
       fontSize: 16,
@@ -105,7 +125,6 @@ function getStyles(colors: ThemeColors) {
       color: colors.defaultText,
     },
     sectionOutline: {
-      paddingTop: 0,
       borderColor: colors.secondaryLight,
       borderRadius: 10,
     },

@@ -99,10 +99,11 @@ function AddCategories() {
             isSecure={false}
             inputText={inputText}
             setInputText={setInputText}
-            background={colors.white}
-            color={colors.primaryDark}
+            background={colors.background}
+            color={colors.defaultText}
             activeColor={colors.highlight}
             labelBorders={false}
+            selectionColor={colors.highlight}
           />
         </View>
         {/* DROPDOWN */}
@@ -121,7 +122,12 @@ function AddCategories() {
 
       {/* BUTTON */}
       <View style={styles.buttonContainer}>
-        <Button onPress={addCategoryHandler} textColor={colors.white} backColor={colors.highlight}>
+        <Button
+          onPress={addCategoryHandler}
+          textColor={colors.whiteText}
+          backColor={colors.buttonHighlight1}
+          backColor1={colors.buttonHighlight2}
+        >
           Sačuvaj
         </Button>
       </View>
@@ -133,11 +139,11 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       alignItems: 'center',
-      borderColor: colors.secondaryLight,
+      borderColor: colors.borderColor,
       borderWidth: 0.5,
       paddingVertical: 16,
       paddingBottom: 8,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
     },
     controllsContainer: {
       flexDirection: 'row',
@@ -159,7 +165,7 @@ function getStyles(colors: ThemeColors) {
       marginTop: 10,
     },
     success: {
-      color: colors.success,
+      color: colors.success1,
       marginTop: 10,
     },
     dropdownContainer: {
@@ -168,8 +174,8 @@ function getStyles(colors: ThemeColors) {
     },
     dropdown: {
       borderWidth: 0.5,
-      borderColor: colors.secondaryLight,
-      backgroundColor: colors.white,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.background,
       borderRadius: 4,
       height: 46,
     },

@@ -1,30 +1,32 @@
-import { Animated, StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import AddColor from '../../components/colors/AddColor';
 import EditColors from '../../components/colors/EditColors';
-import SafeView from '../../components/layout/SafeView';
-import { useFadeAnimation } from '../../hooks/useFadeAnimation';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 
 function ColorsManager() {
-  // Fade in animation
-  const fadeAnimation = useFadeAnimation();
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   return (
-    <SafeView>
-      <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
-        <AddColor />
-        <EditColors />
-      </Animated.View>
-    </SafeView>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 200}
+    >
+      <AddColor />
+      <EditColors />
+    </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  tempText: {
-    fontSize: 34,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.containerBackground,
+    },
+  });
+}
 
 export default ColorsManager;

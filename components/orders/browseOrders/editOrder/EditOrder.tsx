@@ -8,9 +8,9 @@ import { ThemeColors, useThemeColors } from '../../../../store/theme-context';
 import { CourierTypesWithNoId, OrderTypes, ProductTypes } from '../../../../types/allTsTypes';
 import Button from '../../../../util-components/Button';
 import CustomCheckbox from '../../../../util-components/CustomCheckbox';
+import CustomText from '../../../../util-components/CustomText';
 import DropdownList from '../../../../util-components/DropdownList';
 import InputField from '../../../../util-components/InputField';
-import KeyboardAvoidingWrapper from '../../../../util-components/KeyboardAvoidingWrapper';
 import { popupMessage } from '../../../../util-components/PopupMessage';
 import { handleFetchingWithBodyData, handleFetchingWithFormData } from '../../../../util-methods/FetchMethods';
 import { getMimeType } from '../../../../util-methods/ImageMethods';
@@ -277,13 +277,13 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
   };
 
   return (
-    <KeyboardAvoidingWrapper>
+    <>
       <View style={{ flex: 1 }}>
         <ModalHeader title={`${editedOrder?.buyer.name}, ${editedOrder?.buyer.address}`} />
         <View style={styles.container}>
           <View style={styles.card}>
             {/* Buyer data */}
-            <Text style={styles.sectionLabel}>Podaci o kupcu</Text>
+            <CustomText style={styles.sectionLabel}>Podaci o kupcu</CustomText>
             <BuyerDataInputs
               name={name}
               setName={setName}
@@ -304,7 +304,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             />
 
             {/* Courier data */}
-            <Text style={styles.sectionLabel}>Izabrani kurir</Text>
+            <CustomText style={styles.sectionLabel}>Izabrani kurir</CustomText>
             <View style={styles.sectionContainer}>
               <DropdownList
                 data={courierDropdownData}
@@ -328,7 +328,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             </View>
 
             {/* Products list */}
-            <Text style={styles.sectionLabel}>Lista artikla: ({products.length} kom.)</Text>
+            <CustomText style={styles.sectionLabel}>Lista artikla: ({products.length} kom.)</CustomText>
             <AddItemsModal isVisible={showAddItemModal} setIsVisible={setShowAddItemModal} setProducts={setProducts} />
             <View style={[styles.sectionContainer, styles.productListContainer]}>
               {products &&
@@ -337,17 +337,17 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
                 ))}
               {/* Add new product btn */}
               <Button
-                backColor={colors.secondaryLight}
-                textColor={colors.primaryDark}
+                backColor={colors.buttonNormal1}
+                backColor1={colors.buttonNormal2}
+                textColor={colors.defaultText}
                 onPress={handleShowAddItemComponent}
-                containerStyles={(globalStyles.border, globalStyles.elevation_1)}
               >
                 Dodaj Artikal
               </Button>
             </View>
 
             {/* Reservation | Packed */}
-            <Text style={styles.sectionLabel}>Rezervacija | Spakovano:</Text>
+            <CustomText style={styles.sectionLabel}>Rezervacija | Spakovano:</CustomText>
             <View style={styles.sectionContainer}>
               {/* Reservation */}
               <View style={styles.radioGroupContainer}>
@@ -390,7 +390,13 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
                       )}
                       <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
                       <View style={styles.dateButtonsContainer}>
-                        <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker}>
+                        <Button
+                          containerStyles={styles.dateButton}
+                          onPress={handleOpenDatePicker}
+                          backColor={colors.buttonNormal1}
+                          backColor1={colors.buttonNormal2}
+                          textColor={colors.defaultText}
+                        >
                           Izaberi datum
                         </Button>
                         {showDatePicker && (
@@ -417,7 +423,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             </View>
 
             {/* Prices */}
-            <Text style={styles.sectionLabel}>Cene:</Text>
+            <CustomText style={styles.sectionLabel}>Cene:</CustomText>
             <View style={[styles.sectionContainer, styles.pricesContainer]}>
               {/* Products prices */}
               <View style={styles.row}>
@@ -442,15 +448,16 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
                   inputText={customPrice.toString()}
                   setInputText={setCustomPrice as any}
                   containerStyles={styles.customPriceInput}
-                  background={colors.white}
+                  background={colors.background}
                   keyboard="number-pad"
                   onManualInput={handleUserManualPriceInput}
                   labelBorders={false}
+                  activeColor={colors.grayText}
                 />
                 {!calculateItemsPrice && (
                   <Button
                     containerStyles={styles.recalculatePriceBtn}
-                    textStyles={{ color: colors.primaryDark }}
+                    textStyles={{ color: colors.defaultText }}
                     onPress={() => setCalculateItemsPrice(true)}
                   >
                     Preračunaj cenu
@@ -465,8 +472,9 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
               <Button
                 containerStyles={styles.button}
                 onPress={() => setEditedOrder(null)}
-                backColor={colors.error}
-                textColor={colors.white}
+                backColor={colors.buttonNormal1}
+                backColor1={colors.buttonNormal2}
+                textColor={colors.defaultText}
               >
                 Nazad
               </Button>
@@ -475,8 +483,9 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
               <Button
                 containerStyles={styles.button}
                 onPress={handleUpdateMethod}
-                backColor={colors.secondaryDark}
-                textColor={colors.white}
+                backColor={colors.buttonHighlight1}
+                backColor1={colors.buttonHighlight2}
+                textColor={colors.whiteText}
               >
                 Sačuvaj
               </Button>
@@ -484,23 +493,23 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
           </View>
         </View>
       </View>
-    </KeyboardAvoidingWrapper>
+    </>
   );
 }
 
 function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.containerBackground,
       flex: 1,
     },
     card: {
       marginTop: 10,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       padding: 10,
       borderRadius: 4,
       borderWidth: 1,
-      borderColor: colors.secondaryLight,
+      borderColor: colors.borderColor,
       marginBottom: 16,
       margin: 10,
       flex: 1,
@@ -532,40 +541,41 @@ function getStyles(colors: ThemeColors) {
     },
     rowItem: {
       flex: 2,
+      color: colors.defaultText,
     },
     pricesContainer: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       borderRadius: 4,
       borderWidth: 0.5,
-      borderColor: colors.secondaryLight,
+      borderColor: colors.borderColor,
       margin: 10,
       flex: 1,
     },
     radioGroupContainer: {
       padding: 10,
       borderWidth: 0.5,
-      borderColor: colors.secondaryLight,
+      borderColor: colors.borderColor,
       borderRadius: 4,
       marginBottom: 8,
       paddingTop: 20,
       marginTop: 10,
       flexDirection: 'row',
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       justifyContent: 'space-around',
       flex: 1,
     },
     radioGroupHeader: {
       fontSize: 14,
-      color: colors.primaryDark,
+      color: colors.defaultText,
       marginBottom: 8,
       position: 'absolute',
       left: 10,
       top: -12,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       borderRadius: 4,
       paddingHorizontal: 4,
       borderWidth: 0,
-      borderColor: colors.secondaryLight,
+      borderColor: colors.borderColor,
     },
     dateButtonsContainer: {
       flexDirection: 'row',
@@ -575,8 +585,8 @@ function getStyles(colors: ThemeColors) {
     },
     dateButton: {
       flex: 1,
-      backgroundColor: colors.secondaryLight,
-      color: colors.primaryDark,
+      backgroundColor: colors.background,
+      color: colors.defaultText,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -586,7 +596,9 @@ function getStyles(colors: ThemeColors) {
       alignItems: 'center',
       justifyContent: 'center',
     },
-    dateLabel: {},
+    dateLabel: {
+      color: colors.defaultText,
+    },
     dateText: {
       fontSize: 16,
       fontWeight: 'bold',
@@ -596,12 +608,12 @@ function getStyles(colors: ThemeColors) {
     },
     filtersH2absolute: {
       fontSize: 14,
-      color: colors.primaryDark,
+      color: colors.defaultText,
       marginBottom: 8,
       position: 'absolute',
       left: 10,
       top: -12,
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       borderWidth: 0,
       paddingHorizontal: 4,
     },
@@ -614,7 +626,6 @@ function getStyles(colors: ThemeColors) {
       flex: 1,
       maxHeight: 44,
       marginTop: 'auto',
-      backgroundColor: colors.secondaryLight,
       textAlign: 'center',
       justifyContent: 'center',
       maxWidth: 150,

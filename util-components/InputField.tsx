@@ -69,11 +69,11 @@ const InputField = ({
 
   // Animate only on focus/blur
   const handleFocus = () => {
-    setIsActive(true);
+    if (!isActive) setIsActive(true);
     Animated.timing(labelAnim, {
       toValue: 1,
       duration: 150,
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
   };
 
@@ -83,7 +83,7 @@ const InputField = ({
       Animated.timing(labelAnim, {
         toValue: 0,
         duration: 150,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }).start();
     }
   };
@@ -92,7 +92,7 @@ const InputField = ({
     Animated.timing(labelAnim, {
       toValue: inputText !== '' || isActive ? 1 : 0,
       duration: 150,
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
   }, [inputText]);
 

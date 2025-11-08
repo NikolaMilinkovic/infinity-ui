@@ -165,12 +165,20 @@ function EditColorItem({ data }: { data: ColorTypes }) {
               setContentHeight(e.nativeEvent.layout.height);
             }}
           >
-            <TextInput style={styles.input} placeholder="Ime boje" value={newName} onChangeText={handleNameChange} />
+            <TextInput
+              style={[styles.input, { color: colors.defaultText }]}
+              placeholderTextColor={colors.grayText}
+              placeholder="Ime boje"
+              value={newName}
+              onChangeText={handleNameChange}
+              selectionColor={colors.highlight}
+            />
             <View style={styles.buttons}>
               <Button
                 onPress={showEditColorHandler}
-                textColor={colors.whiteText}
-                backColor={colors.deleteButton}
+                textColor={colors.defaultText}
+                backColor={colors.buttonNormal1}
+                backColor1={colors.buttonNormal2}
                 containerStyles={styles.buttonStyle}
               >
                 Otkaži
@@ -178,7 +186,8 @@ function EditColorItem({ data }: { data: ColorTypes }) {
               <Button
                 onPress={updateColorHandler}
                 textColor={colors.whiteText}
-                backColor={colors.primaryDark}
+                backColor={colors.buttonHighlight1}
+                backColor1={colors.buttonHighlight2}
                 containerStyles={styles.buttonStyle}
               >
                 Sačuvaj
@@ -193,9 +202,12 @@ function EditColorItem({ data }: { data: ColorTypes }) {
             <IconButton
               icon="delete"
               onPress={removeColorHandler}
-              color={colors.deleteButton}
+              color={colors.error}
               style={styles.deleteIcon}
               size={26}
+              backColor="transparent"
+              backColor1="transparent"
+              pressedStyles={styles.buttonContainerPressed}
             />
           </View>
         )}
@@ -209,18 +221,15 @@ function getStyles(colors: ThemeColors) {
     colorItem: {
       padding: 14,
       paddingHorizontal: 25,
-      borderWidth: 0.5,
-      borderColor: colors.secondaryLight,
-      backgroundColor: colors.buttonBackground,
-      marginBottom: 1,
+      backgroundColor: colors.background,
+      marginBottom: 2,
       flexDirection: 'row',
       gap: 20,
       alignItems: 'center',
-      elevation: 1,
     },
     deleteIcon: {
-      marginLeft: 'auto',
-      paddingHorizontal: 8,
+      minHeight: 30,
+      backgroundColor: colors.background,
     },
     displayColor: {
       flexDirection: 'row',
@@ -230,17 +239,20 @@ function getStyles(colors: ThemeColors) {
     colorText: {
       fontSize: 16,
       color: colors.defaultText,
+      marginRight: 'auto',
     },
     mainInputsContainer: {
       width: '100%',
       flexDirection: 'column',
     },
     input: {
-      borderBottomColor: colors.secondaryLight,
+      borderBottomColor: colors.borderColor,
       borderBottomWidth: 1,
       flex: 1,
       marginBottom: 10,
+      marginTop: 10,
       fontSize: 16,
+      paddingVertical: 10,
     },
     buttons: {
       flexDirection: 'row',

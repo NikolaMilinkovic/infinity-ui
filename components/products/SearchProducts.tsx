@@ -14,6 +14,7 @@ import CustomText from '../../util-components/CustomText';
 import DropdownList from '../../util-components/DropdownList';
 import ExpandButton from '../../util-components/ExpandButton';
 import InputField from '../../util-components/InputField';
+import KeyboardAvoidingWrapper from '../../util-components/KeyboardAvoidingWrapper';
 import MultiDropdownList from '../../util-components/MultiDropdownList';
 import SizePickerCheckboxes from '../../util-components/SizePickerCheckboxes';
 
@@ -183,6 +184,7 @@ function SearchProducts({
           background={colors.background}
           displayClearInputButton={true}
           activeColor={colors.highlight}
+          selectionColor={colors.highlight}
         />
         <ExpandButton
           isExpanded={isExpanded}
@@ -197,23 +199,24 @@ function SearchProducts({
         pointerEvents={isExpanded ? 'auto' : 'none'}
       >
         <Animated.View style={{ opacity: toggleFade, height: screenHeight - 172 }}>
-          <CustomText style={[styles.filtersH1, { marginTop: 20 }]}>Filteri</CustomText>
-          {/* STOCK AVAILABILITY FILTER INPUT */}
-          <View style={styles.radioGroupContainer}>
-            <CustomText style={styles.filtersH2absolute}>Stanje na lageru</CustomText>
-            <View style={styles.radioGroup}>
-              <RadioGroup radioButtons={radioButtons} onPress={setSelectedId} selectedId={selectedId} layout="row" />
+          <KeyboardAvoidingWrapper>
+            <CustomText style={[styles.filtersH1, { marginTop: 20 }]}>Filteri</CustomText>
+            {/* STOCK AVAILABILITY FILTER INPUT */}
+            <View style={styles.radioGroupContainer}>
+              <CustomText style={styles.filtersH2absolute}>Stanje na lageru</CustomText>
+              <View style={styles.radioGroup}>
+                <RadioGroup radioButtons={radioButtons} onPress={setSelectedId} selectedId={selectedId} layout="row" />
+              </View>
             </View>
-          </View>
-          {/* CATEGORIES FILTER INPUT */}
-          <DropdownList
-            key={resetKey}
-            data={[{ _id: '', name: 'Resetuj izbor' }, ...categoriesCtx.categories]}
-            onSelect={setSelectedCategory}
-            placeholder="Izaberite kategoriju"
-            isDefaultValueOn={false}
-          />
-          {/* <DropdownList2
+            {/* CATEGORIES FILTER INPUT */}
+            <DropdownList
+              key={resetKey}
+              data={[{ _id: '', name: 'Resetuj izbor' }, ...categoriesCtx.categories]}
+              onSelect={setSelectedCategory}
+              placeholder="Izaberite kategoriju"
+              isDefaultValueOn={false}
+            />
+            {/* <DropdownList2
             key={resetKey}
             data={[{ _id: '', name: 'Resetuj izbor' }, ...categoriesCtx.categories]}
             value={selectedCategory ? selectedCategory._id : null}
@@ -224,16 +227,16 @@ function SearchProducts({
             containerStyle={{ marginTop: 8 }}
             resetValue={selectedCategory === null}
           /> */}
-          {/* SUPPLIER */}
-          <View style={{ marginTop: 8 }}>
-            <DropdownList
-              key={supplierResetKey}
-              data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
-              onSelect={setSelectedSupplier}
-              placeholder="Izaberite dobavljača"
-              isDefaultValueOn={false}
-            />
-            {/* <DropdownList2
+            {/* SUPPLIER */}
+            <View style={{ marginTop: 8 }}>
+              <DropdownList
+                key={supplierResetKey}
+                data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
+                onSelect={setSelectedSupplier}
+                placeholder="Izaberite dobavljača"
+                isDefaultValueOn={false}
+              />
+              {/* <DropdownList2
               key={supplierResetKey}
               data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}
               value={selectedSupplier ? selectedSupplier._id : null}
@@ -244,26 +247,27 @@ function SearchProducts({
               containerStyle={{ marginTop: 8 }}
               resetValue={selectedSupplier === null}
             /> */}
-          </View>
-          {/* SIZES FILTER INPUT */}
-          {(!selectedCategory || selectedCategory?.stockType === 'Boja-Veličina-Količina') && (
-            <SizePickerCheckboxes
-              sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
-              selectedSizes={selectedSizes}
-              setSelectedSizes={setSelectedSizes}
-            />
-          )}
-          {/* COLORS FILTER INPUT */}
-          <View style={{ marginTop: 8 }}>
-            <MultiDropdownList
-              data={colorsData}
-              setSelected={setSelectedColors}
-              isOpen={true}
-              label="Boje"
-              placeholder="Filtriraj po bojama"
-              dropdownStyles={{ maxHeight: 150 }}
-            />
-          </View>
+            </View>
+            {/* SIZES FILTER INPUT */}
+            {(!selectedCategory || selectedCategory?.stockType === 'Boja-Veličina-Količina') && (
+              <SizePickerCheckboxes
+                sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
+                selectedSizes={selectedSizes}
+                setSelectedSizes={setSelectedSizes}
+              />
+            )}
+            {/* COLORS FILTER INPUT */}
+            <View style={{ marginTop: 8 }}>
+              <MultiDropdownList
+                data={colorsData}
+                setSelected={setSelectedColors}
+                isOpen={true}
+                label="Boje"
+                placeholder="Filtriraj po bojama"
+                dropdownStyles={{ maxHeight: 150 }}
+              />
+            </View>
+          </KeyboardAvoidingWrapper>
         </Animated.View>
       </Animated.View>
     </View>
@@ -341,7 +345,7 @@ function getStyles(colors: ThemeColors) {
       top: -12,
       backgroundColor: colors.background,
       borderRadius: 4,
-      paddingHorizontal: 4,
+      paddingHorizontal: 6,
     },
   });
 }

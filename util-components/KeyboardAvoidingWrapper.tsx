@@ -1,26 +1,31 @@
 // components/KeyboardAvoidingWrapper.tsx
 import React from 'react';
-import { KeyboardAvoidingView, Platform, View, ViewStyle } from 'react-native';
+import { ViewStyle } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import Animated from 'react-native-reanimated';
 import { useThemeColors } from '../store/theme-context';
+
+const AnimatedKeyboardAwareScrollView = Animated.createAnimatedComponent(KeyboardAwareScrollView);
 
 interface Props {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: ViewStyle | ViewStyle[];
   keyboardVerticalOffset?: number;
 }
 
-const KeyboardAvoidingWrapper: React.FC<Props> = ({ children }) => {
+const KeyboardAvoidingWrapper: React.FC<Props> = ({ children, style }) => {
   const colors = useThemeColors();
-  return Platform.OS === 'ios' ? (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior="padding"
-      contentContainerStyle={{ backgroundColor: colors.primaryDark }}
-    >
-      {children}
-    </KeyboardAvoidingView>
-  ) : (
-    <View style={{ flex: 1 }}>{children}</View>
+  return (
+    <>
+      <AnimatedKeyboardAwareScrollView
+        bottomOffset={70}
+        style={[{ flex: 1, backgroundColor: colors.background }, style]}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
+        {children}
+      </AnimatedKeyboardAwareScrollView>
+    </>
   );
 };
 

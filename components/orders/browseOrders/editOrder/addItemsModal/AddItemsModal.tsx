@@ -68,16 +68,18 @@ export default function AddItemsModal({ isVisible, setIsVisible, setProducts }: 
                   <View style={styles.buttonsContainer}>
                     <Button
                       containerStyles={styles.button}
-                      backColor={colors.error}
-                      textColor={colors.white}
+                      backColor={colors.buttonNormal1}
+                      backColor1={colors.buttonNormal2}
+                      textColor={colors.defaultText}
                       onPress={handleCancel}
                     >
                       Odustani
                     </Button>
                     <Button
                       containerStyles={styles.button}
-                      backColor={colors.secondaryDark}
-                      textColor={colors.white}
+                      backColor={colors.buttonHighlight1}
+                      backColor1={colors.buttonHighlight2}
+                      textColor={colors.whiteText}
                       onPress={handleSaveItems}
                     >
                       Sačuvaj
@@ -122,7 +124,7 @@ function getStyles(colors: ThemeColors) {
     header: {
       fontSize: 16,
       fontWeight: 'bold',
-      backgroundColor: colors.secondaryLight,
+      backgroundColor: colors.background,
       width: '100%',
       textAlign: 'center',
       paddingVertical: 10,

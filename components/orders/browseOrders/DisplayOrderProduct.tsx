@@ -45,7 +45,7 @@ function DisplayOrderProduct({ product, index, grayedText = false }: DisplayOrde
             Boja:
           </CustomText>
           <Text
-            style={[styles.data, { fontWeight: 'bold', color: colors.black }]}
+            style={[styles.data, { fontWeight: 'bold', color: colors.defaultText }]}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
@@ -58,7 +58,7 @@ function DisplayOrderProduct({ product, index, grayedText = false }: DisplayOrde
               Veličina:
             </CustomText>
             <Text
-              style={[styles.data, { fontWeight: 'bold', color: colors.black }]}
+              style={[styles.data, { fontWeight: 'bold', color: colors.defaultText }]}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -96,10 +96,10 @@ function getStyles(colors: ThemeColors, grayedText: boolean) {
     },
     label: {
       width: 70,
-      color: grayedText ? colors.grayText : colors.black,
+      color: grayedText ? colors.grayText : colors.defaultText,
     },
     data: {
-      color: grayedText ? colors.grayText : colors.black,
+      color: grayedText ? colors.grayText : colors.defaultText,
       flexShrink: 1,
       flex: 1,
     },

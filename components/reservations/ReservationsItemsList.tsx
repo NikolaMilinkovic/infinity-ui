@@ -164,11 +164,6 @@ function ReservationsItemsList({ data, setEditedReservation, isDatePicked, picke
   );
 }
 
-interface ItemTypes {
-  date: Date;
-  reservations: OrderTypes;
-}
-
 function ReservationsGroup({
   data,
   setEditedReservation,
@@ -240,7 +235,7 @@ function ReservationsGroup({
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={resGroupStyles.iconStyle}
           size={26}
-          color={colors.white}
+          color={colors.whiteText}
         />
       </Pressable>
       <Animated.View>
@@ -269,10 +264,10 @@ function getStyles(colors: ThemeColors) {
       fontSize: 14,
       textAlign: 'center',
       marginTop: 6,
+      color: colors.defaultText,
     },
     listContainer: {
       gap: 6,
-      backgroundColor: colors.primaryLight,
       overflow: 'hidden',
     },
   });
@@ -284,11 +279,11 @@ function getResGroupStyles(colors: ThemeColors) {
       padding: 10,
       borderRadius: 4,
       borderWidth: 0.5,
-      borderColor: colors.primaryDark,
+      borderColor: colors.borderColor,
       backgroundColor: colors.secondaryDark,
       marginBottom: 6,
       flexDirection: 'row',
-      height: 50,
+      height: 44,
       position: 'relative',
       alignItems: 'center',
     },
@@ -299,7 +294,7 @@ function getResGroupStyles(colors: ThemeColors) {
     header: {
       fontSize: 18,
       fontWeight: 'bold',
-      color: colors.white,
+      color: colors.whiteText,
       marginLeft: 8,
       zIndex: 3,
     },
@@ -311,7 +306,7 @@ function getResGroupStyles(colors: ThemeColors) {
     },
     highlightAllBtn: {
       borderWidth: 1,
-      borderColor: colors.secondaryLight,
+      borderColor: colors.borderColor,
       width: 30,
       borderRadius: 50,
       padding: 3,
@@ -319,7 +314,7 @@ function getResGroupStyles(colors: ThemeColors) {
       justifyContent: 'center',
     },
     highlightAllActive: {
-      backgroundColor: colors.secondaryLight,
+      backgroundColor: colors.borderColor,
       flex: 1,
       borderRadius: 4,
     },
@@ -328,13 +323,12 @@ function getResGroupStyles(colors: ThemeColors) {
     },
     highlightBox: {
       position: 'absolute',
-      backgroundColor: '#A3B9CC',
+      backgroundColor: colors.selectedProductBackground,
       zIndex: 2,
       top: 0,
       right: 0,
       bottom: 0,
       left: 0,
-      opacity: 0.25,
     },
   });
 }

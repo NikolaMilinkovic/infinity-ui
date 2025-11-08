@@ -14,6 +14,7 @@ import {
 import { popupMessage } from '../util-components/PopupMessage';
 import { getMimeType } from '../util-methods/ImageMethods';
 import { AllProductsContext } from './all-products-context';
+import { useBoutique } from './app-context';
 interface ContextChildrenTypes {
   children: ReactNode;
 }
@@ -65,6 +66,7 @@ export const NewOrderContext = createContext<NewOrderContextTypes>({
   setOrderNotes: () => {},
   reservationDate: null,
   setReservationDate: () => {},
+  resetProductAvailableStockOnResetButtonPress: () => {},
   // description: '',
   // setDescription: () => {},
 });
@@ -87,6 +89,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
   const [reservationDate, setReservationDate] = useState<Date>(new Date());
   // const [description, setDescription] = useState('');
   const [defaultCourierData] = useState(useGetDefaultCourierData());
+  const boutique = useBoutique();
 
   // Check to see if all products have selectedColor & selectedSize where applicable
   function validateProductData() {
@@ -113,7 +116,9 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
     if (!buyerData.place) return popupMessage('Nedostaju podaci o mestu', 'danger');
 
     if (!courierData) return popupMessage('Nedostaju podaci o kuriru', 'danger');
-    if (!profileImage) return popupMessage('Nedostaje slika kupčevog profila', 'danger');
+    if (boutique.data.settings.orders.requireBuyerImage) {
+      if (!profileImage) return popupMessage('Nedostaje slika kupčevog profila', 'danger');
+    }
     if (!validateProductData()) return popupMessage('Svi proizvodi moraju imati selektovane boje i veličine', 'danger');
     if (internalRemark === null) setInternalRemark('');
     if (deliveryRemark === null) setInternalRemark('');
@@ -145,11 +150,13 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
     order.append('courier', JSON.stringify(courier));
     order.append('orderNotes', orderNotes || '');
     // order.append('description', description || '');
-    order.append('profileImage', {
-      uri: profileImage.uri,
-      type: getMimeType(profileImage.mimeType, profileImage?.uri || ''),
-      name: profileImage.fileName,
-    } as any);
+    if (profileImage?.uri && profileImage?.fileName) {
+      order.append('profileImage', {
+        uri: profileImage.uri,
+        type: getMimeType(profileImage.mimeType, profileImage?.uri || ''),
+        name: profileImage.fileName,
+      } as any);
+    }
 
     return order;
   }
@@ -240,25 +247,6 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
   };
 
   const resetOrderDataHandler = () => {
-    /**
-     * Count all instances in the product reference array
-     * We use the count to increase the totalStock
-     */
-    const productCount: Record<string, number> = {};
-    productReferences.forEach((ref) => {
-      productCount[ref._id] = (productCount[ref._id] || 0) + 1;
-    });
-    /**
-     * Update total stock in the productsContext
-     */
-    const updatedProducts = productsContext.allActiveProducts.map((p) => {
-      const count = productCount[p._id] || 0;
-      if (count > 0) {
-        return { ...p, totalStock: p.totalStock + count };
-      }
-      return p;
-    });
-    productsContext.setAllActiveProducts(updatedProducts);
     setProductReferences([]);
     setProductData([]);
     setBuyerData({
@@ -280,6 +268,29 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
     setOrderNotes('');
 
     setCourierData(defaultCourierData);
+  };
+
+  const resetProductAvailableStockOnResetButtonPress = () => {
+    /**
+     * Count all instances in the product reference array
+     * We use the count to increase the totalStock
+     */
+    const productCount: Record<string, number> = {};
+    productReferences.forEach((ref) => {
+      productCount[ref._id] = (productCount[ref._id] || 0) + 1;
+    });
+    /**
+     * Update total stock in the productsContext -> OVO JE ISSUE AKO SE POZOVE KADA DODAMO PORUDZBINU
+     * Samo na order reset smemo da pozivamo ovo!!!
+     */
+    const updatedProducts = productsContext.allActiveProducts.map((p) => {
+      const count = productCount[p._id] || 0;
+      if (count > 0) {
+        return { ...p, totalStock: p.totalStock + count };
+      }
+      return p;
+    });
+    productsContext.setAllActiveProducts(updatedProducts);
   };
 
   // COURIER
@@ -341,6 +352,7 @@ function NewOrderContextProvider({ children }: ContextChildrenTypes) {
       setOrderNotes: setOrderNotes,
       reservationDate,
       setReservationDate: setReservationDate,
+      resetProductAvailableStockOnResetButtonPress,
 
       // description,
       // setDescription: setDescription

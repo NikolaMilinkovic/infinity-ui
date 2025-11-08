@@ -48,13 +48,28 @@ interface ProductsByCategoryTypes {
 function AllProductsContextProvider({ children }: AllProductsProviderType) {
   const [activeProducts, setActiveProducts] = useState<(DressTypes | PurseTypes)[]>([]);
   const [inactiveProducts, setInactiveProducts] = useState<(DressTypes | PurseTypes)[]>([]);
-  const [allProducts, setAllProducts] = useState<(DressTypes | PurseTypes)[]>([]);
-  const [productsBySuppliers, setProductsBySuppliers] = useState<ProductsBySuppliersTypes>();
-  const [productsByCategory, setProductsByCategory] = useState<ProductsByCategoryTypes>();
+  // const [allProducts, setAllProducts] = useState<(DressTypes | PurseTypes)[]>([]);
+  // const [productsBySuppliers, setProductsBySuppliers] = useState<ProductsBySuppliersTypes>();
+  // const [productsByCategory, setProductsByCategory] = useState<ProductsByCategoryTypes>();
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const socketCtx = useContext(SocketContext);
   const socket = socketCtx?.socket;
+
+  const allProducts = useMemo(() => {
+    console.log('🎯 Computing allProducts, activeProducts[0] stock:', activeProducts[0]?.totalStock);
+    return [...activeProducts, ...inactiveProducts];
+  }, [activeProducts, inactiveProducts]);
+
+  const productsBySuppliers = useMemo(() => {
+    console.log('🎯 Computing productsBySuppliers');
+    return sortProductsBySupplier(allProducts);
+  }, [allProducts]);
+
+  const productsByCategory = useMemo(() => {
+    console.log('🎯 Computing productsByCategory');
+    return sortProductsByCategory(allProducts);
+  }, [allProducts]);
 
   // SOCKET METHODS
   function activeProductAddedHandler(newProduct: DressTypes | PurseTypes) {
@@ -102,6 +117,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
   }
 
   function handleUpdateProduct(updateData: Record<string, DressTypes | PurseTypes>) {
+    console.log('🔵 handleUpdateProduct called');
     const updateDataMap = new Map(Object.entries(updateData));
     try {
       setActiveProducts((prevProducts) => {
@@ -125,6 +141,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
   }
 
   function handleStockIncrease(data: any) {
+    console.log('🟢 handleStockIncrease called', data);
     if (!data.stockType) return popupMessage('Update stanja nije uspeo, stockType je obavezan!', 'danger');
     if (data.stockType === 'Boja-Veličina-Količina') {
       increaseDressStock(data, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
@@ -150,6 +167,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
     purses: PurseStockDataIncrease[];
   }
   function handleBatchStockIncrease(data: DataProps) {
+    console.log('🟡 handleBatchStockIncrease called', data);
     for (const dress of data.dresses) {
       increaseDressStock(dress, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
     }
@@ -175,6 +193,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
     purses: PurseStockDataDecrease[];
   }
   function handleBatchStockDecreasee(data: DataPropsDecrease) {
+    console.log('🔴 handleBatchStockDecreasee called', data);
     for (const dress of data.dresses) {
       decreaseDressStock(dress, setActiveProducts as React.Dispatch<React.SetStateAction<DressTypes[]>>);
     }
@@ -184,11 +203,11 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
   }
 
   // Handle setting ALL PRODUCTS
-  useEffect(() => {
-    setAllProducts([...activeProducts, ...inactiveProducts]);
-    setProductsBySuppliers(sortProductsBySupplier([...activeProducts, ...inactiveProducts]));
-    setProductsByCategory(sortProductsByCategory([...activeProducts, ...inactiveProducts]));
-  }, [activeProducts, inactiveProducts]);
+  // useEffect(() => {
+  //   setAllProducts([...activeProducts, ...inactiveProducts]);
+  //   setProductsBySuppliers(sortProductsBySupplier([...activeProducts, ...inactiveProducts]));
+  //   setProductsByCategory(sortProductsByCategory([...activeProducts, ...inactiveProducts]));
+  // }, [activeProducts, inactiveProducts]);
 
   function sortProductsBySupplier(products: ProductTypes[]) {
     const groupedBySupplier: Record<string, ProductTypes[]> = {};
@@ -216,11 +235,13 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
   }
 
   function handleActiveProductUpdated(updatedProduct: ProductTypes) {
+    console.log('🟣 handleActiveProductUpdated called', updatedProduct._id);
     setActiveProducts((prevProducts) =>
       prevProducts.map((product) => (product._id === updatedProduct._id.toString() ? updatedProduct : product))
     );
   }
   function handleInactiveProductUpdated(updatedProduct: ProductTypes) {
+    console.log('🟠 handleInactiveProductUpdated called', updatedProduct._id);
     setInactiveProducts((prevProducts) =>
       prevProducts.map((product) => (product._id === updatedProduct._id.toString() ? updatedProduct : product))
     );
@@ -240,6 +261,34 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
   }
 
   useEffect(() => {
+    function handleUpdateProduct(updateData: Record<string, DressTypes | PurseTypes>) {
+      console.log('🔵 handleUpdateProduct called');
+      const updateDataMap = new Map(Object.entries(updateData));
+      try {
+        setActiveProducts((prevProducts) => {
+          console.log('🔵 Inside setActiveProducts callback');
+          console.log('🔵 prevProducts[0] stock:', prevProducts[0]?.totalStock);
+
+          const updated = [...prevProducts];
+
+          for (let i = 0; i < updated.length; i++) {
+            const product = updated[i];
+            const updatedItem = updateDataMap.get(product._id?.toString());
+
+            if (updatedItem) {
+              console.log('🔵 Updating product, old stock:', product.totalStock, 'new stock:', updatedItem.totalStock);
+              updated[i] = updatedItem as any;
+              updateDataMap.delete(product._id?.toString());
+            }
+          }
+
+          console.log('🔵 Returning updated[0] stock:', updated[0]?.totalStock);
+          return updated;
+        });
+      } catch (error) {
+        console.error('Error updating products:', error);
+      }
+    }
     if (socket) {
       socket.on('activeProductAdded', activeProductAddedHandler);
       socket.on('inactiveProductAdded', inactiveProductAddedHandler);
@@ -313,9 +362,9 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
     if (!token) {
       setActiveProducts([]);
       setInactiveProducts([]);
-      setAllProducts([]);
-      setProductsBySuppliers({});
-      setProductsByCategory({});
+      // setAllProducts([]);
+      // setProductsBySuppliers({});
+      // setProductsByCategory({});
     }
   }, [token]);
 
@@ -326,7 +375,7 @@ function AllProductsContextProvider({ children }: AllProductsProviderType) {
       allProducts,
       setAllActiveProducts: setActiveProducts,
       setAllInactiveProducts: setInactiveProducts,
-      setAllProducts,
+      // setAllProducts,
       fetchAllProducts: getProductsData,
       productsBySuppliers: productsBySuppliers ?? {},
       productsByCategory: productsByCategory ?? {},

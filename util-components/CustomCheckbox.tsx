@@ -41,9 +41,7 @@ const CustomCheckbox = ({
       <View style={[styles.checkbox, checked && styles.checkboxChecked, checkColor && { borderColor: checkColor }]}>
         {checked && <View style={[styles.checkboxTick, checkColor && { backgroundColor: lightColor }]} />}
       </View>
-      <CustomText style={[styles.label, customColor && { color: customColor }]} numberOfLines={2} ellipsizeMode="tail">
-        {label}
-      </CustomText>
+      <CustomText style={[styles.label, customColor && { color: customColor }]}>{label}</CustomText>
     </Pressable>
   );
 };
@@ -62,7 +60,7 @@ function getStyles(colors: ThemeColors) {
       width: 24,
       borderWidth: 2,
       borderColor: colors.borderColor,
-      backgroundColor: colors.background1,
+      backgroundColor: colors.background,
       alignItems: 'center',
       justifyContent: 'center',
       marginRight: 10,

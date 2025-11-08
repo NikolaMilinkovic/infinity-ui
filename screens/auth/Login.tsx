@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import LoadingOverlay from '../../components/loading/LoadingOverlay';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
@@ -84,53 +85,69 @@ function Login() {
     return <LoadingOverlay message="Logging in.." />;
   }
 
+  // const AnimatedKeyboardAwareScrollView = Animated.createAnimatedComponent(KeyboardAwareScrollView);
+
   return (
     <View style={{ backgroundColor: colors.background, flex: 1 }}>
       <Animated.View
         entering={FadeIn.duration(600).withInitialValues({ backgroundColor: colors.background2 })}
         style={[styles.container, { backgroundColor: colors.background }]}
       >
-        {themeContext.theme === 'light' && <Image source={require('../../assets/infinity.png')} style={styles.image} />}
-        {themeContext.theme === 'dark' && (
-          <Image source={require('../../assets/infinity-white.png')} style={styles.image} />
-        )}
+        <View style={styles.contentWrapper}>
+          {' '}
+          {/* Add wrapper */}
+          <KeyboardAwareScrollView
+            bottomOffset={70}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+            scrollEnabled={false}
+          >
+            {themeContext.theme === 'light' && (
+              <Image source={require('../../assets/infinity.png')} style={styles.image} />
+            )}
+            {themeContext.theme === 'dark' && (
+              <Image source={require('../../assets/infinity-white.png')} style={styles.image} />
+            )}
 
-        <View style={styles.inputsContainer}>
-          <View style={styles.inputWrapper}>
-            <InputField
-              label="Username"
-              inputText={username}
-              setInputText={setUsername}
-              capitalize="none"
-              labelBorders={false}
-              color={colors.defaultText}
-              activeColor={colors.defaultText}
-              background={colors.blackWhite}
-            />
-          </View>
-          <View style={styles.inputWrapper}>
-            <InputField
-              label="Password"
-              isSecure={true}
-              inputText={password}
-              setInputText={setPassword}
-              capitalize="none"
-              labelBorders={false}
-              color={colors.defaultText}
-              activeColor={colors.defaultText}
-              background={colors.blackWhite}
-            />
-          </View>
-          <Text style={styles.errorMessage}>{errorMessage}</Text>
+            <View style={styles.inputsContainer}>
+              <View style={styles.inputWrapper}>
+                <InputField
+                  label="Username"
+                  inputText={username}
+                  setInputText={setUsername}
+                  capitalize="none"
+                  labelBorders={false}
+                  color={colors.defaultText}
+                  activeColor={colors.defaultText}
+                  background={colors.blackWhite}
+                />
+              </View>
+              <View style={styles.inputWrapper}>
+                <InputField
+                  label="Password"
+                  isSecure={true}
+                  inputText={password}
+                  setInputText={setPassword}
+                  capitalize="none"
+                  labelBorders={false}
+                  color={colors.defaultText}
+                  activeColor={colors.defaultText}
+                  background={colors.blackWhite}
+                />
+              </View>
+              <Text style={styles.errorMessage}>{errorMessage}</Text>
+            </View>
+            <Button
+              onPress={() => loginUserHandler(username, password, expoPushToken?.data || '')}
+              textColor={colors.whiteText}
+              backColor={colors.highlight1}
+              backColor1={colors.highlight2}
+            >
+              Login
+            </Button>
+          </KeyboardAwareScrollView>
         </View>
-        <Button
-          onPress={() => loginUserHandler(username, password, expoPushToken?.data || '')}
-          textColor={colors.whiteText}
-          backColor={colors.highlight1}
-          backColor1={colors.highlight2}
-        >
-          Login
-        </Button>
       </Animated.View>
     </View>
   );
@@ -142,13 +159,24 @@ function getStyles(colors: ThemeColors) {
       backgroundColor: colors.blackWhite,
       alignItems: 'center',
       justifyContent: 'center',
-      padding: 44,
+      maxHeight: '100%',
+    },
+    contentWrapper: {
+      maxHeight: '100%',
+      width: '70%',
+      flex: 1,
+    },
+    scrollContent: {
+      maxHeight: '100%',
+      flexGrow: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     inputsContainer: {
       alignItems: 'center',
       justifyContent: 'center',
       width: '100%',
-      marginBottom: 28,
+      marginBottom: 12,
     },
     inputWrapper: {
       marginTop: 16,

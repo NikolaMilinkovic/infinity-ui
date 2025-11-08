@@ -82,6 +82,14 @@ export interface ThemeColors {
   productGroupSelectedHighlight: string;
   productGroupBackground: string;
   productGroupTextColor: string;
+
+  // packing
+  unpackedOrderBackground: string;
+
+  // switch btn
+  thumbColor: string;
+  switchOnBackground: string;
+  switchOffBackground: string;
 }
 
 // Define the context type
@@ -135,7 +143,7 @@ function getLightColors(): ThemeColors {
   return {
     defaultText: '#313131ff',
     highlightText: '#000000',
-    whiteText: '#F0F0F0',
+    whiteText: '#FFFFFF',
     grayText: '#999999ff',
     grayText1: '#707070ff',
     primaryDark: '#012340',
@@ -158,8 +166,8 @@ function getLightColors(): ThemeColors {
     // button
     buttonNormal1: '#ffffffff',
     buttonNormal2: '#f5f4f4ff',
-    buttonHighlight1: '#ca9393ff',
-    buttonHighlight2: '#996e6eff',
+    buttonHighlight1: '#ebababff',
+    buttonHighlight2: '#c58e8eff',
     blackWhite: '#FFFFFF',
 
     // components
@@ -193,7 +201,7 @@ function getLightColors(): ThemeColors {
     background: '#ffffff',
     background1: '#f3f2f2ff',
     background2: '#ebeaeaff',
-    containerBackground: '#e4e2e2ff',
+    containerBackground: '#f1f1f1ff',
     cardBackground: '#ffffffff',
     screenBackground: '#F0F0F0',
     borderColor: '#C5D5D9',
@@ -213,6 +221,14 @@ function getLightColors(): ThemeColors {
     productGroupSelectedHighlight: '#024059',
     productGroupBackground: '#C5D5D9',
     productGroupTextColor: '#012340',
+
+    // packing
+    unpackedOrderBackground: '#fff4f4ff',
+
+    // switch btn
+    thumbColor: '#f4f3f4',
+    switchOnBackground: '#57a0dfff',
+    switchOffBackground: '#999999ff',
   };
 }
 
@@ -299,5 +315,13 @@ function getDarkColors(): ThemeColors {
     productGroupSelectedHighlight: '#648d76ff',
     productGroupBackground: '#262626',
     productGroupTextColor: '#8a8a8aff',
+
+    // packing
+    unpackedOrderBackground: '#422525ff',
+
+    // switch btn
+    thumbColor: '#f4f3f4',
+    switchOnBackground: '#648d76ff',
+    switchOffBackground: '#B3B3B3',
   };
 }

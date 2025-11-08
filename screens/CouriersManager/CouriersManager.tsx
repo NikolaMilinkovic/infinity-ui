@@ -1,31 +1,31 @@
-import React from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import AddCourier from '../../components/couriers/AddCourier';
 import EditCourier from '../../components/couriers/EditCourier';
-import SafeView from '../../components/layout/SafeView';
-import { useFadeAnimation } from '../../hooks/useFadeAnimation';
+import { ThemeColors, useThemeColors } from '../../store/theme-context';
 
 function CouriersManager() {
-  // Fade in animation
-  const fadeAnimation = useFadeAnimation();
-
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
   return (
-    <SafeView>
-      <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
-        <AddCourier />
-        <EditCourier />
-      </Animated.View>
-    </SafeView>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 200}
+    >
+      <AddCourier />
+      <EditCourier />
+    </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  tempText: {
-    fontSize: 34,
-  },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.containerBackground,
+    },
+  });
+}
 
 export default CouriersManager;
