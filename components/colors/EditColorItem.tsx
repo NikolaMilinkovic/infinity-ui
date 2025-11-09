@@ -27,7 +27,7 @@ function EditColorItem({ data }: { data: ColorTypes }) {
   const [display, setDisplay] = useState(true);
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const user = useUser();
+  const { user } = useUser();
 
   // Resets Error & Success
   function resetNotifications() {

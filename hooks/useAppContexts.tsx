@@ -7,11 +7,11 @@ import { CouriersContext } from '../store/couriers-context';
 import { OrderStatisticsContext } from '../store/end-of-day-statistics';
 import { OrdersContext } from '../store/orders-context';
 import { SuppliersContext } from '../store/suppliers-context';
-import { UserContext } from '../store/user-context';
+import { UsersManagerContext } from '../store/users-manager-context';
 
 interface UseAppContextsTypes {
   app: any;
-  user: any;
+  boutiqueUsers: any;
   orders: any;
   colors: any;
   categories: any;
@@ -24,7 +24,7 @@ interface UseAppContextsTypes {
 export function useAppContexts(): UseAppContextsTypes {
   return {
     app: useContext(AppContext),
-    user: useContext(UserContext),
+    boutiqueUsers: useContext(UsersManagerContext),
     orders: useContext(OrdersContext),
     colors: useContext(ColorsContext),
     categories: useContext(CategoriesContext),

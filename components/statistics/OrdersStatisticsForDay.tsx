@@ -29,10 +29,25 @@ function OrdersStatisticsForDay({ stats }: PropTypes) {
   createdAtIntoDateFormatter;
   return (
     <View style={styles.container}>
-      <Pressable onPress={handleExpandToggle} style={[styles.controllsContainer, globalStyles.border]}>
-        <Text style={styles.header}>
-          {stats.courierName} - {createdAtIntoDateFormatter(stats.createdAt)}
-        </Text>
+      <Pressable
+        onPress={handleExpandToggle}
+        style={({ pressed }) => [styles.controllsContainer, globalStyles.border, pressed && { opacity: 0.6 }]}
+      >
+        <View
+          style={{
+            flex: 8,
+            flexDirection: 'column',
+          }}
+        >
+          <Text style={[styles.header]} numberOfLines={1} ellipsizeMode="tail">
+            {stats.courierName}
+          </Text>
+          <Text style={[styles.date, { marginRight: 20 }]} numberOfLines={1} ellipsizeMode="tail">
+            {createdAtIntoDateFormatter(stats.createdAt)}
+          </Text>
+        </View>
+        {/* <Text style={styles.header}> */}
+        {/* </Text> */}
         <IconButton
           icon="share"
           size={20}
@@ -41,7 +56,6 @@ function OrdersStatisticsForDay({ stats }: PropTypes) {
           style={styles.shareBtn}
           backColor={colors.buttonHighlight1}
           backColor1={colors.buttonHighlight2}
-          pressedStyles={{}}
         />
       </Pressable>
       {isExpanded && (
@@ -81,19 +95,23 @@ function getStyles(colors: ThemeColors) {
       marginBottom: 0,
     },
     controllsContainer: {
-      paddingHorizontal: 10,
+      paddingHorizontal: 20,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
       padding: 10,
-      backgroundColor: colors.buttonNormal1,
+      backgroundColor: colors.background,
     },
     header: {
-      fontSize: 24,
+      fontSize: 18,
       fontWeight: 'bold',
       color: colors.highlightText,
-      textAlign: 'center',
-      flex: 8,
+      textAlign: 'left',
+    },
+    date: {
+      fontSize: 14,
+      color: colors.grayText,
+      textAlign: 'left',
     },
     shareBtn: {
       borderRadius: 100,

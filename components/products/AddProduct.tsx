@@ -35,7 +35,7 @@ function AddProduct() {
   const suppliersCtx = useContext(SuppliersContext);
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const user = useUser();
+  const { user } = useUser();
 
   // Other data
   const [allCategories, setAllCategories] = useState<CategoryTypes[]>([]);
@@ -91,7 +91,7 @@ function AddProduct() {
   function handleOutsideClick() {
     Keyboard.dismiss();
   }
-  function setErrorHandler(errMsg) {
+  function setErrorHandler(errMsg: string) {
     popupMessage(errMsg, 'danger');
   }
   function verifyInputsData() {

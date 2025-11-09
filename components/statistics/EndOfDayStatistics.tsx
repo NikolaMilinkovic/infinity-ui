@@ -31,9 +31,12 @@ function EndOfDayStatistics({ stats }: any) {
               <IconButton
                 icon="share"
                 size={20}
-                color={colors.whiteText}
+                color={colors.white}
                 onPress={() => downloadAndShareFileViaLink(stats.fileName, stats.excellLink)}
                 style={styles.shareBtn}
+                backColor={colors.buttonHighlight1}
+                backColor1={colors.buttonHighlight2}
+                pressedStyles={{}}
               />
             </Pressable>
             <BasicInformationsForEndOfDay
@@ -84,9 +87,11 @@ function getStyles(colors: ThemeColors) {
     },
     shareBtn: {
       borderRadius: 100,
-      maxWidth: 40,
-      height: 40,
+      overflow: 'hidden',
+      elevation: 4,
       backgroundColor: colors.highlight1,
+      maxWidth: 45,
+      height: 45,
       alignItems: 'center',
       justifyContent: 'center',
       flex: 2,

@@ -60,7 +60,7 @@ const Accordion: React.FC<AccordionProps> = ({
 
   return (
     <View style={[styles.container, globalStyles.border, containerStyle]}>
-      <Pressable onPress={toggle} style={styles.headerContainer}>
+      <Pressable onPress={toggle} style={({ pressed }) => [styles.headerContainer, pressed && { opacity: 0.6 }]}>
         <CustomText variant="bold" style={[styles.header, titleStyle]}>
           {title}
         </CustomText>
@@ -107,7 +107,7 @@ function getStyles(colors: ThemeColors) {
       borderBottomWidth: 0.5,
     },
     header: {
-      fontSize: 20,
+      fontSize: 16,
       color: colors.highlightText,
       flex: 1,
       textAlign: 'center',

@@ -43,7 +43,7 @@ function OrderItem({
   const [previewImage, setPreviewImage] = useState(order.buyer.profileImage);
   const [isHighlighted, setIsHighlighted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const user = useUser();
+  const { user } = useUser();
   const [noteHeight, setNoteHeight] = useState(0);
   useEffect(() => {
     if (!order.orderNotes) setNoteHeight(0);

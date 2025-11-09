@@ -22,7 +22,7 @@ function NewOrder() {
   const newOrderCtx = useContext(NewOrderContext);
   const orderCtx = useContext(OrdersContext);
   const authCtx = useContext(AuthContext);
-  const user = useUser();
+  const { user } = useUser();
   const token = authCtx.token;
   const orderPreviewRef = useRef<NewOrderPreviewRef>(null);
   const { showConfirmation } = useConfirmationModal();

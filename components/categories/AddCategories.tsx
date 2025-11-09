@@ -17,7 +17,7 @@ interface DropdownTypes {
 }
 function AddCategories() {
   const authCtx = useContext(AuthContext);
-  const user = useUser();
+  const { user } = useUser();
   const [inputText, setInputText] = useState<string>('');
   const [stockType, setStockType] = useState<DropdownTypes>({
     _id: 0,

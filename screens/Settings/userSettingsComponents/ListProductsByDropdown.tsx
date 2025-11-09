@@ -1,15 +1,15 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import useTextForActiveLanguage from '../../../hooks/useTextForActiveLanguage';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
-import { UserContext } from '../../../store/user-context';
+import { useUser } from '../../../store/user-context';
 import CustomText from '../../../util-components/CustomText';
 import DropdownList from '../../../util-components/DropdownList';
 
 function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: string, value: any) => void }) {
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const userCtx = useContext(UserContext);
+  const { user } = useUser();
   const [firstRender, setFirstRender] = useState(true);
   const text = useTextForActiveLanguage('settings');
   interface DrpodownTypes {
@@ -23,7 +23,7 @@ function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: stri
     { _id: 2, name: 'Samo jedna lista', value: 'one_list' },
   ]);
   function getDefaultSelectionForListProductsBy() {
-    switch (userCtx?.settings?.defaults?.listProductsBy) {
+    switch (user?.settings?.defaults?.listProductsBy) {
       case 'supplier':
         return 'Dobavljač';
       case 'category':
@@ -58,7 +58,7 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     text: {
       fontSize: 14,
-      color: colors.defaultText,
+      color: colors.secondaryText,
     },
     h2: {},
     dropdown: {

@@ -66,7 +66,7 @@ function ImagePicker({
     setIsExpanded(true);
   }
   async function openGalleryHandler() {
-    const pickedImage = await pickImage(0.6, true);
+    const pickedImage = await pickImage(0.6, true, true);
     if (!pickedImage) return;
     setPreviewImage(pickedImage);
     onTakeImage(pickedImage);

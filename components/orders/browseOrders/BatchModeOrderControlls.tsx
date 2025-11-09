@@ -27,7 +27,7 @@ function BatchModeOrderControlls({
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleFade = useToggleFadeAnimation(isExpanded, 100);
   const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 0, 60, 100);
-  const user = useUser();
+  const { user } = useUser();
   const colors = useThemeColors();
   const styles = getStyles(colors);
 

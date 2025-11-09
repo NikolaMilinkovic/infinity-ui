@@ -79,7 +79,7 @@ function BrowseReservations() {
         presentationStyle={Platform.OS === 'android' ? 'overFullScreen' : 'pageSheet'}
       >
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.primaryDark }}>
-          <StatusBar style="light" />
+          <StatusBar style="light" translucent={true} />
           <Animated.View style={[editReservationFade, { flex: 1 }]}>
             <KeyboardAvoidingWrapper>
               <EditOrder editedOrder={editedReservation} setEditedOrder={setEditedReservation} />

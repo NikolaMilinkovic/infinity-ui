@@ -3,7 +3,7 @@ import { forwardRef, useContext, useEffect, useImperativeHandle, useState } from
 import { View } from 'react-native';
 import { AuthContext } from '../store/auth-context';
 import { useThemeColors } from '../store/theme-context';
-import { UserContext } from '../store/user-context';
+import { useUser } from '../store/user-context';
 import NavigationButton from '../util-components/NavigationButton';
 
 /**
@@ -19,7 +19,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
 
   const authCtx = useContext(AuthContext);
   const navigation = useNavigation();
-  const userCtx = useContext(UserContext);
+  const { user } = useUser();
   const colors = useThemeColors();
 
   // Expose setIsActive to parent
@@ -40,11 +40,11 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
   function handleBackgroundChange(pageName) {
     return isActive === pageName ? colors.selectedNavBackground : 'transparent';
   }
-  if (!userCtx.permissions) return;
+  if (!user?.permissions) return;
 
   return (
     <View style={{ flex: 1, paddingBottom: 60, paddingTop: 60, paddingRight: 10 }}>
-      {userCtx.permissions.navigation.lista_artikla && (
+      {user?.permissions?.navigation?.lista_artikla && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('Home')}
           icon="playlist-plus"
@@ -57,7 +57,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* ORDERS MANAGER */}
-      {userCtx.permissions.navigation.porudzbine_rezervacije && (
+      {user?.permissions?.navigation?.porudzbine_rezervacije && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('Orders')}
           icon="ordered-list"
@@ -78,7 +78,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
         /> */}
 
       {/* COLORS | CATEGORIES */}
-      {userCtx.permissions.navigation.boje_kategorije_dobavljaci && (
+      {user?.permissions?.navigation?.boje_kategorije_dobavljaci && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('ColorsCategoriesTabs')}
           icon="color-palette-outline"
@@ -91,7 +91,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* COURIERS */}
-      {userCtx.permissions.navigation.kuriri && (
+      {user?.permissions?.navigation?.kuriri && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('CouriersTabs')}
           icon="truck-delivery-outline"
@@ -104,7 +104,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* PRODUCTS MANAGER */}
-      {userCtx.permissions.navigation.dodaj_artikal && (
+      {user?.permissions?.navigation?.dodaj_artikal && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('ProductsManager')}
           icon="product"
@@ -116,7 +116,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* USERS MANAGER */}
-      {userCtx.permissions.navigation.upravljanje_korisnicima && (
+      {user?.permissions?.navigation?.upravljanje_korisnicima && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('UserManagerTabs')}
           icon="usergroup-add"
@@ -128,7 +128,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* SETTINGS */}
-      {userCtx.permissions.navigation.podesavanja && (
+      {user?.permissions?.navigation?.podesavanja && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('SettingsTabs')}
           icon="setting"
@@ -140,7 +140,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* END OF DAY */}
-      {userCtx.permissions.navigation.zavrsi_dan && (
+      {user?.permissions?.navigation?.zavrsi_dan && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('EndOfDayTabs')}
           icon="file-excel"
@@ -153,7 +153,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* ADMIN DASHBOARD */}
-      {/* {userCtx.userRole === 'admin' && userCtx.permissions.navigation.admin_dashboard && (
+      {/* {user?.role === 'admin' && user?.permissions?.navigation?.admin_dashboard && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('AdminDashboardTabs')}
           icon="equalizer"
@@ -166,7 +166,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )} */}
 
       {/* GLOBAL DASHBOARD */}
-      {userCtx.userRole === 'admin' && userCtx.permissions.navigation.global_dashboard && (
+      {user?.role === 'admin' && user?.permissions?.navigation?.global_dashboard && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('GlobalDashboardTabs')}
           icon="equalizer"

@@ -18,7 +18,7 @@ export function SwitchButton({ value, text, onChange }: SwitchPropTypes) {
       <Switch
         value={value}
         onValueChange={onChange}
-        trackColor={{ false: colors.switchOffBackground, true: colors.switchOnBackground }}
+        trackColor={{ false: colors.grayText, true: colors.highlight }}
         thumbColor={colors.thumbColor}
         style={styles.switch}
       />
@@ -37,6 +37,7 @@ function getStyles(colors: ThemeColors) {
     },
     text: {
       flex: 0.8,
+      color: colors.secondaryText,
     },
     switch: {
       minWidth: 50,

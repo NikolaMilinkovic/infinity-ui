@@ -311,6 +311,10 @@ export interface UserContextTypes {
       listProductsBy?: string;
     };
     language: string;
+    firstTimeSetupDone: boolean;
+    ui: {
+      displayKeyboardToolbar: boolean;
+    };
   };
   createdAt?: string;
   updatedAt?: string;
@@ -419,3 +423,79 @@ export type VersionDataTypes = {
   createdAt?: Date;
   updatedAt?: Date;
 };
+
+export interface User {
+  _id?: string;
+  username?: string;
+  boutiqueId?: string | null;
+  role: string | null;
+  name?: string;
+  pushToken?: string;
+  permissions: {
+    navigation: {
+      lista_artikla: boolean;
+      porudzbine_rezervacije: boolean;
+      boje_kategorije_dobavljaci: boolean;
+      kuriri: boolean;
+      dodaj_artikal: boolean;
+      upravljanje_korisnicima: boolean;
+      podesavanja: boolean;
+      zavrsi_dan: boolean;
+      admin_dashboard: boolean;
+      global_dashboard: boolean;
+    };
+    products: {
+      create: boolean;
+      update: boolean;
+      delete: boolean;
+    };
+    orders: {
+      create: boolean;
+      update: boolean;
+      delete: boolean;
+    };
+    packaging: {
+      check: boolean;
+      finish_packaging: boolean;
+    };
+    colors: {
+      create: boolean;
+      update: boolean;
+      delete: boolean;
+    };
+    categories: {
+      create: boolean;
+      update: boolean;
+      delete: boolean;
+    };
+    suppliers: {
+      create: boolean;
+      update: boolean;
+      delete: boolean;
+    };
+    couriers: {
+      create: boolean;
+      update: boolean;
+      delete: boolean;
+    };
+    boutiques: {
+      create: boolean;
+      update: boolean;
+      delete: boolean;
+    };
+  } | null;
+  settings: {
+    defaults: {
+      courier: string;
+      listProductsBy: string;
+      theme: string;
+    };
+    language: string;
+    firstTimeSetupDone: boolean;
+    ui: {
+      displayKeyboardToolbar: boolean;
+    };
+  } | null;
+  createdAt?: string;
+  updatedAt?: string;
+}

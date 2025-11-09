@@ -69,7 +69,7 @@ function GlobalAppSettings() {
           <View style={[styles.sectionOutline, { paddingBottom: 8, paddingTop: 8 }]}>
             <SwitchButton
               value={boutique.data.settings.orders.requireBuyerImage}
-              text="• Obavezna slika kupčevog profila?"
+              text="Obavezna slika kupčevog profila?"
               onChange={() =>
                 boutique.setAppData((prev) =>
                   updateNestedValue(prev, 'settings.orders.requireBuyerImage', !prev.settings.orders.requireBuyerImage)
@@ -122,7 +122,7 @@ function getStyles(colors: ThemeColors) {
     },
     text: {
       fontSize: 14,
-      color: colors.defaultText,
+      color: colors.secondaryText,
     },
     sectionOutline: {
       borderColor: colors.secondaryLight,

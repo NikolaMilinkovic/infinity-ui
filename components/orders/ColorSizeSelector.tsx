@@ -121,7 +121,7 @@ function ColorSizeSelector({ product, index }: PropTypes) {
             <RadioButtonsGroup
               radioButtons={colorButtons}
               // onPress={(value) => handleColorSelect(index, value, product)}
-              onPress={(color) => handleColorSelect(index, color, product)}
+              onPress={(color) => handleColorSelect(index, color, product as any)}
               containerStyle={styles.radioButtonsContainer}
               selectedId={product.selectedColor}
               labelStyle={styles.label}
@@ -134,7 +134,7 @@ function ColorSizeSelector({ product, index }: PropTypes) {
               <CustomText style={styles.colorHeader}> Veličina</CustomText>
               <RadioButtonsGroup
                 radioButtons={sizeButtons}
-                onPress={(size) => handleSizeSelect(index, size, product)}
+                onPress={(size) => handleSizeSelect(index, size, product as any)}
                 containerStyle={styles.radioButtonsContainer}
                 selectedId={product.selectedSize}
                 labelStyle={styles.label}
@@ -185,7 +185,7 @@ function getStyles(colors: ThemeColors, selectedColor: string, selectedSize: str
       paddingHorizontal: 6,
     },
     label: {
-      color: colors.primaryDark,
+      color: colors.defaultText,
     },
     colorHeader: {
       borderTopWidth: 0,

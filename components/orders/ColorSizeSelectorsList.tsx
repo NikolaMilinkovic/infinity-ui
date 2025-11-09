@@ -56,7 +56,7 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={styles.iconStyle}
           size={26}
-          color={colors.white}
+          color={colors.whiteText}
         />
       </Pressable>
 

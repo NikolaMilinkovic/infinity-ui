@@ -8,7 +8,7 @@ export const pickImage = async (
   quality = 0.6,
   allowsEditing = false,
   useAspect = false,
-  aspectValue: [number, number] = [1, 1]
+  aspectValue: [number, number] = [3, 4]
 ) => {
   // Request permissions
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -24,7 +24,7 @@ export const pickImage = async (
         mediaTypes: ['images'],
         allowsEditing,
         quality,
-        aspect: allowsEditing ? (useAspect ? aspectValue : undefined) : undefined,
+        aspect: allowsEditing && useAspect ? aspectValue : undefined,
       });
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const asset = result.assets[0];

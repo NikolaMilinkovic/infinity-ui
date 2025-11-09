@@ -13,7 +13,7 @@ function AddSupplier() {
   const authCtx = useContext(AuthContext);
   const [inputText, setInputText] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const user = useUser();
+  const { user } = useUser();
   const colors = useThemeColors();
   const styles = getStyles(colors);
 

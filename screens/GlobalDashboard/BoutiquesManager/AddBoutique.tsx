@@ -14,7 +14,7 @@ function AddBoutique() {
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const [error, setError] = useState('');
-  const user = useUser();
+  const { user } = useUser();
   const token = useAuthToken();
   const globalStyles = useGlobalStyles();
   const [boutiqueData, setBoutiqueData] = useState({

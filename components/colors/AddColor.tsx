@@ -15,7 +15,7 @@ function AddColor() {
   const [error, setError] = useState<string>('');
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const user = useUser();
+  const { user } = useUser();
 
   function resetInputAndError() {
     setInputText('');

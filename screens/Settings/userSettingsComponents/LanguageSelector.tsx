@@ -1,12 +1,12 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import useTextForActiveLanguage from '../../../hooks/useTextForActiveLanguage';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
-import { UserContext } from '../../../store/user-context';
+import { useUser } from '../../../store/user-context';
 import DropdownList from '../../../util-components/DropdownList';
 
 function LanguageSelector({ updateUserSetting }: { updateUserSetting: (field: string, value: any) => void }) {
-  const userCtx = useContext(UserContext);
+  const { user } = useUser();
   const [firstRender, setFirstRender] = useState(true);
   const text = useTextForActiveLanguage('settings');
   const colors = useThemeColors();
@@ -21,7 +21,7 @@ function LanguageSelector({ updateUserSetting }: { updateUserSetting: (field: st
     { _id: 1, name: 'Srpski', value: 'srb' },
   ]);
   function getDefaultValue() {
-    switch (userCtx?.settings?.language) {
+    switch (user?.settings?.language) {
       case 'en':
         return 'Engleski';
       case 'srb':

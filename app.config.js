@@ -3,7 +3,7 @@ module.exports = {
     name: 'Infinity Boutique App',
     slug: 'infinity-boutique-app',
     backgroundColor: '#ffffff',
-    version: '2.0.0',
+    version: '2.0.1',
     jsEngine: 'hermes',
     orientation: 'portrait',
     icon: './assets/icon.png',
@@ -106,6 +106,7 @@ module.exports = {
         foregroundImage: './assets/icon.png',
         backgroundColor: '#ffffff',
       },
+      edgeToEdgeEnabled: true,
       permissions: [
         'android.permission.POST_NOTIFICATIONS',
         'android.permission.RECORD_AUDIO',

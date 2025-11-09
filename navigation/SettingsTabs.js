@@ -8,8 +8,7 @@ import { useUser } from '../store/user-context';
 const Tab = createMaterialTopTabNavigator();
 
 export default function SettingsTabs() {
-  const user = useUser();
-  const role = user.getUserRole();
+  const { user } = useUser();
   const colors = useThemeColors();
 
   /**
@@ -45,7 +44,7 @@ export default function SettingsTabs() {
           title: 'Podešavanja aplikacije',
         }}
       />
-      {user && role === 'admin' && (
+      {user && user?.role === 'admin' && (
         <Tab.Screen
           name="globalSettings"
           component={GlobalAppSettings}

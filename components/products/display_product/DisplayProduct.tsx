@@ -51,7 +51,7 @@ function DisplayProduct({
   const styles = getStyles(colors, onStock, showAddBtn);
   const globalStyles = useGlobalStyles();
   if (item) useCheckStockAvailability(item, setOnStock);
-  const user = useUser();
+  const { user } = useUser();
 
   const expandedHeight = 600;
   const expandHeight = useExpandAnimation(isExpanded, 160, expandedHeight, 280);

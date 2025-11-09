@@ -14,7 +14,7 @@ function AddCourier() {
   const [inputText, setInputText] = useState<string>('');
   const [inputPrice, setInputPrice] = useState<number | string>('');
   const [error, setError] = useState<string>('');
-  const user = useUser();
+  const { user } = useUser();
   const colors = useThemeColors();
   const styles = getStyles(colors);
 

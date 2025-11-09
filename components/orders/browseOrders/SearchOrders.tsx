@@ -568,7 +568,7 @@ function getStyles(colors: ThemeColors) {
       paddingHorizontal: 16,
       borderColor: colors.borderColor,
       backgroundColor: colors.background,
-      marginBottom: 2,
+      paddingBottom: 2,
     },
     inputContainer: {
       flexDirection: 'row',

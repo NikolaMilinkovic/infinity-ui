@@ -139,6 +139,7 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
           >
             Sortiraj podatke
           </Button>
+          {/* TODO -> DODAJ POSEBNU ROLU KOJU SAMO JA IMAM TAKO DA SAMO JA MOGU VIDETI OVO */}
           {/* <View style={styles.testButtonContainer}>
             <Button
               textColor={colors.primaryDark}

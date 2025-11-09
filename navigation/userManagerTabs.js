@@ -2,6 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import AddUser from '../components/userManager/AddUser';
 import EditUser from '../components/userManager/EditUser';
 import { useThemeColors } from '../store/theme-context';
+import UsersManagerProvider from '../store/users-manager-context';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -11,36 +12,38 @@ export default function UserManagerTabs() {
    * COURIERS tabovi
    */
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarPressColor: colors.tabsPressEffect,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          color: colors.primaryDark,
-        },
-        tabBarStyle: {
-          backgroundColor: colors.tabsBackground,
-        },
-        tabBarIndicatorStyle: {
-          backgroundColor: colors.highlight,
-          height: 4,
-        },
-      }}
-    >
-      <Tab.Screen
-        name="EditUser"
-        component={EditUser}
-        options={{
-          title: 'Lista korisnika',
+    <UsersManagerProvider>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarPressColor: colors.tabsPressEffect,
+          tabBarLabelStyle: {
+            fontSize: 11,
+            color: colors.primaryDark,
+          },
+          tabBarStyle: {
+            backgroundColor: colors.tabsBackground,
+          },
+          tabBarIndicatorStyle: {
+            backgroundColor: colors.highlight,
+            height: 4,
+          },
         }}
-      />
-      <Tab.Screen
-        name="AddUser"
-        component={AddUser}
-        options={{
-          title: 'Kreiranje korisnika',
-        }}
-      />
-    </Tab.Navigator>
+      >
+        <Tab.Screen
+          name="EditUser"
+          component={EditUser}
+          options={{
+            title: 'Lista korisnika',
+          }}
+        />
+        <Tab.Screen
+          name="AddUser"
+          component={AddUser}
+          options={{
+            title: 'Kreiranje korisnika',
+          }}
+        />
+      </Tab.Navigator>
+    </UsersManagerProvider>
   );
 }

@@ -53,7 +53,7 @@ function EditUserModal({ user, setUser }: EditUserModalTypes) {
 
   return (
     <View>
-      <ModalHeader title={`Izmena korisnika "${user.username}"`} />
+      <ModalHeader title={`Izmena korisnika "${user?.username}"`} />
 
       {/* CONTENT */}
       <ScrollView style={styles.container}>

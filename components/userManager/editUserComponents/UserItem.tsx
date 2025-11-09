@@ -23,21 +23,21 @@ function UserItem({ user, removeUserHandler, setEditedUser }: UserItemPropTypes)
         <CustomText style={{ flex: 1, color: colors.grayText }}>
           Username:{'\n'}
           <CustomText variant="bold" style={[{ color: colors.defaultText }]}>
-            {user.username}
+            {user?.username}
           </CustomText>
         </CustomText>
         <CustomText style={{ flex: 1, color: colors.grayText }}>
           Role: {'\n'}
           <CustomText variant="bold" style={[{ color: colors.defaultText }]}>
-            {user.role}
+            {user?.role}
           </CustomText>
         </CustomText>
         <View style={styles.buttonsContainer}>
           <IconButton
             size={26}
             color={colors.iconColor}
-            onPress={() => removeUserHandler(user._id)}
-            key={`key-${user._id}-remove-button`}
+            onPress={() => removeUserHandler(user?._id)}
+            key={`key-${user?._id}-remove-button`}
             icon="delete"
             style={styles.editButtonContainer}
             pressedStyles={styles.buttonContainerPressed}
@@ -48,7 +48,7 @@ function UserItem({ user, removeUserHandler, setEditedUser }: UserItemPropTypes)
             size={26}
             color={colors.iconColor}
             onPress={() => handleOnEditPress(user)}
-            key={`key-${user._id}-edit-button`}
+            key={`key-${user?._id}-edit-button`}
             icon="edit"
             style={styles.editButtonContainer}
             pressedStyles={styles.buttonContainerPressed}

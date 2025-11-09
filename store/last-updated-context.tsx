@@ -202,7 +202,7 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
   }
   // User
   function updateUserContext(newData: any[]) {
-    contexts.user.setUsersList(newData);
+    contexts.boutiqueUsers.setUsersList(newData);
   }
   // Color
   function updateColorContext(newData: ColorTypes[]) {

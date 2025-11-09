@@ -96,11 +96,10 @@ export const generateExcellForOrders = (orders: OrderTypes[], courier?: string) 
   ]);
 
   adjustCellsWidth(ws);
-  if (courier) {
-    XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate} | Kurir-${courier}`, true);
-  } else {
-    XLSX.utils.book_append_sheet(wb, ws, `Dan-${currentDate}`, true);
-  }
+  const sheetName = courier ? `Dan-${currentDate} | Kurir-${courier}` : `Dan-${currentDate}`;
+  const truncatedName = sheetName.slice(0, 31);
+  XLSX.utils.book_append_sheet(wb, ws, truncatedName, true);
+
   const base64 = XLSX.write(wb, { type: 'base64' });
 
   if (courier) {

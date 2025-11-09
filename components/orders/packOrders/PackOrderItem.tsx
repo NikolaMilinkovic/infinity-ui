@@ -33,7 +33,7 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
   const styles = getStyles(colors, isPacked);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
-  const user = useUser();
+  const { user } = useUser();
   function handleOnPress() {
     setIsExpanded(() => !isExpanded);
   }

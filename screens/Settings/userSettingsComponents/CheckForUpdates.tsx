@@ -65,7 +65,7 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     text: {
       fontSize: 14,
-      color: colors.defaultText,
+      color: colors.secondaryText,
     },
     button: {
       backgroundColor: colors.background,

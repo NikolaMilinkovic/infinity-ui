@@ -2,12 +2,12 @@ import { useContext, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { CouriersContext } from '../../../store/couriers-context';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
-import { UserContext } from '../../../store/user-context';
+import { useUser } from '../../../store/user-context';
 import CustomText from '../../../util-components/CustomText';
 import DropdownList from '../../../util-components/DropdownList';
 
 function CouriersSettings({ updateDefault }: { updateDefault: (field: string, value: any) => void }) {
-  const userCtx = useContext(UserContext);
+  const { user } = useUser();
   const courierCtx = useContext(CouriersContext);
   const [firstRender, setFirstRender] = useState(true);
   const colors = useThemeColors();
@@ -19,7 +19,7 @@ function CouriersSettings({ updateDefault }: { updateDefault: (field: string, va
   }
   const [listSelectorData, setListSelectorData] = useState([{ _id: 0, name: '', value: '' }]);
   const [defaultSelection, setDefaultSelection] = useState(
-    userCtx.settings.defaults.courier || { _id: 0, name: '', value: '' }
+    user?.settings?.defaults?.courier || { _id: 0, name: '', value: '' }
   );
   useEffect(() => {
     let options = [{ _id: 0, name: 'Izaberite default kurira', value: '' }];
@@ -31,8 +31,8 @@ function CouriersSettings({ updateDefault }: { updateDefault: (field: string, va
       });
     }
     setListSelectorData(options);
-    setDefaultSelection(userCtx.settings.defaults.courier);
-  }, [courierCtx.couriers, userCtx.settings.defaults.courier]);
+    setDefaultSelection(user?.settings?.defaults?.courier);
+  }, [courierCtx.couriers, user?.settings?.defaults?.courier]);
 
   async function updateSetting(selected: DrpodownTypes) {
     if (firstRender) {
@@ -60,7 +60,7 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     text: {
       fontSize: 14,
-      color: colors.defaultText,
+      color: colors.secondaryText,
     },
     h2: {},
     dropdown: {

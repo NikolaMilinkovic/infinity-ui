@@ -7,6 +7,7 @@ export interface ThemeColors {
   whiteText: string;
   grayText: string;
   grayText1: string;
+  secondaryText: string;
   primaryDark: string;
   secondaryDark: string;
   primaryLight: string;
@@ -146,6 +147,7 @@ function getLightColors(): ThemeColors {
     whiteText: '#FFFFFF',
     grayText: '#999999ff',
     grayText1: '#707070ff',
+    secondaryText: '#1a1a1aff',
     primaryDark: '#012340',
     secondaryDark: '#024059',
     primaryLight: '#F0F0F0',
@@ -240,6 +242,7 @@ function getDarkColors(): ThemeColors {
     whiteText: '#F2F2F2',
     grayText: '#B3B3B3',
     grayText1: '#B3B3B3',
+    secondaryText: '#B3B3B3',
     primaryDark: '#000000ff',
     secondaryDark: '#1A1A1A',
     primaryLight: '#1A1A1A',

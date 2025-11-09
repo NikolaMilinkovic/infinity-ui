@@ -30,7 +30,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
   const [newName, setNewName] = useState('');
   const [showEdit, setShowEdit] = useState<Boolean>(false);
   const authCtx = useContext(AuthContext);
-  const user = useUser();
+  const { user } = useUser();
   const [success, setSucces] = useState('');
   const [error, setError] = useState('');
   const [display, setDisplay] = useState(true);

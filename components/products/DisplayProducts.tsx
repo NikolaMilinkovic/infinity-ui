@@ -7,7 +7,7 @@ import useImagePreviewModal from '../../hooks/useImagePreviewModal';
 import { AllProductsContext } from '../../store/all-products-context';
 import { AuthContext } from '../../store/auth-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
-import { UserContext } from '../../store/user-context';
+import { useUser } from '../../store/user-context';
 import { DressTypes, ImageTypes, ProductTypes, PurseTypes, SearchParamsTypes } from '../../types/allTsTypes';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
 import CustomText from '../../util-components/CustomText';
@@ -48,13 +48,13 @@ function DisplayProducts({ setEditItem, showAddBtn = true }: DisplayProductsProp
   const { isImageModalVisible, showImageModal, hideImageModal } = useImagePreviewModal();
   const { isModalVisible, showModal, hideModal, confirmAction } = useConfirmationModal();
   const [previewImage, setPreviewImage] = useState<string>('');
-  const userCtx = useContext(UserContext);
-  const [userSettings, setUserSettings] = useState(userCtx.settings);
+  const { user } = useUser();
+  const [userSettings, setUserSettings] = useState(user?.settings);
   const colors = useThemeColors();
   const styles = getStyles(colors);
   useEffect(() => {
-    setUserSettings(userCtx.settings);
-  }, [userCtx.settings]);
+    setUserSettings(user?.settings);
+  }, [user?.settings]);
 
   function handleImagePreview(image: ImageTypes) {
     setPreviewImage(image as any);

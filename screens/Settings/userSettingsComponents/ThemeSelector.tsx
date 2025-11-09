@@ -42,13 +42,13 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     text: {
       fontSize: 14,
-      color: colors.defaultText,
+      color: colors.secondaryText,
     },
     switch: {
       marginLeft: 'auto',
       transform: Platform.select({
-        ios: [{ scaleX: 0.8 }, { scaleY: 0.8 }], // Make iOS switch smaller
-        android: [{ scaleX: 1.1 }, { scaleY: 1.1 }], // Make Android switch bigger
+        ios: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
+        android: [{ scaleX: 1.1 }, { scaleY: 1.1 }],
       }),
     },
   });

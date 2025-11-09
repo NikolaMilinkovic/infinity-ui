@@ -24,7 +24,7 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
   const [success, setSucces] = useState('');
   const [error, setError] = useState('');
   const [display, setDisplay] = useState(true);
-  const user = useUser();
+  const { user } = useUser();
   const colors = useThemeColors();
   const styles = getStyles(colors);
 

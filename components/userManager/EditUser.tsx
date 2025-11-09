@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useContext, useMemo, useState } from 'react';
-import { FlatList, Modal, Platform, StyleSheet, View } from 'react-native';
+import { FlatList, Modal, Platform, StyleSheet, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
@@ -9,7 +9,7 @@ import { useFadeTransition } from '../../hooks/useFadeTransition';
 import { AppContext } from '../../store/app-context';
 import { AuthContext } from '../../store/auth-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
-import { useUser } from '../../store/user-context';
+import { useUsersManager } from '../../store/users-manager-context';
 import ConfirmationModal from '../../util-components/ConfirmationModal';
 import CustomText from '../../util-components/CustomText';
 import { popupMessage } from '../../util-components/PopupMessage';
@@ -19,7 +19,7 @@ import UserFilter from './editUserComponents/UserFilter';
 import UserItem from './editUserComponents/UserItem';
 
 function EditUser() {
-  const user = useUser();
+  const { usersList } = useUsersManager();
   const authCtx = useContext(AuthContext);
   const token = authCtx.token || '';
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,7 +35,7 @@ function EditUser() {
   const styles = getStyles(colors);
 
   const filteredUsers = useMemo(() => {
-    return user.usersList.filter((u) => {
+    return usersList.filter((u) => {
       const matchesSearch = u.username.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesRole = selectedRole === 'all' || u.role === selectedRole;
 
@@ -43,7 +43,7 @@ function EditUser() {
       const notBoutiqueAccount = u.username !== appCtx.data.boutiqueName.toLowerCase();
       return matchesSearch && matchesRole && notBoutiqueAccount;
     });
-  }, [user.usersList, searchQuery, selectedRole, appCtx.data.boutiqueName]);
+  }, [usersList, searchQuery, selectedRole, appCtx.data.boutiqueName]);
 
   function getTotalUsersCount() {
     return (
@@ -74,6 +74,25 @@ function EditUser() {
     });
   }
 
+  function NoUsersRenderer() {
+    const internalStyle = StyleSheet.create({
+      container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      text: {
+        color: colors.defaultText,
+      },
+    });
+
+    return (
+      <View style={internalStyle.container}>
+        <Text style={internalStyle.text}>Trenutno ne postoje dodate boje</Text>
+      </View>
+    );
+  }
+
   return (
     <>
       <View style={styles.container}>
@@ -91,20 +110,24 @@ function EditUser() {
           setSelectedRole={setSelectedRole}
         />
 
-        <FlatList
-          data={filteredUsers}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item, index }) => (
-            <UserItem user={item} removeUserHandler={removeUserHandler} setEditedUser={setEditedUser} />
-          )}
-          style={styles.list}
-          contentContainerStyle={styles.listContainer}
-          ListHeaderComponent={() => getTotalUsersCount()}
-          initialNumToRender={20}
-          maxToRenderPerBatch={10}
-          windowSize={20}
-          removeClippedSubviews={true}
-        />
+        {usersList.length > 0 ? (
+          <FlatList
+            data={filteredUsers}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item, index }) => (
+              <UserItem user={item} removeUserHandler={removeUserHandler} setEditedUser={setEditedUser} />
+            )}
+            style={styles.list}
+            contentContainerStyle={styles.listContainer}
+            ListHeaderComponent={() => getTotalUsersCount()}
+            initialNumToRender={20}
+            maxToRenderPerBatch={10}
+            windowSize={20}
+            removeClippedSubviews={true}
+          />
+        ) : (
+          <NoUsersRenderer />
+        )}
       </View>
 
       <Modal
@@ -114,7 +137,7 @@ function EditUser() {
         presentationStyle={Platform.OS === 'android' ? 'overFullScreen' : 'pageSheet'}
       >
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.primaryDark }}>
-          <StatusBar style="light" translucent />
+          <StatusBar style="light" translucent={true} />
           <Animated.ScrollView contentContainerStyle={editProductFade}>
             {editedUser && <EditUserModal user={editedUser} setUser={setEditedUser} />}
           </Animated.ScrollView>

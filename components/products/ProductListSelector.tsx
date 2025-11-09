@@ -4,7 +4,7 @@ import { useGlobalStyles } from '../../constants/globalStyles';
 import { CategoriesContext } from '../../store/categories-context';
 import { SuppliersContext } from '../../store/suppliers-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
-import { UserContext } from '../../store/user-context';
+import { useUser } from '../../store/user-context';
 import { ProductTypes } from '../../types/allTsTypes';
 import CustomText from '../../util-components/CustomText';
 
@@ -14,18 +14,17 @@ interface ProductListSelectorPropTypes {
 }
 
 function ProductListSelector({ products, setSelectedList }: ProductListSelectorPropTypes) {
-  const userCtx = useContext(UserContext);
-  const colors = useThemeColors();
+  const { user } = useUser();
 
   return (
     <View>
       {/* SUPPLIER */}
-      {userCtx?.settings?.defaults?.listProductsBy === 'supplier' && (
+      {user?.settings?.defaults?.listProductsBy === 'supplier' && (
         <ListProductsBySupplier products={products} setSelectedList={setSelectedList} />
       )}
 
       {/* CATEGORY */}
-      {userCtx?.settings?.defaults?.listProductsBy === 'category' && (
+      {user?.settings?.defaults?.listProductsBy === 'category' && (
         <ListProductsByCategory products={products} setSelectedList={setSelectedList} />
       )}
     </View>

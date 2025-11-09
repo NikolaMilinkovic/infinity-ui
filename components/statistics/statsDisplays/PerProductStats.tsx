@@ -45,7 +45,10 @@ function PerProductStats({ data }: PerProductStatsPropTypes) {
     // IZBACITI ACCORDION
     // NAMESTITI CONFITIONAL RENDERING
     <View>
-      <Pressable onPress={() => setIsExpanded(!isExpanded)} style={[styles.headerContainer, globalStyles.border]}>
+      <Pressable
+        onPress={() => setIsExpanded(!isExpanded)}
+        style={({ pressed }) => [styles.headerContainer, globalStyles.border, pressed && { opacity: 0.6 }]}
+      >
         <CustomText variant="bold" style={[styles.header]}>
           Proizvodi
         </CustomText>
@@ -229,7 +232,7 @@ function getStyles(colors: ThemeColors, isExpanded?: boolean) {
       flex: 2,
     },
     header: {
-      fontSize: 20,
+      fontSize: 16,
       color: colors.defaultText,
       textAlign: 'center',
       flex: 20,

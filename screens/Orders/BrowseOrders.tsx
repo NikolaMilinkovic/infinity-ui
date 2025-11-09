@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useContext, useMemo, useState } from 'react';
-import { Animated, Modal, Platform } from 'react-native';
+import { Animated, Modal, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EditOrder from '../../components/orders/browseOrders/editOrder/EditOrder';
 import OrderItemsList from '../../components/orders/browseOrders/OrderItemsList';
@@ -76,7 +76,7 @@ function BrowseOrders() {
   const editOrderFade = useFadeTransition(editedOrder !== null);
 
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: colors.containerBackground, flexDirection: 'column' }}>
       <SearchOrders
         searchData={searchData}
         setSearchData={setSearchData}
@@ -112,7 +112,7 @@ function BrowseOrders() {
           </Animated.View>
         </SafeAreaView>
       </Modal>
-    </>
+    </View>
   );
 }
 
