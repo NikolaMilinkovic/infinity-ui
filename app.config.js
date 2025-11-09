@@ -3,7 +3,7 @@ module.exports = {
     name: 'Infinity Boutique App',
     slug: 'infinity-boutique-app',
     backgroundColor: '#ffffff',
-    version: '2.0.1',
+    version: '2.0.2',
     jsEngine: 'hermes',
     orientation: 'portrait',
     icon: './assets/icon.png',
@@ -41,7 +41,7 @@ module.exports = {
             {
               fontFamily: 'HelveticaNeue',
               fontDefinitions: [
-                { path: './assets/fonts/helveticaNeue/HelveticaNeueItalic.otf', style: 'italic', weight: 400 },
+                { path: './assets/fonts/helveticaNeue/HelveticaNeueItalic.ttf', style: 'italic', weight: 400 },
                 { path: './assets/fonts/helveticaNeue/HelveticaNeueMedium.otf', weight: 500 },
                 { path: './assets/fonts/helveticaNeue/HelveticaNeueBold.otf', weight: 700 },
               ],
