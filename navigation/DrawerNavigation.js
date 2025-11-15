@@ -1,10 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import { forwardRef, useContext, useEffect, useImperativeHandle, useState } from 'react';
 import { View } from 'react-native';
+import DrawerSectionText from '../components/navigation/drawer/DrawerSectionText';
+import NavigationButton from '../components/navigation/drawer/NavigationButton';
 import { AuthContext } from '../store/auth-context';
 import { useThemeColors } from '../store/theme-context';
 import { useUser } from '../store/user-context';
-import NavigationButton from '../util-components/NavigationButton';
 
 /**
  * Handles display of icons / screens in the drawer menu
@@ -19,7 +20,7 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
 
   const authCtx = useContext(AuthContext);
   const navigation = useNavigation();
-  const { user } = useUser();
+  const { user, userHasPermission } = useUser();
   const colors = useThemeColors();
 
   // Expose setIsActive to parent
@@ -44,12 +45,14 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
 
   return (
     <View style={{ flex: 1, paddingBottom: 60, paddingTop: 60, paddingRight: 10 }}>
-      {user?.permissions?.navigation?.lista_artikla && (
+      {/* ==========================[ DNEVNE OPERACIJE | RAD ]========================== */}
+      <DrawerSectionText text="Rad" />
+      {userHasPermission('lista_artikla') && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('Home')}
           icon="playlist-plus"
           onPress={() => setActiveAndNavigate('Home')}
-          size={18}
+          size={16}
           color={handleActiveColorChange('Home')}
           text={'Lista Artikla'}
           type="MaterialCommunityIcons"
@@ -57,33 +60,41 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* ORDERS MANAGER */}
-      {user?.permissions?.navigation?.porudzbine_rezervacije && (
+      {userHasPermission('porudzbine_rezervacije') && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('Orders')}
           icon="ordered-list"
           onPress={() => setActiveAndNavigate('Orders')}
-          size={18}
+          size={16}
           color={handleActiveColorChange('Orders')}
           text="Porudžbine | Rezervacije"
         />
       )}
 
-      {/* <NavigationButton 
-        backgroundColor={handleBackgroundChange('Profile')}
-        icon="user" 
-        onPress={() => setActiveAndNavigate('Profile')} 
-        size={18} 
-        color={handleActiveColorChange('Profile')}
-        text='Profil'
-        /> */}
+      {/* END OF DAY */}
+      {userHasPermission('zavrsi_dan') && (
+        <NavigationButton
+          backgroundColor={handleBackgroundChange('EndOfDayTabs')}
+          icon="file-excel"
+          onPress={() => setActiveAndNavigate('EndOfDayTabs')}
+          size={16}
+          color={handleActiveColorChange('EndOfDayTabs')}
+          text="Završi dan"
+          type="MaterialCommunityIcons"
+        />
+      )}
+      {/* ==========================[ \DNEVNE OPERACIJE | RAD ]========================== */}
+
+      {/* ==========================[ KONFIGURACIJA OSNOVNIH PODATAKA ]========================== */}
+      <DrawerSectionText text="Konfiguracija osnovnih podataka" />
 
       {/* COLORS | CATEGORIES */}
-      {user?.permissions?.navigation?.boje_kategorije_dobavljaci && (
+      {userHasPermission('boje_kategorije_dobavljaci') && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('ColorsCategoriesTabs')}
           icon="color-palette-outline"
           onPress={() => setActiveAndNavigate('ColorsCategoriesTabs')}
-          size={18}
+          size={16}
           color={handleActiveColorChange('ColorsCategoriesTabs')}
           text="Boje i Kategorije"
           type="Ionicons"
@@ -91,12 +102,12 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* COURIERS */}
-      {user?.permissions?.navigation?.kuriri && (
+      {userHasPermission('kuriri') && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('CouriersTabs')}
           icon="truck-delivery-outline"
           onPress={() => setActiveAndNavigate('CouriersTabs')}
-          size={18}
+          size={16}
           color={handleActiveColorChange('CouriersTabs')}
           text="Kuriri i Dobavljači"
           type="MaterialCommunityIcons"
@@ -104,88 +115,98 @@ export const CustomDrawerContent = forwardRef((props, ref) => {
       )}
 
       {/* PRODUCTS MANAGER */}
-      {user?.permissions?.navigation?.dodaj_artikal && (
+      {userHasPermission('dodaj_artikal') && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('ProductsManager')}
           icon="product"
           onPress={() => setActiveAndNavigate('ProductsManager')}
-          size={18}
+          size={16}
           color={handleActiveColorChange('ProductsManager')}
-          text="Dodaj Artikal"
+          text="Dodavanje Artikala"
         />
       )}
 
-      {/* USERS MANAGER */}
-      {user?.permissions?.navigation?.upravljanje_korisnicima && (
+      {/* EXCEL MANAGER */}
+      {userHasPermission('excel_manager') && (
         <NavigationButton
-          backgroundColor={handleBackgroundChange('UserManagerTabs')}
-          icon="usergroup-add"
-          onPress={() => setActiveAndNavigate('UserManagerTabs')}
-          size={18}
-          color={handleActiveColorChange('UserManagerTabs')}
-          text="Upravljanje Korisnicima"
-        />
-      )}
-
-      {/* SETTINGS */}
-      {user?.permissions?.navigation?.podesavanja && (
-        <NavigationButton
-          backgroundColor={handleBackgroundChange('SettingsTabs')}
-          icon="setting"
-          onPress={() => setActiveAndNavigate('SettingsTabs')}
-          size={18}
-          color={handleActiveColorChange('SettingsTabs')}
-          text="Podešavanja"
-        />
-      )}
-
-      {/* END OF DAY */}
-      {user?.permissions?.navigation?.zavrsi_dan && (
-        <NavigationButton
-          backgroundColor={handleBackgroundChange('EndOfDayTabs')}
-          icon="file-excel"
-          onPress={() => setActiveAndNavigate('EndOfDayTabs')}
-          size={18}
-          color={handleActiveColorChange('EndOfDayTabs')}
-          text="Završi dan"
+          backgroundColor={handleBackgroundChange('ExcelManagerTabs')}
+          icon="microsoft-excel"
           type="MaterialCommunityIcons"
+          onPress={() => setActiveAndNavigate('ExcelManagerTabs')}
+          size={16}
+          color={handleActiveColorChange('ExcelManagerTabs')}
+          text="Excel šabloni"
         />
       )}
+      {/* ==========================[ \KONFIGURACIJA OSNOVNIH PODATAKA ]========================== */}
 
+      {/* ==========================[ ADMIN ]========================== */}
+      <DrawerSectionText text="Administracija" />
       {/* ADMIN DASHBOARD */}
-      {/* {user?.role === 'admin' && user?.permissions?.navigation?.admin_dashboard && (
+      {user?.role === 'admin' && userHasPermission('admin_dashboard') && (
         <NavigationButton
           backgroundColor={handleBackgroundChange('AdminDashboardTabs')}
           icon="equalizer"
           onPress={() => setActiveAndNavigate('AdminDashboardTabs')}
-          size={18}
+          size={16}
           color={handleActiveColorChange('AdminDashboardTabs')}
           text="Admin Dashboard"
           type="MaterialCommunityIcons"
         />
-      )} */}
-
-      {/* GLOBAL DASHBOARD */}
-      {user?.role === 'admin' && user?.permissions?.navigation?.global_dashboard && (
+      )}
+      {/* USERS MANAGER */}
+      {userHasPermission('upravljanje_korisnicima') && (
         <NavigationButton
-          backgroundColor={handleBackgroundChange('GlobalDashboardTabs')}
-          icon="equalizer"
-          onPress={() => setActiveAndNavigate('GlobalDashboardTabs')}
-          size={18}
-          color={handleActiveColorChange('GlobalDashboardTabs')}
-          text="Global Dashboard"
-          type="MaterialCommunityIcons"
+          backgroundColor={handleBackgroundChange('UserManagerTabs')}
+          icon="usergroup-add"
+          onPress={() => setActiveAndNavigate('UserManagerTabs')}
+          size={16}
+          color={handleActiveColorChange('UserManagerTabs')}
+          text="Upravljanje Korisnicima"
         />
       )}
+      {/* ==========================[ \ADMIN ]========================== */}
 
-      {/* Bottom Buttons */}
+      {/* ==========================[ GLOBAL ]========================== */}
+      {user.isSuperAdmin && (
+        <>
+          <DrawerSectionText text="Global" />
+          {/* GLOBAL DASHBOARD */}
+          {user?.role === 'admin' && userHasPermission('global_dashboard') && (
+            <NavigationButton
+              backgroundColor={handleBackgroundChange('GlobalDashboardTabs')}
+              icon="equalizer"
+              onPress={() => setActiveAndNavigate('GlobalDashboardTabs')}
+              size={16}
+              color={handleActiveColorChange('GlobalDashboardTabs')}
+              text="Global Dashboard"
+              type="MaterialCommunityIcons"
+            />
+          )}
+        </>
+      )}
+      {/* ==========================[ \GLOBAL ]========================== */}
+
+      {/* ==========================[ BOTTOM BUTTONS ]========================== */}
       <View
         style={{
           marginTop: 'auto',
         }}
       >
-        <NavigationButton icon="logout" onPress={authCtx.logout} size={18} color={colors.error} text="Logout" />
+        {/* SETTINGS */}
+        {userHasPermission('podesavanja') && (
+          <NavigationButton
+            backgroundColor={handleBackgroundChange('SettingsTabs')}
+            icon="setting"
+            onPress={() => setActiveAndNavigate('SettingsTabs')}
+            size={16}
+            color={handleActiveColorChange('SettingsTabs')}
+            text="Podešavanja"
+          />
+        )}
+        <NavigationButton icon="logout" onPress={authCtx.logout} size={16} color={colors.error} text="Logout" />
       </View>
+      {/* ==========================[ \BOTTOM BUTTONS ]========================== */}
     </View>
   );
 });

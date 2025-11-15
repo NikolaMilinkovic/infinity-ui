@@ -117,19 +117,22 @@ function getStyles(colors: ThemeColors) {
     headerContainer: {
       padding: 10,
       borderRadius: 4,
-      borderWidth: 0.5,
+      borderWidth: 0,
       borderColor: colors.borderColor,
-      backgroundColor: colors.primaryDark,
+      backgroundColor: colors.accordionHeaderBackground,
       marginBottom: 16,
       flexDirection: 'row',
-      alignItems: 'center',
     },
     iconStyle: {
       marginLeft: 'auto',
     },
     header: {
-      fontSize: 18,
+      fontSize: 14,
+      alignSelf: 'center',
       color: colors.whiteText,
+      fontFamily: 'HelveticaNeue-Bold',
+      textAlign: 'center',
+      flex: 1,
     },
     listContainer: {
       padding: 10,

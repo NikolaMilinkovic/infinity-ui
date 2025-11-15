@@ -25,6 +25,9 @@ export interface ThemeColors {
   highlightBlue: string;
   successSecondary: string;
 
+  // accordion
+  accordionHeaderBackground: string;
+
   // button
   buttonNormal1: string;
   buttonNormal2: string;
@@ -51,7 +54,9 @@ export interface ThemeColors {
   // tabs
   tabsBackground: string;
   tabsPressEffect: string;
-  black: string;
+  tabTextColor: string;
+  tabUnderlineColor: string;
+  tabUnderlineWidth: number;
 
   // card
   cardBackground1: string;
@@ -152,7 +157,9 @@ function getLightColors(): ThemeColors {
     secondaryDark: '#024059',
     primaryLight: '#F0F0F0',
     secondaryLight: '#C5D5D9',
-    highlight: '#ca9393ff',
+    highlight: '#ffbdc5',
+    // highlight: '#012340',
+    // highlight: '#ca9393ff',
     highlight1: '#b18080ff',
     highlight2: '#996e6eff',
     secondaryHighlight: '#fff4f4ff',
@@ -165,19 +172,22 @@ function getLightColors(): ThemeColors {
     highlightBlue: '#6A5ACD',
     successSecondary: '#F0FAF0',
 
+    // accordion
+    accordionHeaderBackground: '#000000',
+
     // button
     buttonNormal1: '#ffffffff',
     buttonNormal2: '#f5f4f4ff',
-    buttonHighlight1: '#ebababff',
-    buttonHighlight2: '#c58e8eff',
+    buttonHighlight1: '#fdc7cdff',
+    buttonHighlight2: '#ebababff',
     blackWhite: '#FFFFFF',
 
     // components
     buttonBackground: '#F2F2F2',
-    borders: '#012340',
-    navTextNormal: '#012340',
+    borders: '#000000',
+    navTextNormal: '#000000',
     selectedNavText: '#F2F2F2',
-    selectedNavBackground: '#012340',
+    selectedNavBackground: '#000000',
     deleteButton: '#FF4D5E',
 
     // dropdown
@@ -185,20 +195,22 @@ function getLightColors(): ThemeColors {
     dropdownSearchBackground: '#012340',
 
     // nav stripe
-    navBackground: '#012340',
+    navBackground: '#000000',
     navText: '#F2F2F2',
 
     // tabs
-    tabsBackground: '#C5D5D9',
+    tabsBackground: '#FFFFFF',
     tabsPressEffect: '#b0bdc1ff',
-    black: '#000000',
+    tabTextColor: '#000000',
+    tabUnderlineColor: '#000000',
+    tabUnderlineWidth: 1.5,
 
     // card
     cardBackground1: '#ffffff',
     cardBackground2: '#fcfbfbff',
 
     // icons
-    iconColor: '#012340',
+    iconColor: '#000000',
 
     background: '#ffffff',
     background1: '#f3f2f2ff',
@@ -210,19 +222,20 @@ function getLightColors(): ThemeColors {
     borderColorHighlight: '#d4e6ebff',
 
     // product
-    selectedProductBackground: '#A3B9CC',
-    selectedProductButtonBackground: '#93a6b8ff',
+    selectedProductBackground: '#fcd9ddff',
+    selectedProductButtonBackground: '#fdc7cdff',
     outOfStockButtonColor: '#ebbebeff',
     outOfStockBackground: '#dfb4b4ff',
     outOfStockSelectedProductBackground: '#fff4f4ff',
 
     // checkbox
-    checkboxCheckColor: '#215468ff',
+    checkboxCheckColor: '#fdc7cdff',
 
     // product groups
-    productGroupSelectedHighlight: '#024059',
-    productGroupBackground: '#C5D5D9',
-    productGroupTextColor: '#012340',
+    // productGroupSelectedHighlight: '#ffbdc5',
+    productGroupSelectedHighlight: '#fdc7cdff',
+    productGroupBackground: '#000000',
+    productGroupTextColor: '#ffffff',
 
     // packing
     unpackedOrderBackground: '#fff4f4ff',
@@ -260,6 +273,9 @@ function getDarkColors(): ThemeColors {
     highlightBlue: '#8C9EFF',
     successSecondary: '#264D3A',
 
+    // accordion
+    accordionHeaderBackground: '#1A1A1A',
+
     // button
     buttonNormal2: '#0D0D0D',
     buttonNormal1: '#262626',
@@ -286,7 +302,9 @@ function getDarkColors(): ThemeColors {
     // tabs
     tabsBackground: '#C5D5D9',
     tabsPressEffect: '#b0bdc1ff',
-    black: '#0D0D0D',
+    tabTextColor: '#0D0D0D',
+    tabUnderlineColor: '#72a186ff',
+    tabUnderlineWidth: 4,
 
     // card
     cardBackground1: '#1A1A1A',

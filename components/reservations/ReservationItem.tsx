@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, Pressable, StyleSheet, View } from 'react-native';
 import { useExpandAnimation } from '../../hooks/useExpand';
 import { useHighlightAnimation } from '../../hooks/useHighlightAnimation';
 import useImagePreviewModal from '../../hooks/useImagePreviewModal';
@@ -81,7 +81,7 @@ function ReservationItem({
   return (
     <Pressable delayLongPress={200} onPress={() => handleOnPress(order._id)} onLongPress={() => onLongPress(order._id)}>
       <Animated.View style={[styles.container, { height: expandHeight, backgroundColor: backgroundColor }]}>
-        <Text style={styles.timestamp}>{getFormattedDate(order.createdAt)}</Text>
+        <CustomText style={styles.timestamp}>{getFormattedDate(order.createdAt)}</CustomText>
 
         <View style={styles.infoContainer}>
           {previewImage && (
@@ -91,7 +91,7 @@ function ReservationItem({
             <Image source={order.buyer.profileImage} style={styles.profileImage} />
           </Pressable>
           <View style={styles.info}>
-            <CustomText variant="header" style={{ fontSize: 15, marginBottom: 0 }}>
+            <CustomText variant="medium" style={{ fontSize: 15, marginBottom: 0 }} color={colors.highlightText}>
               {order.buyer.name}
             </CustomText>
             <CustomText style={{ color: colors.grayText, marginTop: -3, marginBottom: 8, fontSize: 13 }}>
@@ -158,7 +158,7 @@ function ReservationItem({
           <Animated.View style={styles.productsContainer}>
             {order.orderNotes && (
               <View style={styles.orderNoteContainer}>
-                <CustomText style={styles.orderNoteLabel} variant="bold">
+                <CustomText style={styles.orderNoteLabel} variant="medium">
                   Napomena:
                 </CustomText>
                 <CustomText style={styles.orderNoteText} variant="bold">
@@ -166,7 +166,9 @@ function ReservationItem({
                 </CustomText>
               </View>
             )}
-            <Text style={styles.header}>Lista artikala:</Text>
+            <CustomText variant="medium" style={styles.header}>
+              Lista artikala:
+            </CustomText>
             {order.products.map((product, index) => (
               <DisplayOrderProduct key={`${index}-${product._id}`} product={product} index={index} />
             ))}
@@ -192,7 +194,7 @@ function getStyles(colors: ThemeColors, packed: boolean) {
     },
     orderNoteIndicator: {
       position: 'absolute',
-      right: -50,
+      right: -47,
       bottom: packed ? 10 : 0,
       color: colors.error,
     },
@@ -244,9 +246,7 @@ function getStyles(colors: ThemeColors, packed: boolean) {
       elevation: 1,
     },
     productsContainer: {},
-    header: {
-      fontWeight: 'bold',
-    },
+    header: {},
     orderNoteContainer: {
       flexDirection: 'row',
       height: 40,
@@ -265,6 +265,7 @@ function getStyles(colors: ThemeColors, packed: boolean) {
       bottom: 10,
       right: -8,
       width: 100,
+      fontWeight: 'bold',
     },
   });
 }

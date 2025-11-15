@@ -2,6 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import CouriersManager from '../screens/CouriersManager/CouriersManager';
 import SuppliersManager from '../screens/SuppliersManager/SuppliersManager';
 import { useThemeColors } from '../store/theme-context';
+import { getTabScreenOptions } from './styles/getTabScreenOptions';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -11,22 +12,7 @@ export default function CouriersTabs() {
    * COURIERS tabovi
    */
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarPressColor: colors.tabsPressEffect,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          color: colors.primaryDark,
-        },
-        tabBarStyle: {
-          backgroundColor: colors.tabsBackground,
-        },
-        tabBarIndicatorStyle: {
-          backgroundColor: colors.highlight,
-          height: 4,
-        },
-      }}
-    >
+    <Tab.Navigator screenOptions={getTabScreenOptions(colors)}>
       <Tab.Screen
         name="CouriersManager"
         component={CouriersManager}

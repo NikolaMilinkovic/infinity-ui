@@ -1,7 +1,7 @@
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Animated, Dimensions, NativeSyntheticEvent, Platform, StyleSheet, Text, View } from 'react-native';
-import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
+import { RadioButtonProps } from 'react-native-radio-buttons-group';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useExpandAnimation } from '../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
@@ -16,6 +16,7 @@ import MultiDropdownList from '../../util-components/MultiDropdownList';
 import { popupMessage } from '../../util-components/PopupMessage';
 import SizePickerCheckboxes from '../../util-components/SizePickerCheckboxes';
 import { fetchData } from '../../util-methods/FetchMethods';
+import CustomRadioGroup from '../buttons/CustomRadioGroup';
 
 interface PropTypes {
   searchParams: any;
@@ -231,12 +232,16 @@ function SearchReservations({ searchParams, setSearchParams, updateSearchParam }
           <View style={styles.radioGroupContainer}>
             <Text style={styles.filtersH2absolute}>Redosled</Text>
             <View style={styles.radioGroup}>
-              <RadioGroup
+              <CustomRadioGroup
                 radioButtons={ascendDescendFilterButtons}
                 onPress={setIsAscending}
                 selectedId={isAscending}
                 containerStyle={styles.radioComponentContainer}
                 layout="row"
+                color={colors.defaultText}
+                background={colors.background}
+                highlight={colors.highlight}
+                borderColor={colors.borderColor}
               />
             </View>
           </View>
@@ -355,7 +360,9 @@ function getStyles(colors: ThemeColors) {
       alignItems: 'center',
       justifyContent: 'center',
     },
-    dateLabel: {},
+    dateLabel: {
+      color: colors.defaultText,
+    },
     dateText: {
       fontSize: 16,
       fontWeight: 'bold',

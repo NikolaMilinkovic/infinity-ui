@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, StyleSheet, Text, TextProps, TextStyle } from 'react-native';
 import { useGlobalStyles } from '../constants/globalStyles';
 
-type TextVariant = 'regular' | 'bold' | 'header';
+type TextVariant = 'regular' | 'bold' | 'medium' | 'header';
 
 interface CustomTextProps extends TextProps {
   children: React.ReactNode;
@@ -22,11 +22,12 @@ const CustomText: React.FC<CustomTextProps> = ({
 }) => {
   const globalStyles = useGlobalStyles();
   let variantStyle = globalStyles.textRegular;
-  if (variant === 'bold') variantStyle = globalStyles.textBold;
-  else if (variant === 'header') variantStyle = globalStyles.header;
+  if (variant === 'bold') variantStyle = globalStyles.textBold as any;
+  if (variant === 'medium') variantStyle = globalStyles.textMedium as any;
+  else if (variant === 'header') variantStyle = globalStyles.header as any;
 
   // Merge style but keep our fontFamily intact
-  const finalStyle: TextStyle = StyleSheet.flatten([variantStyle, color ? { color } : {}, style]);
+  const finalStyle: TextStyle = StyleSheet.flatten([variantStyle, { fontSize: 13 }, color ? { color } : {}, style]);
 
   // Force our fontFamily from variant
   finalStyle.fontFamily = variantStyle.fontFamily;

@@ -6,6 +6,7 @@ import { useBoutique } from '../../store/app-context';
 import { AuthContext } from '../../store/auth-context';
 import { NewOrderContext } from '../../store/new-order-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
+import { useUser } from '../../store/user-context';
 import Button from '../../util-components/Button';
 import GalleryImagePicker from '../../util-components/GalleryImagePicker';
 import InputField from '../../util-components/InputField';
@@ -27,11 +28,12 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
   const authCtx = useContext(AuthContext);
   const orderCtx = useContext(NewOrderContext);
   const boutiqueCtx = useBoutique();
+  const { getUserValueForField } = useUser();
 
   // Expand animation that makescontent visible when expanded
   // Used to fix the padding issue when expand is collapsed
   const [isContentVisible, setIsContentVisible] = useState(false);
-  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 904, 380);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 888, 380);
 
   function handleToggleExpand() {
     if (isExpanded) {
@@ -224,12 +226,13 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
             image={orderCtx.profileImage}
             setImage={orderCtx.setProfileImage}
             placeholder="Dodaj sliku profila"
-            crop={false}
             customStyles={styles.imagePicker}
             textStyles={{ color: colors.defaultText, fontSize: 14 }}
+            enableImageCropping={getUserValueForField('enableCroppingForBuyerImage', true)}
+            useAspectRatioWhileCropping={getUserValueForField('useAspectRatioForBuyerImage', true)}
           />
           <Button
-            textColor={colors.whiteText}
+            textColor={colors.highlightText}
             onPress={handleOnNext}
             backColor={colors.buttonHighlight1}
             backColor1={colors.buttonHighlight2}
@@ -245,20 +248,14 @@ function SortUserInformationField({ isExpanded, setIsExpanded, onNext, buyerInfo
 function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
-      backgroundColor: 'transparent',
-      borderWidth: 0,
-      borderColor: colors.borderColor,
-      borderRadius: 4,
       overflow: 'hidden',
-      marginHorizontal: 8,
-      position: 'relative',
     },
     headerContainer: {
       padding: 10,
       borderRadius: 4,
       borderWidth: 0,
-      borderColor: colors.primaryDark,
-      backgroundColor: colors.secondaryDark,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.accordionHeaderBackground,
       marginBottom: 6,
       flexDirection: 'row',
     },
@@ -266,9 +263,12 @@ function getStyles(colors: ThemeColors) {
       marginLeft: 'auto',
     },
     header: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: colors.white,
+      fontSize: 14,
+      alignSelf: 'center',
+      color: colors.whiteText,
+      fontFamily: 'HelveticaNeue-Bold',
+      textAlign: 'center',
+      flex: 1,
     },
     input: {
       borderWidth: 0.5,

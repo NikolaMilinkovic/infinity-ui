@@ -1,5 +1,25 @@
+import type { TextStyle, ViewStyle } from 'react-native';
 import { Platform, StyleSheet } from 'react-native';
 import { useThemeColors } from '../store/theme-context';
+
+export interface GlobalStyles {
+  // Shadows / Elevation
+  elevation_1: ViewStyle;
+  elevation_2: ViewStyle;
+
+  // Borders
+  border: ViewStyle;
+
+  // Fonts
+  fontRegular: TextStyle;
+  fontMedium: TextStyle;
+  fontBold: TextStyle;
+
+  // Text
+  textRegular: TextStyle;
+  textBold: TextStyle;
+  header: TextStyle;
+}
 
 export const useGlobalStyles = () => {
   const colors = useThemeColors();
@@ -39,15 +59,33 @@ export const useGlobalStyles = () => {
       borderRadius: 4,
     },
 
+    // FONTS
+    fontRegular: {
+      fontFamily: 'HelveticaNeue-Light',
+    },
+    fontMedium: {
+      fontFamily: 'HelveticaNeue-Medium',
+    },
+    fontBold: {
+      fontFamily: 'HelveticaNeue-Bold',
+    },
+
     // TEXT
     textRegular: {
       fontFamily: 'HelveticaNeue-Light',
+      lineHeight: 18,
+      paddingTop: 2,
+      color: colors.defaultText,
+    },
+    textMedium: {
+      fontFamily: 'HelveticaNeue-Medium',
       lineHeight: 18,
       color: colors.defaultText,
     },
     textBold: {
       fontFamily: 'HelveticaNeue-Bold',
       color: colors.defaultText,
+      paddingTop: 2,
       lineHeight: 18,
     },
     header: {

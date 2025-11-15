@@ -88,7 +88,7 @@ function EditUser() {
 
     return (
       <View style={internalStyle.container}>
-        <Text style={internalStyle.text}>Trenutno ne postoje dodate boje</Text>
+        <Text style={internalStyle.text}>Trenutno ne postoje dodati korisnici</Text>
       </View>
     );
   }
@@ -136,7 +136,7 @@ function EditUser() {
         onRequestClose={handleRemoveEditedUser}
         presentationStyle={Platform.OS === 'android' ? 'overFullScreen' : 'pageSheet'}
       >
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.primaryDark }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.navBackground }}>
           <StatusBar style="light" translucent={true} />
           <Animated.ScrollView contentContainerStyle={editProductFade}>
             {editedUser && <EditUserModal user={editedUser} setUser={setEditedUser} />}

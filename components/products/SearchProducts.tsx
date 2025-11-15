@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useContext, useEffect, useMemo, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, View } from 'react-native';
-import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
+import { RadioButtonProps } from 'react-native-radio-buttons-group';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
 import { useExpandAnimation } from '../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../hooks/useFadeAnimation';
@@ -17,6 +17,7 @@ import InputField from '../../util-components/InputField';
 import KeyboardAvoidingWrapper from '../../util-components/KeyboardAvoidingWrapper';
 import MultiDropdownList from '../../util-components/MultiDropdownList';
 import SizePickerCheckboxes from '../../util-components/SizePickerCheckboxes';
+import CustomRadioGroup from '../buttons/CustomRadioGroup';
 
 interface SearchProductsPropTypes {
   searchData: string;
@@ -205,7 +206,16 @@ function SearchProducts({
             <View style={styles.radioGroupContainer}>
               <CustomText style={styles.filtersH2absolute}>Stanje na lageru</CustomText>
               <View style={styles.radioGroup}>
-                <RadioGroup radioButtons={radioButtons} onPress={setSelectedId} selectedId={selectedId} layout="row" />
+                <CustomRadioGroup
+                  radioButtons={radioButtons}
+                  onPress={setSelectedId}
+                  selectedId={selectedId}
+                  layout="row"
+                  color={colors.defaultText}
+                  background={colors.background}
+                  highlight={colors.highlight}
+                  borderColor={colors.borderColor}
+                />
               </View>
             </View>
             {/* CATEGORIES FILTER INPUT */}

@@ -6,13 +6,14 @@ import {
   Pressable,
   StyleProp,
   StyleSheet,
-  Text,
   TextInput,
   TextStyle,
   View,
   ViewStyle,
 } from 'react-native';
+import { useGlobalStyles } from '../constants/globalStyles';
 import { ThemeColors, useThemeColors } from '../store/theme-context';
+import CustomText from './CustomText';
 
 interface InputFieldProps {
   label?: string | null;
@@ -63,6 +64,7 @@ const InputField = ({
   const inputRef = useRef<TextInput>(null);
   const colors = useThemeColors();
   const styles = getStyles(colors, fullBorder);
+  const globalStyles = useGlobalStyles();
 
   // Label animation value
   const labelAnim = useRef(new Animated.Value(inputText !== '' ? 1 : 0)).current;
@@ -134,12 +136,13 @@ const InputField = ({
     >
       {label && (
         <Animated.View style={[labelStyle as any, labelStyles]}>
-          <Text style={{ color: labelTextColor }}>{label}</Text>
+          <CustomText style={[globalStyles.textRegular, { color: labelTextColor }]}>{label}</CustomText>
         </Animated.View>
       )}
       <TextInput
         ref={inputRef}
         style={[
+          globalStyles.fontRegular,
           styles.input,
           {
             color: color ? color : colors.defaultText,
@@ -192,7 +195,7 @@ function getStyles(colors: ThemeColors, fullBorder: boolean) {
     input: {
       minHeight: 44,
       padding: 8,
-      fontSize: 16,
+      fontSize: 14.5,
       borderRadius: 4,
       paddingHorizontal: 22,
       textAlignVertical: 'center',

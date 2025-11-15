@@ -1,7 +1,7 @@
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Animated, Dimensions, NativeSyntheticEvent, Platform, StyleSheet, Text, View } from 'react-native';
-import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
+import { RadioButtonProps } from 'react-native-radio-buttons-group';
 import useBackClickHandler from '../../../hooks/useBackClickHandler';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
@@ -12,6 +12,7 @@ import { OrdersContext } from '../../../store/orders-context';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { CategoryTypes } from '../../../types/allTsTypes';
 import Button from '../../../util-components/Button';
+import CustomText from '../../../util-components/CustomText';
 import DropdownList from '../../../util-components/DropdownList';
 import ExpandButton from '../../../util-components/ExpandButton';
 import InputField from '../../../util-components/InputField';
@@ -20,6 +21,7 @@ import MultiDropdownList from '../../../util-components/MultiDropdownList';
 import { popupMessage } from '../../../util-components/PopupMessage';
 import SizePickerCheckboxes from '../../../util-components/SizePickerCheckboxes';
 import { fetchData } from '../../../util-methods/FetchMethods';
+import CustomRadioGroup from '../../buttons/CustomRadioGroup';
 
 interface PropTypes {
   searchData: string;
@@ -283,11 +285,13 @@ function SearchOrders({
       </View>
       <Animated.View style={[styles.searchParamsContainer, { height: toggleExpandAnimation, opacity: toggleFade }]}>
         <KeyboardAvoidingWrapper>
-          <Text style={styles.filtersH1}>Filteri</Text>
+          <CustomText style={styles.filtersH1} variant="header">
+            Filteri
+          </CustomText>
 
           {/* Courier */}
           <View style={styles.courierContainer}>
-            <Text style={styles.filtersH2}>Pretraga na osnovu kurira</Text>
+            <CustomText style={styles.filtersH2}>Pretraga na osnovu kurira</CustomText>
             <DropdownList
               key={resetKey}
               data={[{ _id: '', name: 'Resetuj izbor' }, ...couriersCtx.couriers]}
@@ -299,48 +303,60 @@ function SearchOrders({
 
           {/* Ascending | Descending */}
           <View style={[styles.radioGroupContainer]}>
-            <Text style={styles.filtersH2absolute}>Redosled</Text>
+            <CustomText style={styles.filtersH2absolute}>Redosled</CustomText>
             <View style={styles.radioGroup}>
-              <RadioGroup
+              <CustomRadioGroup
                 radioButtons={ascendDescendFilterButtons}
                 onPress={setIsAscending}
                 selectedId={isAscending}
                 containerStyle={styles.radioComponentContainer}
                 layout="row"
+                color={colors.defaultText}
+                background={colors.background}
+                highlight={colors.highlight}
+                borderColor={colors.borderColor}
               />
             </View>
           </View>
 
           {/* Processed | Unprocessed */}
           <View style={styles.radioGroupContainer}>
-            <Text style={styles.filtersH2absolute}>Da li je porudžbina izvršena</Text>
+            <CustomText style={styles.filtersH2absolute}>Da li je porudžbina izvršena</CustomText>
             <View style={styles.radioGroup}>
-              <RadioGroup
+              <CustomRadioGroup
                 radioButtons={processedUnprocessedButtons}
                 onPress={setAreProcessedOrders}
                 selectedId={areProcessedOrders}
                 containerStyle={styles.radioComponentContainer}
                 layout="row"
+                color={colors.defaultText}
+                background={colors.background}
+                highlight={colors.highlight}
+                borderColor={colors.borderColor}
               />
             </View>
           </View>
 
           {/* Packed | Unpacked */}
           <View style={styles.radioGroupContainer}>
-            <Text style={styles.filtersH2absolute}>Da li je porudžbine spakovana</Text>
+            <CustomText style={styles.filtersH2absolute}>Da li je porudžbine spakovana</CustomText>
             <View style={styles.radioGroup}>
-              <RadioGroup
+              <CustomRadioGroup
                 radioButtons={packedUnpackedButtons}
                 onPress={setArePacked}
                 selectedId={arePacked}
                 containerStyle={styles.radioComponentContainer}
                 layout="row"
+                color={colors.defaultText}
+                background={colors.background}
+                highlight={colors.highlight}
+                borderColor={colors.borderColor}
               />
             </View>
           </View>
 
           {/* COLORS FILTER */}
-          <Text style={styles.filtersH2}>Pretraga po boji proizvoda</Text>
+          <CustomText style={styles.filtersH2}>Pretraga po boji proizvoda</CustomText>
           <MultiDropdownList
             data={colorsData}
             setSelected={setSelectedColors}
@@ -352,7 +368,7 @@ function SearchOrders({
 
           {/* SIZE FILTER */}
           <View style={[styles.radioGroupContainer, { paddingBottom: 8, paddingTop: 8, marginTop: 36 }]}>
-            <Text style={styles.filtersH2absolute}>Pretraga po veličini proizvoda</Text>
+            <CustomText style={styles.filtersH2absolute}>Pretraga po veličini proizvoda</CustomText>
             <SizePickerCheckboxes
               sizes={['UNI', 'XS', 'S', 'M', 'L', 'XL']}
               selectedSizes={selectedSizes}
@@ -375,7 +391,7 @@ function SearchOrders({
           <View style={[styles.radioGroupContainer, { marginBottom: '20%' }]}>
             {Platform.OS === 'ios' ? (
               <>
-                <Text style={styles.filtersH2absolute}>Pretraži po datumu</Text>
+                <CustomText style={styles.filtersH2absolute}>Pretraži po datumu</CustomText>
                 <View style={{ flexDirection: 'row' }}>
                   <View style={{ justifyContent: 'center', alignSelf: 'center', width: '50%' }}>
                     <DateTimePicker
@@ -397,7 +413,7 @@ function SearchOrders({
               </>
             ) : (
               <>
-                <Text style={styles.filtersH2absolute}>Pretraži po datumu</Text>
+                <CustomText style={styles.filtersH2absolute}>Pretraži po datumu</CustomText>
                 <View style={styles.dateButtonsContainer}>
                   <Button
                     containerStyles={styles.dateButton}
@@ -422,8 +438,8 @@ function SearchOrders({
                 </View>
                 {date && isDatePicked && (
                   <View style={styles.dateDisplayContainer}>
-                    <Text style={styles.dateLabel}>Izabrani datum:</Text>
-                    <Text style={styles.dateText}>{formatDateHandler(date)}</Text>
+                    <CustomText style={styles.dateLabel}>Izabrani datum:</CustomText>
+                    <CustomText style={styles.dateText}>{formatDateHandler(date)}</CustomText>
                   </View>
                 )}
               </>
@@ -509,7 +525,7 @@ function DatePickerFromDateToNow({
     <View style={styles.radioGroupContainer}>
       {Platform.OS === 'ios' ? (
         <>
-          <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+          <Text style={styles.filtersH2absolute}>Pretraži period od datuma do sada</Text>
           <View style={{ flexDirection: 'row' }}>
             <View style={{ justifyContent: 'center', alignSelf: 'center', width: '50%' }}>
               <DateTimePicker
@@ -531,7 +547,7 @@ function DatePickerFromDateToNow({
         </>
       ) : (
         <>
-          <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+          <Text style={styles.filtersH2absolute}>Pretraži period od datuma do sada</Text>
           <View style={styles.dateButtonsContainer}>
             <Button containerStyles={styles.dateButton} onPress={handleOpenDatePicker} textColor={colors.defaultText}>
               Izaberi datum
@@ -613,20 +629,19 @@ function getStyles(colors: ThemeColors) {
     filtersH1: {
       marginTop: 10,
       fontSize: 20,
-      fontWeight: 'bold',
       color: colors.defaultText,
       marginBottom: 16,
     },
     filtersH2: {
       fontSize: 14,
-      color: colors.defaultText,
+      color: colors.grayText,
       marginBottom: 8,
       backgroundColor: colors.background,
       paddingHorizontal: 14,
     },
     filtersH2absolute: {
       fontSize: 14,
-      color: colors.highlightText,
+      color: colors.grayText,
       marginBottom: 8,
       position: 'absolute',
       left: 10,
@@ -643,6 +658,7 @@ function getStyles(colors: ThemeColors) {
       flex: 1,
       backgroundColor: colors.borderColor,
       color: colors.defaultText,
+      borderWidth: 0.5,
     },
     dateDisplayContainer: {
       flexDirection: 'column',
@@ -651,7 +667,9 @@ function getStyles(colors: ThemeColors) {
       justifyContent: 'center',
       marginTop: 10,
     },
-    dateLabel: {},
+    dateLabel: {
+      color: colors.defaultText,
+    },
     dateText: {
       fontSize: 16,
       fontWeight: 'bold',

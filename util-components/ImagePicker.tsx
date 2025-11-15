@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useGlobalStyles } from '../constants/globalStyles';
 import { useExpandAnimation } from '../hooks/useExpand';
 import { ThemeColors, useThemeColors } from '../store/theme-context';
+import { useUser } from '../store/user-context';
 import { pickImage } from '../util-methods/GalleryPickImage';
 import Button from './Button';
 import CustomText from './CustomText';
@@ -19,7 +20,10 @@ interface PropTypes {
   showCamera?: boolean;
   showGallery?: boolean;
   containerStyles?: any;
+  enableImageCropping?: boolean;
+  useAspectRatioWhileCropping?: boolean;
 }
+
 function ImagePicker({
   onTakeImage,
   previewImage,
@@ -29,6 +33,8 @@ function ImagePicker({
   showCamera = true,
   showGallery = true,
   containerStyles,
+  enableImageCropping = true,
+  useAspectRatioWhileCropping = false,
 }: PropTypes) {
   const colors = useThemeColors();
   const styles = getStyles(colors);
@@ -36,6 +42,7 @@ function ImagePicker({
   const [permissionInfo, requestPermission] = useCameraPermissions();
   const [isExpanded, setIsExpanded] = useState(previewImage ? true : false);
   const toggleExpandAnimation = useExpandAnimation(isExpanded, 50, height, 180);
+  const { user, getUserValueForField } = useUser();
 
   async function verifyPermissions() {
     if (permissionInfo?.status === PermissionStatus.UNDETERMINED) {
@@ -50,6 +57,7 @@ function ImagePicker({
     return true;
   }
 
+  // USE CAMERA
   async function takeImageHandler() {
     const hasPermission = await verifyPermissions();
     if (!hasPermission) return;
@@ -65,8 +73,11 @@ function ImagePicker({
     onTakeImage(image?.assets?.[0]);
     setIsExpanded(true);
   }
+
+  // PICK FROM GALLERY
   async function openGalleryHandler() {
-    const pickedImage = await pickImage(0.6, true, true);
+    // const pickedImage = await pickImage(0.6, true, getUserValueForField('useAspectRatioForProductImage', true));
+    const pickedImage = await pickImage(0.6, true, false);
     if (!pickedImage) return;
     setPreviewImage(pickedImage);
     onTakeImage(pickedImage);

@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import { useContext, useEffect, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { useGlobalStyles } from '../../constants/globalStyles';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { AuthContext } from '../../store/auth-context';
 import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
@@ -8,6 +9,7 @@ import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import { ColorTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
+import CustomText from '../../util-components/CustomText';
 import IconButton from '../../util-components/IconButton';
 import { popupMessage } from '../../util-components/PopupMessage';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
@@ -28,6 +30,7 @@ function EditColorItem({ data }: { data: ColorTypes }) {
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const { user } = useUser();
+  const globalStyles = useGlobalStyles();
 
   // Resets Error & Success
   function resetNotifications() {
@@ -166,7 +169,7 @@ function EditColorItem({ data }: { data: ColorTypes }) {
             }}
           >
             <TextInput
-              style={[styles.input, { color: colors.defaultText }]}
+              style={[styles.input, { color: colors.defaultText }, globalStyles.textRegular]}
               placeholderTextColor={colors.grayText}
               placeholder="Ime boje"
               value={newName}
@@ -193,12 +196,12 @@ function EditColorItem({ data }: { data: ColorTypes }) {
                 Sačuvaj
               </Button>
             </View>
-            {error && <Text style={styles.error}>{error}</Text>}
-            {success && <Text style={styles.success}>{success}</Text>}
+            {error && <CustomText style={styles.error}>{error}</CustomText>}
+            {success && <CustomText style={styles.success}>{success}</CustomText>}
           </View>
         ) : (
           <View style={styles.displayColor}>
-            <Text style={styles.colorText}>{colorData.name}</Text>
+            <CustomText style={styles.colorText}>{colorData.name}</CustomText>
             <IconButton
               icon="delete"
               onPress={removeColorHandler}
@@ -207,7 +210,6 @@ function EditColorItem({ data }: { data: ColorTypes }) {
               size={26}
               backColor="transparent"
               backColor1="transparent"
-              pressedStyles={styles.buttonContainerPressed}
             />
           </View>
         )}
@@ -237,7 +239,7 @@ function getStyles(colors: ThemeColors) {
       alignItems: 'center',
     },
     colorText: {
-      fontSize: 16,
+      fontSize: 14,
       color: colors.defaultText,
       marginRight: 'auto',
     },
@@ -251,7 +253,7 @@ function getStyles(colors: ThemeColors) {
       flex: 1,
       marginBottom: 10,
       marginTop: 10,
-      fontSize: 16,
+      fontSize: 14,
       paddingVertical: 10,
     },
     buttons: {
@@ -273,6 +275,8 @@ function getStyles(colors: ThemeColors) {
     },
     buttonStyle: {
       flex: 1,
+      minHeight: 0,
+      height: 36,
     },
   });
 }

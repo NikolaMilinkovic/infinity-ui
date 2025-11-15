@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { CouriersContext } from '../../store/couriers-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { CourierTypes } from '../../types/allTsTypes';
+import CustomText from '../../util-components/CustomText';
 import EditCourierItem from './EditCourierItem';
 
 function EditCourier() {
@@ -28,7 +29,7 @@ function EditCourier() {
   }, [couriers, searchQuery]);
 
   if (isLoading) {
-    return <Text>Ucitavam kurire...</Text>;
+    return <CustomText>Ucitavam kurire...</CustomText>;
   }
 
   function NoCouriersRenderer() {
@@ -46,7 +47,7 @@ function EditCourier() {
 
     return (
       <View style={internalStyle.container}>
-        <Text style={internalStyle.text}>Trenutno ne postoje dodati kuriri</Text>
+        <CustomText style={internalStyle.text}>Trenutno ne postoje dodati kuriri</CustomText>
       </View>
     );
   }

@@ -4,11 +4,12 @@ import GlobalAppSettings from '../screens/Settings/GlobalAppSettings';
 import UserSettings from '../screens/Settings/UserSettings';
 import { useThemeColors } from '../store/theme-context';
 import { useUser } from '../store/user-context';
+import { getTabScreenOptions } from './styles/getTabScreenOptions';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function SettingsTabs() {
-  const { user } = useUser();
+  const { user, getUserValueForField } = useUser();
   const colors = useThemeColors();
 
   /**
@@ -19,23 +20,7 @@ export default function SettingsTabs() {
       initialLayout={{
         width: Dimensions.get('window').width,
       }}
-      screenOptions={{
-        tabBarPressColor: colors.tabsPressEffect,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          color: colors.primaryDark,
-        },
-        tabBarStyle: {
-          backgroundColor: colors.tabsBackground,
-        },
-        tabBarIndicatorStyle: {
-          backgroundColor: colors.highlight,
-          height: 4,
-        },
-        lazy: false,
-        tabBarBounces: true,
-        swipeEnabled: true,
-      }}
+      screenOptions={getTabScreenOptions(colors)}
     >
       <Tab.Screen
         name="userSettings"
@@ -44,7 +29,7 @@ export default function SettingsTabs() {
           title: 'Podešavanja aplikacije',
         }}
       />
-      {user && user?.role === 'admin' && (
+      {getUserValueForField('role') === 'admin' && (
         <Tab.Screen
           name="globalSettings"
           component={GlobalAppSettings}

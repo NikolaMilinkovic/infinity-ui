@@ -4,6 +4,7 @@ import BrowseOrders from '../screens/Orders/BrowseOrders';
 import PackOrders from '../screens/Orders/PackOrders';
 import BrowseReservations from '../screens/Reservations/BrowseReservations';
 import { useThemeColors } from '../store/theme-context';
+import { getTabScreenOptions } from './styles/getTabScreenOptions';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -17,23 +18,7 @@ export default function OrdersManagerTabs() {
       initialLayout={{
         width: Dimensions.get('window').width,
       }}
-      screenOptions={{
-        tabBarPressColor: colors.tabsPressEffect,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          color: colors.secondaryDark,
-        },
-        tabBarStyle: {
-          backgroundColor: colors.tabsBackground,
-        },
-        tabBarIndicatorStyle: {
-          backgroundColor: colors.highlight,
-          height: 4,
-        },
-        lazy: false,
-        tabBarBounces: true,
-        swipeEnabled: true,
-      }}
+      screenOptions={getTabScreenOptions(colors)}
     >
       <Tab.Screen
         name="BrowseOrders"

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, Pressable, StyleSheet, View } from 'react-native';
 import useImagePreviewModal from '../../../hooks/useImagePreviewModal';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import CustomText from '../../../util-components/CustomText';
@@ -33,46 +33,48 @@ function DisplayOrderProduct({ product, index, grayedText = false }: DisplayOrde
       )}
       <View style={styles.info}>
         <View style={styles.row}>
-          <CustomText variant="bold" style={styles.label}>
+          <CustomText variant="medium" style={styles.label}>
             Naziv:
           </CustomText>
-          <Text style={styles.data} numberOfLines={1} ellipsizeMode="tail">
+          <CustomText style={styles.data} numberOfLines={1} ellipsizeMode="tail">
             {product.name}
-          </Text>
+          </CustomText>
         </View>
         <View style={styles.row}>
-          <CustomText variant="bold" style={styles.label}>
+          <CustomText variant="medium" style={styles.label}>
             Boja:
           </CustomText>
-          <Text
-            style={[styles.data, { fontWeight: 'bold', color: colors.defaultText }]}
+          <CustomText
+            style={[styles.data, { color: colors.defaultText }]}
             numberOfLines={1}
             ellipsizeMode="tail"
+            variant="bold"
           >
             {product.selectedColor}
-          </Text>
+          </CustomText>
         </View>
         {product.selectedSize && (
           <View style={styles.row}>
-            <CustomText variant="bold" style={styles.label}>
+            <CustomText variant="medium" style={styles.label}>
               Veličina:
             </CustomText>
-            <Text
-              style={[styles.data, { fontWeight: 'bold', color: colors.defaultText }]}
+            <CustomText
+              style={[styles.data, { color: colors.defaultText }]}
               numberOfLines={1}
               ellipsizeMode="tail"
+              variant="bold"
             >
               {product.selectedSize}
-            </Text>
+            </CustomText>
           </View>
         )}
         <View style={styles.row}>
-          <CustomText variant="bold" style={styles.label}>
+          <CustomText variant="medium" style={styles.label}>
             Cena:
           </CustomText>
-          <Text style={styles.data} numberOfLines={1} ellipsizeMode="tail">
+          <CustomText style={styles.data} numberOfLines={1} ellipsizeMode="tail">
             {product.price} rsd.
-          </Text>
+          </CustomText>
         </View>
       </View>
     </Animated.View>

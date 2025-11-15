@@ -216,18 +216,21 @@ function ReservationsGroup({
 
   return (
     <>
+      {/* <Pressable onPress={handleToggleExpand} style={styles.headerContainer}>
+            <Text style={styles.header}>Izabrani artikli ({ordersCtx.productReferences.length})</Text>
+            <Icon
+              name={isExpanded ? 'chevron-up' : 'chevron-down'}
+              style={styles.iconStyle}
+              size={26}
+              color={colors.white}
+            />
+          </Pressable> */}
       <Pressable
         onPress={() => setIsExpanded(!isExpanded)}
         style={[resGroupStyles.headerContainer]}
         delayLongPress={200}
         onLongPress={toggleSelectAll}
       >
-        {allSelected && <Animated.View style={[resGroupStyles.highlightBox, {}]}></Animated.View>}
-        {/* {batchMode && (
-          <Pressable onPress={toggleSelectAll} style={resGroupStyles.highlightAllBtn}>
-            {allSelected && <MaterialIcons name={'check'} color={colors.white} size={22} />}
-          </Pressable>
-        )} */}
         <Text style={resGroupStyles.header}>
           {getFormattedDateWithoutTime(data.date)} Ukupno: {data.reservations.length} kom.
         </Text>
@@ -278,25 +281,22 @@ function getResGroupStyles(colors: ThemeColors) {
     headerContainer: {
       padding: 10,
       borderRadius: 4,
-      borderWidth: 0.5,
+      borderWidth: 0,
       borderColor: colors.borderColor,
-      backgroundColor: colors.secondaryDark,
+      backgroundColor: colors.accordionHeaderBackground,
       marginBottom: 6,
       flexDirection: 'row',
-      height: 44,
-      position: 'relative',
-      alignItems: 'center',
     },
     iconStyle: {
       marginLeft: 'auto',
-      zIndex: 3,
     },
     header: {
-      fontSize: 18,
-      fontWeight: 'bold',
+      fontSize: 14,
+      alignSelf: 'center',
       color: colors.whiteText,
-      marginLeft: 8,
-      zIndex: 3,
+      fontFamily: 'HelveticaNeue-Bold',
+      textAlign: 'center',
+      flex: 1,
     },
     container: {
       paddingHorizontal: 8,

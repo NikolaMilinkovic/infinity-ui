@@ -2,6 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import PreviousStatisticFiles from '../screens/EndOfDay/PreviousStatisticFiles';
 import Versions from '../screens/Versions/Versions';
 import { useThemeColors } from '../store/theme-context';
+import { getTabScreenOptions } from './styles/getTabScreenOptions';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -11,22 +12,7 @@ export default function AdminDashboardTabs() {
    * END OF DAY tabs
    */
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarPressColor: colors.tabsPressEffect,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          color: colors.secondaryDark,
-        },
-        tabBarStyle: {
-          backgroundColor: colors.secondaryLight,
-        },
-        tabBarIndicatorStyle: {
-          backgroundColor: colors.highlight,
-          height: 4,
-        },
-      }}
-    >
+    <Tab.Navigator screenOptions={getTabScreenOptions(colors)}>
       <Tab.Screen
         name="Versions"
         component={Versions}

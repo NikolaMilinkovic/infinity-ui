@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import { useContext, useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useGlobalStyles } from '../../constants/globalStyles';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { AuthContext } from '../../store/auth-context';
 import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
@@ -8,11 +9,13 @@ import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import { CourierTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
+import CustomText from '../../util-components/CustomText';
 import IconButton from '../../util-components/IconButton';
 import { popupMessage } from '../../util-components/PopupMessage';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function EditCourierItem({ data }: { data: CourierTypes }) {
+  const globalStyles = useGlobalStyles();
   const [courierData, setCourierData] = useState<CourierTypes>({
     _id: '',
     boutiqueId: '',
@@ -180,7 +183,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
             }}
           >
             <TextInput
-              style={styles.input}
+              style={[styles.input, globalStyles.textRegular]}
               placeholder="Ime kurira"
               value={newName}
               onChangeText={handleNameChange}
@@ -188,7 +191,7 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
               placeholderTextColor={colors.grayText}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, globalStyles.textRegular]}
               placeholder="Cena dostave po paketu"
               value={deliveryPrice?.toString() || ''}
               onChangeText={handlePriceChange}
@@ -222,8 +225,10 @@ function EditCourierItem({ data }: { data: CourierTypes }) {
         ) : (
           <View style={styles.displayCourier}>
             <View style={styles.previewData}>
-              <Text style={styles.text}>Kurir: {courierData.name}</Text>
-              <Text style={styles.price}>Cena dostave: {courierData.deliveryPrice} RSD</Text>
+              <CustomText variant="bold" style={styles.text}>
+                Kurir: {courierData.name}
+              </CustomText>
+              <CustomText style={styles.price}>Cena dostave: {courierData.deliveryPrice} RSD</CustomText>
             </View>
             <IconButton
               icon="delete"
@@ -264,12 +269,11 @@ function getStyles(colors: ThemeColors) {
       color: colors.defaultText,
     },
     text: {
-      fontWeight: 'bold',
-      fontSize: 16,
+      fontSize: 14,
       color: colors.defaultText,
     },
     price: {
-      fontSize: 14,
+      fontSize: 13,
       color: colors.defaultText,
     },
     mainInputsContainer: {
@@ -304,6 +308,8 @@ function getStyles(colors: ThemeColors) {
     },
     buttonStyle: {
       flex: 1,
+      minHeight: 0,
+      height: 36,
     },
   });
 }

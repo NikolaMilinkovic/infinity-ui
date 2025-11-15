@@ -1,10 +1,11 @@
 import Constants from 'expo-constants';
 import { useContext, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { AuthContext } from '../../store/auth-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import Button from '../../util-components/Button';
+import CustomText from '../../util-components/CustomText';
 import DropdownList from '../../util-components/DropdownList';
 import InputField from '../../util-components/InputField';
 import { popupMessage } from '../../util-components/PopupMessage';
@@ -118,7 +119,7 @@ function AddCategories() {
       </View>
 
       {/* ERROR MESSAGE */}
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && <CustomText style={styles.error}>{error}</CustomText>}
 
       {/* BUTTON */}
       <View style={styles.buttonContainer}>

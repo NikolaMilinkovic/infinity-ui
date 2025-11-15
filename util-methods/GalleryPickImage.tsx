@@ -8,7 +8,7 @@ export const pickImage = async (
   quality = 0.6,
   allowsEditing = false,
   useAspect = false,
-  aspectValue: [number, number] = [3, 4]
+  aspectValue: [number, number] = [3, 5]
 ) => {
   // Request permissions
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();

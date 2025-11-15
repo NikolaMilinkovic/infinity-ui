@@ -1,8 +1,9 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, StyleSheet, TextInput, View } from 'react-native';
 import { ColorsContext } from '../../store/colors-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { ColorTypes } from '../../types/allTsTypes';
+import CustomText from '../../util-components/CustomText';
 import EditColorItem from './EditColorItem';
 
 function EditColors() {
@@ -33,7 +34,7 @@ function EditColors() {
   }, [colors, searchQuery]);
 
   if (isLoading) {
-    return <Text style={{ color: themeColors.defaultText }}>Ucitavam boje...</Text>;
+    return <CustomText style={{ color: themeColors.defaultText }}>Ucitavam boje...</CustomText>;
   }
 
   function NoColorRenderer() {
@@ -50,7 +51,7 @@ function EditColors() {
 
     return (
       <View style={internalStyle.container}>
-        <Text style={internalStyle.text}>Trenutno ne postoje dodate boje</Text>
+        <CustomText style={internalStyle.text}>Trenutno ne postoje dodate boje</CustomText>
       </View>
     );
   }
@@ -61,7 +62,9 @@ function EditColors() {
         <>
           {/* Header and TextInput moved outside FlatList */}
           <View style={styles.headerWrapper}>
-            <Text style={styles.header}>Ukupno boja: {colors.length}</Text>
+            <CustomText variant="medium" style={styles.header}>
+              Ukupno boja: {colors.length}
+            </CustomText>
             <TextInput
               style={styles.input}
               placeholder="Pretraži boje"
@@ -115,6 +118,7 @@ function getStyles(themeColors: ThemeColors) {
       fontSize: 14,
       fontWeight: 'bold',
       padding: 10,
+      marginTop: 1,
       textAlign: 'center',
       color: themeColors.defaultText,
     },

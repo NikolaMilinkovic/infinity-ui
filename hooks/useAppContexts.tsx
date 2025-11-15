@@ -5,6 +5,7 @@ import { CategoriesContext } from '../store/categories-context';
 import { ColorsContext } from '../store/colors-context';
 import { CouriersContext } from '../store/couriers-context';
 import { OrderStatisticsContext } from '../store/end-of-day-statistics';
+import { useEndOfDayExcelContext } from '../store/excel/end-of-day-excel-presets-context';
 import { OrdersContext } from '../store/orders-context';
 import { SuppliersContext } from '../store/suppliers-context';
 import { UsersManagerContext } from '../store/users-manager-context';
@@ -19,6 +20,7 @@ interface UseAppContextsTypes {
   allProducts: any;
   suppliers: any;
   processedOrdersForPeriod: any;
+  endOfDayExcels: any;
 }
 
 export function useAppContexts(): UseAppContextsTypes {
@@ -32,5 +34,6 @@ export function useAppContexts(): UseAppContextsTypes {
     allProducts: useContext(AllProductsContext),
     suppliers: useContext(SuppliersContext),
     processedOrdersForPeriod: useContext(OrderStatisticsContext),
+    endOfDayExcels: useEndOfDayExcelContext(),
   };
 }

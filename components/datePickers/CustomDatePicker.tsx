@@ -138,6 +138,8 @@ function getStyles(colors: ThemeColors) {
       color: colors.highlight,
       lineHeight: 16,
     },
-    dateLabel: {},
+    dateLabel: {
+      color: colors.defaultText,
+    },
   });
 }

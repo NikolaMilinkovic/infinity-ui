@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useGlobalStyles } from '../constants/globalStyles';
 import { ThemeColors, useThemeColors } from '../store/theme-context';
 import TestMultipleDropdownList from './TestMultiDropdownList';
 
@@ -39,6 +40,7 @@ export default function MultiDropdownList({
   const [dropdownData, setDropdownData] = useState([]);
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
 
   useEffect(() => {
     let d = [];
@@ -71,10 +73,10 @@ export default function MultiDropdownList({
           closeicon={<Icon name={'chevron-up'} style={styles.dropdown1ButtonArrowStyle} size={18} />}
           // STYLES
           boxStyles={styles.boxStyles}
-          inputStyles={styles.inputStyles}
+          inputStyles={[styles.inputStyles, globalStyles.fontRegular]}
           dropdownStyles={[styles.dropdownStyles, dropdownStyles]}
           dropdownItemStyles={styles.dropdownItemStyles}
-          dropdownTextStyles={styles.dropdownTextStyles}
+          dropdownTextStyles={[styles.dropdownTextStyles, globalStyles.fontRegular]}
           disabledItemStyles={styles.disabledItemStyles}
           disabledTextStyles={styles.disabledTextStyles}
           disabledCheckBoxStyles={styles.disabledCheckBoxStyles}
@@ -99,7 +101,7 @@ function getStyles(colors: ThemeColors) {
       borderColor: colors.borderColor,
     },
     inputStyles: {
-      fontSize: 16,
+      fontSize: 14,
       color: colors.defaultText,
     },
     dropdownStyles: {
@@ -114,7 +116,7 @@ function getStyles(colors: ThemeColors) {
     },
     dropdownTextStyles: {
       color: colors.defaultText,
-      fontSize: 16,
+      fontSize: 14,
     },
     disabledItemStyles: {},
     disabledTextStyles: {},

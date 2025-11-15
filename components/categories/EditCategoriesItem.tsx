@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import { useContext, useEffect, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { useGlobalStyles } from '../../constants/globalStyles';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { AuthContext } from '../../store/auth-context';
 import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
@@ -8,6 +9,7 @@ import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import { CategoryTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
+import CustomText from '../../util-components/CustomText';
 import DropdownList from '../../util-components/DropdownList';
 import IconButton from '../../util-components/IconButton';
 import { popupMessage } from '../../util-components/PopupMessage';
@@ -22,6 +24,7 @@ interface DropdownTypes {
 function EditCategoriesItem({ data }: { data: CategoryTypes }) {
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
   const [categoryData, setCategoryData] = useState<CategoryTypes>({
     _id: '',
     name: '',
@@ -35,7 +38,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
   const [error, setError] = useState('');
   const [display, setDisplay] = useState(true);
   const [stockType, setStockType] = useState<DropdownTypes | undefined>();
-  const [dropdownData, setDropdownData] = useState<DropdownTypes[]>([
+  const [dropdownData] = useState<DropdownTypes[]>([
     { _id: 0, name: 'Veličina', value: 'Boja-Veličina-Količina' },
     { _id: 1, name: 'Boja', value: 'Boja-Količina' },
   ]);
@@ -188,7 +191,7 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
             }}
           >
             <TextInput
-              style={styles.input}
+              style={[styles.input, globalStyles.textRegular]}
               placeholder="Ime kategorije"
               value={newName}
               onChangeText={handleNameChange}
@@ -221,14 +224,16 @@ function EditCategoriesItem({ data }: { data: CategoryTypes }) {
                 Sačuvaj
               </Button>
             </View>
-            {error && <Text style={styles.error}>{error}</Text>}
-            {success && <Text style={styles.success}>{success}</Text>}
+            {error && <CustomText style={styles.error}>{error}</CustomText>}
+            {success && <CustomText style={styles.success}>{success}</CustomText>}
           </View>
         ) : (
           <View style={styles.displayCategory}>
             <View style={styles.categoryData}>
-              <Text style={[styles.text, styles.categoryName]}>{categoryData.name}</Text>
-              <Text style={styles.text}>{data.stockType}</Text>
+              <CustomText variant="bold" style={[styles.text, styles.categoryName]}>
+                {categoryData.name}
+              </CustomText>
+              <CustomText style={styles.text}>{data.stockType}</CustomText>
             </View>
             <IconButton
               icon="delete"
@@ -268,12 +273,11 @@ function getStyles(colors: ThemeColors) {
       flexDirection: 'column',
     },
     text: {
-      fontSize: 14,
+      fontSize: 13,
       color: colors.defaultText,
     },
     categoryName: {
-      fontWeight: 'bold',
-      fontSize: 16,
+      fontSize: 14,
       color: colors.defaultText,
     },
     mainInputsContainer: {
@@ -286,7 +290,7 @@ function getStyles(colors: ThemeColors) {
       borderBottomWidth: 1,
       flex: 1,
       marginBottom: 10,
-      fontSize: 16,
+      fontSize: 14,
       paddingVertical: 10,
     },
     dropdown: {
@@ -311,6 +315,8 @@ function getStyles(colors: ThemeColors) {
     },
     buttonStyle: {
       flex: 1,
+      minHeight: 0,
+      height: 36,
     },
   });
 }

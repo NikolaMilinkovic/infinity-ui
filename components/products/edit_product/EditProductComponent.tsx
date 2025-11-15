@@ -1,6 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
+import { RadioButtonProps } from 'react-native-radio-buttons-group';
+import { useGlobalStyles } from '../../../constants/globalStyles';
 import DressColor from '../../../models/DressColor';
 import PurseColor from '../../../models/PurseColor';
 import { AuthContext } from '../../../store/auth-context';
@@ -27,6 +28,7 @@ import { popupMessage } from '../../../util-components/PopupMessage';
 import { handleFetchingWithFormData } from '../../../util-methods/FetchMethods';
 import { getMimeType } from '../../../util-methods/ImageMethods';
 import { betterErrorLog } from '../../../util-methods/LogMethods';
+import CustomRadioGroup from '../../buttons/CustomRadioGroup';
 import ModalHeader from '../../modals/components/ModalHeader';
 import AddDressComponents from '../unique_product_components/add/AddDressComponents';
 import AddPurseComponents from '../unique_product_components/add/AddPurseComponents';
@@ -39,6 +41,7 @@ interface PropTypes {
 
 function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
   const colors = useThemeColors();
+  const globalStyles = useGlobalStyles();
   const styles = getStyles(colors);
   if (!item) {
     return (
@@ -253,25 +256,33 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
 
   return (
     <>
-      {showHeader && <ModalHeader title={`TEST: ${item.name}`} />}
+      {showHeader && <ModalHeader title={`${item.name}`} />}
 
       {/* CONTENT */}
       <View style={styles.container}>
         <View style={styles.card}>
           {/* ACTIVE | INACTIVE */}
           <View>
-            <CustomText style={[styles.sectionText]}>Aktivan | Neaktivan</CustomText>
-            <RadioGroup
+            <CustomText variant="header" style={styles.sectionText}>
+              Aktivan | Neaktivan
+            </CustomText>
+            <CustomRadioGroup
               radioButtons={activeButtons}
               onPress={handleRadioSelect}
               selectedId={isActive ? '1' : '2'}
               containerStyle={styles.radioButtionsContainer}
+              color={colors.defaultText}
+              background={colors.background}
+              highlight={colors.highlight}
+              borderColor={colors.borderColor}
             />
           </View>
 
           {/* PRODUCT NAME */}
           <View>
-            <CustomText style={styles.sectionText}>Osnovne Informacije</CustomText>
+            <CustomText variant="header" style={styles.sectionText}>
+              Osnovne Informacije
+            </CustomText>
             <InputField
               labelBorders={false}
               label="Naziv Proizvoda"
@@ -303,13 +314,17 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
 
           {/* IMAGE PICKER */}
           <View>
-            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Slika Proizvoda</CustomText>
+            <CustomText variant="header" style={[styles.sectionText, styles.sectionTextTopMargin]}>
+              Slika Proizvoda
+            </CustomText>
             <ImagePicker onTakeImage={setProductImage} previewImage={previewImage} setPreviewImage={setPreviewImage} />
           </View>
 
           {/* CATEGORY */}
           <View>
-            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Kategorija</CustomText>
+            <CustomText variant="header" style={[styles.sectionText, styles.sectionTextTopMargin]}>
+              Kategorija
+            </CustomText>
             <DropdownList
               data={filteredCategories}
               placeholder="Kategorija Proizvoda"
@@ -330,7 +345,7 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
 
           {/* COLORS */}
           <View>
-            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>
+            <CustomText variant="header" style={[styles.sectionText, styles.sectionTextTopMargin]}>
               Boje, veličine i količina lagera
             </CustomText>
             {colorsDefaultOptions && allColors && (
@@ -354,7 +369,9 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
             <AddPurseComponents purseColors={itemColors as any} setPurseColors={setItemColors} />
           )}
 
-          <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Dodatne informacije:</CustomText>
+          <CustomText variant="header" style={[styles.sectionText, styles.sectionTextTopMargin, { marginBottom: -10 }]}>
+            Dodatne informacije:
+          </CustomText>
           <MultilineInput
             label="Opis proizvoda"
             value={description}
@@ -367,7 +384,9 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
 
           {/* SUPPLIER */}
           <View>
-            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</CustomText>
+            <CustomText variant="header" style={[styles.sectionText, styles.sectionTextTopMargin]}>
+              Dobavljač
+            </CustomText>
             <DropdownList
               key={resetKey}
               data={supplierData}
@@ -401,7 +420,7 @@ function EditProductComponent({ item, setItem, showHeader = true }: PropTypes) {
             </Button>
             <Button
               onPress={handleProductUpdate}
-              textColor={colors.white}
+              textColor={colors.highlightText}
               backColor={colors.buttonHighlight1}
               backColor1={colors.buttonHighlight2}
               containerStyles={styles.button}
@@ -443,7 +462,7 @@ function getStyles(colors: ThemeColors) {
     card: {
       marginTop: 10,
       backgroundColor: colors.background,
-      padding: 10,
+      padding: 16,
       borderRadius: 4,
       borderWidth: 1,
       borderColor: colors.borderColor,
@@ -451,7 +470,7 @@ function getStyles(colors: ThemeColors) {
       margin: 10,
     },
     sectionText: {
-      fontSize: 18,
+      fontSize: 15,
       color: colors.highlightText,
     },
     sectionTextTopMargin: {

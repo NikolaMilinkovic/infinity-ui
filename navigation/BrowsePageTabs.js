@@ -3,6 +3,7 @@ import { Dimensions } from 'react-native';
 import BrowseProducts from '../screens/Home/browseProducts/BrowseProducts';
 import NewOrder from '../screens/Home/newOrder/NewOrder';
 import { useThemeColors } from '../store/theme-context';
+import { getTabScreenOptions } from './styles/getTabScreenOptions';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -16,23 +17,7 @@ export default function BrowsePageTabs() {
       initialLayout={{
         width: Dimensions.get('window').width,
       }}
-      screenOptions={{
-        tabBarPressColor: colors.tabsPressEffect,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          color: colors.primaryDark,
-        },
-        tabBarStyle: {
-          backgroundColor: colors.tabsBackground,
-        },
-        tabBarIndicatorStyle: {
-          backgroundColor: colors.highlight,
-          height: 4,
-        },
-        lazy: false,
-        tabBarBounces: true,
-        swipeEnabled: true,
-      }}
+      screenOptions={getTabScreenOptions(colors)}
     >
       <Tab.Screen
         name="BrowseProducts"

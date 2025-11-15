@@ -1,7 +1,8 @@
 import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { ThemeColors, useThemeColors } from '../store/theme-context';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { ThemeColors, useThemeColors } from '../../../store/theme-context';
+import CustomText from '../../../util-components/CustomText';
 
 interface ButtonChildrenTypes {
   onPress: () => void;
@@ -47,7 +48,7 @@ const NavigationButton: React.FC<ButtonChildrenTypes> = ({
     >
       <View style={styles.container}>
         {Icon}
-        <Text style={styles.text}>{text}</Text>
+        <CustomText style={styles.text}>{text}</CustomText>
       </View>
     </Pressable>
   );

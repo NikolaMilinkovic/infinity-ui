@@ -1,18 +1,12 @@
-import { useEffect } from 'react';
 import { Platform, StyleSheet, Switch, View } from 'react-native';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { useUser } from '../../../store/user-context';
 import CustomText from '../../../util-components/CustomText';
-import { betterConsoleLog } from '../../../util-methods/LogMethods';
 
 function KeyboardSettings() {
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const { user, updateUser } = useUser();
-
-  useEffect(() => {
-    betterConsoleLog('> Showing toolbar?', user?.settings?.ui.displayKeyboardToolbar);
-  }, [user]);
 
   async function toggleShowKeyboardToolbar() {
     updateUser('displayKeyboardToolbar', !user?.settings?.ui.displayKeyboardToolbar);

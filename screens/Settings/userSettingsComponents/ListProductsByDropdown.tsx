@@ -1,17 +1,34 @@
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import useTextForActiveLanguage from '../../../hooks/useTextForActiveLanguage';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { useUser } from '../../../store/user-context';
+import { User } from '../../../types/allTsTypes';
 import CustomText from '../../../util-components/CustomText';
 import DropdownList from '../../../util-components/DropdownList';
 
-function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: string, value: any) => void }) {
+function ListProductsByDropdown() {
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [firstRender, setFirstRender] = useState(true);
   const text = useTextForActiveLanguage('settings');
+  async function updateDefault(field: string, value: any) {
+    setUser((prevUser: User) => {
+      if (!prevUser) return null;
+      return {
+        ...prevUser,
+        settings: {
+          ...prevUser.settings,
+          defaults: {
+            ...prevUser.settings?.defaults,
+            [field]: value,
+          },
+        },
+      };
+    });
+  }
+
   interface DrpodownTypes {
     _id: number;
     name: string;
@@ -41,7 +58,7 @@ function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: stri
   }
 
   return (
-    <>
+    <View style={styles.container}>
       <CustomText style={styles.text}>{text.listProductsBy_description}</CustomText>
       <DropdownList
         data={listSelectorData}
@@ -50,12 +67,18 @@ function ListProductsByDropdown({ updateDefault }: { updateDefault: (field: stri
         buttonContainerStyles={styles.dropdown}
         buttonTextStyles={styles.dropdownText}
       />
-    </>
+    </View>
   );
 }
 
 function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
+    container: {
+      borderTopColor: colors.borderColor,
+      borderTopWidth: 0.5,
+      paddingTop: 14,
+      marginTop: 8,
+    },
     text: {
       fontSize: 14,
       color: colors.secondaryText,

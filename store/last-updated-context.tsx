@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { useAppContexts } from '../hooks/useAppContexts';
-import { CategoryTypes, ColorTypes, CourierTypes, SupplierTypes } from '../types/allTsTypes';
+import { CategoryTypes, ColorTypes, CourierTypes, Excel, SupplierTypes } from '../types/allTsTypes';
 import { popupMessage } from '../util-components/PopupMessage';
 import { fetchData } from '../util-methods/FetchMethods';
 import { betterErrorLog } from '../util-methods/LogMethods';
@@ -20,6 +20,7 @@ interface LastUpdatedDataType {
   productDisplayCounterLastUpdatedAt: Date;
   processedOrdersForPeriodLastUpdatedAt: Date;
   orderLastUpdatedAt: Date;
+  excelPresetLastUpdatedAt: Date;
 }
 
 interface lastUpdatedResponseDataType {
@@ -176,6 +177,9 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
               popupMessage('FETCHED ALL', 'info');
               productsAlreadyUpdated = true;
               break;
+            case 'excelPreset':
+              updateExcelPresetsContext(dataType.data);
+              break;
 
             default:
               isAllSorted = false;
@@ -231,6 +235,10 @@ function LastUpdatedContextProvider({ children }: LastUpdatedContextProviderType
   // Order
   function updateOrdersContext(newData: any) {
     contexts.orders.setOrders([...newData.processed, ...newData.unprocessed]);
+  }
+  // End Of Day Excel Presets
+  function updateExcelPresetsContext(newData: Excel[]) {
+    contexts.endOfDayExcels.setExcels(newData);
   }
 
   const value = useMemo(

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useGlobalStyles } from '../../../constants/globalStyles';
 import useAuthToken from '../../../hooks/useAuthToken';
+import { useBoutiques } from '../../../store/superAdmin/boutiques-context';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
 import { useUser } from '../../../store/user-context';
 import Button from '../../../util-components/Button';
@@ -15,6 +16,7 @@ function AddBoutique() {
   const styles = getStyles(colors);
   const [error, setError] = useState('');
   const { user } = useUser();
+  const { boutiques } = useBoutiques();
   const token = useAuthToken();
   const globalStyles = useGlobalStyles();
   const [boutiqueData, setBoutiqueData] = useState({

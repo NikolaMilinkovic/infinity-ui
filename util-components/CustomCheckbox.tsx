@@ -76,7 +76,7 @@ function getStyles(colors: ThemeColors) {
       borderRadius: 50,
     },
     label: {
-      fontSize: 16,
+      fontSize: 14,
       color: colors.defaultText,
     },
   });

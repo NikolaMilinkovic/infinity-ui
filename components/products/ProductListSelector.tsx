@@ -65,7 +65,14 @@ function ListButton({ text, activeBtn, onPress }: ListButtonPropTypes) {
       ]}
       onPress={() => onPress(text)}
     >
-      <CustomText style={{ color: isActive ? colors.whiteText : colors.productGroupTextColor }}>{text}</CustomText>
+      <CustomText
+        style={{
+          color: isActive ? colors.defaultText : colors.productGroupTextColor,
+        }}
+        variant={isActive ? 'bold' : 'regular'}
+      >
+        {text}
+      </CustomText>
     </TouchableOpacity>
   );
 }

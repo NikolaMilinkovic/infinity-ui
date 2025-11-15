@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
+import CustomText from '../../../util-components/CustomText';
 
 interface ModalHeaderTypes {
   title: string;
@@ -10,9 +11,9 @@ function ModalHeader({ title }: ModalHeaderTypes) {
   const styles = getStyles(colors);
   return (
     <View style={styles.headerContainer}>
-      <Text style={styles.modalHeader} numberOfLines={1} ellipsizeMode="tail">
+      <CustomText variant="header" style={styles.modalHeader} numberOfLines={1} ellipsizeMode="tail">
         {title}
-      </Text>
+      </CustomText>
     </View>
   );
 }
@@ -23,14 +24,13 @@ function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     headerContainer: {
       height: 50,
-      backgroundColor: colors.primaryDark,
+      backgroundColor: colors.navBackground,
       paddingHorizontal: 10,
       alignItems: 'center',
       justifyContent: 'center',
     },
     modalHeader: {
       color: colors.white,
-      fontWeight: 'bold',
       fontSize: 20,
       textAlign: 'center',
       marginTop: 'auto',

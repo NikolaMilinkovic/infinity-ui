@@ -1,5 +1,6 @@
 import { memo, useRef, useState } from 'react';
 import { Animated, StyleProp, StyleSheet, Text, TextInput, TextStyle, View, ViewStyle } from 'react-native';
+import { useGlobalStyles } from '../constants/globalStyles';
 import { ThemeColors, useThemeColors } from '../store/theme-context';
 
 interface MultilineInputProps {
@@ -33,6 +34,7 @@ const MultilineInput = ({
   const inputRef = useRef<TextInput>(null);
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  const globalStyles = useGlobalStyles();
 
   const labelAnim = useRef(new Animated.Value(value !== '' ? 1 : 0)).current;
 
@@ -98,7 +100,12 @@ const MultilineInput = ({
       )}
       <TextInput
         ref={inputRef}
-        style={[styles.input, { color: color ? color : colors.defaultText, textAlignVertical: 'top' }, inputStyles]}
+        style={[
+          styles.input,
+          globalStyles.fontRegular,
+          { color: color ? color : colors.defaultText, textAlignVertical: 'top' },
+          inputStyles,
+        ]}
         multiline
         numberOfLines={numberOfLines}
         value={value}
@@ -108,6 +115,7 @@ const MultilineInput = ({
         onBlur={handleBlur}
         keyboardType={keyboard}
         placeholderTextColor={colors.defaultText}
+        selectionColor={colors.borderColor}
       />
     </View>
   );

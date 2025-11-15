@@ -10,7 +10,6 @@ import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-rean
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import KeyboardToolbarComponent from './components/keyboard/KeyboardToolbarComponent';
 import StartupOverlay from './components/loading/StartupOverlay';
-import { Colors } from './constants/colors';
 import AuthStack from './navigation/AuthStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
 import ContextProvider from './store/ContextProvider';
@@ -123,7 +122,7 @@ export default function App() {
     'Playfair-Bold': require('./assets/fonts/playfair/PlayfairDisplay-Bold.ttf'),
     'Playfair-Black': require('./assets/fonts/playfair/PlayfairDisplay-Black.ttf'),
     'HelveticaNeue-Regular': require('./assets/fonts/helveticaNeue/HelveticaNeueMedium.otf'),
-    'HelveticaNeue-Light': require('./assets/fonts/helveticaNeue/HelveticaNeueMedium.otf'),
+    'HelveticaNeue-Light': require('./assets/fonts/helveticaNeue/HelveticaNeueLight.otf'),
     'HelveticaNeue-Bold': require('./assets/fonts/helveticaNeue/HelveticaNeueBold.otf'),
     Bodoni: require('./assets/fonts/bodoni/bodoni.ttf'),
   });
@@ -132,7 +131,7 @@ export default function App() {
     <ContextProvider>
       <KeyboardProvider>
         <SafeAreaProvider>
-          <View style={{ flex: 1, backgroundColor: Colors.primaryDark }}>
+          <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
             <StatusBar style="light" translucent={true} />
             <Root />
             <KeyboardToolbarComponent />

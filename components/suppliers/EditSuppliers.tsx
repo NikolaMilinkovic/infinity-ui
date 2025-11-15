@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SuppliersContext } from '../../store/suppliers-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
+import CustomText from '../../util-components/CustomText';
 import EditSupplierItem from './EditSupplierItem';
 
 function EditSuppliers() {
@@ -21,16 +22,15 @@ function EditSuppliers() {
   const filteredSuppliers = useMemo(() => {
     if (!searchQuery.trim()) return suppliersCtx.suppliers;
     return suppliersCtx.suppliers.filter(
-      (supplier) =>
-        supplier.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        supplier.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        supplier.phone?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        supplier.address?.toLowerCase().includes(searchQuery.toLowerCase())
+      (supplier) => supplier.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      // supplier.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      // supplier.phone?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      // supplier.address?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [suppliersCtx.suppliers, searchQuery]);
 
   if (isLoading) {
-    return <Text>Ucitavam dobavljače...</Text>;
+    return <CustomText>Ucitavam dobavljače...</CustomText>;
   }
 
   function NoSuppliersRenderer() {
@@ -48,7 +48,7 @@ function EditSuppliers() {
 
     return (
       <View style={internalStyle.container}>
-        <Text style={internalStyle.text}>Trenutno ne postoje dodati dobavljači</Text>
+        <CustomText style={internalStyle.text}>Trenutno ne postoje dodati dobavljači</CustomText>
       </View>
     );
   }

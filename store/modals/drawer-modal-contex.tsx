@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import useBackClickHandler from '../../hooks/useBackClickHandler';
+import { ThemeColors, useThemeColors } from '../theme-context';
 
 type DrawerContent = ReactNode;
 
@@ -25,13 +26,13 @@ export const DrawerModalProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [content, setContent] = useState<DrawerContent>(null);
   const [contentKey, setContentKey] = useState<string>('');
   const slideAnim = useState(new Animated.Value(Dimensions.get('window').width))[0];
-  const [drawerWidth, setDrawerWidth] = useState<string>('80%');
+  const colors: ThemeColors = useThemeColors();
 
-  const openDrawer = (component: ReactNode, key?: string, width?: string) => {
+  const openDrawer = (component: ReactNode, key?: string) => {
     setContent(component);
     setContentKey(key || Date.now().toString());
     setIsRendered(true);
-    setDrawerWidth(width ?? '80%');
+
     setTimeout(() => {
       setIsVisible(true);
       Animated.timing(slideAnim, {
@@ -60,8 +61,9 @@ export const DrawerModalProvider: React.FC<{ children: ReactNode }> = ({ childre
     });
   };
 
-  // Hook integration: close drawer on hardware back press
   useBackClickHandler(isRendered, closeDrawer);
+
+  const styles = getStyles(colors);
 
   return (
     <DrawerModalContext.Provider value={{ openDrawer, closeDrawer, updateDrawerContent, isDrawerOpen: isRendered }}>
@@ -81,21 +83,22 @@ export const DrawerModalProvider: React.FC<{ children: ReactNode }> = ({ childre
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  visible: {
-    opacity: 1,
-  },
-  drawer: {
-    height: '100%',
-    backgroundColor: '#fff',
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    padding: 16,
-  },
-});
+const getStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      justifyContent: 'flex-end',
+    },
+    visible: {
+      opacity: 1,
+    },
+    drawer: {
+      height: '100%',
+      backgroundColor: colors.background,
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      padding: 16,
+    },
+  });

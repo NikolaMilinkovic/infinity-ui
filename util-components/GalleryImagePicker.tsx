@@ -1,19 +1,21 @@
 import { useState } from 'react';
-import { Animated, Image, Pressable, StyleSheet, Text } from 'react-native';
+import { Animated, Image, Pressable, StyleSheet } from 'react-native';
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useExpandAnimation } from '../hooks/useExpand';
 import { ThemeColors, useThemeColors } from '../store/theme-context';
 import { ProductImageTypes } from '../types/allTsTypes';
 import { pickImage } from '../util-methods/GalleryPickImage';
+import CustomText from './CustomText';
 
 interface PropTypes {
   image: ProductImageTypes | null;
   setImage: (image: ProductImageTypes | null) => void;
   placeholder: string;
   quality: number;
-  crop: boolean;
   customStyles?: any;
   textStyles?: any;
+  enableImageCropping: boolean;
+  useAspectRatioWhileCropping: boolean;
 }
 
 function GalleryImagePicker({
@@ -21,9 +23,10 @@ function GalleryImagePicker({
   setImage,
   placeholder = 'Dodaj sliku',
   quality = 0.6,
-  crop = false,
   customStyles,
   textStyles,
+  enableImageCropping = false,
+  useAspectRatioWhileCropping = false,
 }: PropTypes) {
   const colors = useThemeColors();
   const styles = getStyles(colors);
@@ -31,7 +34,7 @@ function GalleryImagePicker({
   const toggledHeight = useExpandAnimation(isExpanded, 50, 100, 180);
 
   async function handlePickImage() {
-    const pickedImage = await pickImage(quality, crop);
+    const pickedImage = await pickImage(quality, enableImageCropping, useAspectRatioWhileCropping);
     if (pickedImage) {
       setImage(pickedImage as any);
       setIsExpanded(true);
@@ -43,7 +46,7 @@ function GalleryImagePicker({
     event.stopPropagation();
   }
 
-  let imagePreview = <Text style={[styles.text, textStyles]}>{placeholder}</Text>;
+  let imagePreview = <CustomText style={[styles.text, textStyles]}>{placeholder}</CustomText>;
   if (!isExpanded) {
     imagePreview = <Pressable onPress={handleToggleExpand} style={styles.collapsedArea}></Pressable>;
   }

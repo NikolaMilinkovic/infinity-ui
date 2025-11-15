@@ -8,12 +8,14 @@ interface LinearGradientBackgroundProps {
   containerStyles?: StyleProp<ViewStyle>;
   color1?: string;
   color2?: string;
+  flex?: boolean;
 }
 export default function LinearGradientBackground({
   children,
   containerStyles,
   color1,
   color2,
+  flex = true,
 }: LinearGradientBackgroundProps) {
   const colors = useThemeColors();
 
@@ -22,7 +24,7 @@ export default function LinearGradientBackground({
       colors={[color2 ? color2 : colors.buttonNormal2, color1 ? color1 : colors.buttonNormal1]}
       start={{ x: 0.5, y: 1 }}
       end={{ x: 0.5, y: 0 }}
-      style={[{ flex: 1 }, containerStyles]}
+      style={[flex && { flex: 1 }, containerStyles]}
     >
       {children}
     </LinearGradient>

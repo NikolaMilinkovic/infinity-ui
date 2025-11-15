@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, Pressable, StyleSheet, View } from 'react-native';
 import { useGlobalStyles } from '../../../constants/globalStyles';
 import { useExpandAnimation } from '../../../hooks/useExpand';
 import { useHighlightAnimation } from '../../../hooks/useHighlightAnimation';
@@ -89,7 +89,7 @@ function OrderItem({
   });
 
   function Row({ children }: any) {
-    return <View style={{ flexDirection: 'row', gap: 6 }}>{children}</View>;
+    return <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>{children}</View>;
   }
 
   return (
@@ -98,7 +98,7 @@ function OrderItem({
         <View style={styles.itemHighlightedOverlay}/>
       )} */}
       <Animated.View style={[styles.container, { height: expandHeight, backgroundColor }]}>
-        <Text style={styles.timestamp}>{getFormattedDate(order.createdAt)}</Text>
+        <CustomText style={styles.timestamp}>{getFormattedDate(order.createdAt)}</CustomText>
         <View style={styles.infoContainer}>
           {previewImage && (
             <ImagePreviewModal image={previewImage} isVisible={isImageModalVisible} onCancel={hideImageModal} />
@@ -107,29 +107,35 @@ function OrderItem({
             <Image source={order.buyer.profileImage} style={styles.profileImage} />
           </Pressable>
           <View style={styles.info}>
-            <CustomText variant="header" style={{ marginBottom: 0, fontSize: 15 }}>
+            <CustomText style={{ marginBottom: 0, fontSize: 15 }} color={colors.highlightText} variant="medium">
               {order.buyer.name}
             </CustomText>
-            <Text style={[{ color: colors.grayText, marginBottom: 8, marginTop: -4 }, styles.orderTextinfoSize]}>
+            <CustomText style={[{ color: colors.grayText, marginBottom: 8, marginTop: -4 }, styles.orderTextinfoSize]}>
               {order.buyer.address}, {order.buyer?.place}
-            </Text>
+            </CustomText>
             <Row>
-              <CustomText variant="bold" style={[{ minWidth: 46 }, styles.orderTextinfoSize]}>
+              <CustomText variant="medium" style={[{ minWidth: 46 }, styles.orderTextinfoSize]}>
                 Tel.
               </CustomText>
-              <Text style={[{ color: colors.defaultText }, styles.orderTextinfoSize]}>{order.buyer.phone}</Text>
+              <CustomText style={[{ color: colors.defaultText }, styles.orderTextinfoSize]}>
+                {order.buyer.phone}
+              </CustomText>
             </Row>
             <Row>
-              <CustomText variant="bold" style={[{ minWidth: 46 }, styles.orderTextinfoSize]}>
+              <CustomText variant="medium" style={[{ minWidth: 46 }, styles.orderTextinfoSize]}>
                 Otkup:
               </CustomText>
-              <Text style={[{ color: colors.defaultText }, styles.orderTextinfoSize]}>{order.totalPrice} rsd.</Text>
+              <CustomText style={[{ color: colors.defaultText }, styles.orderTextinfoSize]}>
+                {order.totalPrice} rsd.
+              </CustomText>
             </Row>
             <Row>
-              <CustomText variant="bold" style={[{ minWidth: 46 }, styles.orderTextinfoSize]}>
+              <CustomText variant="medium" style={[{ minWidth: 46 }, styles.orderTextinfoSize]}>
                 Kurir:
               </CustomText>
-              <Text style={[{ color: colors.defaultText }, styles.orderTextinfoSize]}>{order.courier?.name}</Text>
+              <CustomText style={[{ color: colors.defaultText }, styles.orderTextinfoSize]}>
+                {order.courier?.name}
+              </CustomText>
             </Row>
             {order.orderNotes && (
               <CustomText variant="bold" style={styles.orderNoteIndicator}>
@@ -184,13 +190,15 @@ function OrderItem({
           <Animated.View style={styles.productsContainer}>
             {order.orderNotes && (
               <View style={styles.orderNoteContainer} onLayout={onNoteLayout}>
-                <CustomText style={styles.orderNoteLabel} variant="bold">
+                <CustomText style={styles.orderNoteLabel} variant="medium">
                   Napomena:
                 </CustomText>
-                <CustomText style={styles.orderNoteText}>{order.orderNotes}</CustomText>
+                <CustomText style={styles.orderNoteText} variant="bold">
+                  {order.orderNotes}
+                </CustomText>
               </View>
             )}
-            <CustomText variant="bold">Lista artikala:</CustomText>
+            <CustomText variant="medium">Lista artikala:</CustomText>
             {order.products.map((product, index) => (
               <DisplayOrderProduct key={`${index}-${product._id}`} product={product} index={index} />
             ))}
@@ -219,7 +227,7 @@ function getStyles(colors: ThemeColors, packed: boolean) {
     },
     orderNoteIndicator: {
       position: 'absolute',
-      right: -50,
+      right: -47,
       bottom: packed ? 10 : 0,
       color: colors.error,
     },
@@ -296,12 +304,10 @@ function getStyles(colors: ThemeColors, packed: boolean) {
       gap: 10,
     },
     orderNoteLabel: {
-      fontWeight: 'bold',
       minWidth: 85,
       flex: 4,
     },
     orderNoteText: {
-      fontWeight: 'bold',
       color: colors.error,
       flexShrink: 1,
     },

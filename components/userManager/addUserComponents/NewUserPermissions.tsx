@@ -4,7 +4,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useExpandAnimationWithContentVisibility } from '../../../hooks/useExpand';
 import { useToggleFadeAnimation } from '../../../hooks/useFadeAnimation';
 import { ThemeColors, useThemeColors } from '../../../store/theme-context';
-import { DropdownTypes } from '../../../types/allTsTypes';
 import Button from '../../../util-components/Button';
 import CustomCheckbox from '../../../util-components/CustomCheckbox';
 import CustomText from '../../../util-components/CustomText';
@@ -25,11 +24,7 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
   // Expand animation that makescontent visible when expanded
   // Used to fix the padding issue when expand is collapsed
   const [isContentVisible, setIsContentVisible] = useState(true);
-  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 950);
-  const [userDropdownData, setUserDropdownData] = useState<DropdownTypes[]>([
-    { _id: 0, name: 'Admin', value: 'Admin' },
-    { _id: 1, name: 'User', value: 'User' },
-  ]);
+  const toggleExpandAnimation = useExpandAnimationWithContentVisibility(isExpanded, setIsContentVisible, 10, 1050);
 
   function handleToggleExpand() {
     if (isExpanded) {
@@ -100,6 +95,7 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
           </Button>
 
           {/* NAVIGATION PERMISSIONS */}
+          {/* ==============================[ NAVIGATION ]============================== */}
           <PermissionsRow header="Navigacija">
             <View style={{ flexDirection: 'column', width: '100%' }}>
               <View style={styles.navRow}>
@@ -178,18 +174,19 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
                 />
               </View>
 
-              {/* <View style={styles.navRow}>
+              <View style={styles.navRow}>
                 <CustomCheckbox
                   customColor={colors.defaultText}
                   checkColor={colors.checkboxCheckColor}
-                  onCheckedChange={() => toggleNavigation('admin_dashboard')}
+                  onCheckedChange={() => toggleNavigation('excel_manager')}
                   containerStyles={styles.cell}
-                  label={'Admin Dashboard'}
-                  checked={data.permissions.navigation.admin_dashboard}
+                  label={'Excel Šabloni'}
+                  checked={data.permissions.navigation.excel_manager}
                 />
-              </View> */}
+              </View>
             </View>
           </PermissionsRow>
+          {/* ==============================[ \NAVIGATION ]============================== */}
 
           {/* ARTIKAL */}
           <PermissionsRow header="Artikal" useCheckAll={true}>
@@ -262,7 +259,7 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
                 customColor={colors.defaultText}
                 checkColor={colors.checkboxCheckColor}
                 containerStyles={styles.permissionsItem}
-                label={'Štikliranje pakovanja'}
+                label={'Štikliranje\npakovanja'}
                 onCheckedChange={() => togglePermission('packaging', 'check')}
                 checked={data.permissions.packaging.check}
               />
@@ -277,7 +274,7 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
             </View>
           </PermissionsRow>
 
-          {/* cOLORS */}
+          {/* COLORS */}
           <PermissionsRow
             header="Boje"
             isDisabled={!data.permissions.navigation.boje_kategorije_dobavljaci}
@@ -412,6 +409,36 @@ function NewUserPermissions({ isExpanded, setIsExpanded, data, setData }: PropTy
               />
             </View>
           </PermissionsRow>
+
+          {/* EXCEL */}
+          <PermissionsRow header="Excel" isDisabled={!data.permissions.navigation.excel_manager} useCheckAll={true}>
+            <View style={styles.permissionWrapper}>
+              <CustomCheckbox
+                customColor={colors.defaultText}
+                checkColor={colors.checkboxCheckColor}
+                containerStyles={styles.permissionsItem}
+                label={'Kreiraj'}
+                onCheckedChange={() => togglePermission('excel', 'create')}
+                checked={data.permissions.excel.create}
+              />
+              <CustomCheckbox
+                customColor={colors.defaultText}
+                checkColor={colors.checkboxCheckColor}
+                containerStyles={styles.permissionsItem}
+                label={'Menjaj'}
+                onCheckedChange={() => togglePermission('excel', 'update')}
+                checked={data.permissions.excel.update}
+              />
+              <CustomCheckbox
+                customColor={colors.defaultText}
+                checkColor={colors.checkboxCheckColor}
+                containerStyles={styles.permissionsItem}
+                label={'Briši'}
+                onCheckedChange={() => togglePermission('excel', 'delete')}
+                checked={data.permissions.excel.delete}
+              />
+            </View>
+          </PermissionsRow>
         </Animated.View>
       )}
     </View>
@@ -423,19 +450,22 @@ function getStyles(colors: ThemeColors) {
     headerContainer: {
       padding: 10,
       borderRadius: 4,
-      borderWidth: 0.5,
+      borderWidth: 0,
       borderColor: colors.borderColor,
-      backgroundColor: colors.primaryDark,
-      marginBottom: 10,
+      backgroundColor: colors.accordionHeaderBackground,
+      marginBottom: 6,
       flexDirection: 'row',
-      alignItems: 'center',
     },
     iconStyle: {
       marginLeft: 'auto',
     },
     header: {
-      fontSize: 20,
-      color: colors.highlightText,
+      fontSize: 14,
+      alignSelf: 'center',
+      color: colors.whiteText,
+      fontFamily: 'HelveticaNeue-Bold',
+      textAlign: 'center',
+      flex: 1,
     },
     contentContainer: {
       flexDirection: 'column',

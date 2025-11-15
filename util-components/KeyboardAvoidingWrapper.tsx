@@ -11,9 +11,10 @@ interface Props {
   children: React.ReactNode;
   style?: ViewStyle | ViewStyle[];
   keyboardVerticalOffset?: number;
+  scroll?: boolean;
 }
 
-const KeyboardAvoidingWrapper: React.FC<Props> = ({ children, style }) => {
+const KeyboardAvoidingWrapper: React.FC<Props> = ({ children, style, scroll = true }) => {
   const colors = useThemeColors();
   return (
     <>
@@ -22,6 +23,7 @@ const KeyboardAvoidingWrapper: React.FC<Props> = ({ children, style }) => {
         style={[{ flex: 1, backgroundColor: colors.background }, style]}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
+        scrollEnabled={scroll}
       >
         {children}
       </AnimatedKeyboardAwareScrollView>

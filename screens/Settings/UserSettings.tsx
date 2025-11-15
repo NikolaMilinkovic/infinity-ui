@@ -12,7 +12,8 @@ import { handleFetchingWithBodyData } from '../../util-methods/FetchMethods';
 import CheckForUpdates from './userSettingsComponents/CheckForUpdates';
 import CouriersSettings from './userSettingsComponents/CouriersSettings';
 import KeyboardSettings from './userSettingsComponents/KeyboardSettings';
-import ListProductsByDropdown from './userSettingsComponents/ListProductsByDropdown';
+import OrdersManagerSettings from './userSettingsComponents/OrdersManagerSettings';
+import ProductsManagerSettings from './userSettingsComponents/ProductsManagerSettings';
 import ThemeSelector from './userSettingsComponents/ThemeSelector';
 
 function UserSettings() {
@@ -97,14 +98,6 @@ function UserSettings() {
             <CheckForUpdates />
           </View>
 
-          {/* LIST PRODUCTS BY */}
-          <CustomText variant="bold" style={styles.h1}>
-            {text.listProductsBy_header}
-          </CustomText>
-          <View style={styles.sectionOutline}>
-            <ListProductsByDropdown updateDefault={updateDefault} />
-          </View>
-
           {/* DEFAULT COURIER */}
           <CustomText variant="bold" style={styles.h1}>
             Kuriri
@@ -133,6 +126,22 @@ function UserSettings() {
           </CustomText>
           <View style={styles.sectionOutline}>
             <KeyboardSettings />
+          </View>
+
+          {/* PRODUCTS MANAGER */}
+          <CustomText variant="bold" style={[styles.h1]}>
+            Proizvodi
+          </CustomText>
+          <View style={styles.sectionOutline}>
+            <ProductsManagerSettings />
+          </View>
+
+          {/* PRODUCTS MANAGER */}
+          <CustomText variant="bold" style={[styles.h1]}>
+            Porudžbine
+          </CustomText>
+          <View style={styles.sectionOutline}>
+            <OrdersManagerSettings />
           </View>
 
           {/* SAVE BTN */}

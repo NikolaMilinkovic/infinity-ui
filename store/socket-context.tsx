@@ -58,3 +58,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
   return <SocketContext.Provider value={{ socket }}>{children}</SocketContext.Provider>;
 };
+
+export function useSocket() {
+  const context = useContext(SocketContext);
+
+  if (!context) {
+    throw new Error('SocketContext must be used within a SocketContextProvider');
+  }
+
+  return context.socket;
+}

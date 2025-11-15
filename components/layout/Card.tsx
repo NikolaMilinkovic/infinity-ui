@@ -15,8 +15,8 @@ function Card({ children, cardStyles, padding = 18 }: CardPropTypes) {
     <View style={[styles.card, cardStyles]}>
       <LinearGradientBackground
         containerStyles={{ padding: padding, borderRadius: 4 }}
-        color1={colors.cardBackground}
-        color2={colors.cardBackground1}
+        color1={colors.cardBackground1}
+        color2={colors.cardBackground2}
       >
         {children}
       </LinearGradientBackground>

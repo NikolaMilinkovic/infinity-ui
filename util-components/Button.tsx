@@ -67,7 +67,7 @@ function getStyles(colors: ThemeColors, textColor = 'black', backColor1 = colors
     },
     buttonText: {
       color: textColor,
-      fontSize: 16,
+      fontSize: 14,
     },
   });
 }

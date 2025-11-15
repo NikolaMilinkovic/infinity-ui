@@ -1,10 +1,11 @@
 import Constants from 'expo-constants';
 import { useContext, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { AuthContext } from '../../store/auth-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import Button from '../../util-components/Button';
+import CustomText from '../../util-components/CustomText';
 import InputField from '../../util-components/InputField';
 import { popupMessage } from '../../util-components/PopupMessage';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
@@ -98,7 +99,7 @@ function AddColor() {
           </Button>
         </View>
       </View>
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && <CustomText style={styles.error}>{error}</CustomText>}
     </View>
   );
 }

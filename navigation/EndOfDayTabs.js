@@ -2,6 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import EndOfDay from '../screens/EndOfDay/EndOfDay';
 import PreviousStatisticFiles from '../screens/EndOfDay/PreviousStatisticFiles';
 import { useThemeColors } from '../store/theme-context';
+import { getTabScreenOptions } from './styles/getTabScreenOptions';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -11,22 +12,7 @@ export default function EndOfDayTabs() {
    * END OF DAY tabs
    */
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarPressColor: colors.tabsPressEffect,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          color: colors.primaryDark,
-        },
-        tabBarStyle: {
-          backgroundColor: colors.tabsBackground,
-        },
-        tabBarIndicatorStyle: {
-          backgroundColor: colors.highlight,
-          height: 4,
-        },
-      }}
-    >
+    <Tab.Navigator screenOptions={getTabScreenOptions(colors)}>
       <Tab.Screen
         name="EndOfDayScreen"
         component={EndOfDay}

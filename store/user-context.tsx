@@ -13,6 +13,8 @@ interface UserContextTypes {
   user: User | null;
   setUser: (data: User | null) => void;
   updateUser: (field: string, value: any) => void;
+  getUserValueForField: (keyName: string, fallback: any) => any;
+  userHasPermission: (keyName: string, fallback: any) => any;
 }
 interface UserContextProviderTypes {
   children: ReactNode;
@@ -21,6 +23,8 @@ export const UserContext = createContext<UserContextTypes>({
   user: null,
   setUser: () => {},
   updateUser: () => {},
+  getUserValueForField: () => {},
+  userHasPermission: () => {},
 });
 
 function UserContextProvider({ children }: UserContextProviderTypes) {
@@ -41,7 +45,6 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
 
           if (token && expoPushToken?.data) {
             if (expoPushToken?.data !== userData.pushToken) {
-              popupMessage('Updating expo push token', 'info');
               await updateUserExpoPushToken(token, expoPushToken?.data);
             }
           }
@@ -103,6 +106,23 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
     });
   };
 
+  function getUserValueForField(keyName: string, fallback: any = false) {
+    if (!user || typeof user !== 'object') return fallback;
+
+    function deepSearch(obj: any): any {
+      for (const key in obj) {
+        if (key === keyName) return obj[key];
+        if (typeof obj[key] === 'object') {
+          const value = deepSearch(obj[key]);
+          if (value !== undefined) return value;
+        }
+      }
+      return undefined;
+    }
+
+    return deepSearch(user) ?? fallback;
+  }
+
   function handleUpdateUserPermissions() {}
   function handleUpdateUserSettings() {}
 
@@ -123,6 +143,8 @@ function UserContextProvider({ children }: UserContextProviderTypes) {
       user,
       setUser,
       updateUser,
+      getUserValueForField,
+      userHasPermission: getUserValueForField,
     }),
     [user, setUser]
   );

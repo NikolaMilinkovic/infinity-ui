@@ -2,6 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import AddItem from '../screens/ProductsManager/AddProduct/AddItem';
 import EditItem from '../screens/ProductsManager/editProduct/EditItem';
 import { useThemeColors } from '../store/theme-context';
+import { getTabScreenOptions } from './styles/getTabScreenOptions';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -11,22 +12,7 @@ export default function ProductsManagerTabs() {
    * PRODUCTS MANAGER Tabs
    */
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarPressColor: colors.tabsPressEffect,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          color: colors.secondaryDark,
-        },
-        tabBarStyle: {
-          backgroundColor: colors.tabsBackground,
-        },
-        tabBarIndicatorStyle: {
-          backgroundColor: colors.highlight,
-          height: 4,
-        },
-      }}
-    >
+    <Tab.Navigator screenOptions={getTabScreenOptions(colors)}>
       <Tab.Screen
         name="AddItem"
         component={AddItem}

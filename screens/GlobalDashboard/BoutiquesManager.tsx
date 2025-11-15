@@ -2,6 +2,7 @@ import { Animated, StyleSheet } from 'react-native';
 import { useFadeAnimation } from '../../hooks/useFadeAnimation';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import AddBoutique from './BoutiquesManager/AddBoutique';
+import EditBoutique from './BoutiquesManager/EditBoutique';
 
 function BoutiquesManager() {
   const fadeAnimation = useFadeAnimation();
@@ -11,6 +12,7 @@ function BoutiquesManager() {
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnimation }]}>
       <AddBoutique />
+      <EditBoutique />
     </Animated.View>
   );
 }

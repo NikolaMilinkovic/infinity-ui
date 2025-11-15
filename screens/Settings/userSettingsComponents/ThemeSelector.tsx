@@ -24,7 +24,7 @@ function ThemeSelector({ updateDefault }: { updateDefault: (field: string, value
 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <CustomText style={styles.text}>{text.theme_description}</CustomText>
+      <CustomText style={styles.text}>Izabrana tema: {themeContext.theme === 'dark' ? 'Tamna' : 'Svetla'}</CustomText>
       <Switch
         value={themeContext.theme === 'dark'}
         onValueChange={toggleTheme}

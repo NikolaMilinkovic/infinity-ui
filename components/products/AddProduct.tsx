@@ -282,7 +282,9 @@ function AddProduct() {
           />
 
           <View style={styles.wrapper}>
-            <CustomText style={[styles.sectionText, styles.sectionTextTopMargin]}>Dobavljač</CustomText>
+            <CustomText variant="header" style={[styles.sectionText, styles.sectionTextTopMargin]}>
+              Dobavljač
+            </CustomText>
             <DropdownList
               key={resetKey}
               data={[{ _id: '', name: 'Resetuj izbor' }, ...suppliersCtx.suppliers]}

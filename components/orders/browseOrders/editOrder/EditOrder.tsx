@@ -283,7 +283,9 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
         <View style={styles.container}>
           <View style={styles.card}>
             {/* Buyer data */}
-            <CustomText style={styles.sectionLabel}>Podaci o kupcu</CustomText>
+            <CustomText variant="header" style={styles.sectionLabel}>
+              Podaci o kupcu
+            </CustomText>
             <BuyerDataInputs
               name={name}
               setName={setName}
@@ -304,7 +306,9 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             />
 
             {/* Courier data */}
-            <CustomText style={styles.sectionLabel}>Izabrani kurir</CustomText>
+            <CustomText variant="header" style={styles.sectionLabel}>
+              Izabrani kurir
+            </CustomText>
             <View style={styles.sectionContainer}>
               <DropdownList
                 data={courierDropdownData}
@@ -328,7 +332,9 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             </View>
 
             {/* Products list */}
-            <CustomText style={styles.sectionLabel}>Lista artikla: ({products.length} kom.)</CustomText>
+            <CustomText variant="header" style={styles.sectionLabel}>
+              Lista artikla: ({products.length} kom.)
+            </CustomText>
             <AddItemsModal isVisible={showAddItemModal} setIsVisible={setShowAddItemModal} setProducts={setProducts} />
             <View style={[styles.sectionContainer, styles.productListContainer]}>
               {products &&
@@ -347,7 +353,9 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             </View>
 
             {/* Reservation | Packed */}
-            <CustomText style={styles.sectionLabel}>Rezervacija | Spakovano:</CustomText>
+            <CustomText variant="header" style={styles.sectionLabel}>
+              Rezervacija | Spakovano:
+            </CustomText>
             <View style={styles.sectionContainer}>
               {/* Reservation */}
               <View style={styles.radioGroupContainer}>
@@ -423,7 +431,9 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
             </View>
 
             {/* Prices */}
-            <CustomText style={styles.sectionLabel}>Cene:</CustomText>
+            <CustomText variant="header" style={styles.sectionLabel}>
+              Cene:
+            </CustomText>
             <View style={[styles.sectionContainer, styles.pricesContainer]}>
               {/* Products prices */}
               <View style={styles.row}>
@@ -485,7 +495,7 @@ function EditOrder({ editedOrder, setEditedOrder }: PropTypes) {
                 onPress={handleUpdateMethod}
                 backColor={colors.buttonHighlight1}
                 backColor1={colors.buttonHighlight2}
-                textColor={colors.whiteText}
+                textColor={colors.highlightText}
               >
                 Sačuvaj
               </Button>
@@ -506,7 +516,7 @@ function getStyles(colors: ThemeColors) {
     card: {
       marginTop: 10,
       backgroundColor: colors.background,
-      padding: 10,
+      padding: 16,
       borderRadius: 4,
       borderWidth: 1,
       borderColor: colors.borderColor,
@@ -519,7 +529,8 @@ function getStyles(colors: ThemeColors) {
       flex: 1,
     },
     sectionLabel: {
-      fontSize: 18,
+      fontSize: 15,
+      color: colors.highlightText,
     },
     buttonsContainer: {
       display: 'flex',

@@ -166,14 +166,14 @@ function DisplayProduct({
 
           <View style={styles.info}>
             <Text
-              style={[globalStyles.header, { fontSize: 14, marginBottom: 6, marginTop: 6, maxWidth: '82%' }]}
+              style={[globalStyles.header, { fontSize: 14.5, marginBottom: 6, marginTop: 6, maxWidth: '82%' }]}
               numberOfLines={2}
               ellipsizeMode="tail"
             >
               {item.name}
             </Text>
-            <CustomText style={globalStyles.textRegular}>Kategorija: {item.category}</CustomText>
-            <CustomText style={globalStyles.textRegular}>Cena: {item.price} RSD</CustomText>
+            <CustomText style={(globalStyles.textRegular, { fontSize: 13 })}>Kategorija: {item.category}</CustomText>
+            <CustomText style={(globalStyles.textRegular, { fontSize: 13 })}>Cena: {item.price} RSD</CustomText>
 
             {!onStock && (
               <CustomText style={styles.soldText} variant="bold">
@@ -209,8 +209,8 @@ function DisplayProduct({
               {/* ADD */}
               {onStock && user?.permissions?.products?.create && showAddBtn && (
                 <IconButton
-                  size={26}
-                  color={colors.defaultText}
+                  size={22}
+                  color={colors.iconColor}
                   onPress={handleOnAddPress}
                   key={`key-${item._id}-add-button`}
                   icon="add"
@@ -224,8 +224,8 @@ function DisplayProduct({
               {/* EDIT */}
               {user?.permissions?.products?.update && (
                 <IconButton
-                  size={26}
-                  color={colors.defaultText}
+                  size={22}
+                  color={colors.iconColor}
                   onPress={handleOnEditPress}
                   key={`key-${item._id}-edit-button`}
                   icon="edit"
@@ -317,7 +317,7 @@ function getStyles(colors: ThemeColors, onStock: boolean, showAddBtn: boolean) {
       borderRadius: 4,
       overflow: 'hidden',
       borderColor: colors.borderColor,
-      borderWidth: 1,
+      borderWidth: 0,
       padding: 0,
     },
     image: {
@@ -333,6 +333,8 @@ function getStyles(colors: ThemeColors, onStock: boolean, showAddBtn: boolean) {
     },
     soldText: {
       color: colors.error,
+      marginTop: 'auto',
+      marginLeft: 'auto',
     },
     expandButton: {
       position: 'absolute',
@@ -360,7 +362,10 @@ function getStyles(colors: ThemeColors, onStock: boolean, showAddBtn: boolean) {
     },
     onStockText: {
       color: colors.success1,
-      // fontWeight: 'bold',
+      fontSize: 13,
+      marginBottom: 10,
+      marginTop: 'auto',
+      marginLeft: 'auto',
     },
     highlightRemoveBtnContainer: {
       position: 'absolute',

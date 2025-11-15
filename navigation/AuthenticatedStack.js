@@ -14,6 +14,7 @@ import ColorsCategoriesTabs from './ColorsCategoriesTabs';
 import CouriersTabs from './CouriersTabs';
 import { CustomDrawerContent } from './DrawerNavigation';
 import EndOfDayTabs from './EndOfDayTabs';
+import ExcelManagerTabs from './ExcelTabs';
 import GlobalDashboardTabs from './GlobalDashboardTabs';
 import OrdersManagerTabs from './OrdersManagerTabs';
 import ProductsManagerTabs from './ProductsManagerTabs';
@@ -113,6 +114,9 @@ export default function AuthenticatedStack() {
 
       {/* USERMANAGER */}
       <Drawer.Screen name="UserManagerTabs" component={UserManagerTabs} />
+
+      {/* EXCEL MANAGER */}
+      <Drawer.Screen name="ExcelManagerTabs" component={ExcelManagerTabs} />
 
       {/* COLORS AND CATEGORIES TAB SCREEN */}
       <Drawer.Screen

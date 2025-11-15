@@ -31,28 +31,28 @@ function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }: 
           {/* Product sorting buttons */}
           <View style={styles.sortProductsContainer}>
             <Button
-              containerStyles={styles.button}
+              containerStyles={[styles.button, globalStyles.elevation_1]}
               onPress={() => handleSortProducts('top')}
               backColor={colors.buttonNormal1}
-              backColor1={colors.buttonNormal2}
+              backColor1={colors.buttonNormal1}
               textStyles={styles.buttonText}
             >
               Top
             </Button>
             <Button
-              containerStyles={styles.button}
+              containerStyles={[styles.button, globalStyles.elevation_1]}
               onPress={() => handleSortProducts('mid')}
               backColor={colors.buttonNormal1}
-              backColor1={colors.buttonNormal2}
+              backColor1={colors.buttonNormal1}
               textStyles={styles.buttonText}
             >
               Mid
             </Button>
             <Button
-              containerStyles={styles.button}
+              containerStyles={[styles.button, globalStyles.elevation_1]}
               onPress={() => handleSortProducts('bot')}
               backColor={colors.buttonNormal1}
-              backColor1={colors.buttonNormal2}
+              backColor1={colors.buttonNormal1}
               textStyles={styles.buttonText}
             >
               Bot
@@ -69,7 +69,7 @@ function BatchModeControlls({ active, onRemoveBatchPress, handleSortProducts }: 
             style={[styles.removeBatchItemsButton, globalStyles.elevation_1]}
             pressedStyles={styles.removeBatchItemsButtonPressed}
             backColor={colors.buttonNormal1}
-            backColor1={colors.buttonNormal2}
+            backColor1={colors.buttonNormal1}
           />
         </Animated.View>
       )}
@@ -95,6 +95,9 @@ function getStyles(colors: ThemeColors) {
       alignItems: 'center',
       justifyContent: 'center',
       marginLeft: 'auto',
+      borderEndWidth: 0.5,
+      borderColor: colors.borderColor,
+      elevation: 1,
     },
     removeBatchItemsButtonPressed: {
       opacity: 0.7,
@@ -115,12 +118,15 @@ function getStyles(colors: ThemeColors) {
       paddingHorizontal: 0,
       borderWidth: 0,
       borderTopWidth: 0,
+      borderEndWidth: 0.5,
+      borderColor: colors.borderColor,
+      elevation: 1,
     },
     buttonPressed: {
       opacity: 0.7,
     },
     buttonText: {
-      color: colors.defaultText,
+      color: colors.highlightText,
       margin: 0,
     },
   });

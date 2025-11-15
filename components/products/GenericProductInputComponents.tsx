@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
+import { useUser } from '../../store/user-context';
 import CustomText from '../../util-components/CustomText';
 import DropdownList from '../../util-components/DropdownList';
 import ImagePicker from '../../util-components/ImagePicker';
@@ -44,6 +45,7 @@ function GenericProductInputComponents({
 }: PropTypes) {
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  const { getUserValueForField } = useUser();
   return (
     <>
       <View style={[styles.wrapper]}>
@@ -82,7 +84,13 @@ function GenericProductInputComponents({
         <CustomText variant="bold" style={[styles.sectionText, styles.sectionTextTopMargin]}>
           Slika Proizvoda
         </CustomText>
-        <ImagePicker onTakeImage={setProductImage} previewImage={previewImage} setPreviewImage={setPreviewImage} />
+        <ImagePicker
+          onTakeImage={setProductImage}
+          previewImage={previewImage}
+          setPreviewImage={setPreviewImage}
+          enableImageCropping={getUserValueForField('enableCroppingForProductImage', true)}
+          useAspectRatioWhileCropping={getUserValueForField('useAspectRatioForProductImage', true)}
+        />
       </View>
       <View style={styles.wrapper}>
         <CustomText variant="bold" style={[styles.sectionText, styles.sectionTextTopMargin]}>

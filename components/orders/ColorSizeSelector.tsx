@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import RadioButtonsGroup from 'react-native-radio-buttons-group';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useGlobalStyles } from '../../constants/globalStyles';
 import { NewOrderContext } from '../../store/new-order-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { DressColorTypes, DressTypes, OrderProductTypes, PurseColorTypes } from '../../types/allTsTypes';
@@ -30,6 +31,7 @@ function ColorSizeSelector({ product, index }: PropTypes) {
   const [sizeButtons, setSizeButtons] = useState<ButtonTypes[]>([]);
   const colors = useThemeColors();
   const styles = getStyles(colors, product.selectedColor, product.selectedSize);
+  const globalStyles = useGlobalStyles();
 
   useEffect(() => {
     if (!product) return;
@@ -105,7 +107,7 @@ function ColorSizeSelector({ product, index }: PropTypes) {
     <Animated.ScrollView style={styles.container}>
       {/* TOGGLE  BUTTON */}
       <Pressable onPress={() => setIsExpanded(!isExpanded)} style={styles.headerContainer}>
-        <TruncatedText style={styles.header}>{product?.itemReference?.name}</TruncatedText>
+        <TruncatedText style={[globalStyles.fontMedium, styles.header]}>{product?.itemReference?.name}</TruncatedText>
         <Icon
           name={isExpanded ? 'chevron-up' : 'chevron-down'}
           style={styles.iconStyle}
@@ -117,14 +119,17 @@ function ColorSizeSelector({ product, index }: PropTypes) {
         <>
           <View style={styles.colorsContainer}>
             {/* COLOR PICKERS */}
-            <CustomText style={styles.colorHeader}> Boja</CustomText>
+            <CustomText style={[globalStyles.fontMedium, styles.colorHeader]}> Boja</CustomText>
             <RadioButtonsGroup
               radioButtons={colorButtons}
               // onPress={(value) => handleColorSelect(index, value, product)}
               onPress={(color) => handleColorSelect(index, color, product as any)}
               containerStyle={styles.radioButtonsContainer}
               selectedId={product.selectedColor}
-              labelStyle={styles.label}
+              labelStyle={[styles.label, globalStyles.fontRegular]}
+              borderColor={colors.borderColor}
+              highlight={colors.highlight}
+              color={colors.defaultText}
             />
           </View>
 
@@ -137,7 +142,10 @@ function ColorSizeSelector({ product, index }: PropTypes) {
                 onPress={(size) => handleSizeSelect(index, size, product as any)}
                 containerStyle={styles.radioButtonsContainer}
                 selectedId={product.selectedSize}
-                labelStyle={styles.label}
+                labelStyle={[styles.label, globalStyles.fontRegular]}
+                borderColor={colors.borderColor}
+                highlight={colors.highlight}
+                color={colors.defaultText}
               />
             </View>
           )}
@@ -159,8 +167,7 @@ function getStyles(colors: ThemeColors, selectedColor: string, selectedSize: str
       color: colors.defaultText,
     },
     header: {
-      fontSize: 16,
-      fontWeight: 'bold',
+      fontSize: 15,
       color: colors.highlightText,
       maxWidth: '90%',
     },
@@ -188,11 +195,11 @@ function getStyles(colors: ThemeColors, selectedColor: string, selectedSize: str
       color: colors.defaultText,
     },
     colorHeader: {
-      borderTopWidth: 0,
+      borderTopWidth: 0.5,
       borderTopColor: colors.borderColor,
       color: colors.defaultText,
-      fontSize: 16,
-      fontWeight: 'bold',
+      fontSize: 14,
+      borderBottomColor: colors.borderColor,
       padding: 6,
       marginBottom: 4,
     },

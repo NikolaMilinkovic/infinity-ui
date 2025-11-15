@@ -7,6 +7,7 @@ import { NewOrderContext } from '../../store/new-order-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import Button from '../../util-components/Button';
 import CustomCheckbox from '../../util-components/CustomCheckbox';
+import CustomText from '../../util-components/CustomText';
 import InputField from '../../util-components/InputField';
 
 interface PropTypes {
@@ -132,44 +133,44 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
             >
               {/* BUYER INFORMATION */}
               <View style={styles.buyerInfoContainer}>
-                <Text style={styles.header2}>Informacije o kupcu</Text>
+                <CustomText style={styles.header2}>Informacije o kupcu</CustomText>
 
                 {/* NAME */}
                 <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Ime:</Text>
-                  <Text style={styles.information}>{orderCtx.buyerData?.name || 'N/A'}</Text>
+                  <CustomText style={styles.label}>Ime:</CustomText>
+                  <CustomText style={styles.information}>{orderCtx.buyerData?.name || 'N/A'}</CustomText>
                 </View>
 
                 {/* ADDRESS */}
                 <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Adresa:</Text>
-                  <Text style={styles.information}>{orderCtx.buyerData?.address || 'N/A'}</Text>
+                  <CustomText style={styles.label}>Adresa:</CustomText>
+                  <CustomText style={styles.information}>{orderCtx.buyerData?.address || 'N/A'}</CustomText>
                 </View>
 
                 {/* PLACE */}
                 <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Mesto:</Text>
-                  <Text style={styles.information}>{orderCtx.buyerData?.place || 'N/A'}</Text>
+                  <CustomText style={styles.label}>Mesto:</CustomText>
+                  <CustomText style={styles.information}>{orderCtx.buyerData?.place || 'N/A'}</CustomText>
                 </View>
 
                 {/* PHONE */}
                 <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Telefon:</Text>
-                  <Text style={styles.information}>{orderCtx.buyerData?.phone || 'N/A'}</Text>
+                  <CustomText style={styles.label}>Telefon:</CustomText>
+                  <CustomText style={styles.information}>{orderCtx.buyerData?.phone || 'N/A'}</CustomText>
                 </View>
 
                 {/* PHONE2 */}
                 {orderCtx.buyerData?.phone2 !== '' && (
                   <View style={styles.rowContainer}>
-                    <Text style={styles.label}>Dodatni telefon:</Text>
-                    <Text style={styles.information}>{orderCtx.buyerData?.phone2 || 'N/A'}</Text>
+                    <CustomText style={styles.label}>Dodatni telefon:</CustomText>
+                    <CustomText style={styles.information}>{orderCtx.buyerData?.phone2 || 'N/A'}</CustomText>
                   </View>
                 )}
               </View>
 
               {/* SELECTED PRODUCTS */}
               <View style={styles.selectedItemsContainer}>
-                <Text style={styles.header2}>Izabrani proizvodi ({orderCtx.productData.length}) :</Text>
+                <CustomText style={styles.header2}>Izabrani proizvodi ({orderCtx.productData.length}) :</CustomText>
                 {orderCtx?.productData.map((item, index) => (
                   <View
                     style={[
@@ -179,33 +180,33 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
                     key={index}
                   >
                     <View style={styles.rowContainer}>
-                      <Text style={styles.label}>Artikal:</Text>
-                      <Text style={styles.information}>{item.itemReference.name || 'N/A'}</Text>
+                      <CustomText style={styles.label}>Artikal:</CustomText>
+                      <CustomText style={styles.information}>{item.itemReference.name || 'N/A'}</CustomText>
                     </View>
                     <View style={styles.rowContainer}>
-                      <Text style={styles.label}>Kategorija:</Text>
-                      <Text style={styles.information}>{item.itemReference.category || 'N/A'}</Text>
+                      <CustomText style={styles.label}>Kategorija:</CustomText>
+                      <CustomText style={styles.information}>{item.itemReference.category || 'N/A'}</CustomText>
                     </View>
                     <View style={styles.rowContainer}>
-                      <Text style={styles.label}>Boja:</Text>
-                      <Text style={styles.information}>{item.selectedColor || 'N/A'}</Text>
+                      <CustomText style={styles.label}>Boja:</CustomText>
+                      <CustomText style={styles.information}>{item.selectedColor || 'N/A'}</CustomText>
                     </View>
                     {item.hasOwnProperty('selectedSize') && (
                       <View style={styles.rowContainer}>
-                        <Text style={styles.label}>Veličina:</Text>
-                        <Text style={styles.information}>{item.selectedSize || 'N/A'}</Text>
+                        <CustomText style={styles.label}>Veličina:</CustomText>
+                        <CustomText style={styles.information}>{item.selectedSize || 'N/A'}</CustomText>
                       </View>
                     )}
                     <View style={styles.rowContainer}>
-                      <Text style={styles.label}>Cena:</Text>
-                      <Text style={styles.information}>{`${item.itemReference.price} din` || 'N/A'}</Text>
+                      <CustomText style={styles.label}>Cena:</CustomText>
+                      <CustomText style={styles.information}>{`${item.itemReference.price} din` || 'N/A'}</CustomText>
                     </View>
                   </View>
                 ))}
               </View>
 
               <View style={styles.otherInfoContainer}>
-                <Text style={styles.header2}>Rezervacija:</Text>
+                <CustomText style={styles.header2}>Rezervacija:</CustomText>
                 <View style={styles.rowContainer}>
                   <CustomCheckbox
                     label={'Da'}
@@ -224,7 +225,7 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
                   <>
                     {Platform.OS === 'ios' ? (
                       <View style={[styles.radioGroupContainer, { flexDirection: 'column' }]}>
-                        <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+                        <CustomText style={styles.filtersH2absolute}>Datum rezervacije</CustomText>
                         <View style={{ justifyContent: 'center', alignSelf: 'center' }}>
                           <DateTimePicker
                             value={orderCtx.reservationDate}
@@ -240,11 +241,13 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
                       <View style={[styles.radioGroupContainer, { flexDirection: 'column' }]}>
                         {orderCtx.reservationDate && pickedDateDisplay && (
                           <View style={styles.dateDisplayContainer}>
-                            <Text style={styles.dateLabel}>Izabrani datum:</Text>
-                            <Text style={styles.dateText}>{formatDateHandler(orderCtx.reservationDate)}</Text>
+                            <CustomText style={styles.dateLabel}>Izabrani datum:</CustomText>
+                            <CustomText style={styles.dateText}>
+                              {formatDateHandler(orderCtx.reservationDate)}
+                            </CustomText>
                           </View>
                         )}
-                        <Text style={styles.filtersH2absolute}>Datum rezervacije</Text>
+                        <CustomText style={styles.filtersH2absolute}>Datum rezervacije</CustomText>
                         <View style={styles.dateButtonsContainer}>
                           <Button
                             containerStyles={styles.dateButton}
@@ -270,29 +273,31 @@ const NewOrderPreview = forwardRef<NewOrderPreviewRef, PropTypes>(
                   </>
                 )}
 
-                <Text style={styles.header2}>Ostale informacije:</Text>
+                <CustomText style={styles.header2}>Ostale informacije:</CustomText>
                 <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Težina:</Text>
-                  <Text style={styles.information}>{orderCtx?.weight} kg</Text>
+                  <CustomText style={styles.label}>Težina:</CustomText>
+                  <CustomText style={styles.information}>{orderCtx?.weight} kg</CustomText>
                 </View>
                 <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Kurir:</Text>
-                  <Text style={styles.information}>{orderCtx.courierData?.name}</Text>
+                  <CustomText style={styles.label}>Kurir:</CustomText>
+                  <CustomText style={styles.information}>{orderCtx.courierData?.name}</CustomText>
                 </View>
                 <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Cena dostave:</Text>
-                  <Text style={styles.information}>{Number(orderCtx.courierData?.deliveryPrice) | 0} din</Text>
+                  <CustomText style={styles.label}>Cena dostave:</CustomText>
+                  <CustomText style={styles.information}>
+                    {Number(orderCtx.courierData?.deliveryPrice) | 0} din
+                  </CustomText>
                 </View>
                 <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Ukupna cena artikala:</Text>
-                  <Text style={styles.information}>{Number(itemsPrice) || 0} din</Text>
+                  <CustomText style={styles.label}>Ukupna cena artikala:</CustomText>
+                  <CustomText style={styles.information}>{Number(itemsPrice) || 0} din</CustomText>
                 </View>
                 {/* Final price */}
                 <View style={styles.rowContainer}>
-                  <Text style={styles.label}>Ukupno:</Text>
-                  <Text style={styles.information}>
+                  <CustomText style={styles.label}>Ukupno:</CustomText>
+                  <CustomText style={styles.information}>
                     {Number(itemsPrice) + Number(orderCtx.courierData?.deliveryPrice) || 0} din
-                  </Text>
+                  </CustomText>
                 </View>
                 <View style={styles.priceContainer}>
                   <InputField
@@ -338,19 +343,21 @@ function getStyles(colors: ThemeColors) {
       padding: 10,
       borderRadius: 4,
       borderWidth: 0,
-      borderColor: colors.secondaryLight,
-      backgroundColor: colors.secondaryDark,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.accordionHeaderBackground,
       marginBottom: 6,
       flexDirection: 'row',
-      flex: 1,
     },
     iconStyle: {
       marginLeft: 'auto',
     },
     header: {
-      fontSize: 20,
-      fontWeight: 'bold',
+      fontSize: 14,
+      alignSelf: 'center',
       color: colors.whiteText,
+      fontFamily: 'HelveticaNeue-Bold',
+      textAlign: 'center',
+      flex: 1,
     },
     buyerInfoContainer: {
       borderWidth: 0.5,
@@ -474,6 +481,7 @@ function getStyles(colors: ThemeColors) {
       flexDirection: 'row',
       flex: 1,
       gap: 10,
+      marginTop: 10,
     },
     recalculatePriceBtn: {
       flex: 1,

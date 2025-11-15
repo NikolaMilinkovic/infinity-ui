@@ -5,6 +5,7 @@ import useImagePreviewModal from '../../../../hooks/useImagePreviewModal';
 import { ThemeColors, useThemeColors } from '../../../../store/theme-context';
 import { OrderProductTypes } from '../../../../types/allTsTypes';
 import ConfirmationModal from '../../../../util-components/ConfirmationModal';
+import CustomText from '../../../../util-components/CustomText';
 import IconButton from '../../../../util-components/IconButton';
 import ImagePreviewModal from '../../../../util-components/ImagePreviewModal';
 
@@ -56,7 +57,7 @@ function ProductDisplay({ product, index, setProducts }: ProductDisplayTypes) {
 
           {/* Main data */}
           <View style={styles.infoContainer}>
-            <Text style={styles.header}>{product.name}</Text>
+            <CustomText style={styles.header}>{product.name}</CustomText>
 
             {/* Category */}
             <View style={styles.infoRow}>
@@ -121,7 +122,6 @@ function getStyles(colors: ThemeColors) {
       position: 'relative',
     },
     header: {
-      fontWeight: 'bold',
       fontSize: 16,
       color: colors.defaultText,
     },

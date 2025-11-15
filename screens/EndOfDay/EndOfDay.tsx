@@ -81,7 +81,7 @@ function EndOfDay() {
           onPress={handleOnDayEnd}
           backColor={colors.buttonHighlight1}
           backColor1={colors.buttonHighlight2}
-          textColor={colors.white}
+          textColor={colors.whiteText}
         >
           Završi dan i izvuci porudžbine
         </Button>

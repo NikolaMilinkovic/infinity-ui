@@ -21,7 +21,7 @@ const CourierSelector = forwardRef(
   ({ isExpanded, setIsExpanded, onNext, defaultValueByMatch = 'Bex', courierSelectorRef }: PropTypes, ref) => {
     const orderCtx = useContext(NewOrderContext);
     const dropdownData = useGetCourierDropdownData();
-    const toggleExpandAnimation = useExpandAnimation(isExpanded, 0, 117, 180);
+    const toggleExpandAnimation = useExpandAnimation(isExpanded, 0, 108, 180);
     const defaultCourierData = useGetDefaultCourierData();
     const [resetDropdownCounter, setResetDropdownCounter] = useState(0);
     const colors = useThemeColors();
@@ -77,7 +77,7 @@ const CourierSelector = forwardRef(
           <Button
             backColor={colors.buttonHighlight1}
             backColor1={colors.buttonHighlight2}
-            textColor={colors.whiteText}
+            textColor={colors.highlightText}
             containerStyles={{ marginBottom: 6, marginTop: 6 }}
             onPress={onNext}
           >
@@ -95,13 +95,22 @@ function getStyles(colors: ThemeColors) {
       padding: 10,
       borderRadius: 4,
       borderWidth: 0,
-      borderColor: colors.primaryDark,
-      backgroundColor: colors.secondaryDark,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.accordionHeaderBackground,
       marginBottom: 6,
       flexDirection: 'row',
     },
-    iconStyle: { marginLeft: 'auto' },
-    header: { fontSize: 20, fontWeight: 'bold', color: colors.whiteText },
+    iconStyle: {
+      marginLeft: 'auto',
+    },
+    header: {
+      fontSize: 14,
+      alignSelf: 'center',
+      color: colors.whiteText,
+      fontFamily: 'HelveticaNeue-Bold',
+      textAlign: 'center',
+      flex: 1,
+    },
     container: { paddingHorizontal: 8 },
   });
 }

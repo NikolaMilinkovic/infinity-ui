@@ -262,7 +262,7 @@ function NewOrder() {
           <Button
             backColor={colors.buttonHighlight1}
             backColor1={colors.buttonHighlight2}
-            textColor={colors.whiteText}
+            textColor={colors.highlightText}
             containerStyles={[styles.button, { marginBottom: 6 }]}
             onPress={handleSubmitOrder}
           >

@@ -3,6 +3,7 @@ import AddUser from '../components/userManager/AddUser';
 import EditUser from '../components/userManager/EditUser';
 import { useThemeColors } from '../store/theme-context';
 import UsersManagerProvider from '../store/users-manager-context';
+import { getTabScreenOptions } from './styles/getTabScreenOptions';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -13,22 +14,7 @@ export default function UserManagerTabs() {
    */
   return (
     <UsersManagerProvider>
-      <Tab.Navigator
-        screenOptions={{
-          tabBarPressColor: colors.tabsPressEffect,
-          tabBarLabelStyle: {
-            fontSize: 11,
-            color: colors.primaryDark,
-          },
-          tabBarStyle: {
-            backgroundColor: colors.tabsBackground,
-          },
-          tabBarIndicatorStyle: {
-            backgroundColor: colors.highlight,
-            height: 4,
-          },
-        }}
-      >
+      <Tab.Navigator screenOptions={getTabScreenOptions(colors)}>
         <Tab.Screen
           name="EditUser"
           component={EditUser}

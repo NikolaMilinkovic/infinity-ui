@@ -81,7 +81,7 @@ function ColorSizeSelectorsList({ ordersCtx, isExpanded, setIsExpanded, onNext }
 
             {/* ON NEXT BUTTON */}
             <Button
-              textColor={colors.whiteText}
+              textColor={colors.highlightText}
               containerStyles={{ marginBottom: 6, marginHorizontal: 0 }}
               onPress={handleOnNext}
               backColor={colors.buttonHighlight1}
@@ -102,8 +102,8 @@ function getStyles(colors: ThemeColors) {
       padding: 10,
       borderRadius: 4,
       borderWidth: 0,
-      borderColor: colors.primaryDark,
-      backgroundColor: colors.secondaryDark,
+      borderColor: colors.borderColor,
+      backgroundColor: colors.accordionHeaderBackground,
       marginBottom: 6,
       flexDirection: 'row',
     },
@@ -111,9 +111,12 @@ function getStyles(colors: ThemeColors) {
       marginLeft: 'auto',
     },
     header: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: colors.white,
+      fontSize: 14,
+      alignSelf: 'center',
+      color: colors.whiteText,
+      fontFamily: 'HelveticaNeue-Bold',
+      textAlign: 'center',
+      flex: 1,
     },
     container: {
       paddingHorizontal: 8,

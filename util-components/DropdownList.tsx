@@ -106,7 +106,10 @@ const DropdownList = ({
                 color2={colors.cardBackground2}
                 containerStyles={styles.dropdownButtonStyle}
               >
-                <Text style={[styles.dropdownButtonTxtStyle, buttonTextStyles]} numberOfLines={1}>
+                <Text
+                  style={[styles.dropdownButtonTxtStyle, globalStyles.fontRegular, buttonTextStyles]}
+                  numberOfLines={1}
+                >
                   {selectedItem?.name || selectedItem?.value || placeholder || 'No placeholder value provided'}
                 </Text>
                 <Icon
@@ -128,7 +131,9 @@ const DropdownList = ({
               }}
             >
               {/* <Text>{index + 1}</Text> */}
-              <Text style={styles.dropdownItemTxtStyle}>{item?.name || item?.value || 'ERROR'}</Text>
+              <Text style={[globalStyles.fontRegular, styles.dropdownItemTxtStyle]}>
+                {item?.name || item?.value || 'ERROR'}
+              </Text>
             </View>
           );
         }}

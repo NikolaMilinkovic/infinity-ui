@@ -3,6 +3,7 @@ import { useContext, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { AuthContext } from '../../store/auth-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
+import { UserPermissions } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
 import { popupMessage } from '../../util-components/PopupMessage';
 import NewUserDetails from './addUserComponents/NewUserDetails';
@@ -20,29 +21,8 @@ interface NewUserDataTypes {
   name: string;
   role: string;
   boutiqueId: string;
-  permissions: {
-    navigation: {
-      lista_artikla: boolean;
-      porudzbine_rezervacije: boolean;
-      boje_kategorije_dobavljaci: boolean;
-      kuriri: boolean;
-      dodaj_artikal: boolean;
-      upravljanje_korisnicima: boolean;
-      podesavanja: boolean;
-      zavrsi_dan: boolean;
-      admin_dashboard: boolean;
-    };
-    products: cud;
-    orders: cud;
-    packaging: {
-      check: boolean;
-      finish_packaging: boolean;
-    };
-    colors: cud;
-    categories: cud;
-    suppliers: cud;
-    couriers: cud;
-  };
+  isSuperAdmin: boolean;
+  permissions: UserPermissions;
 }
 
 function AddUser() {
@@ -58,6 +38,7 @@ function AddUser() {
     name: '',
     role: 'user',
     boutiqueId: '',
+    isSuperAdmin: false,
     permissions: {
       navigation: {
         lista_artikla: true,
@@ -69,6 +50,8 @@ function AddUser() {
         podesavanja: true,
         zavrsi_dan: true,
         admin_dashboard: false,
+        global_dashboard: false,
+        excel_manager: false,
       },
       products: {
         create: true,
@@ -104,6 +87,16 @@ function AddUser() {
         update: true,
         delete: true,
       },
+      boutiques: {
+        create: false,
+        update: false,
+        delete: false,
+      },
+      excel: {
+        create: false,
+        update: false,
+        delete: false,
+      },
     },
   });
   const colors = useThemeColors();
@@ -118,6 +111,7 @@ function AddUser() {
       name: '',
       role: 'user',
       boutiqueId: '',
+      isSuperAdmin: false,
       permissions: {
         navigation: {
           lista_artikla: true,
@@ -129,6 +123,8 @@ function AddUser() {
           podesavanja: true,
           zavrsi_dan: true,
           admin_dashboard: false,
+          global_dashboard: false,
+          excel_manager: false,
         },
         products: {
           create: true,
@@ -163,6 +159,16 @@ function AddUser() {
           create: true,
           update: true,
           delete: true,
+        },
+        boutiques: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+        excel: {
+          create: false,
+          update: false,
+          delete: false,
         },
       },
     });

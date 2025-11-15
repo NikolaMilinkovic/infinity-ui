@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useGlobalStyles } from '../../constants/globalStyles';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { NewOrderContextTypes } from '../../types/allTsTypes';
@@ -15,6 +16,7 @@ interface PropTypes {
   setIsExpanded: (expanded: boolean) => void;
 }
 function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext }: PropTypes) {
+  const globalStyles = useGlobalStyles();
   const colors = useThemeColors();
   const styles = getStyles(colors);
 
@@ -68,7 +70,7 @@ function SelectedProductsDisplay({ ordersCtx, isExpanded, setIsExpanded, onNext 
 
           {/* NEXT BUTTON */}
           <Button
-            textColor={colors.whiteText}
+            textColor={colors.highlightText}
             containerStyles={{ marginBottom: 6 }}
             onPress={handleOnNext}
             backColor={colors.buttonHighlight1}
@@ -90,7 +92,7 @@ function getStyles(colors: ThemeColors) {
       borderRadius: 4,
       borderWidth: 0,
       borderColor: colors.borderColor,
-      backgroundColor: colors.secondaryDark,
+      backgroundColor: colors.accordionHeaderBackground,
       marginBottom: 6,
       flexDirection: 'row',
     },
@@ -98,9 +100,12 @@ function getStyles(colors: ThemeColors) {
       marginLeft: 'auto',
     },
     header: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: colors.white,
+      fontSize: 14,
+      alignSelf: 'center',
+      color: colors.whiteText,
+      fontFamily: 'HelveticaNeue-Bold',
+      textAlign: 'center',
+      flex: 1,
     },
     listContainer: {
       padding: 10,

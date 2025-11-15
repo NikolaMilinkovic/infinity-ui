@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import { useContext, useEffect, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { useGlobalStyles } from '../../constants/globalStyles';
 import { useExpandAnimationWithContentVisibility } from '../../hooks/useExpand';
 import { AuthContext } from '../../store/auth-context';
 import { useConfirmationModal } from '../../store/modals/confirmation-modal-context';
@@ -8,11 +9,13 @@ import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { useUser } from '../../store/user-context';
 import { SupplierTypes } from '../../types/allTsTypes';
 import Button from '../../util-components/Button';
+import CustomText from '../../util-components/CustomText';
 import IconButton from '../../util-components/IconButton';
 import { popupMessage } from '../../util-components/PopupMessage';
 const backendURI = Constants.expoConfig?.extra?.backendURI;
 
 function EditSupplierItem({ data }: { data: SupplierTypes }) {
+  const globalStyles = useGlobalStyles();
   const [supplierData, setSupplierData] = useState<SupplierTypes>({
     _id: '',
     boutiqueId: '',
@@ -171,7 +174,7 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
             }}
           >
             <TextInput
-              style={styles.input}
+              style={[styles.input, globalStyles.textRegular]}
               placeholder="Ime dobavljača"
               value={newName}
               onChangeText={handleNameChange}
@@ -198,12 +201,12 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
                 Sačuvaj
               </Button>
             </View>
-            {error && <Text style={styles.error}>{error}</Text>}
-            {success && <Text style={styles.success}>{success}</Text>}
+            {error && <CustomText style={styles.error}>{error}</CustomText>}
+            {success && <CustomText style={styles.success}>{success}</CustomText>}
           </View>
         ) : (
           <View style={styles.displayItem}>
-            <Text style={styles.supplierText}>{supplierData.name}</Text>
+            <CustomText style={styles.supplierText}>{supplierData.name}</CustomText>
             <IconButton
               icon="delete"
               onPress={removeSupplierHandler}
@@ -223,7 +226,7 @@ function EditSupplierItem({ data }: { data: SupplierTypes }) {
 function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
     supplierItem: {
-      padding: 14,
+      padding: 10,
       paddingHorizontal: 25,
       backgroundColor: colors.background,
       marginBottom: 1,
@@ -241,7 +244,7 @@ function getStyles(colors: ThemeColors) {
       alignItems: 'center',
     },
     supplierText: {
-      fontSize: 16,
+      fontSize: 14,
       color: colors.defaultText,
     },
     mainInputsContainer: {
@@ -254,7 +257,7 @@ function getStyles(colors: ThemeColors) {
       borderBottomWidth: 1,
       flex: 1,
       marginBottom: 10,
-      fontSize: 16,
+      fontSize: 14,
     },
     buttons: {
       flexDirection: 'row',
@@ -275,6 +278,8 @@ function getStyles(colors: ThemeColors) {
     },
     buttonStyle: {
       flex: 1,
+      minHeight: 0,
+      height: 36,
     },
   });
 }

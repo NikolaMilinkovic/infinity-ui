@@ -95,7 +95,9 @@ function PackOrderItem({ order }: PackOrderItemPropTypes) {
               <CustomText variant="bold" style={styles.rowLabel}>
                 Kupac:
               </CustomText>
-              <CustomText style={styles.rowText}>{order.buyer.name}</CustomText>
+              <CustomText style={styles.rowText} color={colors.highlightText}>
+                {order.buyer.name}
+              </CustomText>
             </View>
 
             {/* ADDRESS */}

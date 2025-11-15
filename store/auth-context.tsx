@@ -28,9 +28,7 @@ function AuthContextProvider({ children }: AuthContextProviderType) {
     AsyncStorage.setItem('token', token);
   }
   function logout() {
-    console.log('> Logging out..');
     if (authToken) {
-      console.log('> reseting user expo push token');
       resetUserExpoPushToken(authToken);
     }
     setAuthToken(null);

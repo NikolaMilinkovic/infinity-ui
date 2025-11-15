@@ -141,8 +141,8 @@ function Login() {
             <Button
               onPress={() => loginUserHandler(username, password, expoPushToken?.data || '')}
               textColor={colors.whiteText}
-              backColor={colors.highlight1}
-              backColor1={colors.highlight2}
+              backColor={colors.buttonHighlight1}
+              backColor1={colors.buttonHighlight2}
             >
               Login
             </Button>

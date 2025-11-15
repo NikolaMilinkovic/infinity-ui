@@ -4,7 +4,7 @@ import CustomText from '../../util-components/CustomText';
 
 interface SwitchPropTypes {
   value: boolean;
-  text: string;
+  text?: string;
   onChange: () => void;
 }
 export function SwitchButton({ value, text, onChange }: SwitchPropTypes) {

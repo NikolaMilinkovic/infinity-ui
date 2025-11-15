@@ -90,9 +90,6 @@ function getStyles(colors: ThemeColors) {
       opacity: 0.7,
       elevation: 1,
     },
-    bold: {
-      fontWeight: 'bold',
-    },
   });
 }
 

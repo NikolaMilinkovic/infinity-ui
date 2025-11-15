@@ -105,7 +105,7 @@ function getStyles(colors: ThemeColors) {
       left: 0,
       zIndex: 2,
       height: 60,
-      backgroundColor: colors.primaryDark,
+      backgroundColor: colors.containerBackground,
       paddingHorizontal: 10,
       alignItems: 'center',
       justifyContent: 'center',
@@ -124,7 +124,6 @@ function getStyles(colors: ThemeColors) {
     header: {
       fontSize: 22,
       fontWeight: 'bold',
-      backgroundColor: colors.primaryDark,
       color: colors.white,
       paddingHorizontal: 16,
       paddingVertical: 16,

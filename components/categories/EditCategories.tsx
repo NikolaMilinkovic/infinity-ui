@@ -1,8 +1,10 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, StyleSheet, TextInput, View } from 'react-native';
+import { useGlobalStyles } from '../../constants/globalStyles';
 import { CategoriesContext } from '../../store/categories-context';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { CategoryTypes } from '../../types/allTsTypes';
+import CustomText from '../../util-components/CustomText';
 import EditCategoriesItem from './EditCategoriesItem';
 
 function EditCategories() {
@@ -11,6 +13,7 @@ function EditCategories() {
   const [categories, setCategories] = useState<CategoryTypes[]>([]);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const globalStyles = useGlobalStyles();
   const colors = useThemeColors();
   const styles = getStyles(colors);
 
@@ -34,7 +37,7 @@ function EditCategories() {
   }, [categories, searchQuery]);
 
   if (isLoading) {
-    return <Text>Učitavam kategorije...</Text>;
+    return <CustomText>Učitavam kategorije...</CustomText>;
   }
 
   function NoCategoriesRenderer() {
@@ -49,7 +52,7 @@ function EditCategories() {
 
     return (
       <View style={internalStyle.container}>
-        <Text style={internalStyle.text}>Trenutno ne postoje dodate kategorije</Text>
+        <CustomText style={internalStyle.text}>Trenutno ne postoje dodate kategorije</CustomText>
       </View>
     );
   }
@@ -60,9 +63,11 @@ function EditCategories() {
         <>
           {/* Header and TextInput moved outside FlatList */}
           <View style={styles.headerWrapper}>
-            <Text style={styles.header}>Ukupno kategorija: {categories.length}</Text>
+            <CustomText variant="medium" style={styles.header}>
+              Ukupno kategorija: {categories.length}
+            </CustomText>
             <TextInput
-              style={styles.input}
+              style={[styles.input]}
               placeholder="Pretraži kategorije"
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -112,7 +117,7 @@ function getStyles(colors: ThemeColors) {
       fontSize: 14,
       fontWeight: 'bold',
       padding: 10,
-      backgroundColor: colors.background,
+      marginTop: 1,
       textAlign: 'center',
       color: colors.defaultText,
     },

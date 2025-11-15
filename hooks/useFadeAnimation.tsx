@@ -3,14 +3,14 @@ import { useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 
 // FADE ANIMATION ON FOCUS
-export const useFadeAnimation = () => {
+export const useFadeAnimation = (duration = 180) => {
   const isFocused = useIsFocused();
   const fadeAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.timing(fadeAnimation, {
       toValue: isFocused ? 1 : 0,
-      duration: 180,
+      duration: duration,
       useNativeDriver: true,
     }).start();
 

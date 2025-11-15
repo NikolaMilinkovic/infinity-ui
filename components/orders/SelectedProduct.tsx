@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { useGlobalStyles } from '../../constants/globalStyles';
 import { ThemeColors, useThemeColors } from '../../store/theme-context';
 import { NewOrderContextTypes, ProductTypes } from '../../types/allTsTypes';
+import CustomText from '../../util-components/CustomText';
 
 interface PropTypes {
   item: ProductTypes;
@@ -23,9 +24,9 @@ function SelectedProduct({ item, orderCtx, index }: PropTypes) {
       style={({ pressed }) => [styles.pressable, pressed && styles.pressed, globalStyles.elevation_1]}
       key={`${index}-${item._id}`}
     >
-      <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
+      <CustomText style={styles.text} numberOfLines={1} ellipsizeMode="tail">
         {index + 1}. {item.name}
-      </Text>
+      </CustomText>
     </Pressable>
   );
 }
@@ -48,7 +49,7 @@ function getStyles(colors: ThemeColors) {
     },
     text: {
       color: colors.defaultText,
-      fontSize: 16,
+      fontSize: 14,
     },
   });
 }

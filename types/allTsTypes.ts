@@ -427,63 +427,13 @@ export type VersionDataTypes = {
 export interface User {
   _id?: string;
   username?: string;
+  password?: string;
   boutiqueId?: string | null;
   role: string | null;
   name?: string;
   pushToken?: string;
-  permissions: {
-    navigation: {
-      lista_artikla: boolean;
-      porudzbine_rezervacije: boolean;
-      boje_kategorije_dobavljaci: boolean;
-      kuriri: boolean;
-      dodaj_artikal: boolean;
-      upravljanje_korisnicima: boolean;
-      podesavanja: boolean;
-      zavrsi_dan: boolean;
-      admin_dashboard: boolean;
-      global_dashboard: boolean;
-    };
-    products: {
-      create: boolean;
-      update: boolean;
-      delete: boolean;
-    };
-    orders: {
-      create: boolean;
-      update: boolean;
-      delete: boolean;
-    };
-    packaging: {
-      check: boolean;
-      finish_packaging: boolean;
-    };
-    colors: {
-      create: boolean;
-      update: boolean;
-      delete: boolean;
-    };
-    categories: {
-      create: boolean;
-      update: boolean;
-      delete: boolean;
-    };
-    suppliers: {
-      create: boolean;
-      update: boolean;
-      delete: boolean;
-    };
-    couriers: {
-      create: boolean;
-      update: boolean;
-      delete: boolean;
-    };
-    boutiques: {
-      create: boolean;
-      update: boolean;
-      delete: boolean;
-    };
-  } | null;
+  isSuperAdmin: boolean;
+  permissions: UserPermissions;
   settings: {
     defaults: {
       courier: string;
@@ -495,7 +445,99 @@ export interface User {
     ui: {
       displayKeyboardToolbar: boolean;
     };
+    productsManager: {
+      enableCroppingForProductImage: boolean;
+      useAspectRatioForProductImage: boolean;
+    };
+    ordersManager: {
+      enableCroppingForBuyerImage: boolean;
+      useAspectRatioForBuyerImage: boolean;
+    };
   } | null;
   createdAt?: string;
   updatedAt?: string;
+}
+export interface UserPermissions {
+  navigation: {
+    lista_artikla: boolean;
+    porudzbine_rezervacije: boolean;
+    boje_kategorije_dobavljaci: boolean;
+    kuriri: boolean;
+    dodaj_artikal: boolean;
+    upravljanje_korisnicima: boolean;
+    podesavanja: boolean;
+    zavrsi_dan: boolean;
+    admin_dashboard: boolean;
+    global_dashboard: boolean;
+    excel_manager: boolean;
+  };
+  products: {
+    create: boolean;
+    update: boolean;
+    delete: boolean;
+  };
+  orders: {
+    create: boolean;
+    update: boolean;
+    delete: boolean;
+  };
+  packaging: {
+    check: boolean;
+    finish_packaging: boolean;
+  };
+  colors: {
+    create: boolean;
+    update: boolean;
+    delete: boolean;
+  };
+  categories: {
+    create: boolean;
+    update: boolean;
+    delete: boolean;
+  };
+  suppliers: {
+    create: boolean;
+    update: boolean;
+    delete: boolean;
+  };
+  couriers: {
+    create: boolean;
+    update: boolean;
+    delete: boolean;
+  };
+  boutiques: {
+    create: boolean;
+    update: boolean;
+    delete: boolean;
+  };
+  excel: {
+    create: boolean;
+    update: boolean;
+    delete: boolean;
+  };
+}
+
+export interface ExcelColumn {
+  temp_id?: string;
+  _id?: string;
+  name: string;
+  source: {
+    type: string;
+    valueKey: string;
+  };
+  options?: {
+    defaultValue?: string;
+    isAllCaps?: boolean;
+    format?: string;
+  };
+}
+
+export interface Excel {
+  _id?: string;
+  boutiqueId: string;
+  name: string;
+  isDefault?: boolean;
+  columns: ExcelColumn[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
